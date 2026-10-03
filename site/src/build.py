@@ -4,7 +4,7 @@ import json, os, sys
 here = os.path.dirname(os.path.abspath(__file__)); root = os.path.dirname(here)
 g = json.load(open(os.path.join(here, 'glyphs.json')))
 L = ['P', 'E', 'C', 'R', 'I1', 'A', 'T', 'I2', 'V', 'O']
-NOME, NOME_CURTO = 'Luiz Carlos Alves Evangelista', 'Luiz Carlos'
+NOME, NOME_CURTO = 'Luiz Evangelista', 'Luiz Evangelista'
 icons = {
  '__IC_PEN__': '<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M32 6 L48 30 L32 58 L16 30 Z"/><circle cx="32" cy="32" r="5"/><path d="M32 6 V27"/></svg>',
  '__IC_PANEL__': '<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><rect x="6" y="10" width="52" height="38" rx="5"/><path d="M22 10 V48"/><path d="M30 22 H50 M30 30 H44 M30 38 H48"/><path d="M24 56 H40"/></svg>',
