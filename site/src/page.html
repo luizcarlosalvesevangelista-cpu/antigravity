@@ -1,0 +1,592 @@
+<title>Upe Criativo</title>
+<meta name="description" content="Upe Criativo: Branding e Redesign, Upe ERP e Upe TV.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,400&display=swap">
+<style>
+/* Layout: brand-blue hero with the live logo reveal, then alternating cream/blue bands per frente; Sobre mim and Portfólio are their own tabs */
+:root {
+  --azul: #0C4F7F;
+  --azul-fundo: #0C4F7F;
+  --creme: #F2F0E1;
+  --ardosia: #798EA6;
+  --cinza: #A6A9AF;
+  --tinta: #111111;
+  --bg: #F7F6EE;
+  --bg-2: #EFEDE0;
+  --fg: #172431;
+  --fg-2: #4F5D6B;
+  --linha: #DCD8C6;
+  --cartao: #FFFFFF;
+  --acento: #0C4F7F;
+  --sobre-azul: #F2F0E1;
+  --font: "Lato", "Helvetica Neue", Arial, sans-serif;
+  --gutter: clamp(16px, 4vw, 48px);
+  --max: 1200px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0E1823; --bg-2: #132232; --fg: #ECEADB; --fg-2: #A9B4C0; --linha: #26384A; --cartao: #152535; --acento: #9DB6D3; --azul-fundo: #0B3F66; color-scheme: dark;
+} }
+:root[data-theme="dark"] { --bg: #0E1823; --bg-2: #132232; --fg: #ECEADB; --fg-2: #A9B4C0; --linha: #26384A; --cartao: #152535; --acento: #9DB6D3; --azul-fundo: #0B3F66; color-scheme: dark; }
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 17px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+img, video { max-width: 100%; display: block; }
+a { color: inherit; }
+.wrap { max-width: var(--max); margin: 0 auto; padding-inline: var(--gutter); }
+.wm { display: block; height: 100%; width: auto; fill: currentColor; }
+.eb { font-size: .74rem; font-weight: 900; letter-spacing: .2em; text-transform: uppercase; color: var(--ardosia); margin: 0; }
+h1, h2, h3 { margin: 0; line-height: 1.06; letter-spacing: -.01em; text-wrap: balance; }
+h2 { font-size: clamp(2rem, 4.4vw, 3.3rem); font-weight: 900; }
+h3 { font-size: 1.2rem; font-weight: 900; }
+.lead { font-size: clamp(1.05rem, 1.6vw, 1.22rem); color: var(--fg-2); max-width: 60ch; margin: 0; }
+.btn { display: inline-flex; align-items: center; gap: 10px; font: 900 .95rem var(--font); text-decoration: none; padding: 14px 22px; border-radius: 999px; border: 2px solid transparent; cursor: pointer; }
+.btn-creme { background: var(--creme); color: var(--azul); }
+.btn-linha { border-color: currentColor; color: inherit; background: transparent; }
+.btn-azul { background: var(--azul); color: var(--creme); }
+:root[data-theme="dark"] .btn-azul { background: var(--creme); color: var(--azul); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn-azul { background: var(--creme); color: var(--azul); } }
+.btn:focus-visible, nav a:focus-visible, button:focus-visible, .case:focus-visible { outline: 3px solid var(--ardosia); outline-offset: 3px; }
+
+/* cabeçalho */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--azul-fundo); color: var(--creme); }
+.top .wrap { display: flex; align-items: center; gap: 24px; height: 68px; }
+.top .brand { height: 24px; color: var(--creme); flex: none; }
+.top nav { display: flex; gap: 2px; margin-left: auto; overflow-x: auto; scrollbar-width: none; }
+.top nav a { text-decoration: none; font-weight: 700; font-size: .92rem; padding: 8px 12px; border-radius: 999px; white-space: nowrap; opacity: .86; }
+.top nav a:hover { opacity: 1; background: rgba(242,240,225,.1); }
+.top nav a[aria-current="page"] { background: var(--creme); color: var(--azul); opacity: 1; }
+.top .theme { flex: none; background: transparent; border: 1.5px solid rgba(242,240,225,.35); color: var(--creme); width: 38px; height: 38px; border-radius: 50%; cursor: pointer; display: grid; place-items: center; }
+@media (max-width: 860px) {
+  .top .wrap { flex-wrap: wrap; height: auto; padding-block: 12px 0; row-gap: 6px; }
+  .top nav { order: 3; width: 100%; margin: 0 calc(var(--gutter) * -1); padding: 0 var(--gutter) 10px; }
+  .top .theme { margin-left: auto; }
+}
+
+/* hero */
+.hero { background: var(--azul); color: var(--creme); position: relative; overflow: hidden; }
+.hero .pat, .band-azul .pat { position: absolute; inset: -130px; background-size: 130px 130px; opacity: .13; pointer-events: none; }
+.hero .stage { position: relative; aspect-ratio: 16 / 7; max-width: 100%; }
+.hero .stage svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.hero .copy { position: relative; display: grid; gap: 22px; justify-items: center; text-align: center; padding-block: 0 72px; }
+.hero h1 { font-size: clamp(1.9rem, 4.6vw, 3.6rem); font-weight: 900; max-width: 20ch; }
+.hero .lead { color: var(--creme); opacity: .86; text-align: center; }
+.hero .ctas { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
+.replay { position: absolute; right: var(--gutter); top: 16px; background: rgba(242,240,225,.12); color: var(--creme); border: 0; font: 700 .8rem var(--font); padding: 7px 12px; border-radius: 999px; cursor: pointer; }
+@media (max-width: 700px) { .hero .stage { aspect-ratio: 4 / 3; } }
+
+/* faixas */
+section { position: relative; }
+.band { padding-block: clamp(64px, 9vw, 112px); }
+.band-alt { background: var(--bg-2); }
+.band-azul { background: var(--azul-fundo); color: var(--creme); overflow: hidden; }
+.band-azul .lead { color: var(--creme); opacity: .85; }
+.band-azul .eb { color: #A9BBD0; }
+.head { display: grid; gap: 16px; margin-bottom: 40px; }
+.split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: clamp(28px, 5vw, 64px); align-items: center; }
+.split.flip > :first-child { order: 2; }
+@media (max-width: 900px) { .split, .split.flip { grid-template-columns: 1fr; } .split.flip > :first-child { order: 0; } }
+.split > * { min-width: 0; }
+.stack { display: grid; gap: 20px; align-content: start; }
+
+/* filme */
+.reel { position: relative; border-radius: 14px; overflow: hidden; background: var(--tinta); box-shadow: 0 30px 70px rgba(6,30,50,.28); }
+.reel video { width: 100%; height: auto; aspect-ratio: 16 / 9; background: var(--tinta); }
+.reel.v video { aspect-ratio: 9 / 16; }
+.reel-cap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 20px; margin-top: 14px; font-size: .9rem; color: var(--fg-2); }
+.band-azul .reel-cap { color: rgba(242,240,225,.75); }
+
+/* serviços */
+.servs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+@media (max-width: 900px) { .servs { grid-template-columns: 1fr; } }
+.serv { background: var(--cartao); border: 1px solid var(--linha); border-radius: 18px; padding: 28px; display: grid; gap: 12px; align-content: start; text-decoration: none; }
+.serv svg { width: 46px; height: 46px; color: var(--acento); }
+.serv p { margin: 0; color: var(--fg-2); }
+.serv .more { font-weight: 900; color: var(--acento); font-size: .92rem; margin-top: 6px; }
+.serv:hover { border-color: var(--acento); }
+.ticks { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+.ticks li { display: grid; grid-template-columns: 22px 1fr; gap: 10px; }
+.ticks li::before { content: ""; width: 10px; height: 10px; margin-top: 9px; border-radius: 3px; background: var(--ardosia); }
+.steps { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; counter-reset: s; }
+@media (max-width: 900px) { .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .steps { grid-template-columns: 1fr; } }
+.steps li { counter-increment: s; border-top: 3px solid var(--acento); padding-top: 14px; }
+.steps li::before { content: "0" counter(s); font-weight: 900; color: var(--ardosia); font-size: .85rem; letter-spacing: .1em; }
+.steps b { display: block; font-size: 1.08rem; margin: 4px 0; }
+.steps span { color: var(--fg-2); font-size: .95rem; }
+.shot { border-radius: 14px; overflow: hidden; border: 1px solid var(--linha); background: var(--cartao); }
+.shot img { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; }
+.duo { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 520px) { .duo { grid-template-columns: 1fr; } }
+
+/* produtos */
+.feats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 8px; }
+@media (max-width: 700px) { .feats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.feat { border: 1.5px solid rgba(242,240,225,.2); border-radius: 14px; padding: 16px; }
+.feat b { display: block; font-size: 1rem; }
+.feat span { font-size: .88rem; opacity: .78; line-height: 1.45; display: block; margin-top: 4px; }
+.feats.light .feat { border-color: var(--linha); background: var(--cartao); }
+.feats.light .feat span { color: var(--fg-2); opacity: 1; }
+.url { font-weight: 900; font-size: .95rem; letter-spacing: .02em; }
+.aud { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 520px) { .aud { grid-template-columns: 1fr; } }
+.aud div { background: var(--cartao); border: 1px solid var(--linha); border-radius: 16px; padding: 20px; display: grid; gap: 8px; align-content: start; }
+.aud p { margin: 0; color: var(--fg-2); font-size: .95rem; }
+
+/* portfólio */
+.cases { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+@media (max-width: 900px) { .cases { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .cases { grid-template-columns: 1fr; } }
+.case { display: grid; gap: 12px; text-decoration: none; border-radius: 18px; }
+.case .cv { border-radius: 16px; overflow: hidden; aspect-ratio: 16 / 9; background: var(--azul); position: relative; }
+.case .cv img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
+.case:hover .cv img { transform: scale(1.03); }
+.case .meta { display: flex; justify-content: space-between; gap: 10px; font-size: .85rem; color: var(--fg-2); }
+.case h3 { font-size: 1.15rem; }
+.case.soon .cv { background: repeating-linear-gradient(135deg, var(--bg-2) 0 14px, var(--bg) 14px 28px); border: 1.5px dashed var(--linha); display: grid; place-items: center; color: var(--fg-2); font-weight: 700; font-size: .92rem; text-align: center; padding: 20px; }
+.filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 26px; }
+.filters button { font: 700 .88rem var(--font); background: transparent; color: var(--fg); border: 1.5px solid var(--linha); border-radius: 999px; padding: 7px 14px; cursor: pointer; }
+.filters button[aria-pressed="true"] { background: var(--azul); border-color: var(--azul); color: var(--creme); }
+.casepage .cover { border-radius: 18px; overflow: hidden; }
+.facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; border-block: 1px solid var(--linha); padding-block: 18px; margin: 0; }
+.facts div { display: grid; gap: 2px; } .facts dt { font-size: .78rem; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; color: var(--ardosia); } .facts dd { margin: 0; font-weight: 700; }
+@media (max-width: 560px) { .facts { grid-template-columns: 1fr; } }
+.back { font-weight: 900; text-decoration: none; color: var(--acento); }
+
+/* sobre */
+.about { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: clamp(28px, 5vw, 72px); align-items: start; }
+@media (max-width: 860px) { .about { grid-template-columns: 1fr; } }
+.portrait { aspect-ratio: 4 / 5; border-radius: 20px; background: var(--azul); color: var(--creme); position: relative; overflow: hidden; display: grid; place-items: center; max-width: 320px; }
+.portrait .pat { position: absolute; inset: -60px; background-size: 90px 90px; opacity: .14; }
+.portrait .mono { position: relative; height: 38%; }
+.portrait small { position: absolute; left: 0; right: 0; bottom: 16px; text-align: center; font-size: .78rem; opacity: .7; }
+.about h1 { font-size: clamp(2.2rem, 5vw, 3.6rem); font-weight: 900; color: var(--acento); }
+.role { font-size: 1.15rem; font-weight: 700; margin: 6px 0 0; }
+.bio { display: grid; gap: 14px; max-width: 64ch; }
+.bio p { margin: 0; }
+.tl { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--linha); }
+.tl li { display: grid; grid-template-columns: 104px minmax(0, 1fr); gap: 16px; padding: 18px 0; border-bottom: 1px solid var(--linha); }
+@media (max-width: 560px) { .tl li { grid-template-columns: 1fr; gap: 4px; } }
+.tl .when { font-weight: 900; color: var(--ardosia); font-size: .88rem; letter-spacing: .04em; }
+.tl b { display: block; font-size: 1.05rem; }
+.tl span { color: var(--fg-2); font-size: .96rem; }
+.tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.tags span { border: 1.5px solid var(--linha); border-radius: 999px; padding: 5px 12px; font-size: .88rem; font-weight: 700; }
+.cols2 { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+@media (max-width: 760px) { .cols2 { grid-template-columns: 1fr; } }
+
+/* contato */
+.contact { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 40px; align-items: center; }
+@media (max-width: 860px) { .contact { grid-template-columns: 1fr; } }
+.chan { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+.chan li { display: flex; justify-content: space-between; gap: 16px; align-items: center; padding: 14px 18px; border-radius: 14px; border: 1.5px solid rgba(242,240,225,.22); flex-wrap: wrap; }
+.chan small { display: block; font-size: .74rem; letter-spacing: .16em; font-weight: 900; text-transform: uppercase; opacity: .7; }
+.chan b { font-size: 1.05rem; overflow-wrap: anywhere; }
+.chan .todo { opacity: .55; font-style: italic; font-weight: 400; }
+.chan button { font: 700 .82rem var(--font); background: var(--creme); color: var(--azul); border: 0; border-radius: 999px; padding: 7px 12px; cursor: pointer; }
+footer { background: var(--tinta); color: #CFCDBF; padding-block: 36px; font-size: .9rem; }
+footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; align-items: center; }
+footer .brand { height: 20px; color: var(--creme); }
+footer a { text-decoration: none; opacity: .85; } footer a:hover { opacity: 1; }
+footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
+.view[hidden] { display: none !important; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .case .cv img { transition: none; } }
+</style>
+<!--BODY-->
+<header class="top">
+  <div class="wrap">
+    <a href="#inicio" class="brand" aria-label="Upe Criativo, início"><svg class="wm" viewBox="786 2599 350 48" aria-hidden="true">__WM__</svg></a>
+    <nav aria-label="Principal">
+      <a href="#inicio" data-nav="inicio">Início</a>
+      <a href="#branding" data-nav="branding">Branding e Redesign</a>
+      <a href="#erp" data-nav="erp">Upe ERP</a>
+      <a href="#tv" data-nav="tv">Upe TV</a>
+      <a href="#portfolio" data-nav="portfolio">Portfólio</a>
+      <a href="#sobre" data-nav="sobre">Sobre mim</a>
+      <a href="#contato" data-nav="contato">Contato</a>
+    </nav>
+    <button class="theme" id="theme" type="button" aria-label="Alternar tema claro e escuro"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+  </div>
+</header>
+
+<main>
+<!-- ================= INÍCIO ================= -->
+<div class="view" data-view="home">
+  <section class="hero" id="inicio">
+    <div class="pat"></div>
+    <div class="stage" id="stage" aria-hidden="true"></div>
+    <button class="replay" id="replay" type="button">Ver de novo</button>
+    <div class="wrap copy">
+      <p class="eb" style="color:#A9BBD0">Branding · Redesign · Sistemas · Mídia</p>
+      <h1>Branding, sistemas e mídia para a sua marca decolar.</h1>
+      <p class="lead">Crio identidades visuais e redesenho marcas. E levo esse cuidado até a venda, com o Upe ERP e o Upe TV.</p>
+      <div class="ctas"><a class="btn btn-creme" href="#filme">Assistir ao filme</a><a class="btn btn-linha" href="#contato">Falar com a Upe</a></div>
+    </div>
+  </section>
+
+  <section class="band" id="filme">
+    <div class="wrap split">
+      <div class="stack reveal">
+        <p class="eb">O filme</p>
+        <h2>Da identidade à venda.</h2>
+        <p class="lead">Um minuto e meio sobre o que a Upe faz: a marca, a loja e a tela. Com som, ou no mudo, como numa TV de espera.</p>
+        <ul class="ticks"><li>Branding e Redesign</li><li>Upe ERP: loja online, PDV e pedidos</li><li>Upe TV: mídia em telas parceiras</li></ul>
+      </div>
+      <div class="reveal">
+        <div class="reel" data-reel><video controls playsinline preload="none" data-h="assets/video/filme-h.mp4" data-v="assets/video/filme-v.mp4" data-ph="assets/img/filme-h.jpg" data-pv="assets/img/filme-v.jpg" poster="assets/img/filme-h.jpg"></video></div>
+        <div class="reel-cap"><span>Filme institucional · 1:42</span><span>Também em 9:16 para Reels e totens</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band band-alt" id="frentes">
+    <div class="wrap">
+      <div class="head reveal"><p class="eb">Três frentes</p><h2>Uma marca forte, do traço até o balcão.</h2></div>
+      <div class="servs">
+        <a class="serv reveal" href="#branding">__IC_PEN__<h3>Branding e Redesign</h3><p>Logotipo, paleta, tipografia, ícones, padrões e manual de marca. Ou o redesenho da marca que você já tem.</p><span class="more">Ver como funciona →</span></a>
+        <a class="serv reveal" href="#erp">__IC_PANEL__<h3>Upe ERP</h3><p>Loja virtual, PDV, PIX com QR Code, gestão de pedidos, cupons e relatórios num só painel.</p><span class="more">Conhecer o sistema →</span></a>
+        <a class="serv reveal" href="#tv">__IC_TV__<h3>Upe TV</h3><p>A sua marca nas TVs e totens de cafés, academias, clínicas, salões e lojas parceiras.</p><span class="more">Anunciar ou ser parceiro →</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="branding">
+    <div class="wrap">
+      <div class="split" style="margin-bottom:56px">
+        <div class="stack reveal">
+          <p class="eb">Branding e Redesign</p>
+          <h2>Uma identidade que as pessoas reconhecem.</h2>
+          <p class="lead">Cada marca sai com um sistema completo e um manual que deixa tudo igual em qualquer lugar: na fachada, no Instagram, na embalagem e na tela.</p>
+          <ul class="ticks"><li>Logotipo principal, secundário e versões alternativas</li><li>Ícone para redes sociais e favicon</li><li>Paleta, tipografia, padrões e ativos da marca</li><li>Manual da marca e aplicações</li><li>Motion do logo para vídeos e telas</li></ul>
+        </div>
+        <div class="duo reveal">
+          <div class="shot"><img src="assets/img/brand.jpg" alt="Quadro da identidade Upe Criativo: paleta, tipografia Lato, ícone, padrão de foguetes, logotipo e cartão" width="1280" height="720"></div>
+          <div class="shot"><img src="assets/img/redesign.jpg" alt="Exemplo ilustrativo de redesign: antes e depois de uma marca de café" width="1280" height="720"></div>
+        </div>
+      </div>
+      <ol class="steps reveal">
+        <li><b>Conversa</b><span>Entendo o negócio, o público e o que a marca precisa dizer.</span></li>
+        <li><b>Conceito</b><span>Referências, caminhos e a ideia central da identidade.</span></li>
+        <li><b>Identidade</b><span>Logotipo, cores, tipografia, ícones e padrões.</span></li>
+        <li><b>Manual e aplicações</b><span>Arquivos finais, manual da marca e peças para usar já.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="band band-azul" id="erp">
+    <div class="pat"></div>
+    <div class="wrap split">
+      <div class="stack reveal">
+        <p class="eb">Lançamento · Upe ERP</p>
+        <h2>Sua loja online, PDV e pedidos num só painel.</h2>
+        <p class="lead">Cadastre o produto uma vez e ele aparece na loja, no PDV e nos relatórios. Cada pedido tem número, status, pagamento e rastreio, e o seu cliente acompanha tudo por um link.</p>
+        <div class="feats">
+          <div class="feat"><b>Loja virtual</b><span>Sua marca, banners e compra sem cadastro.</span></div>
+          <div class="feat"><b>PDV</b><span>Venda no balcão que baixa o estoque.</span></div>
+          <div class="feat"><b>PIX com QR Code</b><span>Valor certo em cada pedido.</span></div>
+          <div class="feat"><b>Gestão de pedidos</b><span>Quadro do aprovado à entrega.</span></div>
+          <div class="feat"><b>Cupons</b><span>Promoções e frete grátis.</span></div>
+          <div class="feat"><b>Relatórios</b><span>Vendas, clientes e newsletter.</span></div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center"><a class="btn btn-creme" href="https://upe-erp.web.app/" target="_blank" rel="noopener">Abrir o Upe ERP</a><span class="url">upe-erp.web.app</span></div>
+      </div>
+      <div class="reveal">
+        <div class="reel" data-reel><video controls playsinline preload="none" data-h="assets/video/erp-h.mp4" data-v="assets/video/erp-v.mp4" data-ph="assets/img/erp-h.jpg" data-pv="assets/img/erp-v.jpg" poster="assets/img/erp-h.jpg"></video></div>
+        <div class="reel-cap"><span>Vídeo de lançamento · 0:38</span><span>Telas com dados de exemplo</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="tv">
+    <div class="wrap split flip">
+      <div class="stack reveal">
+        <p class="eb">Lançamento · Upe TV</p>
+        <h2>Sua marca na tela certa.</h2>
+        <p class="lead">Enquanto as pessoas esperam, olham para a tela. Quem se interessa aponta a câmera para o QR code e fala com a marca na hora. A Upe cria, publica e cuida de tudo pela internet.</p>
+        <div class="aud">
+          <div><h3>Para anunciantes</h3><p>Tela cheia, lateral que expande, letreiro e cardápio com pedido pelo celular. No portal, você vê onde passou, por quanto tempo e quantos leram o QR.</p></div>
+          <div><h3>Para estabelecimentos</h3><p>A sua TV com programação profissional, o seu nome no letreiro e espaço para as suas promoções. A Upe instala e cuida da tela.</p></div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center"><a class="btn btn-azul" href="https://upe-tv.web.app/" target="_blank" rel="noopener">Conhecer o Upe TV</a><span class="url" style="color:var(--acento)">upe-tv.web.app</span></div>
+      </div>
+      <div class="reveal">
+        <div class="reel" data-reel><video controls playsinline preload="none" data-h="assets/video/tv-h.mp4" data-v="assets/video/tv-v.mp4" data-ph="assets/img/tv-h.jpg" data-pv="assets/img/tv-v.jpg" poster="assets/img/tv-h.jpg"></video></div>
+        <div class="reel-cap"><span>Vídeo de lançamento · 0:40</span><span>Campanhas de exemplo</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band band-alt" id="portfolio-teaser">
+    <div class="wrap">
+      <div class="head reveal" style="grid-template-columns:1fr auto;align-items:end"><div style="display:grid;gap:14px"><p class="eb">Portfólio</p><h2>Projetos de Branding e Redesign.</h2></div><a class="btn btn-azul" href="#portfolio">Ver portfólio</a></div>
+      <div class="cases" data-cases="3"></div>
+    </div>
+  </section>
+
+  <section class="band" id="sobre-teaser">
+    <div class="wrap split">
+      <div class="reveal"><div class="portrait" style="max-width:260px"><div class="pat" data-pat></div><div class="mono"><svg class="wm" viewBox="786 2599 36 48" aria-hidden="true"><path d="__N__"/><path d="__U__"/></svg></div></div></div>
+      <div class="stack reveal">
+        <p class="eb">Quem está por trás</p>
+        <h2>A Upe é o meu projeto de agência pessoal.</h2>
+        <p class="lead">Sou __NOME_CURTO__, criador de Branding e Redesign. Formação recente em Nexus e ID Class, com Marcelo Kimura, e experiência como analista de e-commerce.</p>
+        <div><a class="btn btn-azul" href="#sobre">Sobre mim</a></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ================= PORTFÓLIO ================= -->
+<div class="view" data-view="portfolio" hidden>
+  <section class="band">
+    <div class="wrap">
+      <div class="head"><p class="eb">Portfólio</p><h2>Branding, Redesign e Motion.</h2><p class="lead">Os projetos entram aqui conforme forem publicados. O primeiro é a própria Upe Criativo.</p></div>
+      <div class="filters" role="group" aria-label="Filtrar projetos"><button type="button" data-f="todos" aria-pressed="true">Todos</button><button type="button" data-f="Branding" aria-pressed="false">Branding</button><button type="button" data-f="Redesign" aria-pressed="false">Redesign</button><button type="button" data-f="Motion" aria-pressed="false">Motion</button></div>
+      <div class="cases" data-cases="all"></div>
+    </div>
+  </section>
+</div>
+
+<!-- ================= CASE ================= -->
+<div class="view" data-view="case" hidden>
+  <section class="band casepage">
+    <div class="wrap stack" id="caseBody"></div>
+  </section>
+</div>
+
+<!-- ================= SOBRE MIM ================= -->
+<div class="view" data-view="sobre" hidden>
+  <section class="band">
+    <div class="wrap about">
+      <div class="stack">
+        <div class="portrait"><div class="pat" data-pat></div><div class="mono"><svg class="wm" viewBox="786 2599 36 48" aria-hidden="true"><path d="__N__"/><path d="__U__"/></svg></div><small>Espaço para a sua foto</small></div>
+      </div>
+      <div class="stack" style="gap:34px">
+        <div><p class="eb">Sobre mim</p><h1>__NOME__</h1><p class="role">Criador de Branding e Redesign · Fundador da Upe Criativo</p></div>
+        <div class="bio">
+          <p>Sou __NOME_CURTO__ e crio identidades visuais. Desenho marcas novas e redesenho as que já existem, sempre com um sistema completo: logotipo, cores, tipografia, ícones, padrões e um manual que deixa tudo igual em qualquer lugar.</p>
+          <p>A Upe Criativo é o meu projeto de agência pessoal. Nela, o branding vai além do logo: estou lançando o Upe ERP, para vender na internet e no balcão num só painel, e o Upe TV, para colocar marcas nas telas de quem espera.</p>
+          <p>Também tenho experiência como analista de e-commerce, e isso me faz pensar a marca até o momento da venda.</p>
+        </div>
+        <div class="cols2">
+          <div class="stack" style="gap:14px"><h3>Formação recente</h3>
+            <ul class="tl">
+              <li><span class="when">Concluído</span><div><b>Nexus</b><span>Marcelo Kimura</span></div></li>
+              <li><span class="when">Concluído</span><div><b>ID Class</b><span>Marcelo Kimura</span></div></li>
+            </ul>
+          </div>
+          <div class="stack" style="gap:14px"><h3>Experiência</h3>
+            <ul class="tl">
+              <li><span class="when">Atual</span><div><b>Upe Criativo</b><span>Fundador · Branding, Redesign, Upe ERP e Upe TV</span></div></li>
+              <li><span class="when">Experiência</span><div><b>Analista de e-commerce</b><span>Operação de loja virtual e vendas online</span></div></li>
+            </ul>
+          </div>
+        </div>
+        <div class="stack" style="gap:14px"><h3>O que eu faço</h3><div class="tags"><span>Branding</span><span>Redesign</span><span>Identidade visual</span><span>Manual de marca</span><span>Motion design</span><span>E-commerce</span><span>Produtos digitais</span></div></div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px"><a class="btn btn-azul" href="#contato">Vamos conversar</a><a class="btn btn-linha" id="lnk-linkedin" href="#contato" style="color:var(--acento)">LinkedIn</a></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ================= CONTATO (sempre visível) ================= -->
+<section class="band band-azul" id="contato">
+  <div class="pat"></div>
+  <div class="wrap contact">
+    <div class="stack">
+      <p class="eb">Contato</p>
+      <h2>Vamos colocar a sua marca no ar?</h2>
+      <p class="lead">Conte o que você precisa: uma identidade nova, o redesign da sua marca, a sua loja no Upe ERP ou a sua campanha no Upe TV.</p>
+    </div>
+    <ul class="chan" id="chan"></ul>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a href="#inicio" class="brand" aria-label="Upe Criativo"><svg class="wm" viewBox="786 2599 350 48" aria-hidden="true">__WM__</svg></a>
+    <nav aria-label="Rodapé"><a href="#branding">Branding e Redesign</a><a href="https://upe-erp.web.app/" target="_blank" rel="noopener">Upe ERP</a><a href="https://upe-tv.web.app/" target="_blank" rel="noopener">Upe TV</a><a href="#portfolio">Portfólio</a><a href="#sobre">Sobre mim</a></nav>
+    <span>© <span id="ano">2026</span> Upe Criativo</span>
+  </div>
+</footer>
+
+<script>
+/* ====== Edite aqui os seus dados ====== */
+const CONTATO = {
+  whatsapp: "",   // ex.: "5581999999999"
+  email: "",      // ex.: "contato@upecriativo.com.br"
+  instagram: "",  // ex.: "upecriativo"
+  linkedin: ""    // link do perfil público, ex.: "https://www.linkedin.com/in/seu-perfil"
+};
+/* Portfólio: acrescente um objeto por projeto. Imagens em assets/img. */
+const PROJETOS = [
+  { id: "upe", titulo: "Upe Criativo", cliente: "Marca própria", ano: "2026", tipos: ["Branding", "Motion"], capa: "assets/img/brand.jpg",
+    resumo: "Identidade da própria agência: logotipo com um foguete dentro do U, paleta azul e creme, Lato, padrão de foguetes e motion do logo.",
+    entregas: ["Logotipo principal, secundário e alternativos", "Ícone e favicon", "Paleta, tipografia e padrão", "Manual da marca", "Logo reveal e filme institucional"],
+    imagens: [["assets/img/brand.jpg", "Quadro da identidade Upe Criativo"], ["assets/img/filme-h.jpg", "Assinatura da marca na versão creme"]],
+    video: { h: "assets/video/filme-h.mp4", v: "assets/video/filme-v.mp4", ph: "assets/img/filme-h.jpg", pv: "assets/img/filme-v.jpg" } },
+  { id: "upe-erp", titulo: "Upe ERP · lançamento", cliente: "Produto Upe", ano: "2026", tipos: ["Motion"], capa: "assets/img/erp-painel.jpg",
+    resumo: "Vídeo de lançamento do sistema de loja online, PDV e pedidos, nos formatos 16:9 e 9:16, com trilha e efeitos sonoros.",
+    entregas: ["Vídeo de 38 s em 16:9 e 9:16", "Telas do produto animadas", "Trilha e efeitos sonoros"],
+    imagens: [["assets/img/erp-pedidos.jpg", "Quadro de pedidos animado"], ["assets/img/erp-pdv.jpg", "PDV com pagamento por PIX"]],
+    video: { h: "assets/video/erp-h.mp4", v: "assets/video/erp-v.mp4", ph: "assets/img/erp-h.jpg", pv: "assets/img/erp-v.jpg" } },
+  { id: "upe-tv", titulo: "Upe TV · lançamento", cliente: "Produto Upe", ano: "2026", tipos: ["Motion"], capa: "assets/img/tv-tela.jpg",
+    resumo: "Vídeo para anunciantes e parceiros: a campanha na tela, o caminho do QR até o pedido e o portal de resultados.",
+    entregas: ["Vídeo de 40 s em 16:9 e 9:16", "Versão vertical para totens", "Trilha e efeitos sonoros"],
+    imagens: [["assets/img/tv-qr.jpg", "Do QR code ao pedido no WhatsApp"], ["assets/img/tv-portal.jpg", "Portal do anunciante"]],
+    video: { h: "assets/video/tv-h.mp4", v: "assets/video/tv-v.mp4", ph: "assets/img/tv-h.jpg", pv: "assets/img/tv-v.jpg" } }
+];
+/* ====================================== */
+
+const G = __GLYPHS__;
+const LETTERS = ["P", "E", "C", "R", "I1", "A", "T", "I2", "V", "O"];
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const isPhone = () => matchMedia("(max-width: 700px)").matches;
+document.getElementById("ano").textContent = new Date().getFullYear();
+
+/* tema */
+(() => {
+  const root = document.documentElement, btn = document.getElementById("theme");
+  try { const t = localStorage.getItem("upe-tema"); if (t) root.dataset.theme = t; } catch (e) {}
+  btn.addEventListener("click", () => {
+    const dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    root.dataset.theme = dark ? "light" : "dark";
+    try { localStorage.setItem("upe-tema", root.dataset.theme); } catch (e) {}
+  });
+})();
+
+/* padrão de foguetes */
+const patURL = color => {
+  const s = `<svg xmlns="http://www.w3.org/2000/svg" width="130" height="130" viewBox="0 0 130 130"><defs><mask id="m" maskUnits="userSpaceOnUse" x="780" y="2590" width="60" height="60"><rect x="780" y="2590" width="60" height="60" fill="#fff"/><path d="${G.U}" fill="#000"/></mask></defs><g fill="${color}" transform="translate(65 65) rotate(45) scale(1.7) translate(-804.4 -2620)"><path d="${G.N}"/><rect x="795" y="2605.45" width="18.9" height="30.6" mask="url(#m)"/></g></svg>`;
+  return `url("data:image/svg+xml,${encodeURIComponent(s)}")`;
+};
+document.querySelectorAll(".pat").forEach(p => p.style.backgroundImage = patURL("#798EA6"));
+document.querySelectorAll("[data-pat]").forEach(p => p.style.backgroundImage = patURL("#F2F0E1"));
+
+/* vídeos: 9:16 no celular */
+function setupReel(r) {
+  const v = r.querySelector("video"), vert = isPhone();
+  r.classList.toggle("v", vert);
+  const src = vert ? v.dataset.v : v.dataset.h, poster = vert ? v.dataset.pv : v.dataset.ph;
+  if (v.getAttribute("src") !== src) { v.poster = poster; v.src = src; }
+}
+const reels = () => document.querySelectorAll("[data-reel]");
+reels().forEach(setupReel);
+let lastPhone = isPhone();
+addEventListener("resize", () => { if (isPhone() !== lastPhone) { lastPhone = isPhone(); reels().forEach(r => { if (r.querySelector("video").paused) setupReel(r); }); } });
+
+/* logo reveal ao vivo no hero */
+const Hero = (() => {
+  const NS = "http://www.w3.org/2000/svg", host = document.getElementById("stage");
+  const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x)), lerp = (a, b, p) => a + (b - a) * p, prog = (t, a, b) => clamp((t - a) / (b - a));
+  const EO = p => 1 - Math.pow(1 - p, 3), EIO = p => p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2, BACK = (p, s = 1.5) => 1 + (s + 1) * Math.pow(p - 1, 3) + s * Math.pow(p - 1, 2);
+  const rnd = i => { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+  const W = 1920, H = 1080, cx = 960, cy = 560, S = 3.2, BIG = 8, UX = cx + S * (804.5 - 960.95);
+  host.innerHTML = `<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMid slice">
+    <defs><mask id="hNotU" maskUnits="userSpaceOnUse" x="780" y="2590" width="60" height="60"><rect x="780" y="2590" width="60" height="60" fill="#fff"/><path d="${G.U}" fill="#000"/></mask>
+    <clipPath id="hUClip"><rect id="hUClipR" x="780" y="2645" width="60" height="60"/></clipPath><clipPath id="hWClip"><rect x="815" y="2596" width="330" height="49.5"/></clipPath></defs>
+    <g id="hSpeed" stroke="#F2F0E1" stroke-linecap="round"></g>
+    <circle id="hRing" cx="${cx}" cy="${cy + 20}" r="0" fill="none" stroke="#F2F0E1" opacity="0"/>
+    <g id="hU"><g id="hSmoke"></g><g id="hRocket"><path id="hFO" fill="#F2F0E1"/><path id="hFI" fill="#798EA6"/>
+      <rect id="hBody" x="795" y="2605.45" width="18.9" height="30.6" mask="url(#hNotU)" fill="#F2F0E1"/><path id="hNose" d="${G.N}" fill="#F2F0E1"/></g>
+      <path d="${G.U}" fill="#F2F0E1" clip-path="url(#hUClip)"/></g>
+    <g transform="translate(${cx} ${cy}) scale(${S}) translate(-960.95 -2622.65)"><g clip-path="url(#hWClip)" fill="#F2F0E1" id="hLetters">${LETTERS.map(k => `<path d="${G[k]}"/>`).join("")}</g></g>
+  </svg>`;
+  const $ = id => host.querySelector("#" + id), mk = (tag, a, p) => { const e = document.createElementNS(NS, tag); for (const k in a) e.setAttribute(k, a[k]); p.appendChild(e); return e; };
+  const lines = [...Array(16)].map((_, i) => ({ e: mk("line", { "stroke-width": 2 + rnd(i) * 3 }, $("hSpeed")), x: 80 + rnd(i + 50) * 1760, len: 90 + rnd(i + 9) * 200, off: rnd(i + 99) * 1400, v: 1800 + rnd(i + 3) * 1500 }));
+  const puffs = [...Array(40)].map((_, i) => ({ e: mk("circle", { fill: i % 3 ? "#F2F0E1" : "#A6A9AF" }, $("hSmoke")), tb: .25 + i * .038, sx: (rnd(i) - .5) * 2, dx: (rnd(i + 7) - .5) * 14, dy: 4 + rnd(i + 13) * 10, r: 2.2 + rnd(i + 21) * 3.5 }));
+  const letters = [...host.querySelectorAll("#hLetters path")];
+  const rDy = t => t < .2 ? 110 : lerp(110, 0, BACK(prog(t, .2, 1.75), 1.2));
+  const mix = (a, b, p) => "#" + [0, 2, 4].map(i => Math.round(lerp(parseInt(a.substr(i, 2), 16), parseInt(b.substr(i, 2), 16), p)).toString(16).padStart(2, "0")).join("");
+  function render(t) {
+    const sv = Math.sin(prog(t, .2, 1.9) * Math.PI);
+    lines.forEach(l => { const y = ((l.off + t * l.v) % 1480) - 250; l.e.setAttribute("x1", l.x); l.e.setAttribute("x2", l.x); l.e.setAttribute("y1", y); l.e.setAttribute("y2", y + l.len); l.e.setAttribute("opacity", (sv * .3).toFixed(3)); });
+    const mv = EIO(prog(t, 2.6, 3.5)), dock = t > 2.15 ? Math.sin(prog(t, 2.15, 2.55) * Math.PI) * .05 : 0;
+    const s = lerp(BIG, S, mv) * (1 + dock);
+    $("hU").setAttribute("transform", `translate(${lerp(cx, UX, mv).toFixed(2)} ${lerp(cy + 20, cy, mv).toFixed(2)}) scale(${s.toFixed(4)}) translate(-804.5 -2622.65)`);
+    const wob = Math.sin(t * 18) * 2.2 * (1 - prog(t, .2, 1.75));
+    $("hRocket").setAttribute("transform", `translate(0 ${rDy(t).toFixed(3)}) rotate(${wob.toFixed(2)} 804.4 2620)`);
+    $("hNose").setAttribute("transform", `translate(0 ${(-3 * Math.sin(prog(t, 4.9, 5.45) * Math.PI)).toFixed(3)})`);
+    $("hBody").setAttribute("fill", mix("F2F0E1", "0C4F7F", EIO(prog(t, 2.05, 2.5))));
+    const fa = t < .2 ? 0 : clamp(prog(t, .2, .4) - prog(t, 1.6, 2.1)), L = fa * (7 + Math.sin(t * 43) * 1.6 + Math.sin(t * 71) * 1.1), Li = L * .55, fy = 2635.2;
+    $("hFO").setAttribute("d", fa ? `M801.6 ${fy} C801.4 ${fy + L * .45} 803.4 ${fy + L * .8} 804.4 ${fy + L} C805.4 ${fy + L * .8} 807.4 ${fy + L * .45} 807.2 ${fy} Z` : "");
+    $("hFI").setAttribute("d", fa ? `M803 ${fy} C803 ${fy + Li * .5} 803.9 ${fy + Li * .8} 804.4 ${fy + Li} C804.9 ${fy + Li * .8} 805.8 ${fy + Li * .5} 805.8 ${fy} Z` : "");
+    puffs.forEach(p => { const age = t - p.tb; if (age < 0 || age > 1.1) { p.e.setAttribute("r", 0); return; } const a = age / 1.1;
+      p.e.setAttribute("cx", (804.4 + p.sx + p.dx * EO(a)).toFixed(2)); p.e.setAttribute("cy", (2637 + rDy(p.tb) + p.dy * EO(a)).toFixed(2)); p.e.setAttribute("r", (p.r * (.4 + EO(a))).toFixed(2)); p.e.setAttribute("opacity", ((1 - a) * .55).toFixed(3)); });
+    $("hUClipR").setAttribute("y", lerp(2645.5, 2598, EO(prog(t, 1.45, 2.2))).toFixed(2));
+    const rp = prog(t, 2.15, 2.95); $("hRing").setAttribute("r", (60 + EO(rp) * 760).toFixed(1)); $("hRing").setAttribute("stroke-width", ((1 - rp) * 14).toFixed(2)); $("hRing").setAttribute("opacity", rp > 0 && rp < 1 ? ((1 - rp) * .6).toFixed(3) : 0);
+    letters.forEach((e, i) => { const p = prog(t, 3 + i * .07, 3.55 + i * .07); e.setAttribute("transform", `translate(0 ${lerp(46, 0, BACK(p, 1.4)).toFixed(3)})`); });
+  }
+  let raf = 0;
+  function play() { cancelAnimationFrame(raf); const t0 = performance.now(); const step = now => { const t = (now - t0) / 1000; render(Math.min(t, 6)); if (t < 6) raf = requestAnimationFrame(step); }; raf = requestAnimationFrame(step); }
+  render(6);
+  if (!reduce) play();
+  document.getElementById("replay").addEventListener("click", play);
+  return { play };
+})();
+
+/* portfólio */
+function caseCard(p) {
+  return `<a class="case reveal" href="#case-${p.id}" data-tipos="${p.tipos.join(" ")}"><div class="cv"><img src="${p.capa}" alt="" width="1280" height="720"></div><div class="meta"><span>${p.tipos.join(" · ")}</span><span>${p.ano}</span></div><h3>${p.titulo}</h3></a>`;
+}
+const soon = `<div class="case soon"><div class="cv">Próximo projeto de Branding e Redesign</div><div class="meta"><span>Em breve</span><span></span></div><h3 style="color:var(--fg-2)">Seu projeto aqui</h3></div>`;
+document.querySelectorAll("[data-cases]").forEach(g => {
+  const n = g.dataset.cases === "all" ? PROJETOS.length : +g.dataset.cases;
+  const items = PROJETOS.slice(0, n).map(caseCard);
+  if (g.dataset.cases === "all") items.push(soon, soon);
+  g.innerHTML = items.join("");
+});
+document.querySelectorAll(".filters button").forEach(b => b.addEventListener("click", () => {
+  document.querySelectorAll(".filters button").forEach(x => x.setAttribute("aria-pressed", x === b ? "true" : "false"));
+  document.querySelectorAll('[data-cases="all"] .case[data-tipos]').forEach(c => c.hidden = !(b.dataset.f === "todos" || c.dataset.tipos.includes(b.dataset.f)));
+}));
+function renderCase(id) {
+  const p = PROJETOS.find(x => x.id === id); if (!p) return false;
+  document.getElementById("caseBody").innerHTML = `
+    <a class="back" href="#portfolio">← Portfólio</a>
+    <div class="stack" style="gap:14px"><p class="eb">${p.tipos.join(" · ")}</p><h2>${p.titulo}</h2><p class="lead">${p.resumo}</p></div>
+    <dl class="facts"><div><dt>Cliente</dt><dd>${p.cliente}</dd></div><div><dt>Ano</dt><dd>${p.ano}</dd></div><div><dt>Frentes</dt><dd>${p.tipos.join(", ")}</dd></div></dl>
+    ${p.video ? `<div class="reel" data-reel><video controls playsinline preload="none" data-h="${p.video.h}" data-v="${p.video.v}" data-ph="${p.video.ph}" data-pv="${p.video.pv}" poster="${p.video.ph}"></video></div>` : ""}
+    <div class="cols2"><div class="stack" style="gap:12px"><h3>Entregas</h3><ul class="ticks">${p.entregas.map(e => `<li>${e}</li>`).join("")}</ul></div>
+    <div class="duo">${p.imagens.map(([src, alt]) => `<div class="shot"><img src="${src}" alt="${alt}" width="1280" height="720"></div>`).join("")}</div></div>`;
+  document.querySelectorAll("#caseBody [data-reel]").forEach(setupReel);
+  return true;
+}
+
+/* contato */
+(() => {
+  const c = CONTATO, rows = [
+    ["WhatsApp", c.whatsapp && "+" + c.whatsapp.replace(/(\d{2})(\d{2})(\d{5})(\d{4})/, "$1 $2 $3-$4"), c.whatsapp && `https://wa.me/${c.whatsapp}`, "adicione o seu WhatsApp"],
+    ["E-mail", c.email, null, "adicione o seu e-mail"],
+    ["Instagram", c.instagram && "@" + c.instagram, c.instagram && `https://instagram.com/${c.instagram}`, "adicione o seu Instagram"],
+    ["LinkedIn", c.linkedin && c.linkedin.replace(/^https?:\/\/(www\.)?/, ""), c.linkedin, "adicione o link do seu perfil"]
+  ];
+  document.getElementById("chan").innerHTML = rows.map(([lab, val, href, todo]) => `<li><div><small>${lab}</small>${val ? (href ? `<a href="${href}" target="_blank" rel="noopener"><b>${val}</b></a>` : `<b>${val}</b>`) : `<b class="todo">${todo}</b>`}</div>${val ? `<button type="button" data-copy="${val}">Copiar</button>` : ""}</li>`).join("");
+  document.querySelectorAll("[data-copy]").forEach(b => b.addEventListener("click", () => {
+    const done = () => { b.textContent = "Copiado"; setTimeout(() => b.textContent = "Copiar", 1600); };
+    if (navigator.clipboard) navigator.clipboard.writeText(b.dataset.copy).then(done, () => { const s = getSelection(), r = document.createRange(); r.selectNodeContents(b.previousElementSibling); s.removeAllRanges(); s.addRange(r); });
+  }));
+  if (c.linkedin) { const l = document.getElementById("lnk-linkedin"); l.href = c.linkedin; l.target = "_blank"; l.rel = "noopener"; }
+})();
+
+/* rotas: #portfolio, #sobre, #case-xxx são abas; o resto são âncoras da página inicial */
+const homeAnchors = ["inicio", "filme", "frentes", "branding", "erp", "tv", "portfolio-teaser", "sobre-teaser"];
+function route() {
+  const h = location.hash.replace("#", "") || "inicio";
+  let view = "home", nav = h;
+  if (h === "portfolio") view = "portfolio";
+  else if (h === "sobre") view = "sobre";
+  else if (h.startsWith("case-") && renderCase(h.slice(5))) { view = "case"; nav = "portfolio"; }
+  else if (h === "contato") view = document.querySelector(".view:not([hidden])")?.dataset.view || "home";
+  const changed = document.querySelector(`.view[data-view="${view}"]`).hidden;
+  document.querySelectorAll(".view").forEach(v => v.hidden = v.dataset.view !== view);
+  document.querySelectorAll("[data-nav]").forEach(a => a.dataset.nav === nav ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current"));
+  document.querySelectorAll("video").forEach(v => { if (v.closest(".view")?.hidden) v.pause(); });
+  if (view !== "home" && h !== "contato") window.scrollTo(0, 0);
+  else if (homeAnchors.includes(h) || h === "contato") { const t = document.getElementById(h); if (t && changed) t.scrollIntoView(); }
+}
+addEventListener("hashchange", route);
+route();
+</script>
