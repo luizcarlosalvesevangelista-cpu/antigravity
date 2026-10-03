@@ -177,7 +177,19 @@ section { position: relative; }
 @media (max-width: 760px) { .cols2 { grid-template-columns: 1fr; } }
 
 /* contato */
-.contact { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 40px; align-items: center; }
+.contact { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 40px; align-items: start; }
+.form { display: grid; gap: 14px; margin-top: 10px; }
+.form .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+@media (max-width: 560px) { .form .row2 { grid-template-columns: 1fr; } }
+.form label { display: grid; gap: 6px; font-size: .82rem; font-weight: 900; letter-spacing: .06em; }
+.form input, .form select, .form textarea { font: 400 1rem var(--font); color: var(--tinta); background: var(--creme); border: 2px solid transparent; border-radius: 12px; padding: 12px 14px; width: 100%; min-width: 0; }
+.form textarea { resize: vertical; }
+.form input:focus-visible, .form select:focus-visible, .form textarea:focus-visible { outline: none; border-color: var(--ardosia); }
+.form [aria-invalid="true"] { border-color: #F2C14E; }
+.form .hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.frow { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
+.fmsg { font-size: .95rem; }
+.fmsg a { font-weight: 900; }
 @media (max-width: 860px) { .contact { grid-template-columns: 1fr; } }
 .chan { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
 .chan li { display: flex; justify-content: space-between; gap: 16px; align-items: center; padding: 14px 18px; border-radius: 14px; border: 1.5px solid rgba(242,240,225,.22); flex-wrap: wrap; }
@@ -392,7 +404,7 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
           </div>
         </div>
         <div class="stack" style="gap:14px"><h3>O que eu faço</h3><div class="tags"><span>Branding</span><span>Redesign</span><span>Identidade visual</span><span>Manual de marca</span><span>Design gráfico</span><span>Motion design</span><span>Growth Marketing</span><span>Social media</span><span>E-commerce</span><span>Produtos digitais</span></div></div>
-        <div style="display:flex;flex-wrap:wrap;gap:12px"><a class="btn btn-azul" href="#contato">Vamos conversar</a><a class="btn btn-linha" id="lnk-linkedin" href="#contato" style="color:var(--acento)">LinkedIn</a></div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px"><a class="btn btn-azul" href="#contato">Vamos conversar</a><a class="btn btn-linha" id="lnk-linkedin" href="#contato" style="color:var(--acento)">LinkedIn</a><a class="btn btn-linha" id="lnk-insta" href="#contato" style="color:var(--acento)" target="_blank" rel="noopener" hidden>Instagram</a></div>
       </div>
     </div>
   </section>
@@ -406,6 +418,16 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
       <p class="eb">Contato</p>
       <h2>Vamos colocar a sua marca no ar?</h2>
       <p class="lead">Conte o que você precisa: uma identidade nova, o redesign da sua marca, a sua loja no Upe ERP ou a sua campanha no Upe TV.</p>
+      <form class="form" id="form" novalidate>
+        <div class="row2">
+          <label for="f-nome">Nome<input id="f-nome" name="nome" autocomplete="name" required></label>
+          <label for="f-contato">E-mail ou WhatsApp<input id="f-contato" name="contato" autocomplete="email" required></label>
+        </div>
+        <label for="f-assunto">Assunto<select id="f-assunto" name="assunto"><option>Branding</option><option>Redesign</option><option>Upe ERP</option><option>Upe TV</option><option>Outro assunto</option></select></label>
+        <label for="f-msg">Mensagem<textarea id="f-msg" name="mensagem" rows="4" required></textarea></label>
+        <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
+        <div class="frow"><button class="btn btn-creme" type="submit" id="f-enviar">Enviar mensagem</button><span class="fmsg" id="f-msg-status" role="status"></span></div>
+      </form>
     </div>
     <ul class="chan" id="chan"></ul>
   </div>
@@ -423,10 +445,14 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
 <script>
 /* ====== Edite aqui os seus dados ====== */
 const CONTATO = {
-  whatsapp: "",   // ex.: "5581999999999"
-  email: "",      // ex.: "contato@upecriativo.com.br"
-  instagram: "",  // ex.: "upecriativo"
-  linkedin: "https://www.linkedin.com/in/luizopublicitario"
+  whatsapp: "5511934393249",
+  email: "upecriativo@gmail.com",
+  instagram: "upecriativo",
+  instagramPessoal: "luizopublicitario",
+  linkedin: "https://www.linkedin.com/in/luizopublicitario",
+  // Formulário: endereço do Formspree (https://formspree.io/f/xxxxxxx). O e-mail que recebe
+  // as mensagens fica só na conta do Formspree e nunca aparece no site nem no código.
+  formulario: ""
 };
 /* Portfólio: acrescente um objeto por projeto. Imagens em assets/img. */
 const PROJETOS = [
@@ -567,7 +593,7 @@ function renderCase(id) {
 (() => {
   const c = CONTATO, rows = [
     ["WhatsApp", c.whatsapp && "+" + c.whatsapp.replace(/(\d{2})(\d{2})(\d{5})(\d{4})/, "$1 $2 $3-$4"), c.whatsapp && `https://wa.me/${c.whatsapp}`, "adicione o seu WhatsApp"],
-    ["E-mail", c.email, null, "adicione o seu e-mail"],
+    ["E-mail", c.email, c.email && `mailto:${c.email}`, "adicione o seu e-mail"],
     ["Instagram", c.instagram && "@" + c.instagram, c.instagram && `https://instagram.com/${c.instagram}`, "adicione o seu Instagram"],
     ["LinkedIn", c.linkedin && c.linkedin.replace(/^https?:\/\/(www\.)?/, ""), c.linkedin, "adicione o link do seu perfil"]
   ];
@@ -577,6 +603,29 @@ function renderCase(id) {
     if (navigator.clipboard) navigator.clipboard.writeText(b.dataset.copy).then(done, () => { const s = getSelection(), r = document.createRange(); r.selectNodeContents(b.previousElementSibling); s.removeAllRanges(); s.addRange(r); });
   }));
   if (c.linkedin) { const l = document.getElementById("lnk-linkedin"); l.href = c.linkedin; l.target = "_blank"; l.rel = "noopener"; }
+  if (c.instagramPessoal) { const l = document.getElementById("lnk-insta"); l.href = `https://instagram.com/${c.instagramPessoal}`; l.textContent = "@" + c.instagramPessoal; l.hidden = false; }
+
+  /* formulário: envia para o Formspree; sem endereço configurado, monta a mensagem no WhatsApp */
+  const form = document.getElementById("form"), st = document.getElementById("f-msg-status"), btn = document.getElementById("f-enviar");
+  form.addEventListener("submit", async e => {
+    e.preventDefault();
+    let ok = true;
+    form.querySelectorAll("[required]").forEach(f => { const bad = !f.value.trim(); f.setAttribute("aria-invalid", bad); if (bad) ok = false; });
+    if (!ok) { st.textContent = "Preencha nome, contato e mensagem."; form.querySelector('[aria-invalid="true"]').focus(); return; }
+    const d = Object.fromEntries(new FormData(form));
+    if (d._gotcha) return;
+    const texto = `Olá, Upe! Sou ${d.nome} (${d.contato}). Assunto: ${d.assunto}. ${d.mensagem}`;
+    const wa = c.whatsapp ? `https://wa.me/${c.whatsapp}?text=${encodeURIComponent(texto)}` : null;
+    if (!c.formulario) { st.innerHTML = wa ? `Para enviar agora, <a href="${wa}" target="_blank" rel="noopener">abra a conversa no WhatsApp</a> com a sua mensagem pronta.` : "Use um dos canais ao lado."; return; }
+    btn.disabled = true; st.textContent = "Enviando…";
+    try {
+      const r = await fetch(c.formulario, { method: "POST", headers: { Accept: "application/json" }, body: new FormData(form) });
+      if (!r.ok) throw new Error(r.status);
+      form.reset(); st.textContent = "Mensagem enviada. Respondo em breve.";
+    } catch (err) {
+      st.innerHTML = `Não foi possível enviar agora. ${wa ? `<a href="${wa}" target="_blank" rel="noopener">Envie pelo WhatsApp</a> com a mensagem pronta.` : "Use um dos canais ao lado."}`;
+    } finally { btn.disabled = false; }
+  });
 })();
 
 /* rotas: #portfolio, #sobre, #case-xxx são abas; o resto são âncoras da página inicial */
