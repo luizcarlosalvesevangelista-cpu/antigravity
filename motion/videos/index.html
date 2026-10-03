@@ -1,0 +1,137 @@
+<title>Upe Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
+<style>
+/* Layout: editorial reel sheet on brand cream; one band per piece, player left, roteiro right; stacks on phones */
+:root {
+  --azul: #0C4F7F;
+  --creme: #F2F0E1;
+  --papel: #F7F6EE;
+  --ardosia: #798EA6;
+  --cinza: #A6A9AF;
+  --tinta: #111111;
+  --texto: #1A2632;
+  --linha: #DDD9C8;
+  --font: "Lato", "Helvetica Neue", Arial, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body { background: var(--papel); color: var(--texto); font-family: var(--font); font-size: 16px; line-height: 1.5; padding: 0 16px 64px; }
+.wrap { max-width: 1160px; margin: 0 auto; }
+header { background: var(--azul); color: var(--creme); margin: 0 -16px; padding: 40px 16px 44px; }
+header .wrap { display: grid; gap: 18px; }
+.wm { height: 30px; width: auto; display: block; fill: currentColor; }
+header h1 { margin: 0; font-size: clamp(2rem, 5vw, 3.4rem); font-weight: 900; line-height: 1.04; letter-spacing: -.01em; text-wrap: balance; max-width: 18ch; }
+header p { margin: 0; max-width: 62ch; font-size: 1.08rem; opacity: .88; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px; }
+.meta span { border: 1.5px solid rgba(242,240,225,.35); border-radius: 999px; padding: 4px 12px; font-size: .82rem; font-weight: 700; }
+nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--papel); border-bottom: 1px solid var(--linha); margin: 0 -16px; padding: 0 16px; }
+nav .wrap { display: flex; gap: 4px; overflow-x: auto; }
+nav a { color: var(--texto); text-decoration: none; font-weight: 700; font-size: .92rem; padding: 14px 12px; border-bottom: 3px solid transparent; white-space: nowrap; }
+nav a:hover, nav a:focus-visible { border-bottom-color: var(--azul); color: var(--azul); outline: none; }
+section { padding-block: 48px 8px; border-bottom: 1px solid var(--linha); scroll-margin-top: 56px; }
+.sec-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 20px; margin-bottom: 20px; }
+.eb { font-size: .74rem; font-weight: 900; letter-spacing: .18em; text-transform: uppercase; color: var(--ardosia); }
+h2 { margin: 4px 0 0; font-size: clamp(1.5rem, 3vw, 2.1rem); font-weight: 900; color: var(--azul); line-height: 1.1; text-wrap: balance; }
+.dur { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--ardosia); }
+.grid { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 28px; align-items: start; }
+.player { display: grid; gap: 12px; min-width: 0; }
+.seg { display: inline-flex; border: 1.5px solid var(--linha); border-radius: 999px; padding: 3px; gap: 2px; justify-self: start; }
+.seg button { appearance: none; border: 0; background: transparent; font: 700 .85rem var(--font); color: var(--texto); padding: 7px 14px; border-radius: 999px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--azul); color: var(--creme); }
+.seg button:focus-visible { outline: 2px solid var(--azul); outline-offset: 2px; }
+.frame { background: var(--tinta); border-radius: 10px; overflow: hidden; display: grid; place-items: center; }
+.frame video { display: block; width: 100%; max-width: 100%; height: auto; background: var(--tinta); }
+.frame.v video { width: auto; max-height: 640px; aspect-ratio: 9 / 16; }
+.note { font-size: .85rem; color: #5D6A77; }
+.ro { min-width: 0; }
+.ro p { margin: 0 0 14px; }
+ol.cenas { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--linha); }
+ol.cenas li { display: grid; grid-template-columns: 52px 1fr; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--linha); font-size: .93rem; }
+ol.cenas time { font-variant-numeric: tabular-nums; color: var(--ardosia); font-weight: 700; }
+ol.cenas b { color: var(--azul); }
+.info { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; padding-block: 40px; }
+.info h3 { margin: 0 0 6px; font-size: 1rem; font-weight: 900; color: var(--azul); }
+.info p { margin: 0; font-size: .93rem; }
+.sw { display: flex; gap: 6px; margin-top: 8px; }
+.sw i { width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--linha); display: block; }
+@media (max-width: 820px) { .grid, .info { grid-template-columns: 1fr; } .frame.v video { max-height: 70vh; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+
+<header>
+  <div class="wrap">
+    <svg class="wm" viewBox="786 2599 350 48" role="img" aria-label="Upe Criativo"><path d="M 807.03 2603.74 C 805.59 2603.18 803.34 2603.19 801.95 2603.85 C 803.12 2602.35 803.71 2601.73 804.37 2601.19 C 804.45 2601.12 804.55 2601.12 804.63 2601.19 C 805.21 2601.69 805.64 2602.05 807.03 2603.74 "/><path d="M 812.05 2605.51 L 808.33 2605.51 C 809.1 2606.7 809.76 2607.97 810.29 2609.32 C 810.3 2609.33 810.3 2609.35 810.31 2609.37 C 810.95 2611.01 811.42 2612.75 811.68 2614.56 C 812.25 2618.48 811.84 2622.43 810.54 2626.03 C 810.86 2626.07 811.38 2626.18 811.92 2626.47 C 812.7 2626.89 813.63 2627.79 813.7 2629.64 C 813.79 2632.04 812.46 2633.9 811.66 2634.8 C 811.55 2634.93 811.39 2635 811.23 2635 C 811.16 2635 811.08 2634.98 811.01 2634.96 C 810.78 2634.87 810.64 2634.65 810.64 2634.4 L 810.7 2631.87 C 810.71 2631.42 810.48 2631 810.11 2630.76 C 809.73 2630.52 809.2 2630.27 808.56 2630.01 C 808.39 2630.18 808.19 2630.31 807.97 2630.4 L 807.75 2631.98 C 807.67 2632.57 807.16 2633.02 806.57 2633.02 L 805.51 2633.02 C 805.46 2633.42 805.39 2633.8 805.31 2634.14 C 805.07 2635.09 804.76 2635.57 804.36 2635.57 C 803.97 2635.57 803.65 2635.09 803.41 2634.14 C 803.33 2633.8 803.27 2633.42 803.21 2633.02 L 802.43 2633.02 C 801.84 2633.02 801.33 2632.57 801.25 2631.98 L 801.04 2630.41 C 800.81 2630.31 800.61 2630.17 800.43 2630 C 799.77 2630.26 799.25 2630.52 798.86 2630.76 C 798.48 2631 798.25 2631.42 798.27 2631.87 L 798.32 2634.4 C 798.33 2634.65 798.18 2634.87 797.95 2634.96 C 797.88 2634.98 797.81 2635 797.74 2635 C 797.57 2635 797.42 2634.93 797.3 2634.8 C 796.5 2633.9 795.18 2632.04 795.27 2629.64 C 795.33 2627.79 796.27 2626.89 797.05 2626.47 C 797.61 2626.17 798.15 2626.06 798.46 2626.02 C 797.16 2622.43 796.75 2618.48 797.32 2614.56 C 797.58 2612.75 798.05 2611.01 798.69 2609.37 C 798.7 2609.35 798.7 2609.33 798.71 2609.32 C 799.24 2607.97 799.9 2606.7 800.67 2605.51 L 788.57 2605.51 L 788.57 2622.07 C 788.57 2626.13 789.5 2629.85 791.35 2633.22 C 793.2 2636.59 795.91 2639.26 799.49 2641.24 C 803.07 2643.23 807.35 2644.21 812.32 2644.21 L 820.39 2644.21 L 820.39 2605.51 Z M 812.05 2605.51 "/><path d="M 857.14 2615.61 C 857.02 2617.67 856.43 2619.39 855.36 2620.77 C 854.3 2622.14 853.02 2623.25 851.53 2624.09 C 850.03 2624.93 848.01 2625.87 845.46 2626.92 C 843.27 2627.83 841.5 2628.64 840.12 2629.34 C 838.74 2630.03 837.44 2630.92 836.21 2631.99 C 834.97 2633.06 833.99 2634.4 833.26 2635.99 C 832.54 2637.59 832.17 2639.48 832.17 2641.67 L 832.17 2644.21 L 823.83 2644.21 L 823.83 2641.67 C 823.83 2637.72 824.75 2634.3 826.57 2631.38 C 828.41 2628.47 831.19 2625.84 834.93 2623.5 C 836.11 2622.75 837.28 2622.1 838.45 2621.54 C 839.63 2620.98 841.02 2620.36 842.64 2619.67 C 844.74 2618.79 846.26 2618.05 847.2 2617.48 C 848.14 2616.9 848.66 2616.2 848.77 2615.4 C 848.91 2614.48 848.69 2613.9 848.11 2613.64 C 847.54 2613.38 846.88 2613.24 846.13 2613.24 L 830.64 2613.24 L 830.64 2605.51 L 847.04 2605.51 C 848.88 2605.51 850.59 2605.96 852.18 2606.87 C 853.77 2607.78 855.01 2609.02 855.91 2610.57 C 856.81 2612.13 857.22 2613.81 857.14 2615.61  M 827.91 2613.66 C 825.66 2613.66 823.83 2611.84 823.83 2609.59 C 823.83 2607.33 825.66 2605.51 827.91 2605.51 "/><path d="M 865.48 2628.74 L 865.48 2636.48 L 886.59 2636.48 L 886.59 2644.21 L 857.14 2644.21 L 857.14 2627.68 C 857.14 2623.62 858.06 2619.9 859.91 2616.54 C 861.76 2613.16 864.48 2610.49 868.06 2608.5 C 871.64 2606.5 875.91 2605.51 880.89 2605.51 L 886.59 2605.51 L 886.59 2613.24 L 880.62 2613.24 C 877.83 2613.24 875.16 2613.85 872.63 2615.06 C 870.09 2616.28 868.19 2618.26 866.94 2621.01 L 886.59 2621.01 L 886.59 2628.74 Z M 865.48 2628.74 "/><path d="M 927.23 2644.21 L 897.77 2644.21 L 897.77 2627.68 C 897.77 2623.62 898.7 2619.9 900.55 2616.54 C 902.4 2613.17 905.11 2610.49 908.69 2608.5 C 912.27 2606.5 916.55 2605.51 921.52 2605.51 L 927.23 2605.51 L 927.23 2613.24 L 921.25 2613.24 C 918.84 2613.24 916.5 2613.7 914.21 2614.61 C 911.93 2615.52 910.01 2617.1 908.45 2619.36 C 906.89 2621.61 906.11 2624.62 906.11 2628.38 L 906.11 2636.48 L 927.23 2636.48 Z M 927.23 2644.21  M 918.17 2629.86 C 915.92 2629.86 914.09 2628.03 914.09 2625.78 C 914.09 2623.52 915.92 2621.7 918.17 2621.7 "/><path d="M 942.43 2631.66 C 941.01 2632.85 939.92 2634.25 939.15 2635.88 C 938.38 2637.49 938 2639.42 938 2641.67 L 938 2644.21 L 929.66 2644.21 L 929.66 2641.67 C 929.66 2637.72 930.57 2634.3 932.4 2631.38 C 934.23 2628.47 937.02 2625.84 940.76 2623.5 C 941.93 2622.75 943.1 2622.09 944.28 2621.54 C 945.45 2620.98 946.84 2620.36 948.46 2619.68 C 950.57 2618.79 952.09 2618.05 953.03 2617.47 C 953.97 2616.9 954.49 2616.21 954.59 2615.39 C 954.73 2614.48 954.52 2613.9 953.94 2613.64 C 953.36 2613.38 952.7 2613.24 951.95 2613.24 L 929.66 2613.24 L 929.66 2605.51 L 952.86 2605.51 C 954.7 2605.51 956.41 2605.96 958 2606.87 C 959.59 2607.78 960.84 2609.02 961.73 2610.57 C 962.63 2612.13 963.04 2613.81 962.96 2615.61 C 962.84 2617.67 962.25 2619.39 961.19 2620.77 C 960.13 2622.14 958.85 2623.25 957.35 2624.09 C 955.85 2624.93 953.83 2625.88 951.29 2626.93 C 950.66 2627.19 950.19 2627.38 949.89 2627.5 L 964.93 2644.21 L 953.71 2644.21 Z M 942.43 2631.66 "/><path d="M 967.36 2613.91 L 975.7 2613.91 L 975.7 2644.21 L 967.36 2644.21 Z M 967.36 2613.91  M 967.45 2609.59 C 967.45 2607.33 969.28 2605.51 971.53 2605.51 C 973.79 2605.51 975.61 2607.33 975.61 2609.59 "/><path d="M 999.3 2644.21 L 978.13 2644.21 L 978.13 2627.68 C 978.13 2623.62 979.05 2619.9 980.91 2616.54 C 982.76 2613.17 985.47 2610.49 989.05 2608.5 C 992.63 2606.5 996.91 2605.51 1001.88 2605.51 L 1009.95 2605.51 L 1009.95 2644.21 L 1001.61 2644.21 L 1001.61 2613.24 C 999.2 2613.24 996.86 2613.7 994.57 2614.61 C 992.29 2615.52 990.37 2617.1 988.81 2619.36 C 987.25 2621.61 986.47 2624.62 986.47 2628.38 L 986.47 2636.48 L 999.3 2636.48 Z M 999.3 2644.21 "/><path d="M 1025 2613.24 L 1012.38 2613.24 L 1012.38 2605.51 L 1045.7 2605.51 C 1045.85 2605.51 1045.96 2605.62 1045.96 2605.76 L 1045.96 2613.24 L 1033.34 2613.24 L 1033.34 2644.21 L 1025 2644.21 Z M 1025 2613.24 "/><path d="M 1048.39 2613.57 L 1056.73 2613.57 L 1056.73 2644.21 L 1048.39 2644.21 Z M 1048.39 2613.57  M 1048.48 2609.59 C 1048.48 2607.33 1050.31 2605.51 1052.56 2605.51 C 1054.81 2605.51 1056.64 2607.33 1056.64 2609.59 "/><path d="M 1083.91 2644.21 L 1074.32 2644.21 C 1074.32 2640.33 1073.97 2636.64 1073.27 2633.13 C 1072.55 2629.62 1071.64 2626.43 1070.52 2623.55 C 1069.39 2620.68 1068.2 2618.15 1066.94 2615.96 C 1065.67 2613.76 1064.48 2611.92 1063.36 2610.42 C 1062.23 2608.93 1060.84 2607.29 1059.16 2605.51 L 1069.96 2605.51 C 1071.27 2607.14 1072.35 2608.64 1073.19 2609.98 C 1074.03 2611.33 1074.88 2612.96 1075.73 2614.88 C 1076.59 2616.8 1077.34 2618.98 1077.96 2621.42 C 1078.59 2623.86 1078.98 2626.44 1079.12 2629.17 C 1079.36 2626.44 1079.82 2623.86 1080.48 2621.42 C 1081.15 2618.98 1081.9 2616.8 1082.74 2614.88 C 1083.58 2612.96 1084.4 2611.33 1085.2 2609.98 C 1086 2608.64 1087.02 2607.14 1088.28 2605.51 L 1099.08 2605.51 C 1097.4 2607.29 1095.99 2608.93 1094.86 2610.42 C 1093.73 2611.92 1092.54 2613.76 1091.28 2615.96 C 1090.03 2618.15 1088.84 2620.68 1087.72 2623.55 C 1086.6 2626.43 1085.68 2629.62 1084.97 2633.13 C 1084.27 2636.64 1083.91 2640.33 1083.91 2644.21 "/><path d="M 1109.85 2613.24 L 1109.85 2621.34 C 1109.85 2625.13 1110.63 2628.14 1112.18 2630.38 C 1113.74 2632.63 1115.66 2634.2 1117.95 2635.11 C 1120.23 2636.02 1122.58 2636.48 1124.98 2636.48 L 1124.98 2628.38 C 1124.98 2624.62 1124.21 2621.61 1122.65 2619.36 C 1121.09 2617.1 1119.17 2615.52 1116.89 2614.61 C 1114.6 2613.7 1112.25 2613.24 1109.85 2613.24 M 1109.85 2605.51 C 1114.76 2605.55 1118.99 2606.57 1122.53 2608.57 C 1126.07 2610.57 1128.75 2613.25 1130.58 2616.59 C 1132.41 2619.94 1133.33 2623.64 1133.33 2627.68 L 1133.33 2644.21 L 1124.98 2644.21 C 1120.07 2644.18 1115.84 2643.16 1112.3 2641.16 C 1108.77 2639.18 1106.08 2636.5 1104.25 2633.14 C 1102.42 2629.79 1101.5 2626.09 1101.5 2622.07 L 1101.5 2605.51 Z M 1109.85 2605.51  M 1119.42 2628.97 C 1117.17 2628.97 1115.34 2627.15 1115.34 2624.89 C 1115.34 2622.64 1117.17 2620.82 1119.42 2620.82 "/></svg>
+    <h1>Branding, Upe ERP e Upe TV em movimento</h1>
+    <p>Quatro peças com a identidade da Upe Criativo: o filme institucional, um vídeo para cada lançamento e o logo reveal. Todas têm trilha e efeitos sonoros e vêm em 16:9 e 9:16.</p>
+    <div class="meta"><span>1920×1080 e 1080×1920</span><span>30 fps · H.264 + AAC</span><span>Trilha original sintetizada</span></div>
+  </div>
+</header>
+
+<nav aria-label="Peças"><div class="wrap"><a href="#filme">Filme institucional</a><a href="#erp">Upe ERP</a><a href="#tv">Upe TV</a><a href="#logo">Logo reveal</a><a href="#notas">Notas de uso</a></div></nav>
+
+<main class="wrap">
+  <section id="filme">
+    <div class="sec-head"><div><div class="eb">Filme institucional</div><h2>Upe Criativo: da identidade à venda</h2></div><span class="dur">1:42</span></div>
+    <div class="grid">
+      <div class="player" data-id="filme">
+        <div class="seg" role="group" aria-label="Formato"><button type="button" data-fmt="h" aria-pressed="true">16:9 horizontal</button><button type="button" data-fmt="v" aria-pressed="false">9:16 vertical</button></div>
+        <div class="frame" data-fmt="h"><video controls playsinline preload="metadata" src="filme-h.mp4" poster="filme-h.jpg"></video></div>
+        <div class="note">Use 9:16 em Reels, Stories e nos totens verticais do Upe TV.</div>
+      </div>
+      <div class="ro"><p>A apresentação completa: o seu trabalho de Branding e Redesign e os dois lançamentos, fechando na assinatura da marca.</p><ol class="cenas"><li><time>0:00</time><span><b>Logo reveal</b> · o foguete decola e vira o “U”</span></li><li><time>0:08</time><span><b>Branding e Redesign</b> · paleta, tipografia, ícone, padrão e papelaria</span></li><li><time>0:16</time><span><b>Redesign</b> · antes e depois de uma marca</span></li><li><time>0:24</time><span><b>Lançamentos</b> · “Dois sistemas para o seu negócio”</span></li><li><time>0:28</time><span><b>Upe ERP · painel</b> · indicadores, vendas e primeiros passos</span></li><li><time>0:38</time><span><b>Upe ERP · pedidos</b> · pedido chega, muda de status e o cliente acompanha</span></li><li><time>0:48</time><span><b>Upe ERP · PDV</b> · venda no balcão com PIX e baixa de estoque</span></li><li><time>0:56</time><span><b>Upe TV · tela</b> · campanha, lateral que expande e letreiro</span></li><li><time>1:06</time><span><b>Upe TV · QR code</b> · do QR ao cardápio e ao pedido no WhatsApp</span></li><li><time>1:18</time><span><b>Upe TV · resultados</b> · portal do anunciante</span></li><li><time>1:26</time><span><b>Três frentes</b> · Branding, Upe ERP e Upe TV</span></li><li><time>1:34</time><span><b>Assinatura</b> · logotipo, endereços e versão creme</span></li></ol></div>
+    </div>
+  </section>
+  <section id="erp">
+    <div class="sec-head"><div><div class="eb">Upe ERP</div><h2>Lançamento Upe ERP</h2></div><span class="dur">0:38</span></div>
+    <div class="grid">
+      <div class="player" data-id="erp">
+        <div class="seg" role="group" aria-label="Formato"><button type="button" data-fmt="h" aria-pressed="true">16:9 horizontal</button><button type="button" data-fmt="v" aria-pressed="false">9:16 vertical</button></div>
+        <div class="frame" data-fmt="h"><video controls playsinline preload="metadata" src="erp-h.mp4" poster="erp-h.jpg"></video></div>
+        <div class="note">Use 9:16 em Reels, Stories e nos totens verticais do Upe TV.</div>
+      </div>
+      <div class="ro"><p>Vídeo de lançamento do sistema: loja virtual, PDV, PIX, gestão de pedidos e relatórios num só painel.</p><ol class="cenas"><li><time>0:00</time><span><b>Abertura</b> · Upe ERP</span></li><li><time>0:04</time><span><b>Painel</b> · indicadores, gráfico de vendas e primeiros passos</span></li><li><time>0:14</time><span><b>Pedidos</b> · novo pedido, quadro e rastreio para o cliente</span></li><li><time>0:24</time><span><b>PDV + PIX</b> · venda no balcão, QR Code e pagamento confirmado</span></li><li><time>0:32</time><span><b>Assinatura</b> · upe-erp.web.app</span></li></ol></div>
+    </div>
+  </section>
+  <section id="tv">
+    <div class="sec-head"><div><div class="eb">Upe TV</div><h2>Lançamento Upe TV</h2></div><span class="dur">0:40</span></div>
+    <div class="grid">
+      <div class="player" data-id="tv">
+        <div class="seg" role="group" aria-label="Formato"><button type="button" data-fmt="h" aria-pressed="true">16:9 horizontal</button><button type="button" data-fmt="v" aria-pressed="false">9:16 vertical</button></div>
+        <div class="frame" data-fmt="h"><video controls playsinline preload="metadata" src="tv-h.mp4" poster="tv-h.jpg"></video></div>
+        <div class="note">Use 9:16 em Reels, Stories e nos totens verticais do Upe TV.</div>
+      </div>
+      <div class="ro"><p>Vídeo para anunciantes e parceiros: a rede de telas, o caminho do QR até o pedido e o portal de resultados.</p><ol class="cenas"><li><time>0:00</time><span><b>Abertura</b> · Upe TV</span></li><li><time>0:04</time><span><b>Na tela</b> · campanha em tela cheia, lateral e letreiro de parceiros</span></li><li><time>0:14</time><span><b>QR code</b> · câmera, cardápio e pedido no WhatsApp</span></li><li><time>0:26</time><span><b>Resultados</b> · tempo de tela, exibições e leituras de QR</span></li><li><time>0:34</time><span><b>Assinatura</b> · upe-tv.web.app</span></li></ol></div>
+    </div>
+  </section>
+  <section id="logo">
+    <div class="sec-head"><div><div class="eb">Logo reveal</div><h2>Logo reveal Upe Criativo</h2></div><span class="dur">0:10</span></div>
+    <div class="grid">
+      <div class="player" data-id="logo">
+        <div class="seg" role="group" aria-label="Formato"><button type="button" data-fmt="h" aria-pressed="true">16:9 horizontal</button><button type="button" data-fmt="v" aria-pressed="false">9:16 vertical</button></div>
+        <div class="frame" data-fmt="h"><video controls playsinline preload="metadata" src="logo-h.mp4" poster="logo-h.jpg"></video></div>
+        <div class="note">Use 9:16 em Reels, Stories e nos totens verticais do Upe TV.</div>
+      </div>
+      <div class="ro"><p>A assinatura animada para abrir ou fechar vídeos, posts e apresentações, agora com som.</p><ol class="cenas"><li><time>0:00</time><span><b>Decolagem</b> · foguete, fumaça e linhas de velocidade</span></li><li><time>0:02</time><span><b>Encaixe</b> · o “U” envolve o foguete, com impacto</span></li><li><time>0:03</time><span><b>Nome</b> · as letras sobem uma a uma</span></li><li><time>0:07</time><span><b>Versão creme</b> · máscara circular revela o logo azul</span></li></ol></div>
+    </div>
+  </section>
+
+  <div class="info" id="notas">
+    <div><h3>Sem som também funciona</h3><p>As telas do Upe TV costumam ficar no mudo, então toda mensagem está escrita na tela. O áudio serve para redes sociais, apresentações e eventos.</p></div>
+    <div><h3>Dados das telas</h3><p>Lojas, pedidos e números são os exemplos fictícios dos guias (Doce Encanto, Hamburgueria Brasa 81, Padaria Pão Dourado). Cada cena traz o aviso “dados de exemplo”.</p></div>
+    <div><h3>Identidade</h3><p>Logotipo e ícone vetorizados do manual da marca, tipografia Lato, padrão de foguetes e paleta oficial.</p><div class="sw" aria-label="Paleta"><i style="background:#0C4F7F"></i><i style="background:#F2F0E1"></i><i style="background:#798EA6"></i><i style="background:#A6A9AF"></i><i style="background:#111111"></i></div></div>
+  </div>
+</main>
+
+<script>
+document.querySelectorAll(".player").forEach(p => {
+  const v = p.querySelector("video"), fr = p.querySelector(".frame"), btns = p.querySelectorAll(".seg button");
+  btns.forEach(b => b.addEventListener("click", () => {
+    const fmt = b.dataset.fmt; if (fr.dataset.fmt === fmt) return;
+    btns.forEach(x => x.setAttribute("aria-pressed", x === b ? "true" : "false"));
+    const wasPlaying = !v.paused; fr.dataset.fmt = fmt; fr.classList.toggle("v", fmt === "v");
+    v.src = `${p.dataset.id}-${fmt}.mp4`; v.poster = `${p.dataset.id}-${fmt}.jpg`; v.load(); if (wasPlaying) v.play().catch(() => {});
+  }));
+});
+</script>

@@ -1,0 +1,1058 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Upe Studio</title>
+<style>
+@font-face { font-family: "Lato"; font-weight: 400; src: url(data:font/woff2;base64,__LATO400__) format("woff2"); }
+@font-face { font-family: "Lato"; font-weight: 700; src: url(data:font/woff2;base64,__LATO700__) format("woff2"); }
+@font-face { font-family: "Lato"; font-weight: 900; src: url(data:font/woff2;base64,__LATO900__) format("woff2"); }
+:root {
+  --azul: #0C4F7F; --azul-escuro: #083A5E; --noite: #0E1B27;
+  --creme: #F2F0E1; --creme-2: #FAF9F2; --ardosia: #798EA6; --cinza: #A6A9AF; --tinta: #111111;
+  --linha: #E3E0D2; --ok: #2F8F5B; --ouro: #F2C14E;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: #000; }
+#stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: var(--azul); font-family: "Lato", Arial, sans-serif; color: var(--creme); -webkit-font-smoothing: antialiased; }
+#stage.v { width: 1080px; height: 1920px; }
+.scene { position: absolute; inset: 0; display: none; overflow: hidden; }
+.scene.on { display: block; }
+.bg-azul { background: var(--azul); }
+.bg-creme { background: var(--creme); color: var(--azul); }
+.pat { position: absolute; inset: -260px; background-size: 130px 130px; opacity: .16; }
+.bg-creme .pat { opacity: .07; }
+
+/* tipografia */
+.eb { font-size: 22px; font-weight: 900; letter-spacing: .2em; text-transform: uppercase; color: var(--ardosia); }
+.h { font-size: 84px; font-weight: 900; line-height: 1.02; letter-spacing: -.01em; }
+.h.xl { font-size: 112px; }
+.p { font-size: 32px; line-height: 1.38; opacity: .86; max-width: 640px; }
+.w { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: .1em; margin-bottom: -.1em; }
+.wi { display: inline-block; will-change: transform; }
+.v .h { font-size: 78px; } .v .h.xl { font-size: 100px; } .v .p { font-size: 34px; max-width: none; }
+.chips { display: flex; flex-wrap: wrap; gap: 12px; }
+.chip { border: 2px solid rgba(242,240,225,.35); border-radius: 999px; padding: 10px 22px; font-size: 22px; font-weight: 700; }
+.bg-creme .chip { border-color: rgba(12,79,127,.3); }
+.bar { height: 6px; width: 120px; background: var(--ardosia); border-radius: 3px; transform-origin: left; }
+
+/* layout */
+.split { position: absolute; inset: 0; display: grid; grid-template-columns: 660px 1fr; column-gap: 60px; align-items: center; padding: 0 110px; }
+.split.rev { grid-template-columns: 1fr 640px; }
+.txt { display: grid; gap: 26px; align-content: center; position: relative; z-index: 2; }
+.vis { position: relative; height: 100%; }
+.v .split, .v .split.rev { grid-template-columns: 1fr; grid-template-rows: auto 1fr; padding: 190px 80px 120px; align-items: start; row-gap: 40px; }
+.v .split.rev .txt { grid-row: 1; }
+.v .split { align-content: center; grid-template-rows: auto 820px; padding-top: 150px; padding-bottom: 90px; }
+.fit { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) scale(var(--k, 1)); }
+.center { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; text-align: center; gap: 28px; padding: 0 120px; }
+.small-note { position: absolute; right: 40px; bottom: 30px; font-size: 16px; opacity: .55; letter-spacing: .04em; }
+.v .small-note { right: 50%; transform: translateX(50%); white-space: nowrap; bottom: 50px; }
+.logo-corner { position: absolute; left: 110px; top: 70px; height: 34px; color: var(--creme); }
+.v .logo-corner { left: 80px; top: 90px; }
+.bg-creme .logo-corner { color: var(--azul); }
+svg.wm { display: block; height: 100%; width: auto; overflow: visible; }
+
+/* navegador ERP */
+.browser { width: 1000px; height: 640px; border-radius: 18px; background: #fff; overflow: hidden; box-shadow: 0 40px 90px rgba(4,25,42,.45); color: #1B2733; position: relative; }
+.bbar { height: 40px; background: #E9E7DC; display: flex; align-items: center; gap: 8px; padding: 0 16px; }
+.bbar i { width: 12px; height: 12px; border-radius: 50%; background: #C9C6B8; display: block; }
+.bbar .url { margin-left: 18px; background: #fff; border-radius: 8px; padding: 5px 16px; font-size: 14px; color: #55606B; width: 360px; }
+.app { position: absolute; top: 40px; left: 0; right: 0; bottom: 0; display: grid; grid-template-columns: 196px 1fr; }
+.side { background: var(--noite); color: var(--creme); padding: 18px 12px; display: flex; flex-direction: column; gap: 4px; }
+.side .co { font-weight: 900; font-size: 15px; letter-spacing: .06em; padding: 4px 10px 14px; border-bottom: 1px solid rgba(242,240,225,.12); margin-bottom: 8px; }
+.side .co small { display: block; font-weight: 400; font-size: 11px; letter-spacing: .04em; opacity: .6; margin-top: 3px; }
+.side .it { font-size: 14px; padding: 9px 12px; border-radius: 8px; opacity: .78; display: flex; align-items: center; gap: 10px; }
+.side .it::before { content: ""; width: 8px; height: 8px; border-radius: 2px; background: currentColor; opacity: .5; }
+.side .it.on { background: var(--azul); opacity: 1; font-weight: 700; }
+.main { background: #F6F5EE; padding: 22px 24px; position: relative; overflow: hidden; }
+.mtop { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+.mtop h4 { font-size: 22px; font-weight: 900; color: var(--noite); }
+.mtop h4 small { display: block; font-size: 12px; font-weight: 700; color: #7A8590; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 2px; }
+.search { background: #fff; border: 1px solid var(--linha); border-radius: 10px; padding: 8px 14px; font-size: 13px; color: #7A8590; width: 230px; display: flex; justify-content: space-between; }
+.search b { font-weight: 700; color: #55606B; border: 1px solid var(--linha); border-radius: 5px; padding: 0 6px; font-size: 11px; }
+.kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 14px; }
+.kpi { background: #fff; border: 1px solid var(--linha); border-radius: 12px; padding: 14px 16px; }
+.kpi small { font-size: 12px; color: #7A8590; font-weight: 700; display: block; margin-bottom: 6px; }
+.kpi b { white-space: nowrap; font-size: 22px; font-weight: 900; color: var(--noite); font-variant-numeric: tabular-nums; }
+.kpi em { font-style: normal; font-size: 12px; color: var(--ok); font-weight: 700; display: block; margin-top: 4px; }
+.row2 { display: grid; grid-template-columns: 1.55fr 1fr; gap: 12px; }
+.card { background: #fff; border: 1px solid var(--linha); border-radius: 12px; padding: 16px; }
+.card h5 { font-size: 14px; font-weight: 900; color: var(--noite); margin-bottom: 12px; display: flex; justify-content: space-between; }
+.card h5 span { font-weight: 400; color: #7A8590; font-size: 12px; }
+.bars { height: 250px; display: flex; align-items: flex-end; gap: 10px; border-bottom: 1px solid var(--linha); padding: 0 4px; }
+.bars i { flex: 1; background: var(--azul); border-radius: 5px 5px 0 0; transform-origin: bottom; display: block; }
+.bars i.lt { background: #B9C6D4; }
+.steps { display: grid; gap: 9px; }
+.step { display: flex; align-items: center; gap: 10px; font-size: 13px; color: #33404C; }
+.step i { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #C9CED4; display: grid; place-items: center; flex: none; position: relative; }
+.step i::after { content: ""; position: absolute; inset: 2px; border-radius: 50%; background: var(--ok); transform: scale(var(--c, 0)); }
+.prog { height: 8px; background: #E9E7DC; border-radius: 4px; overflow: hidden; margin: 4px 0 12px; }
+.prog i { display: block; height: 100%; width: 0; background: var(--ok); }
+
+/* quadro de pedidos */
+.board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; height: 500px; position: relative; }
+.col { background: #EDEBE1; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.col h6 { font-size: 13px; font-weight: 900; color: #33404C; display: flex; justify-content: space-between; align-items: center; }
+.col h6 b { background: #fff; border-radius: 999px; padding: 1px 9px; font-size: 12px; }
+.oc { background: #fff; border-radius: 10px; padding: 12px; border: 1px solid var(--linha); font-size: 13px; color: #33404C; display: grid; gap: 4px; }
+.oc .t { display: flex; justify-content: space-between; font-weight: 900; color: var(--noite); }
+.oc .s { display: flex; justify-content: space-between; color: #7A8590; font-size: 12px; }
+.pill { font-size: 11px; font-weight: 900; padding: 2px 8px; border-radius: 999px; letter-spacing: .03em; }
+.pill.ap { background: #DCE8F3; color: var(--azul); }
+.pill.en { background: #E4E7EC; color: #4E5D70; }
+.pill.fi { background: #DDF0E4; color: var(--ok); }
+.oc.new { position: absolute; width: calc((100% - 24px) / 3 - 24px); box-shadow: 0 14px 30px rgba(14,27,39,.18); border-color: var(--azul); }
+.toast { position: absolute; right: 22px; top: 18px; background: var(--noite); color: var(--creme); border-radius: 12px; padding: 12px 16px; display: flex; gap: 12px; align-items: center; font-size: 14px; box-shadow: 0 18px 40px rgba(0,0,0,.3); z-index: 5; }
+.toast i { width: 34px; height: 34px; border-radius: 50%; background: var(--ok); display: grid; place-items: center; font-style: normal; font-weight: 900; }
+.toast b { display: block; font-size: 15px; }
+
+/* PDV */
+.pdv { display: grid; grid-template-columns: 1fr 300px; gap: 14px; height: 520px; }
+.prods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; align-content: start; }
+.pr { background: #fff; border: 1px solid var(--linha); border-radius: 12px; overflow: hidden; font-size: 13px; color: #33404C; }
+.pr .ph { height: 92px; display: grid; place-items: center; font-weight: 900; font-size: 26px; color: rgba(14,27,39,.55); }
+.pr .nm { padding: 9px 12px 2px; font-weight: 700; }
+.pr .pc { padding: 0 12px 10px; font-weight: 900; color: var(--azul); }
+.cart { background: #fff; border: 1px solid var(--linha); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px; position: relative; }
+.cart h5 { font-size: 15px; font-weight: 900; color: var(--noite); }
+.li { display: flex; justify-content: space-between; font-size: 14px; color: #33404C; border-bottom: 1px dashed var(--linha); padding-bottom: 8px; }
+.tot { margin-top: auto; display: flex; justify-content: space-between; align-items: baseline; font-weight: 900; color: var(--noite); }
+.tot b { font-size: 30px; font-variant-numeric: tabular-nums; }
+.btn { background: var(--azul); color: var(--creme); text-align: center; border-radius: 10px; padding: 14px; font-weight: 900; font-size: 16px; }
+.modal { position: absolute; inset: 0; background: rgba(14,27,39,.55); display: grid; place-items: center; z-index: 4; }
+.mbox { width: 380px; background: #fff; border-radius: 18px; padding: 26px; text-align: center; color: var(--noite); display: grid; gap: 12px; justify-items: center; position: relative; overflow: hidden; }
+.mbox h5 { font-size: 18px; font-weight: 900; }
+.mbox .val { font-size: 34px; font-weight: 900; color: var(--azul); }
+.mbox .cc { font-size: 12px; color: #7A8590; background: #F2F1EA; border-radius: 8px; padding: 8px 12px; width: 100%; font-family: monospace; }
+.qr { display: grid; gap: 0; background: #fff; }
+.qr i { display: block; background: var(--noite); }
+.paid { position: absolute; inset: 0; background: var(--ok); color: #fff; display: grid; place-content: center; justify-items: center; gap: 12px; font-weight: 900; font-size: 26px; }
+.paid .ck { width: 96px; height: 96px; border-radius: 50%; border: 6px solid #fff; display: grid; place-items: center; }
+
+/* celular */
+.phone { width: 330px; height: 680px; border-radius: 48px; background: var(--tinta); padding: 12px; box-shadow: 0 40px 80px rgba(4,25,42,.5); position: relative; }
+.phone .scr { position: absolute; inset: 12px; border-radius: 37px; overflow: hidden; background: #fff; color: var(--noite); }
+.phone .notch { position: absolute; top: 20px; left: 50%; width: 92px; height: 26px; margin-left: -46px; background: var(--tinta); border-radius: 14px; z-index: 9; }
+.ps { position: absolute; inset: 0; display: flex; flex-direction: column; }
+.ph-head { padding: 58px 22px 16px; background: var(--noite); color: var(--creme); }
+.ph-head small { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; opacity: .65; font-weight: 700; }
+.ph-head b { display: block; font-size: 20px; font-weight: 900; margin-top: 4px; }
+.track { padding: 22px; display: grid; gap: 0; }
+.tk { display: grid; grid-template-columns: 30px 1fr; gap: 12px; min-height: 78px; position: relative; }
+.tk i { width: 26px; height: 26px; border-radius: 50%; border: 3px solid #C9CED4; background: #fff; position: relative; z-index: 2; }
+.tk i::after { content: ""; position: absolute; inset: 3px; border-radius: 50%; background: var(--ok); transform: scale(var(--c, 0)); }
+.tk::before { content: ""; position: absolute; left: 12px; top: 26px; bottom: 0; width: 3px; background: #E1E4E8; }
+.tk:last-child::before { display: none; }
+.tk b { font-size: 16px; font-weight: 900; display: block; }
+.tk span { font-size: 13px; color: #7A8590; }
+
+/* TV */
+.tvwrap { position: relative; }
+.tv { width: 1060px; height: 620px; background: var(--tinta); border-radius: 18px; padding: 14px; box-shadow: 0 50px 100px rgba(4,25,42,.55); position: relative; }
+.tv .scr { position: absolute; inset: 14px; overflow: hidden; border-radius: 6px; background: #3A1A0C; }
+.tvstand { position: absolute; left: 50%; bottom: -46px; width: 260px; height: 14px; margin-left: -130px; background: #1F2328; border-radius: 0 0 8px 8px; }
+.camp { position: absolute; left: 0; top: 0; bottom: 46px; right: 0; background: repeating-linear-gradient(135deg, #6E2B12 0 46px, #7A3416 46px 50px); padding: 70px 60px; color: #fff; }
+.camp .clock { position: absolute; left: 18px; top: 16px; font-family: monospace; font-size: 15px; background: rgba(0,0,0,.4); border-radius: 6px; padding: 3px 9px; }
+.camp .ce { font-size: 15px; letter-spacing: .24em; font-weight: 700; color: #F2B66B; margin-top: 70px; }
+.camp h3 { font-size: 58px; font-weight: 900; line-height: 1.02; margin-top: 12px; }
+.camp .price { font-size: 84px; font-weight: 900; color: var(--ouro); margin-top: 8px; }
+.camp p { font-size: 20px; opacity: .92; margin-top: 8px; max-width: 460px; }
+.camp .wmk { position: absolute; left: 30px; bottom: 18px; height: 16px; color: #fff; opacity: .9; }
+.tvqr { position: absolute; right: 22px; bottom: 18px; background: #fff; border-radius: 8px; padding: 9px; text-align: center; color: var(--noite); font-size: 10px; font-weight: 900; }
+.tvqr small { display: block; font-size: 8px; letter-spacing: .1em; color: #7A8590; margin-top: 4px; font-weight: 700; }
+.lat { position: absolute; top: 0; right: 0; bottom: 46px; width: 0; background: #2F6E52; overflow: hidden; color: #fff; }
+.lat .in { position: absolute; right: 0; top: 0; bottom: 0; width: 330px; padding: 40px 30px; display: flex; flex-direction: column; gap: 14px; }
+.lat .in small { font-size: 13px; letter-spacing: .2em; font-weight: 700; opacity: .8; }
+.lat .in b { font-size: 34px; font-weight: 900; line-height: 1.08; }
+.lat .in span { font-size: 18px; opacity: .9; }
+.lat .tvqr { position: static; align-self: flex-start; margin-top: auto; }
+.tick { position: absolute; left: 0; right: 0; bottom: 0; height: 46px; background: var(--tinta); display: flex; align-items: center; overflow: hidden; }
+.tick .lab { background: var(--creme); color: var(--azul); font-weight: 900; font-size: 13px; letter-spacing: .12em; height: 100%; display: grid; place-items: center; padding: 0 16px; position: relative; z-index: 2; }
+.tick .run { white-space: nowrap; font-size: 18px; font-weight: 700; color: #fff; padding-left: 20px; }
+.tick .run span { margin-right: 18px; } .tick .run em { font-style: normal; color: var(--ardosia); margin-right: 18px; }
+
+/* celular TV */
+.cam { background: #20262C; }
+.cam .view { position: absolute; inset: 0; background: linear-gradient(160deg, #4A3A30, #22262B 60%); }
+.cam .scanbox { position: absolute; left: 60px; top: 190px; width: 186px; height: 186px; }
+.cam .scanbox::before, .cam .scanbox::after { content: ""; position: absolute; inset: 0; border: 4px solid var(--ouro); clip-path: polygon(0 0, 30% 0, 30% 4%, 4% 4%, 4% 30%, 0 30%, 0 0, 70% 0, 100% 0, 100% 30%, 96% 30%, 96% 4%, 70% 4%, 70% 0, 100% 70%, 100% 100%, 70% 100%, 70% 96%, 96% 96%, 96% 70%, 100% 70%, 0 70%, 4% 70%, 4% 96%, 30% 96%, 30% 100%, 0 100%); border-radius: 18px; }
+.cam .qrbig { position: absolute; left: 83px; top: 213px; background: #fff; padding: 10px; border-radius: 6px; }
+.cam .line { position: absolute; left: 66px; width: 174px; height: 3px; background: var(--ouro); box-shadow: 0 0 14px var(--ouro); }
+.cam .link { position: absolute; left: 30px; right: 30px; top: 420px; background: rgba(255,255,255,.92); border-radius: 14px; padding: 12px 14px; font-size: 13px; color: var(--noite); font-weight: 700; }
+.cam .link small { display: block; font-weight: 400; color: #7A8590; font-size: 11px; }
+.menu-h { padding: 56px 20px 14px; background: #1E1612; color: #fff; }
+.menu-h small { font-size: 11px; letter-spacing: .16em; opacity: .7; font-weight: 700; }
+.menu-h b { display: block; font-size: 20px; font-weight: 900; margin-top: 3px; }
+.mi { display: grid; grid-template-columns: 52px 1fr auto; gap: 12px; align-items: center; padding: 12px 18px; border-bottom: 1px solid #EEE; position: relative; }
+.mi .im { width: 52px; height: 52px; border-radius: 12px; }
+.mi b { font-size: 15px; font-weight: 900; display: block; }
+.mi span { font-size: 12px; color: #7A8590; }
+.mi .pz { font-weight: 900; font-size: 15px; text-align: right; }
+.mi .pz s { display: block; font-weight: 400; font-size: 11px; color: #A0A6AD; }
+.tag { font-size: 9px; font-weight: 900; padding: 2px 6px; border-radius: 5px; letter-spacing: .06em; margin-left: 6px; vertical-align: 2px; }
+.tag.of { background: #F2C14E; color: #3A2A00; } .tag.nv { background: #DCE8F3; color: var(--azul); }
+.mi .qty { position: absolute; right: 18px; top: 8px; background: var(--azul); color: #fff; font-size: 11px; font-weight: 900; border-radius: 999px; padding: 1px 7px; }
+.cartbar { margin: auto 16px 18px; background: var(--azul); color: #fff; border-radius: 14px; padding: 14px 16px; display: flex; justify-content: space-between; font-weight: 900; font-size: 15px; }
+.wa-h { padding: 52px 16px 12px; background: #1F5E4F; color: #fff; display: flex; gap: 10px; align-items: center; }
+.wa-h i { width: 36px; height: 36px; border-radius: 50%; background: #6E2B12; display: grid; place-items: center; font-style: normal; font-weight: 900; font-size: 12px; }
+.wa-h b { font-size: 15px; } .wa-h small { display: block; font-size: 11px; opacity: .75; }
+.wa-b { flex: 1; background: #ECE5DA; padding: 14px; position: relative; overflow: hidden; }
+.bub { background: #DCF5D0; border-radius: 12px 2px 12px 12px; padding: 10px 12px; margin-left: 18px; font-family: "Courier New", monospace; font-size: 10.5px; line-height: 1.42; color: #1B2733; white-space: pre; box-shadow: 0 1px 1px rgba(0,0,0,.08); }
+.bub mark { background: #F2C14E; color: #1B2733; border-radius: 3px; padding: 0 2px; }
+.flow { display: grid; gap: 14px; }
+.fl { display: grid; grid-template-columns: 54px 1fr; gap: 18px; align-items: center; padding: 14px 18px; border-radius: 16px; background: rgba(242,240,225,.06); border: 2px solid rgba(242,240,225,.12); }
+.fl i { width: 54px; height: 54px; border-radius: 50%; background: var(--azul-escuro); color: var(--creme); display: grid; place-items: center; font-style: normal; font-weight: 900; font-size: 24px; border: 2px solid rgba(242,240,225,.25); }
+.fl b { font-size: 28px; font-weight: 900; display: block; }
+.fl span { font-size: 19px; opacity: .78; }
+.v .fl b { font-size: 30px; }
+
+/* portal */
+.portal { width: 980px; background: var(--noite); border-radius: 20px; padding: 30px; color: var(--creme); box-shadow: 0 40px 90px rgba(4,25,42,.45); display: grid; gap: 18px; }
+.portal .ptop { display: flex; justify-content: space-between; align-items: center; }
+.portal .ptop b { font-size: 22px; font-weight: 900; display: block; }
+.portal .ptop small { font-size: 13px; opacity: .6; letter-spacing: .12em; text-transform: uppercase; font-weight: 700; }
+.pchips { display: flex; gap: 8px; } .pchips span { font-size: 13px; padding: 6px 12px; border-radius: 999px; border: 1px solid rgba(242,240,225,.25); } .pchips span.on { background: var(--creme); color: var(--noite); font-weight: 900; border-color: transparent; }
+.mets { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.met { background: rgba(242,240,225,.06); border-radius: 14px; padding: 16px; }
+.met small { font-size: 13px; opacity: .7; display: block; margin-bottom: 8px; }
+.met b { font-size: 34px; font-weight: 900; font-variant-numeric: tabular-nums; }
+.prow { display: grid; grid-template-columns: 1.4fr 1fr; gap: 12px; }
+.pbox { background: rgba(242,240,225,.06); border-radius: 14px; padding: 16px; }
+.pbox h6 { font-size: 14px; font-weight: 900; margin-bottom: 10px; }
+.scr-l { display: grid; gap: 12px; }
+.scr-l div { font-size: 14px; display: grid; gap: 6px; }
+.scr-l div span { display: flex; justify-content: space-between; }
+.scr-l div i { display: block; height: 8px; border-radius: 4px; background: var(--ardosia); transform-origin: left; }
+
+/* marca */
+.board3 { display: grid; grid-template-columns: repeat(3, 230px); grid-template-rows: repeat(2, 230px); gap: 18px; }
+.tile { border-radius: 20px; overflow: hidden; position: relative; display: grid; place-items: center; }
+.tile.t-blue { background: var(--azul); color: var(--creme); }
+.tile.t-ink { background: var(--tinta); color: var(--creme); }
+.tile.t-white { background: #fff; color: var(--azul); border: 2px solid var(--linha); }
+.sw { position: absolute; inset: 0; display: grid; grid-template-rows: 2fr 1.2fr 1fr 1fr .8fr; }
+.sw i { display: block; }
+.sw i span { display: block; font-size: 12px; font-weight: 900; letter-spacing: .08em; padding: 8px 12px; }
+.aa { font-size: 120px; font-weight: 900; line-height: 1; letter-spacing: -.03em; }
+.aa-l { position: absolute; left: 16px; bottom: 14px; font-size: 13px; font-weight: 700; letter-spacing: .08em; }
+.circ { width: 150px; height: 150px; border-radius: 50%; background: var(--creme); display: grid; place-items: center; }
+.patt { position: absolute; inset: 0; background-size: 76px 76px; }
+.bc { width: 190px; height: 112px; background: var(--creme); border-radius: 8px; box-shadow: 0 12px 26px rgba(0,0,0,.25); padding: 14px; display: flex; flex-direction: column; justify-content: space-between; color: var(--azul); transform: rotate(-8deg); }
+.bc b { font-size: 13px; font-weight: 900; } .bc small { font-size: 9px; opacity: .7; }
+.ba { width: 900px; height: 520px; border-radius: 24px; overflow: hidden; position: relative; box-shadow: 0 30px 70px rgba(4,25,42,.35); }
+.ba .side-a, .ba .side-b { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 18px; }
+.ba .side-a { background: #E8E2D0; color: #5B4A3A; }
+.ba .side-b { background: #1E3A2F; color: #F2E6C9; }
+.ba .lab { position: absolute; top: 22px; font-size: 15px; font-weight: 900; letter-spacing: .2em; padding: 6px 14px; border-radius: 999px; }
+.ba .side-a .lab { left: 22px; background: rgba(91,74,58,.12); }
+.ba .side-b .lab { right: 22px; background: rgba(242,230,201,.14); }
+.old-logo { font-family: "Times New Roman", Georgia, serif; font-size: 64px; font-style: italic; text-shadow: 3px 3px 0 #C8B89A; }
+.old-sub { font-family: "Comic Sans MS", "Times New Roman", serif; font-size: 22px; }
+.new-mark { display: flex; align-items: center; gap: 22px; }
+.new-mark .mono { width: 110px; height: 110px; border-radius: 50%; border: 5px solid #E2A84A; display: grid; place-items: center; font-weight: 900; font-size: 44px; color: #E2A84A; letter-spacing: -.04em; }
+.new-mark .nm b { display: block; font-weight: 900; font-size: 52px; letter-spacing: .02em; line-height: 1; }
+.new-mark .nm span { font-size: 17px; letter-spacing: .5em; font-weight: 700; color: #E2A84A; }
+.ba .handle { position: absolute; top: 0; bottom: 0; width: 6px; margin-left: -3px; background: var(--creme); z-index: 3; }
+.ba .handle::after { content: "‹ ›"; position: absolute; top: 50%; left: 50%; width: 56px; height: 56px; margin: -28px 0 0 -28px; border-radius: 50%; background: var(--creme); color: var(--azul); display: grid; place-items: center; font-weight: 900; font-size: 22px; box-shadow: 0 6px 18px rgba(0,0,0,.25); }
+
+/* finale */
+.pillars { display: grid; grid-template-columns: repeat(3, 440px); gap: 30px; }
+.v .pillars { grid-template-columns: 820px; gap: 26px; }
+.pill3 { border-radius: 26px; padding: 40px 38px; background: rgba(242,240,225,.07); border: 2px solid rgba(242,240,225,.16); display: grid; gap: 16px; text-align: left; }
+.pill3 svg { width: 64px; height: 64px; }
+.pill3 b { font-size: 38px; font-weight: 900; }
+.pill3 span { font-size: 23px; opacity: .82; line-height: 1.35; }
+.v .pill3 { grid-template-columns: 70px 1fr; column-gap: 26px; padding: 30px 34px; align-items: center; }
+.v .pill3 svg { grid-row: span 2; }
+.end { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 34px; text-align: center; }
+.end .wmw { height: 128px; }
+.v .end .wmw { height: 104px; }
+.end .tag2 { font-size: 34px; font-weight: 700; }
+.end .urls { display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; font-size: 26px; font-weight: 700; }
+.end .urls span { padding: 10px 24px; border-radius: 999px; border: 2px solid currentColor; }
+.end .prod { font-size: 26px; letter-spacing: .3em; font-weight: 900; color: var(--ardosia); }
+.wipeA, .wipeB { position: absolute; inset: 0; }
+.wipeB { background: var(--creme); color: var(--azul); }
+.wipeA { background: var(--azul); color: var(--creme); }
+
+/* transição */
+#trans { position: absolute; inset: 0; pointer-events: none; z-index: 50; }
+#trans .band { position: absolute; top: -20%; bottom: -20%; left: -25%; width: 150%; transform: translateX(-200%) skewX(-12deg); }
+#trans .b1 { background: var(--ardosia); }
+#trans .b2 { background: var(--creme); display: grid; place-items: center; }
+#trans .b2 svg { height: 150px; transform: skewX(12deg); color: var(--azul); }
+</style>
+</head>
+<body>
+<div id="stage"><div id="trans"><div class="band b1"></div><div class="band b2"><svg class="wm" viewBox="786 2599 36 48" fill="currentColor"><path d="__N__"/><path d="__U__"/></svg></div></div></div>
+
+<script>
+const G = __GLYPHS__;
+const NS = "http://www.w3.org/2000/svg";
+const qs = new URLSearchParams(location.search);
+const FMT = qs.get("fmt") === "v" ? "v" : "h";
+const PIECE = qs.get("piece") || "film";
+const W = FMT === "v" ? 1080 : 1920, H = FMT === "v" ? 1920 : 1080;
+const stage = document.getElementById("stage");
+if (FMT === "v") stage.classList.add("v");
+
+/* ---------- utilidades ---------- */
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, p) => a + (b - a) * p;
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const EO = p => 1 - Math.pow(1 - p, 3);
+const EIO = p => p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+const EI = p => p * p * p;
+const BACK = (p, s = 1.5) => 1 + (s + 1) * Math.pow(p - 1, 3) + s * Math.pow(p - 1, 2);
+const EB = p => BACK(p);
+const LIN = p => p;
+const rnd = i => { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+const brl = (n, d = 2) => n.toLocaleString("pt-BR", { minimumFractionDigits: d, maximumFractionDigits: d });
+const int = n => Math.round(n).toLocaleString("pt-BR");
+const LETTERS = ["P", "E", "C", "R", "I1", "A", "T", "I2", "V", "O"];
+const wordmark = (cls = "") => `<svg class="wm ${cls}" viewBox="786 2599 350 48" fill="currentColor"><g class="wm-u"><path d="${G.N}"/><path d="${G.U}"/></g>${LETTERS.map(k => `<path class="wm-l" d="${G[k]}"/>`).join("")}</svg>`;
+const icon = (cls = "") => `<svg class="wm ${cls}" viewBox="786 2599 36 48" fill="currentColor"><path d="${G.N}"/><path d="${G.U}"/></svg>`;
+const patURL = (() => {
+  const s = `<svg xmlns="http://www.w3.org/2000/svg" width="130" height="130" viewBox="0 0 130 130"><defs><mask id="m" maskUnits="userSpaceOnUse" x="780" y="2590" width="60" height="60"><rect x="780" y="2590" width="60" height="60" fill="#fff"/><path d="${G.U}" fill="#000"/></mask></defs><g fill="#798EA6" transform="translate(65 65) rotate(45) scale(1.7) translate(-804.4 -2620)"><path d="${G.N}"/><rect x="795" y="2605.45" width="18.9" height="30.6" mask="url(#m)"/></g></svg>`;
+  return `url("data:image/svg+xml,${encodeURIComponent(s)}")`;
+})();
+const el = html => { const d = document.createElement("div"); d.innerHTML = html.trim(); return d.firstElementChild; };
+function splitWords(node) {
+  const out = [];
+  const walk = n => {
+    [...n.childNodes].forEach(c => {
+      if (c.nodeType === 3) {
+        const frag = document.createDocumentFragment();
+        c.textContent.split(/(\s+)/).forEach(part => {
+          if (!part) return;
+          if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(" ")); return; }
+          const w = document.createElement("span"); w.className = "w";
+          const i = document.createElement("span"); i.className = "wi"; i.textContent = part;
+          w.appendChild(i); frag.appendChild(w); out.push(i);
+        });
+        n.replaceChild(frag, c);
+      } else if (c.nodeType === 1 && c.tagName !== "BR") walk(c);
+    });
+  };
+  walk(node); return out;
+}
+function qr(n, size, seed) {
+  const cell = size / n; let h = `<div class="qr" style="grid-template-columns:repeat(${n},${cell}px);width:${size}px">`;
+  const finder = (x, y) => { for (const [fx, fy] of [[0, 0], [n - 7, 0], [0, n - 7]]) { const dx = x - fx, dy = y - fy; if (dx >= 0 && dx < 7 && dy >= 0 && dy < 7) return (dx === 0 || dx === 6 || dy === 0 || dy === 6 || (dx >= 2 && dx <= 4 && dy >= 2 && dy <= 4)) ? 1 : 0; } return -1; };
+  for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) { const f = finder(x, y); const on = f === -1 ? rnd(x * 31 + y * 17 + seed) > .52 : f; h += `<i data-k="${rnd(x * 7 + y * 13 + seed)}" style="height:${cell}px;${on ? "" : "background:transparent"}"></i>`; }
+  return h + "</div>";
+}
+
+/* ---------- animação declarativa ---------- */
+const DEF = { x: 0, y: 0, xp: 0, yp: 0, s: 1, sx: 1, sy: 1, r: 0, o: 1 };
+function A(target, a, b, f, to, e = EO) {
+  const els = typeof target === "string" ? null : (target instanceof Element ? [target] : [...target]);
+  return els.map(elm => ({ el: elm, a, b, f, to, e }));
+}
+function stagger(list, a, step, dur, f, to, e = EO) { return [...list].flatMap((elm, i) => A(elm, a + i * step, a + i * step + dur, f, to, e)); }
+function applyAnims(list, t) {
+  const st = new Map();
+  for (const an of list) {
+    let s = st.get(an.el); if (!s) { s = {}; st.set(an.el, s); }
+    const started = t >= an.a, p = an.e(prog(t, an.a, an.b));
+    for (const k in an.to) if (started || s[k] === undefined) s[k] = lerp(an.f[k] ?? DEF[k] ?? 0, an.to[k], started ? p : 0);
+  }
+  for (const [elm, s] of st) {
+    const g = k => s[k] ?? DEF[k];
+    const tf = `translate(${g("x")}px,${g("y")}px) translate(${g("xp")}%,${g("yp")}%) rotate(${g("r")}deg) scale(${g("s") * g("sx")},${g("s") * g("sy")})`;
+    elm.style.transform = tf;
+    if (s.o !== undefined) elm.style.opacity = s.o;
+    if (s.w !== undefined) elm.style.width = s.w + (elm.dataset.unit || "%");
+    if (s.cr !== undefined || s.ct !== undefined || s.cl !== undefined || s.cb !== undefined) elm.style.clipPath = `inset(${s.ct || 0}% ${s.cr || 0}% ${s.cb || 0}% ${s.cl || 0}%)`;
+    if (s.c !== undefined) elm.style.setProperty("--c", s.c);
+  }
+}
+const titleIn = (words, a, step = .06) => stagger(words, a, step, .7, { yp: 110 }, { yp: 0 }, EO);
+const fadeUp = (els, a, step = .1, d = 30) => stagger(els, a, step, .7, { y: d, o: 0 }, { y: 0, o: 1 });
+
+/* ---------- cenas ---------- */
+const SCENES = {};
+
+/* LOGO REVEAL */
+SCENES.logo = (opt = {}) => ({
+  dur: opt.dur || 10,
+  cues: [[0.2, "rumble"], [1.45, "riser"], [2.15, "impact"], ...LETTERS.map((_, i) => [3.0 + i * .07, "tick"]), [3.9, "sparkle"], [4.9, "pop"], ...(opt.wipe === false ? [] : [[6.55, "whoosh"], [7.2, "chime"]])],
+  build(root) {
+    const v = FMT === "v", S = v ? 2.6 : 3.2, BIG = v ? 8 : 9, cx = W / 2, cy = H / 2;
+    const UX = cx + S * (804.5 - 960.95);
+    root.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" style="position:absolute;inset:0">
+      <defs>
+        <mask id="notU" maskUnits="userSpaceOnUse" x="780" y="2590" width="60" height="60"><rect x="780" y="2590" width="60" height="60" fill="#fff"/><path d="${G.U}" fill="#000"/></mask>
+        <clipPath id="uClip"><rect id="uClipRect" x="780" y="2645" width="60" height="60"/></clipPath>
+        <clipPath id="wordClip"><rect x="815" y="2596" width="330" height="49.5"/></clipPath>
+        <clipPath id="wipeClip"><circle id="wipeCircle" cx="${UX}" cy="${cy - 66}" r="0"/></clipPath>
+      </defs>
+      <rect width="${W}" height="${H}" fill="#0C4F7F"/>
+      <g id="lgShake">
+        <g id="lgSpeed" stroke="#F2F0E1" stroke-linecap="round"></g>
+        <circle id="lgRing" cx="${cx}" cy="${cy + 20}" r="0" fill="none" stroke="#F2F0E1" stroke-width="0" opacity="0"/>
+        <g id="lgU">
+          <g id="lgSmoke"></g>
+          <g id="lgRocket">
+            <path id="flO" fill="#F2F0E1"/><path id="flI" fill="#798EA6"/>
+            <rect id="lgBody" x="795" y="2605.45" width="18.9" height="30.6" mask="url(#notU)" fill="#F2F0E1"/>
+            <path id="lgNose" d="${G.N}" fill="#F2F0E1"/>
+          </g>
+          <path d="${G.U}" fill="#F2F0E1" clip-path="url(#uClip)"/>
+        </g>
+        <g transform="translate(${cx} ${cy}) scale(${S}) translate(-960.95 -2622.65)"><g clip-path="url(#wordClip)" fill="#F2F0E1" id="lgLetters">${LETTERS.map(k => `<path d="${G[k]}"/>`).join("")}</g></g>
+        <g id="lgSparks" fill="#F2F0E1"></g>
+      </g>
+      <g clip-path="url(#wipeClip)">
+        <rect width="${W}" height="${H}" fill="#F2F0E1"/>
+        <g transform="translate(${UX} ${cy}) scale(${S}) translate(-804.5 -2622.65)" fill="#0C4F7F"><path d="${G.N}"/><path d="${G.U}"/></g>
+        <g transform="translate(${cx} ${cy}) scale(${S}) translate(-960.95 -2622.65)" fill="#0C4F7F">${LETTERS.map(k => `<path d="${G[k]}"/>`).join("")}</g>
+      </g>
+    </svg>`;
+    root.insertBefore(el(`<div class="pat"></div>`), root.firstChild);
+    const pat = root.querySelector(".pat"); pat.style.backgroundImage = patURL; pat.style.zIndex = 1; pat.style.opacity = .16;
+    root.querySelector("svg").style.zIndex = 0;
+    const $ = id => root.querySelector("#" + id);
+    const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent.appendChild(e); return e; };
+    const lines = []; for (let i = 0; i < 18; i++) lines.push({ e: mk("line", { "stroke-width": 2 + rnd(i) * 3 }, $("lgSpeed")), x: 60 + rnd(i + 50) * (W - 120), len: 90 + rnd(i + 9) * 220, off: rnd(i + 99) * 1400, v: 1800 + rnd(i + 3) * 1600 });
+    const puffs = []; for (let i = 0; i < 46; i++) puffs.push({ e: mk("circle", { fill: i % 3 ? "#F2F0E1" : "#A6A9AF" }, $("lgSmoke")), tb: .25 + i * .034, sx: (rnd(i) - .5) * 2, dx: (rnd(i + 7) - .5) * 14, dy: 4 + rnd(i + 13) * 10, r: 2.2 + rnd(i + 21) * 3.5 });
+    const STAR = "M0,-1 C.12,-.12 .12,-.12 1,0 C.12,.12 .12,.12 0,1 C-.12,.12 -.12,.12 -1,0 C-.12,-.12 -.12,-.12 0,-1Z";
+    const sd = [[-.3, -.17, 34, 3.9], [.29, -.2, 26, 4], [.33, .15, 38, 4.12], [-.35, .18, 22, 4.2], [.01, -.22, 18, 4.28], [-.1, .23, 24, 4.36]];
+    const sparks = sd.map(([fx, fy, sz, t0]) => ({ e: mk("path", { d: STAR }, $("lgSparks")), x: cx + fx * (v ? 1000 : 1920), y: cy + fy * (v ? 900 : 1080), sz, t0 }));
+    const letters = [...root.querySelectorAll("#lgLetters path")];
+    const rDy = t => t < .2 ? 110 : lerp(110, 0, BACK(prog(t, .2, 1.75), 1.2));
+    const mix = (a, b, p) => "#" + [0, 2, 4].map(i => Math.round(lerp(parseInt(a.substr(i, 2), 16), parseInt(b.substr(i, 2), 16), p)).toString(16).padStart(2, "0")).join("");
+    return {
+      tick(t) {
+        const drift = (t * 26) % 130; pat.style.transform = `translate(${drift}px,${-drift * .75}px)`;
+        pat.style.opacity = (.16 - .08 * EIO(prog(t, 2.4, 3.4))).toFixed(3);
+        const sh = Math.sin(prog(t, .3, 1.7) * Math.PI) * 5;
+        $("lgShake").setAttribute("transform", `translate(${(Math.sin(t * 91) * sh).toFixed(2)} ${(Math.cos(t * 77) * sh).toFixed(2)})`);
+        const sv = Math.sin(prog(t, .2, 1.9) * Math.PI);
+        lines.forEach(l => { const y = ((l.off + t * l.v) % (H + 400)) - 250; l.e.setAttribute("x1", l.x); l.e.setAttribute("x2", l.x); l.e.setAttribute("y1", y); l.e.setAttribute("y2", y + l.len); l.e.setAttribute("opacity", (sv * .35).toFixed(3)); });
+        const mv = EIO(prog(t, 2.6, 3.5)), dock = t > 2.15 ? Math.sin(prog(t, 2.15, 2.55) * Math.PI) * .05 : 0;
+        const s = lerp(BIG, S, mv) * (1 + dock), X = lerp(cx, UX, mv), Y = lerp(cy + 20, cy, mv);
+        $("lgU").setAttribute("transform", `translate(${X.toFixed(2)} ${Y.toFixed(2)}) scale(${s.toFixed(4)}) translate(-804.5 -2622.65)`);
+        const dy = rDy(t), hop = -3 * Math.sin(prog(t, 4.9, 5.45) * Math.PI), wob = Math.sin(t * 18) * 2.2 * (1 - prog(t, .2, 1.75));
+        $("lgRocket").setAttribute("transform", `translate(0 ${dy.toFixed(3)}) rotate(${wob.toFixed(2)} 804.4 2620)`);
+        $("lgNose").setAttribute("transform", `translate(0 ${hop.toFixed(3)})`);
+        $("lgBody").setAttribute("fill", mix("F2F0E1", "0C4F7F", EIO(prog(t, 2.05, 2.5))));
+        const fa = t < .2 ? 0 : clamp(prog(t, .2, .4) - prog(t, 1.6, 2.1));
+        const L = fa * (7 + Math.sin(t * 43) * 1.6 + Math.sin(t * 71) * 1.1), Li = L * .55, fy = 2635.2;
+        $("flO").setAttribute("d", fa ? `M801.6 ${fy} C801.4 ${fy + L * .45} 803.4 ${fy + L * .8} 804.4 ${fy + L} C805.4 ${fy + L * .8} 807.4 ${fy + L * .45} 807.2 ${fy} Z` : "");
+        $("flI").setAttribute("d", fa ? `M803 ${fy} C803 ${fy + Li * .5} 803.9 ${fy + Li * .8} 804.4 ${fy + Li} C804.9 ${fy + Li * .8} 805.8 ${fy + Li * .5} 805.8 ${fy} Z` : "");
+        puffs.forEach(p => {
+          const age = t - p.tb; if (age < 0 || age > 1.1) { p.e.setAttribute("r", 0); return; }
+          const a = age / 1.1, by = 2637 + rDy(p.tb);
+          p.e.setAttribute("cx", (804.4 + p.sx + p.dx * EO(a)).toFixed(2)); p.e.setAttribute("cy", (by + p.dy * EO(a)).toFixed(2));
+          p.e.setAttribute("r", (p.r * (.4 + EO(a))).toFixed(2)); p.e.setAttribute("opacity", ((1 - a) * .55).toFixed(3));
+        });
+        $("uClipRect").setAttribute("y", lerp(2645.5, 2598, EO(prog(t, 1.45, 2.2))).toFixed(2));
+        const rp = prog(t, 2.15, 2.95);
+        $("lgRing").setAttribute("r", (60 + EO(rp) * 760).toFixed(1)); $("lgRing").setAttribute("stroke-width", ((1 - rp) * 14).toFixed(2));
+        $("lgRing").setAttribute("opacity", rp > 0 && rp < 1 ? ((1 - rp) * .6).toFixed(3) : 0);
+        letters.forEach((e, i) => { const p = prog(t, 3 + i * .07, 3.55 + i * .07); e.setAttribute("transform", `translate(0 ${lerp(46, 0, BACK(p, 1.4)).toFixed(3)})`); });
+        sparks.forEach(sp => { const p = prog(t, sp.t0, sp.t0 + .6), k = Math.sin(p * Math.PI) * sp.sz; sp.e.setAttribute("transform", `translate(${sp.x} ${sp.y}) rotate(${p * 90}) scale(${k.toFixed(2)})`); });
+        $("wipeCircle").setAttribute("r", opt.wipe === false ? 0 : (EIO(prog(t, 6.6, 7.6)) * 2400).toFixed(1));
+      }
+    };
+  }
+});
+
+/* CARTÃO DE TÍTULO */
+SCENES.title = (opt) => ({
+  dur: opt.dur || 4, bg: opt.bg || "azul",
+  cues: [[.25, "swell"]],
+  build(root) {
+    root.innerHTML = `<div class="pat"></div><div class="center">
+      <div class="ic" style="height:${FMT === "v" ? 120 : 110}px;color:${opt.bg === "creme" ? "var(--azul)" : "var(--creme)"}">${icon()}</div>
+      ${opt.eb ? `<div class="eb">${opt.eb}</div>` : ""}
+      <div class="h ${opt.xl ? "xl" : ""}" style="max-width:${FMT === "v" ? 900 : 1500}px;text-wrap:balance">${opt.title}</div>
+      ${opt.sub ? `<div class="p" style="max-width:${FMT === "v" ? 860 : 1100}px">${opt.sub}</div>` : ""}
+      ${opt.chips ? `<div class="chips" style="justify-content:center">${opt.chips.map(c => `<span class="chip">${c}</span>`).join("")}</div>` : ""}
+    </div>`;
+    const words = splitWords(root.querySelector(".h"));
+    const an = [
+      ...A(root.querySelector(".ic"), 0, .8, { y: 120, o: 0, s: .7 }, { y: 0, o: 1, s: 1 }, EB),
+      ...(opt.eb ? A(root.querySelector(".eb"), .25, .9, { y: 20, o: 0 }, { y: 0, o: 1 }) : []),
+      ...titleIn(words, .4, .07),
+      ...(opt.sub ? A(root.querySelector(".p"), .9, 1.6, { y: 24, o: 0 }, { y: 0, o: .86 }) : []),
+      ...(opt.chips ? stagger(root.querySelectorAll(".chip"), 1.1, .12, .6, { y: 30, o: 0, s: .9 }, { y: 0, o: 1, s: 1 }, EB) : [])
+    ];
+    return { anims: an, tick(t) { root.querySelector(".pat").style.transform = `translate(${(t * 22) % 130}px,${-(t * 16) % 130}px)`; } };
+  }
+});
+
+/* BRANDING: quadro da marca */
+SCENES.brand = () => ({
+  dur: 8, bg: "creme",
+  cues: [[.3, "swell"], [1.2, "pop"], [1.35, "pop"], [1.5, "pop"], [1.65, "pop"], [1.8, "pop"], [1.95, "pop"], [3.2, "click"], [4.4, "sparkle"]],
+  build(root) {
+    root.innerHTML = `<div class="pat"></div><div class="logo-corner">${wordmark()}</div>
+    <div class="split">
+      <div class="txt">
+        <div class="eb">Upe Criativo</div>
+        <div class="h">Branding e Redesign</div>
+        <div class="p">Logotipo, paleta, tipografia, ícones e padrões. Um manual que deixa a marca igual em todo lugar.</div>
+        <div class="bar"></div>
+      </div>
+      <div class="vis"><div class="fit" style="--k:${FMT === "v" ? 1.3 : 1.12}"><div class="board3">
+        <div class="tile t-white"><div class="sw"><i style="background:#0C4F7F;color:#F2F0E1"><span>AZUL UPE</span></i><i style="background:#F2F0E1"><span>CREME</span></i><i style="background:#798EA6"></i><i style="background:#A6A9AF"></i><i style="background:#111"></i></div></div>
+        <div class="tile t-white"><div class="aa">Aa</div><div class="aa-l">LATO · 900</div></div>
+        <div class="tile t-blue"><div class="circ" style="color:var(--azul)"><div style="height:92px">${icon()}</div></div></div>
+        <div class="tile t-blue"><div class="patt"></div></div>
+        <div class="tile t-ink"><div style="height:30px;color:var(--creme)">${wordmark()}</div></div>
+        <div class="tile t-blue" style="background:var(--ardosia)"><div class="bc"><div style="height:16px">${wordmark()}</div><div><b>Seu Nome</b><br><small>Branding e Redesign</small></div></div></div>
+      </div></div></div>
+    </div>`;
+    root.querySelector(".pat").style.backgroundImage = patURL;
+    root.querySelector(".patt").style.backgroundImage = patURL.replace(/%23798EA6/g, "%23F2F0E1");
+    const words = splitWords(root.querySelector(".h"));
+    const tiles = root.querySelectorAll(".tile");
+    const swi = root.querySelectorAll(".sw i");
+    return {
+      anims: [
+        ...A(root.querySelector(".logo-corner"), .1, .7, { y: -20, o: 0 }, { y: 0, o: 1 }),
+        ...A(root.querySelector(".eb"), .2, .8, { y: 20, o: 0 }, { y: 0, o: 1 }),
+        ...titleIn(words, .35), ...A(root.querySelector(".p"), .8, 1.5, { y: 24, o: 0 }, { y: 0, o: .86 }),
+        ...A(root.querySelector(".bar"), 1, 1.8, { sx: 0 }, { sx: 1 }),
+        ...stagger(tiles, 1.2, .15, .7, { s: .4, o: 0, r: -8 }, { s: 1, o: 1, r: 0 }, EB),
+        ...stagger(swi, 1.5, .08, .5, { cr: 100 }, { cr: 0 }),
+        ...A(root.querySelector(".aa"), 1.6, 2.4, { yp: 40, o: 0 }, { yp: 0, o: 1 }),
+        ...A(root.querySelector(".bc"), 2.3, 3.1, { y: 80, o: 0, r: 10 }, { y: 0, o: 1, r: -8 }, EB),
+        ...A(root.querySelector(".circ"), 1.8, 2.6, { s: 0 }, { s: 1 }, EB)
+      ],
+      tick(t) { root.querySelector(".patt").style.backgroundPosition = `${t * 30}px ${-t * 30}px`; root.querySelector(".pat").style.transform = `translate(${(t * 20) % 130}px,${-(t * 15) % 130}px)`; }
+    };
+  }
+});
+
+/* REDESIGN: antes e depois */
+SCENES.redesign = () => ({
+  dur: 8, bg: "azul",
+  cues: [[.3, "swell"], [2.2, "swipe"], [3.6, "impact-soft"], [4.0, "sparkle"]],
+  build(root) {
+    root.innerHTML = `<div class="pat"></div>
+    <div class="split rev">
+      <div class="vis"><div class="fit" style="--k:${FMT === "v" ? 1.04 : 1}"><div class="ba">
+        <div class="side-a"><span class="lab">ANTES</span><div class="old-logo">Café Ponto Central</div><div class="old-sub">desde 1998 ~ cafés e lanches</div></div>
+        <div class="side-b"><span class="lab">DEPOIS</span><div class="new-mark"><div class="mono">PC</div><div class="nm"><b>PONTO<br>CENTRAL</b><span>CAFÉ</span></div></div></div>
+        <div class="handle"></div>
+      </div></div></div>
+      <div class="txt">
+        <div class="eb">Redesign</div>
+        <div class="h">A marca que você tem, do jeito que ela merece.</div>
+        <div class="p">Redesenho com respeito à história da marca, pronto para tela, loja e embalagem.</div>
+      </div>
+    </div><div class="small-note">Exemplo ilustrativo</div>`;
+    root.querySelector(".pat").style.backgroundImage = patURL;
+    const words = splitWords(root.querySelector(".h"));
+    const B = root.querySelector(".side-b"), hd = root.querySelector(".handle");
+    return {
+      anims: [
+        ...A(root.querySelector(".ba"), 0, .9, { y: 80, o: 0, s: .92 }, { y: 0, o: 1, s: 1 }, EB),
+        ...A(root.querySelector(".eb"), .3, .9, { y: 20, o: 0 }, { y: 0, o: 1 }),
+        ...titleIn(words, .45), ...A(root.querySelector(".p"), 1.1, 1.8, { y: 24, o: 0 }, { y: 0, o: .86 }),
+        ...A(root.querySelectorAll(".mono, .nm"), 3.0, 3.8, { s: .85 }, { s: 1 }, EB)
+      ],
+      tick(t) {
+        const p = EIO(prog(t, 1.8, 3.4)), wob = Math.sin(prog(t, 4.6, 6.6) * Math.PI * 2) * .06 * prog(t, 4.6, 5);
+        const pos = clamp(1 - p + wob + .0);
+        B.style.clipPath = `inset(0 0 0 ${pos * 100}%)`; hd.style.left = (pos * 100) + "%";
+        hd.style.opacity = t < 1.6 ? prog(t, 1.2, 1.6) : (t > 6.6 ? 1 - prog(t, 6.6, 7) : 1);
+        root.querySelector(".pat").style.transform = `translate(${(t * 20) % 130}px,${-(t * 15) % 130}px)`;
+      }
+    };
+  }
+});
+
+/* ERP: painel */
+const sideNav = (on) => `<aside class="side"><div class="co">DOCE ENCANTO<small>Doces artesanais</small></div>${["Início", "Pedidos", "Gestão de pedidos", "PDV", "Produtos", "Clientes", "Cupons", "Relatórios", "Configurações"].map(n => `<div class="it ${n === on ? "on" : ""}">${n}</div>`).join("")}</aside>`;
+const browser = (on, main) => `<div class="browser"><div class="bbar"><i></i><i></i><i></i><span class="url">upe-erp.web.app</span></div><div class="app">${sideNav(on)}<main class="main">${main}</main></div></div>`;
+SCENES.erpPanel = () => ({
+  dur: 10, bg: "azul",
+  cues: [[.3, "swell"], [1.0, "whoosh-soft"], [2.0, "count"], [3.4, "rise"], ...[0, 1, 2, 3, 4, 5].map(i => [5.0 + i * .22, "tick"]), [7.4, "chime"]],
+  build(root) {
+    const bars = [38, 52, 46, 61, 58, 72, 66, 80, 74, 88, 84, 96];
+    root.innerHTML = `<div class="pat"></div><div class="logo-corner">${wordmark()}</div>
+    <div class="split">
+      <div class="txt">
+        <div class="eb">Upe ERP</div>
+        <div class="h">Sua loja online, PDV e pedidos num só painel.</div>
+        <div class="chips">${["Loja virtual", "PDV", "PIX com QR Code", "Gestão de pedidos", "Cupons", "Relatórios"].map(c => `<span class="chip">${c}</span>`).join("")}</div>
+      </div>
+      <div class="vis"><div class="fit" style="--k:${FMT === "v" ? 1.0 : .98}"><div class="mock">${browser("Início", `
+        <div class="mtop"><h4><small>Visão geral</small>Outubro de 2026</h4><div class="search">Buscar <b>Ctrl K</b></div></div>
+        <div class="kpis">
+          <div class="kpi"><small>Faturamento do mês</small><b data-n="48320" data-f="brl">R$ 0</b><em>+18% vs. setembro</em></div>
+          <div class="kpi"><small>Pedidos</small><b data-n="312" data-f="int">0</b><em>+41 esta semana</em></div>
+          <div class="kpi"><small>Ticket médio</small><b data-n="154.87" data-f="brl">R$ 0</b><em>+6%</em></div>
+          <div class="kpi"><small>Clientes novos</small><b data-n="46" data-f="int">0</b><em>+12</em></div>
+        </div>
+        <div class="row2">
+          <div class="card"><h5>Vendas por semana <span>loja + balcão</span></h5><div class="bars">${bars.map((b, i) => `<i class="${i % 2 ? "lt" : ""}" style="height:${b}%"></i>`).join("")}</div></div>
+          <div class="card"><h5>Primeiros passos <span class="pp">0 de 7</span></h5><div class="prog"><i></i></div><div class="steps">${["Dados da empresa", "Sua marca", "Receber por PIX", "Primeiro produto", "Banner da loja", "Primeira venda", "Ativar a assinatura"].map(s => `<div class="step"><i></i>${s}</div>`).join("")}</div></div>
+        </div>`)}</div></div></div>
+    </div><div class="small-note">Telas com dados de exemplo</div>`;
+    root.querySelector(".pat").style.backgroundImage = patURL;
+    const words = splitWords(root.querySelector(".h"));
+    const nums = [...root.querySelectorAll("[data-n]")], steps = root.querySelectorAll(".step i"), pi = root.querySelector(".prog i"), pp = root.querySelector(".pp");
+    return {
+      anims: [
+        ...A(root.querySelector(".logo-corner"), .1, .7, { y: -20, o: 0 }, { y: 0, o: 1 }),
+        ...A(root.querySelector(".eb"), .2, .8, { y: 20, o: 0 }, { y: 0, o: 1 }), ...titleIn(words, .35, .05),
+        ...stagger(root.querySelectorAll(".chip"), 5.0, .22, .6, { y: 26, o: 0, s: .9 }, { y: 0, o: 1, s: 1 }, EB),
+        ...A(root.querySelector(".mock"), .9, 2.0, { x: 260, o: 0, r: 4 }, { x: 0, o: 1, r: 0 }, EO),
+        ...stagger(root.querySelectorAll(".kpi"), 1.7, .12, .6, { y: 30, o: 0 }, { y: 0, o: 1 }),
+        ...stagger(root.querySelectorAll(".bars i"), 2.6, .06, .7, { sy: 0 }, { sy: 1 }, EB),
+        ...stagger(root.querySelectorAll(".card"), 2.2, .15, .6, { y: 30, o: 0 }, { y: 0, o: 1 }),
+        ...stagger(steps, 3.4, .45, .35, { c: 0 }, { c: 1 }, EB),
+        ...A(root.querySelector(".mock"), 6.2, 9.6, { s: 1 }, { s: 1.04 }, LIN)
+      ],
+      tick(t) {
+        const p = EO(prog(t, 2.0, 3.8));
+        nums.forEach(n => { const v = +n.dataset.n * p; n.textContent = n.dataset.f === "brl" ? "R$ " + brl(v) : int(v); });
+        const done = clamp(Math.floor((t - 3.4) / .45) + 1, 0, 7); pp.textContent = `${done} de 7`; pi.style.width = (done / 7 * 100) + "%";
+        root.querySelector(".pat").style.transform = `translate(${(t * 20) % 130}px,${-(t * 15) % 130}px)`;
+      }
+    };
+  }
+});
+
+/* ERP: pedidos */
+SCENES.erpOrders = () => ({
+  dur: 10, bg: "azul",
+  cues: [[.3, "swell"], [1.6, "ding"], [2.3, "pop"], [4.0, "swipe"], [4.3, "click"], [6.2, "swipe"], [6.5, "success"]],
+  build(root) {
+    const oc = (n, nm, v, pay, st) => `<div class="oc"><div class="t">#${n}<span class="pill ${st}">${{ ap: "APROVADO", en: "ENVIADO", fi: "FINALIZADO" }[st]}</span></div><div>${nm}</div><div class="s"><span>${pay}</span><b>R$ ${v}</b></div></div>`;
+    root.innerHTML = `<div class="pat"></div><div class="logo-corner">${wordmark()}</div>
+    <div class="split">
+      <div class="txt">
+        <div class="eb">Upe ERP · Pedidos</div>
+        <div class="h">Cada pedido com status, pagamento e rastreio.</div>
+        <div class="p">O pedido da loja chega no painel já aprovado, com aviso sonoro. O cliente acompanha tudo por um link.</div>
+      </div>
+      <div class="vis"><div class="fit" style="--k:${FMT === "v" ? .96 : .9}; margin-left:${FMT === "v" ? -70 : -60}px"><div class="mock">${browser("Gestão de pedidos", `
+        <div class="mtop"><h4><small>Gestão de pedidos</small>Quadro</h4><div class="search">Buscar pedido <b>Ctrl K</b></div></div>
+        <div class="board">
+          <div class="col"><h6>Aprovado <b class="c1">2</b></h6>${oc(1040, "Marina S.", "89,90", "PIX", "ap")}${oc(1041, "Rafael T.", "132,00", "Cartão", "ap")}</div>
+          <div class="col"><h6>Enviado <b class="c2">2</b></h6>${oc(1036, "Júlia M.", "64,50", "PIX", "en")}${oc(1038, "Paulo R.", "210,00", "Boleto", "en")}</div>
+          <div class="col"><h6>Finalizado <b class="c3">3</b></h6>${oc(1031, "Ana L.", "45,00", "PIX", "fi")}${oc(1033, "Bruno C.", "98,70", "PIX", "fi")}${oc(1034, "Carla D.", "77,40", "Dinheiro", "fi")}</div>
+          <div class="oc new"><div class="t">#1042<span class="pill ap st">APROVADO</span></div><div>Luiza P. · Loja virtual</div><div class="s"><span class="rs">PIX aprovado</span><b>R$ 154,80</b></div></div>
+        </div>
+        <div class="toast"><i>✓</i><div><b>Novo pedido #1042</b>Loja virtual · PIX aprovado</div></div>`)}</div></div>
+      <div class="fit ph-pos" style="--k:${FMT === "v" ? 1.02 : .82}"><div class="phone"><div class="notch"></div><div class="scr"><div class="ps">
+        <div class="ph-head"><small>Doce Encanto</small><b>Pedido #1042</b></div>
+        <div class="track">
+          <div class="tk"><i style="--c:1"></i><div><b>Aprovado</b><span>PIX confirmado · 14:02</span></div></div>
+          <div class="tk"><i class="k2"></i><div><b>Enviado</b><span class="k2t">Aguardando envio</span></div></div>
+          <div class="tk"><i class="k3"></i><div><b>Entregue</b><span>Previsão: amanhã</span></div></div>
+        </div>
+      </div></div></div></div>
+      </div>
+    </div><div class="small-note">Telas com dados de exemplo</div>`;
+    root.querySelector(".pat").style.backgroundImage = patURL;
+    const php = root.querySelector(".ph-pos");
+    php.style.left = FMT === "v" ? "80%" : "86%"; php.style.top = FMT === "v" ? "56%" : "58%";
+    const words = splitWords(root.querySelector(".h"));
+    const card = root.querySelector(".oc.new"), pill = card.querySelector(".st"), rs = card.querySelector(".rs");
+    const colX = i => 12 + i * ((1000 - 196 - 48 - 24) / 3 + 12);
+    card.style.left = "0px"; card.style.top = "0px";
+    return {
+      anims: [
+        ...A(root.querySelector(".logo-corner"), .1, .7, { y: -20, o: 0 }, { y: 0, o: 1 }),
+        ...A(root.querySelector(".eb"), .2, .8, { y: 20, o: 0 }, { y: 0, o: 1 }), ...titleIn(words, .35, .05),
+        ...A(root.querySelector(".p"), 1.0, 1.7, { y: 24, o: 0 }, { y: 0, o: .86 }),
+        ...A(root.querySelector(".mock"), .5, 1.4, { y: 120, o: 0 }, { y: 0, o: 1 }),
+        ...A(root.querySelector(".toast"), 1.6, 2.1, { x: 340, o: 0 }, { x: 0, o: 1 }, EB),
+        ...A(root.querySelector(".toast"), 3.6, 4.0, { x: 0, o: 1 }, { x: 340, o: 0 }, EI),
+        ...A(root.querySelector(".phone"), 2.8, 3.7, { y: 200, o: 0, r: 6 }, { y: 0, o: 1, r: 0 }, EB)
+      ],
+      tick(t) {
+        const pIn = EB(prog(t, 2.2, 2.8)), m1 = EIO(prog(t, 4.0, 4.7)), m2 = EIO(prog(t, 6.2, 6.9));
+        const x = lerp(colX(0), colX(1), m1) + (colX(2) - colX(1)) * m2;
+        const lift = Math.sin(prog(t, 4.0, 4.7) * Math.PI) * -18 + Math.sin(prog(t, 6.2, 6.9) * Math.PI) * -18;
+        card.style.transform = `translate(${x}px, ${lerp(-60, 40, pIn) + 0 + lift + 6}px) rotate(${(Math.sin(prog(t, 4, 4.7) * Math.PI) + Math.sin(prog(t, 6.2, 6.9) * Math.PI)) * 3}deg)`;
+        card.style.opacity = clamp(prog(t, 2.2, 2.5));
+        card.style.top = "300px";
+        const st = t < 4.4 ? "ap" : t < 6.6 ? "en" : "fi";
+        pill.className = "pill st " + st; pill.textContent = { ap: "APROVADO", en: "ENVIADO", fi: "FINALIZADO" }[st];
+        rs.textContent = st === "ap" ? "PIX aprovado" : st === "en" ? "Rastreio BR482177350" : "Entregue";
+        root.querySelector(".k2").style.setProperty("--c", EB(prog(t, 4.4, 4.8)));
+        root.querySelector(".k3").style.setProperty("--c", EB(prog(t, 6.6, 7.0)));
+        root.querySelector(".k2t").textContent = t < 4.4 ? "Aguardando envio" : "Rastreio BR482177350";
+        root.querySelector(".c1").textContent = t < 2.3 ? 2 : t < 4.4 ? 3 : 2;
+        root.querySelector(".c2").textContent = t < 4.4 ? 2 : t < 6.6 ? 3 : 2;
+        root.querySelector(".c3").textContent = t < 6.6 ? 3 : 4;
+        root.querySelector(".pat").style.transform = `translate(${(t * 20) % 130}px,${-(t * 15) % 130}px)`;
+      }
+    };
+  }
+});
+
+/* ERP: PDV + PIX */
+SCENES.erpPdv = () => ({
+  dur: 8, bg: "azul",
+  cues: [[.3, "swell"], [1.5, "click"], [2.0, "click"], [2.5, "click"], [3.2, "click"], [3.5, "whoosh-soft"], [3.7, "type"], [5.2, "success"], [5.9, "pop"]],
+  build(root) {
+    const prods = [["Bolo de pote", "15,90", "#F3D9C9", "BO"], ["Brigadeiro", "4,50", "#E7D3C1", "BR"], ["Cookie", "8,90", "#F1E3B9", "CO"], ["Torta de limão", "12,00", "#DDEBC8", "TL"], ["Brownie", "9,50", "#E3CDBA", "BW"], ["Pão de mel", "7,00", "#EED8AE", "PM"]];
+    root.innerHTML = `<div class="pat"></div><div class="logo-corner">${wordmark()}</div>
+    <div class="split">
+      <div class="txt">
+        <div class="eb">Upe ERP · PDV</div>
+        <div class="h">Venda no balcão com PIX na hora.</div>
+        <div class="p">Cada pedido gera o QR Code com o valor certo. A venda baixa o estoque sozinha.</div>
+      </div>
+      <div class="vis"><div class="fit" style="--k:${FMT === "v" ? 1.0 : .98}"><div class="mock">${browser("PDV", `
+        <div class="mtop"><h4><small>PDV</small>Venda no balcão</h4><div class="search">Buscar produto <b>Ctrl K</b></div></div>
+        <div class="pdv">
+          <div class="prods">${prods.map(p => `<div class="pr"><div class="ph" style="background:${p[2]}">${p[3]}</div><div class="nm">${p[0]}</div><div class="pc">R$ ${p[1]}</div></div>`).join("")}</div>
+          <div class="cart"><h5>Venda atual</h5>
+            <div class="li l1"><span>2× Bolo de pote</span><b>R$ 31,80</b></div>
+            <div class="li l2"><span>1× Cookie</span><b>R$ 8,90</b></div>
+            <div class="li l3"><span>1× Pão de mel</span><b>R$ 7,00</b></div>
+            <div class="tot"><span>Total</span><b class="tvl">R$ 0,00</b></div>
+            <div class="btn">Cobrar com PIX</div>
+          </div>
+        </div>
+        <div class="modal"><div class="mbox"><h5>Pague com PIX</h5>${qr(25, 180, 7)}<div class="val">R$ 47,70</div><div class="cc">00020126580014BR.GOV.BCB.PIX…</div>
+          <div class="paid"><div class="ck"><svg width="54" height="54" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path class="ckp" d="M5 12.5l4.2 4.2L19 7" stroke-dasharray="24" stroke-dashoffset="24"/></svg></div>Pagamento confirmado</div></div></div>
+        <div class="toast" style="top:auto;bottom:18px"><i>✓</i><div><b>Estoque atualizado</b>Bolo de pote: 18 → 16</div></div>`)}</div></div></div>
+    </div><div class="small-note">Telas com dados de exemplo</div>`;
+    root.querySelector(".pat").style.backgroundImage = patURL;
+    const words = splitWords(root.querySelector(".h"));
+    const prs = root.querySelectorAll(".pr"), tv = root.querySelector(".tvl"), modal = root.querySelector(".modal"), cells = [...root.querySelectorAll(".qr i")];
+    const paid = root.querySelector(".paid"), ckp = root.querySelector(".ckp"), btn = root.querySelector(".btn");
+    return {
+      anims: [
+        ...A(root.querySelector(".logo-corner"), .1, .7, { y: -20, o: 0 }, { y: 0, o: 1 }),
+        ...A(root.querySelector(".eb"), .2, .8, { y: 20, o: 0 }, { y: 0, o: 1 }), ...titleIn(words, .35, .05),
+        ...A(root.querySelector(".p"), 1.0, 1.7, { y: 24, o: 0 }, { y: 0, o: .86 }),
+        ...A(root.querySelector(".mock"), .4, 1.3, { x: 240, o: 0 }, { x: 0, o: 1 }),
+        ...A(prs[0], 1.5, 1.6, { s: 1 }, { s: .94 }, LIN), ...A(prs[0], 1.6, 1.8, { s: .94 }, { s: 1 }),
+        ...A(prs[0], 2.0, 2.1, { s: 1 }, { s: .94 }, LIN), ...A(prs[0], 2.1, 2.3, { s: .94 }, { s: 1 }),
+        ...A(prs[2], 2.5, 2.6, { s: 1 }, { s: .94 }, LIN), ...A(prs[2], 2.6, 2.8, { s: .94 }, { s: 1 }),
+        ...A(prs[5], 2.85, 2.95, { s: 1 }, { s: .94 }, LIN), ...A(prs[5], 2.95, 3.15, { s: .94 }, { s: 1 }),
+        ...A(root.querySelector(".l1"), 1.6, 1.9, { x: 30, o: 0 }, { x: 0, o: 1 }),
+        ...A(root.querySelector(".l2"), 2.6, 2.9, { x: 30, o: 0 }, { x: 0, o: 1 }),
+        ...A(root.querySelector(".l3"), 2.95, 3.25, { x: 30, o: 0 }, { x: 0, o: 1 }),
+        ...A(btn, 3.2, 3.3, { s: 1 }, { s: .95 }, LIN), ...A(btn, 3.3, 3.5, { s: .95 }, { s: 1 }),
+        ...A(root.querySelector(".mbox"), 3.5, 4.0, { y: 60, s: .9 }, { y: 0, s: 1 }, EB),
+        ...A(root.querySelector(".toast"), 5.9, 6.4, { y: 80, o: 0 }, { y: 0, o: 1 }, EB)
+      ],
+      tick(t) {
+        const total = t < 1.6 ? 0 : t < 2.1 ? 15.9 : t < 2.6 ? 31.8 : t < 2.95 ? 40.7 : 47.7;
+        tv.textContent = "R$ " + brl(total);
+        modal.style.opacity = clamp(prog(t, 3.5, 3.8)) * (1 - prog(t, 6.6, 7.0)); modal.style.display = t < 3.5 ? "none" : "grid";
+        const qp = prog(t, 3.7, 4.6); cells.forEach(c => c.style.opacity = +c.dataset.k < qp ? 1 : 0);
+        paid.style.opacity = clamp(prog(t, 5.1, 5.35)); ckp.style.strokeDashoffset = 24 * (1 - EO(prog(t, 5.25, 5.7)));
+        root.querySelector(".pat").style.transform = `translate(${(t * 20) % 130}px,${-(t * 15) % 130}px)`;
+      }
+    };
+  }
+});
+
+/* TV: tela no estabelecimento */
+const tvScreen = (cls = "") => `<div class="tv ${cls}"><div class="scr">
+  <div class="camp"><span class="clock">18:29</span><div class="ce">PADARIA PÃO DOURADO</div><h3>Café da manhã<br>completo</h3><div class="price">R$ 19,90</div><p>Pão na chapa, café coado e suco · todos os dias até 11h</p>
+    <div class="wmk">${wordmark()}</div><div class="tvqr">${qr(21, 84, 3)}<small>APONTE A CÂMERA</small>Peça agora</div></div>
+  <div class="lat"><div class="in"><small>PET SHOP AMIGO FIEL</small><b>Banho e tosa com 15% off</b><span>Às terças e quartas. Agende pelo WhatsApp.</span><div class="tvqr">${qr(21, 76, 11)}<small>APONTE A CÂMERA</small>Agendar</div></div></div>
+  <div class="tick"><div class="lab">PARCEIROS</div><div class="run">${Array(3).fill(`<span>Café Ponto Central</span><em>◆</em><span>Auto Center: alinhamento + balanceamento R$ 89</span><em>◆</em><span>Farmácia Bem Viver</span><em>◆</em><span>Hamburgueria Brasa 81</span><em>◆</em><span>Ótica Visão Clara: entrega em 24h</span><em>◆</em>`).join("")}</div></div>
+</div><div class="tvstand"></div></div>`;
+SCENES.tvScreen = () => ({
+  dur: 10, bg: "azul",
+  cues: [[.3, "swell"], [.9, "whoosh-soft"], [1.6, "tv-on"], [4.2, "swipe"], [7.0, "swipe"]],
+  build(root) {
+    root.innerHTML = `<div class="pat"></div><div class="logo-corner">${wordmark()}</div>
+    <div class="split">
+      <div class="txt">
+        <div class="eb">Upe TV</div>
+        <div class="h">Sua marca na tela certa.</div>
+        <div class="p">Campanhas nas TVs e totens de cafés, academias, clínicas, salões e lojas parceiras. Quem espera, olha para a tela.</div>
+        <div class="chips">${["Tela cheia", "Lateral que expande", "Letreiro", "Cardápio com QR"].map(c => `<span class="chip">${c}</span>`).join("")}</div>
+      </div>
+      <div class="vis"><div class="fit" style="--k:${FMT === "v" ? .97 : .92}"><div class="mock">${tvScreen()}</div></div></div>
+    </div><div class="small-note">Campanhas de exemplo</div>`;
+    root.querySelector(".pat").style.backgroundImage = patURL;
+    const words = splitWords(root.querySelector(".h"));
+    const scr = root.querySelector(".scr"), lat = root.querySelector(".lat"), run = root.querySelector(".run"), camp = root.querySelector(".camp");
+    return {
+      anims: [
+        ...A(root.querySelector(".logo-corner"), .1, .7, { y: -20, o: 0 }, { y: 0, o: 1 }),
+        ...A(root.querySelector(".eb"), .2, .8, { y: 20, o: 0 }, { y: 0, o: 1 }), ...titleIn(words, .35, .06),
+        ...A(root.querySelector(".p"), 1.0, 1.7, { y: 24, o: 0 }, { y: 0, o: .86 }),
+        ...stagger(root.querySelectorAll(".chip"), 4.2, .7, .6, { y: 26, o: 0, s: .9 }, { y: 0, o: 1, s: 1 }, EB),
+        ...A(root.querySelector(".mock"), .8, 1.7, { y: 140, o: 0, s: .94 }, { y: 0, o: 1, s: 1 }, EO),
+        ...stagger(root.querySelectorAll(".camp .ce, .camp h3, .camp .price, .camp p"), 2.0, .14, .6, { x: -40, o: 0 }, { x: 0, o: 1 }),
+        ...A(root.querySelector(".camp .tvqr"), 2.6, 3.1, { s: 0 }, { s: 1 }, EB)
+      ],
+      tick(t) {
+        scr.style.filter = `brightness(${lerp(0, 1, EO(prog(t, 1.6, 2.0)))})`;
+        const lw = EIO(prog(t, 4.2, 4.9)) * (1 - EIO(prog(t, 7.0, 7.6)));
+        lat.style.width = (lw * 330) + "px";
+        run.style.transform = `translateX(${-((t * 120) % 1400)}px)`;
+        root.querySelector(".pat").style.transform = `translate(${(t * 20) % 130}px,${-(t * 15) % 130}px)`;
+      }
+    };
+  }
+});
+
+/* TV: do QR ao pedido */
+SCENES.tvQR = () => ({
+  dur: 12, bg: "azul",
+  cues: [[.3, "swell"], [1.8, "beep"], [2.2, "whoosh-soft"], [3.3, "click"], [3.8, "click"], [4.4, "click"], [5.4, "click"], [5.8, "whoosh-soft"], [6.4, "send"], [6.8, "type"], [9.2, "ding"]],
+  build(root) {
+    const item = (nm, sub, pz, old, col, tag) => `<div class="mi"><div class="im" style="background:${col}"></div><div><b>${nm}${tag || ""}</b><span>${sub}</span></div><div class="pz">${old ? `<s>R$ ${old}</s>` : ""}R$ ${pz}</div></div>`;
+    root.innerHTML = `<div class="pat"></div><div class="logo-corner">${wordmark()}</div>
+    <div class="split">
+      <div class="txt">
+        <div class="eb">Upe TV · QR code</div>
+        <div class="h">Viu na TV, pediu pelo celular.</div>
+        <div class="flow">
+          <div class="fl"><i>1</i><div><b>Você aparece</b><span>Vídeo, motion ou imagem nas telas parceiras.</span></div></div>
+          <div class="fl"><i>2</i><div><b>Aponta a câmera</b><span>O QR leva ao cardápio, WhatsApp ou site.</span></div></div>
+          <div class="fl"><i>3</i><div><b>O pedido chega pronto</b><span>Itens, total, endereço e em qual TV viu.</span></div></div>
+        </div>
+      </div>
+      <div class="vis"><div class="fit" style="--k:${FMT === "v" ? 1.2 : 1.08}"><div class="phone"><div class="notch"></div><div class="scr">
+        <div class="ps cam"><div class="view"></div><div class="qrbig">${qr(21, 140, 3)}</div><div class="scanbox"></div><div class="line"></div><div class="link">Abrir cardápio<small>upe-tv.web.app · Hamburgueria Brasa 81</small></div></div>
+        <div class="ps menu" style="background:#fff"><div class="menu-h"><small>HAMBURGUERIA BRASA 81</small><b>Cardápio da semana</b></div>
+          ${item("Smash duplo", "+ Bacon extra", "36,00", "42,00", "#B8562B", '<span class="tag of">OFERTA</span>')}
+          ${item("Veggie da casa", "Grão-de-bico e queijo", "30,00", "", "#7E9A4E", '<span class="tag nv">NOVIDADE</span>')}
+          ${item("Batata rústica", "Porção média", "18,00", "", "#D9A441", "")}
+          ${item("Limonada da casa", "500 ml", "12,00", "", "#E8D35A", "")}
+          <div class="q1 qty" style="position:absolute;right:22px;top:118px">2</div><div class="q2 qty" style="position:absolute;right:22px;top:196px">1</div>
+          <div class="cartbar"><span>Ver pedido · <span class="cn">0</span> itens</span><span class="ct">R$ 0,00</span></div>
+        </div>
+        <div class="ps wa"><div class="wa-h"><i>B81</i><div><b>Hamburgueria Brasa 81</b><small>online</small></div></div>
+          <div class="wa-b"><div class="bub">================================
+ HAMBURGUERIA BRASA 81
+ PEDIDO #AW8G
+--------------------------------
+ 2x Smash duplo
+    (+ Bacon extra)    R$ 72,00
+ 1x Veggie da casa     R$ 30,00
+--------------------------------
+ TOTAL                R$ 102,00
+================================
+ Cliente: Ana
+ ENTREGA
+ Rua da Aurora, 120 - Boa Vista
+ <mark>Visto na TV: Café Ponto Central</mark></div></div></div>
+      </div></div></div></div>
+    </div><div class="small-note">Exemplo com dados fictícios</div>`;
+    root.querySelector(".pat").style.backgroundImage = patURL;
+    const words = splitWords(root.querySelector(".h"));
+    const cam = root.querySelector(".cam"), menu = root.querySelector(".menu"), wa = root.querySelector(".wa"), line = root.querySelector(".line"), bub = root.querySelector(".bub");
+    const fls = root.querySelectorAll(".fl"), mis = root.querySelectorAll(".mi");
+    return {
+      anims: [
+        ...A(root.querySelector(".logo-corner"), .1, .7, { y: -20, o: 0 }, { y: 0, o: 1 }),
+        ...A(root.querySelector(".eb"), .2, .8, { y: 20, o: 0 }, { y: 0, o: 1 }), ...titleIn(words, .35, .06),
+        ...stagger(fls, .9, .15, .6, { x: -40, o: 0 }, { x: 0, o: 1 }),
+        ...A(root.querySelector(".phone"), .5, 1.4, { y: 220, o: 0, r: -5 }, { y: 0, o: 1, r: 0 }, EB),
+        ...A(root.querySelector(".link"), 1.8, 2.2, { y: 30, o: 0 }, { y: 0, o: 1 }, EB),
+        ...stagger(mis, 2.5, .08, .5, { y: 30, o: 0 }, { y: 0, o: 1 }),
+        ...A(root.querySelector(".q1"), 3.3, 3.6, { s: 0 }, { s: 1 }, EB), ...A(root.querySelector(".q2"), 4.4, 4.7, { s: 0 }, { s: 1 }, EB),
+        ...A(root.querySelector(".cartbar"), 5.4, 5.5, { s: 1 }, { s: .95 }, LIN), ...A(root.querySelector(".cartbar"), 5.5, 5.7, { s: .95 }, { s: 1 }),
+        ...A(bub, 6.4, 6.9, { y: 40, o: 0, s: .9 }, { y: 0, o: 1, s: 1 }, EB),
+        ...A(root.querySelector(".phone"), 9.0, 9.3, { s: 1 }, { s: 1.04 }, EO), ...A(root.querySelector(".phone"), 9.3, 9.8, { s: 1.04 }, { s: 1 }, EO)
+      ],
+      tick(t) {
+        const ly = 196 + (Math.sin(t * 5) * .5 + .5) * 172; line.style.top = ly + "px"; line.style.opacity = t < 1.8 ? 1 : 0;
+        cam.style.opacity = 1 - prog(t, 2.2, 2.5);
+        menu.style.transform = `translateX(${lerp(100, 0, EO(prog(t, 2.2, 2.7))) - lerp(0, 100, EIO(prog(t, 5.8, 6.3)))}%)`;
+        wa.style.transform = `translateX(${lerp(100, 0, EO(prog(t, 5.8, 6.3)))}%)`;
+        const n = t < 3.3 ? 0 : t < 3.8 ? 1 : t < 4.4 ? 2 : 3; root.querySelector(".cn").textContent = n;
+        root.querySelector(".ct").textContent = "R$ " + brl([0, 36, 72, 102][n]);
+        const lines = bub.innerHTML.split("\n").length; bub.style.clipPath = `inset(0 0 ${(1 - EO(prog(t, 6.8, 8.6))) * 100}% 0)`;
+        const act = t < 2.2 ? 0 : t < 6.3 ? 1 : 2;
+        fls.forEach((f, i) => { f.style.background = i === act ? "rgba(242,240,225,.16)" : "rgba(242,240,225,.06)"; f.style.borderColor = i === act ? "rgba(242,240,225,.6)" : "rgba(242,240,225,.12)"; f.querySelector("i").style.background = i === act ? "#F2F0E1" : ""; f.querySelector("i").style.color = i === act ? "#0C4F7F" : ""; });
+        root.querySelector(".pat").style.transform = `translate(${(t * 20) % 130}px,${-(t * 15) % 130}px)`;
+      }
+    };
+  }
+});
+
+/* TV: portal de resultados */
+SCENES.tvMetrics = () => ({
+  dur: 8, bg: "azul",
+  cues: [[.3, "swell"], [1.4, "count"], [3.0, "rise"], [5.0, "chime"]],
+  build(root) {
+    const pts = [12, 18, 15, 24, 30, 27, 36, 42, 39, 50, 56, 62, 58, 70];
+    const pw = 520, ph = 170, path = pts.map((v, i) => `${i ? "L" : "M"}${(i / (pts.length - 1) * pw).toFixed(1)} ${(ph - v / 72 * ph).toFixed(1)}`).join(" ");
+    root.innerHTML = `<div class="pat"></div><div class="logo-corner">${wordmark()}</div>
+    <div class="split rev">
+      <div class="vis"><div class="fit" style="--k:${FMT === "v" ? 1.0 : .9}"><div class="portal">
+        <div class="ptop"><div><small>Portal do anunciante</small><b>Padaria Pão Dourado</b></div><div class="pchips"><span class="on">7 dias</span><span>30 dias</span><span>90 dias</span></div></div>
+        <div class="mets">
+          <div class="met"><small>Tempo de tela</small><b class="m1">0 h 00 min</b></div>
+          <div class="met"><small>Exibições</small><b data-n="24879">0</b></div>
+          <div class="met"><small>Telas</small><b data-n="3">0</b></div>
+          <div class="met"><small>Leituras de QR</small><b data-n="89">0</b></div>
+        </div>
+        <div class="prow">
+          <div class="pbox"><h6>Leituras de QR por dia</h6><svg width="${pw}" height="${ph + 10}" viewBox="0 -5 ${pw} ${ph + 10}" style="overflow:visible"><path d="${path} L${pw} ${ph} L0 ${ph} Z" fill="rgba(121,142,166,.25)" class="ar"/><path d="${path}" fill="none" stroke="#F2F0E1" stroke-width="3" stroke-linejoin="round" class="ln"/></svg></div>
+          <div class="pbox"><h6>Em quais telas</h6><div class="scr-l">
+            <div><span>Café Ponto Central<b>41%</b></span><i style="width:100%"></i></div>
+            <div><span>Academia Movimento<b>33%</b></span><i style="width:80%"></i></div>
+            <div><span>Clínica Bem Viver<b>26%</b></span><i style="width:63%"></i></div>
+          </div></div>
+        </div>
+      </div></div></div>
+      <div class="txt">
+        <div class="eb">Upe TV · Resultados</div>
+        <div class="h">Você mede cada exibição.</div>
+        <div class="p">No portal, você vê onde a campanha passou, por quanto tempo e quantas pessoas leram o QR.</div>
+      </div>
+    </div><div class="small-note">Dados de exemplo</div>`;
+    root.querySelector(".pat").style.backgroundImage = patURL;
+    const words = splitWords(root.querySelector(".h"));
+    const ln = root.querySelector(".ln"), ar = root.querySelector(".ar"), L = ln.getTotalLength ? 1400 : 1400;
+    ln.style.strokeDasharray = L;
+    const nums = [...root.querySelectorAll("[data-n]")], m1 = root.querySelector(".m1");
+    return {
+      anims: [
+        ...A(root.querySelector(".logo-corner"), .1, .7, { y: -20, o: 0 }, { y: 0, o: 1 }),
+        ...A(root.querySelector(".eb"), .2, .8, { y: 20, o: 0 }, { y: 0, o: 1 }), ...titleIn(words, .35, .06),
+        ...A(root.querySelector(".p"), 1.0, 1.7, { y: 24, o: 0 }, { y: 0, o: .86 }),
+        ...A(root.querySelector(".portal"), .5, 1.4, { y: 120, o: 0 }, { y: 0, o: 1 }),
+        ...stagger(root.querySelectorAll(".met"), 1.2, .1, .5, { y: 24, o: 0 }, { y: 0, o: 1 }),
+        ...stagger(root.querySelectorAll(".scr-l i"), 3.2, .15, .8, { sx: 0 }, { sx: 1 }, EO),
+        ...A(ar, 3.4, 4.4, { o: 0 }, { o: 1 })
+      ],
+      tick(t) {
+        const p = EO(prog(t, 1.4, 3.2));
+        nums.forEach(n => n.textContent = int(+n.dataset.n * p));
+        const mins = Math.round((69 * 60 + 6) * p); m1.textContent = `${Math.floor(mins / 60)} h ${String(mins % 60).padStart(2, "0")} min`;
+        ln.style.strokeDashoffset = L * (1 - EIO(prog(t, 3.0, 4.6)));
+        root.querySelector(".pat").style.transform = `translate(${(t * 20) % 130}px,${-(t * 15) % 130}px)`;
+      }
+    };
+  }
+});
+
+/* FINAL: três frentes */
+const icons = {
+  pen: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"><path d="M32 6 L48 30 L32 58 L16 30 Z"/><circle cx="32" cy="32" r="5"/><path d="M32 6 V27"/></svg>`,
+  panel: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"><rect x="6" y="10" width="52" height="38" rx="5"/><path d="M22 10 V48"/><path d="M30 22 H50 M30 30 H44 M30 38 H48"/><path d="M24 56 H40"/></svg>`,
+  tv: `<svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"><rect x="5" y="12" width="54" height="36" rx="5"/><path d="M22 56 H42 M32 48 V56"/><rect x="40" y="30" width="12" height="12" rx="2"/></svg>`
+};
+SCENES.pillars = () => ({
+  dur: 8, bg: "azul",
+  cues: [[.3, "swell"], [.8, "pop"], [1.05, "pop"], [1.3, "pop"], [3.2, "sparkle"]],
+  build(root) {
+    root.innerHTML = `<div class="pat"></div>
+    <div class="center" style="gap:${FMT === "v" ? 60 : 64}px">
+      <div class="h" style="max-width:1400px;text-wrap:balance">Da identidade à venda.</div>
+      <div class="pillars">
+        <div class="pill3">${icons.pen}<b>Branding e Redesign</b><span>Identidade visual e manual de marca.</span></div>
+        <div class="pill3">${icons.panel}<b>Upe ERP</b><span>Loja online, PDV e pedidos num só painel.</span></div>
+        <div class="pill3">${icons.tv}<b>Upe TV</b><span>Sua marca nas telas de quem espera.</span></div>
+      </div>
+    </div>`;
+    root.querySelector(".pat").style.backgroundImage = patURL;
+    const words = splitWords(root.querySelector(".h"));
+    return {
+      anims: [
+        ...titleIn(words, .2, .08),
+        ...stagger(root.querySelectorAll(".pill3"), .8, .25, .8, { y: 120, o: 0, s: .9 }, { y: 0, o: 1, s: 1 }, EB),
+        ...stagger(root.querySelectorAll(".pill3 svg"), 1.2, .25, .6, { s: 0, r: -40 }, { s: 1, r: 0 }, EB),
+        ...A(root.querySelector(".pillars"), 2.5, 7.8, { s: 1 }, { s: 1.03 }, LIN)
+      ],
+      tick(t) { root.querySelector(".pat").style.transform = `translate(${(t * 20) % 130}px,${-(t * 15) % 130}px)`; }
+    };
+  }
+});
+
+/* ASSINATURA */
+SCENES.end = (opt = {}) => ({
+  dur: opt.dur || 8, bg: "azul",
+  cues: [[.2, "swell"], ...LETTERS.map((_, i) => [.5 + i * .06, "tick"]), [1.6, "sparkle"], [3.0, "whoosh"], [3.5, "final"]],
+  build(root) {
+    const content = `<div class="end">${opt.prod ? `<div class="prod">${opt.prod}</div>` : ""}<div class="wmw">${wordmark()}</div><div class="tag2">${opt.tag || "Branding, sistemas e mídia para a sua marca decolar."}</div><div class="urls">${(opt.urls || ["upe-erp.web.app", "upe-tv.web.app"]).map(u => `<span>${u}</span>`).join("")}</div></div>`;
+    root.innerHTML = `<div class="wipeA"><div class="pat"></div>${content}</div><div class="wipeB">${content}</div>`;
+    root.querySelector(".pat").style.backgroundImage = patURL;
+    const B = root.querySelector(".wipeB");
+    const us = root.querySelectorAll(".wm-u"), ls = [...root.querySelectorAll(".wipeA .wm-l")], ls2 = [...root.querySelectorAll(".wipeB .wm-l")];
+    return {
+      anims: [
+        ...A(us, 0, .7, { y: 60, o: 0 }, { y: 0, o: 1 }, EB),
+        ...stagger(ls, .5, .06, .5, { y: 40, o: 0 }, { y: 0, o: 1 }, EB), ...stagger(ls2, .5, .06, .5, { y: 40, o: 0 }, { y: 0, o: 1 }, EB),
+        ...A(root.querySelectorAll(".tag2"), 1.3, 2.0, { y: 24, o: 0 }, { y: 0, o: 1 }),
+        ...stagger(root.querySelectorAll(".wipeA .urls span"), 1.7, .15, .6, { y: 24, o: 0 }, { y: 0, o: 1 }, EB),
+        ...stagger(root.querySelectorAll(".wipeB .urls span"), 1.7, .15, .6, { y: 24, o: 0 }, { y: 0, o: 1 }, EB),
+        ...A(root.querySelectorAll(".prod"), .1, .7, { y: -20, o: 0 }, { y: 0, o: 1 })
+      ],
+      tick(t) {
+        const r = EIO(prog(t, 3.0, 4.0)) * Math.hypot(W, H);
+        B.style.clipPath = `circle(${r}px at 50% 50%)`;
+        root.querySelector(".pat").style.transform = `translate(${(t * 20) % 130}px,${-(t * 15) % 130}px)`;
+      }
+    };
+  }
+});
+
+/* ---------- peças ---------- */
+const PIECES = {
+  logo: () => [SCENES.logo({ dur: 10 })],
+  film: () => [
+    SCENES.logo({ dur: 8, wipe: false }),
+    SCENES.brand(), SCENES.redesign(),
+    SCENES.title({ dur: 4, eb: "Lançamentos Upe", title: "Dois sistemas para o seu negócio.", chips: ["Upe ERP", "Upe TV"] }),
+    SCENES.erpPanel(), SCENES.erpOrders(), SCENES.erpPdv(),
+    SCENES.tvScreen(), SCENES.tvQR(), SCENES.tvMetrics(),
+    SCENES.pillars(), SCENES.end({ dur: 8 })
+  ],
+  erp: () => [
+    SCENES.title({ dur: 4, eb: "Lançamento Upe Criativo", title: "Upe ERP", xl: true, sub: "Loja virtual, PDV, PIX, pedidos e relatórios num só painel." }),
+    SCENES.erpPanel(), SCENES.erpOrders(), SCENES.erpPdv(),
+    SCENES.end({ dur: 6, prod: "UPE ERP", tag: "Sua loja online, PDV e pedidos num só painel.", urls: ["upe-erp.web.app"] })
+  ],
+  tv: () => [
+    SCENES.title({ dur: 4, eb: "Lançamento Upe Criativo", title: "Upe TV", xl: true, sub: "Mídia em telas de estabelecimentos parceiros." }),
+    SCENES.tvScreen(), SCENES.tvQR(), SCENES.tvMetrics(),
+    SCENES.end({ dur: 6, prod: "UPE TV", tag: "Sua marca na tela certa.", urls: ["upe-tv.web.app"] })
+  ]
+};
+
+/* ---------- motor ---------- */
+const list = PIECES[PIECE]();
+let acc = 0;
+const timeline = list.map(sc => {
+  const root = document.createElement("div"); root.className = "scene bg-" + (sc.bg || "azul"); stage.insertBefore(root, document.getElementById("trans"));
+  const inst = sc.build(root); const anims = (inst.anims || []).sort((a, b) => a.a - b.a);
+  const item = { sc, root, inst, anims, start: acc, end: acc + sc.dur }; acc += sc.dur; return item;
+});
+const DURATION = acc;
+const bounds = timeline.slice(1).map(i => i.start);
+const b1 = document.querySelector("#trans .b1"), b2 = document.querySelector("#trans .b2");
+const cues = [];
+timeline.forEach(i => (i.sc.cues || []).forEach(([t, k]) => cues.push({ t: +(i.start + t).toFixed(3), k })));
+bounds.forEach(b => cues.push({ t: +(b - .3).toFixed(3), k: "trans" }));
+cues.sort((a, b) => a.t - b.t);
+
+function render(T) {
+  let cur = timeline.find(i => T >= i.start && T < i.end) || timeline[timeline.length - 1];
+  timeline.forEach(i => i.root.classList.toggle("on", i === cur));
+  const lt = T - cur.start;
+  applyAnims(cur.anims, lt);
+  cur.inst.tick && cur.inst.tick(lt);
+  // transição
+  let x1 = -200, x2 = -200;
+  for (const b of bounds) {
+    const d = T - b;
+    if (d > -.45 && d < .45) {
+      const f = (o) => { const dd = d - o; return dd < 0 ? lerp(-150, 0, EO(clamp((dd + .4) / .4))) : lerp(0, 150, EI(clamp(dd / .4))); };
+      x1 = f(-.05); x2 = f(.0);
+    }
+  }
+  b1.style.transform = `translateX(${x1}%) skewX(-12deg)`; b2.style.transform = `translateX(${x2}%) skewX(-12deg)`;
+}
+window.__duration = DURATION; window.__cues = cues; window.__render = render; window.__bounds = bounds;
+render(qs.has("t") ? +qs.get("t") : 0);
+if (qs.has("play")) { const t0 = performance.now(); const loop = () => { render(((performance.now() - t0) / 1000) % DURATION); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+</script>
+</body>
+</html>
