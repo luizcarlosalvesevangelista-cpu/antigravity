@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1920">
+<title>Plano Tecidos | Brand Book</title>
+<link href="fonts/fonts.css" rel="stylesheet">
+<style>
+:root{
+  --verde:#4E8C34; --verde-claro:#86BC5F; --verde-flap:#6FAA48; --verde-sombra:#3C7429;
+  --linho:#F1EADF; --musgo:#24402A; --areia:#D6CAB4; --grafite:#2B2B29;
+  --line:#E3E3E3; --muted:#6B6B66;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#fff}
+body{width:1920px;font-family:'Poppins',sans-serif;color:#2b2b2b;-webkit-font-smoothing:antialiased}
+.wrap{padding:0 70px}
+h1.manual{font-family:'Poppins';font-weight:800;font-size:96px;letter-spacing:-1px;text-align:center;color:var(--verde);padding:96px 0 70px}
+h1.manual small{display:block;font-size:22px;font-weight:600;letter-spacing:.42em;color:var(--grafite);margin-top:10px}
+
+/* ---------- cards de logotipo ---------- */
+.logos{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+.lcard{border:2px solid var(--line);border-radius:22px;overflow:hidden;display:flex;flex-direction:column}
+.lcard h3{font-weight:700;font-size:30px;text-align:center;padding:42px 10px 30px;border-bottom:2px solid var(--line);color:#333}
+.lcard .stage{height:200px;display:flex;align-items:center;justify-content:center}
+.lcard .stage.fill{border-radius:20px;margin:0 -2px;height:182px}
+.lcard p{font-size:17px;line-height:1.55;padding:28px 36px 38px;color:#333}
+.lcard .stack2{display:flex;flex-direction:column}
+
+/* ---------- logo ---------- */
+.logo{display:inline-flex;flex-direction:column;align-items:center;color:var(--grafite);line-height:1}
+.logo .word{font-family:'Montserrat';font-weight:800;display:flex;align-items:baseline;letter-spacing:.02em;white-space:nowrap}
+.logo .word .l{display:inline-block;position:relative;width:calc(.7em * 72 / 100);height:.7em;margin:0 .05em 0 .01em}
+.logo .word .l svg{position:absolute;left:0;bottom:-.007em;width:100%;height:calc(.7em * 107.5 / 100);overflow:visible}
+.logo .sub{font-family:'Montserrat';font-weight:600;white-space:nowrap;margin-top:.32em}
+.logo.h{flex-direction:row;align-items:center}
+.logo.h .sep{width:2px;align-self:stretch;background:currentColor;opacity:.35;margin:0 .45em}
+.logo.h .sub{margin-top:0}
+
+/* ---------- ícones (símbolo) ---------- */
+.icons{display:grid;grid-template-columns:repeat(3,1fr);gap:16px 18px;padding:22px 30px;height:360px;align-items:center;justify-items:center}
+.badge{width:96px;height:96px;display:flex;align-items:center;justify-content:center}
+.badge.circle{border-radius:50%}
+.badge.sq{border-radius:22px}
+.badge svg{height:54%}
+
+/* ---------- seções ---------- */
+.sec{border:2px solid var(--line);border-radius:22px;margin-top:44px;padding:60px 46px;display:grid;grid-template-columns:380px 1fr;gap:40px}
+.sec .intro h2{font-weight:700;font-size:32px;color:#333;margin-bottom:26px;line-height:1.1}
+.sec .intro p{font-size:18px;line-height:1.7;color:#333}
+.sec .intro b{display:block;font-weight:700;font-size:17px;text-transform:uppercase;margin-top:26px}
+.sec .intro b:first-of-type{margin-top:0}
+
+/* paleta */
+.pal{display:grid;grid-template-columns:1fr 1fr 1.48fr;gap:24px}
+.sw{border-radius:16px;padding:28px 28px;color:#fff;display:flex;flex-direction:column;justify-content:space-between;font-size:15px}
+.sw .nm{font-weight:800;font-size:28px;line-height:1.05;text-transform:uppercase}
+.sw .rl{font-weight:600;font-size:17px;margin-top:6px;opacity:.9}
+.sw table{border-collapse:collapse}
+.sw td{padding:4px 0;font-size:15px}
+.sw td:first-child{width:76px;opacity:.85}
+.sw.big{height:470px}
+.sw.row{flex-direction:row;align-items:center;height:142px}
+.sw.row table{margin-left:auto}
+.sw.dark{color:var(--grafite)}
+.tints{display:flex;gap:0;margin-top:22px;border-radius:12px;overflow:hidden;height:46px}
+.tints div{flex:1}
+.contrast{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:22px}
+.contrast div{border-radius:12px;height:70px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;font-weight:700;font-size:22px}
+.contrast span{font-size:13px;font-weight:600;opacity:.8}
+
+/* ativos */
+.assets{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:24px;height:470px}
+.assets>div{border-radius:16px;overflow:hidden;position:relative}
+.cap{position:absolute;left:18px;bottom:16px;font-size:14px;font-weight:600;padding:6px 12px;border-radius:30px;background:rgba(255,255,255,.88);color:var(--grafite)}
+
+/* construção */
+.cons{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:24px}
+.box{border:2px solid var(--line);border-radius:16px;padding:30px;position:relative}
+.box h4{font-size:15px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:18px}
+.gest{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-top:24px}
+.gest .g{border:2px solid var(--line);border-radius:16px;padding:22px 20px}
+.gest .g svg{height:76px;display:block;margin-bottom:16px}
+.gest .g b{font-size:18px;display:block;margin-bottom:6px}
+.gest .g p{font-size:14px;line-height:1.55;color:#444}
+
+/* iconografia */
+.ico-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:18px}
+.ico{border:2px solid var(--line);border-radius:16px;height:170px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;font-size:14px;font-weight:600;color:#444}
+.ico svg{width:64px;height:64px;color:var(--grafite)}
+.ico.inv{background:var(--musgo);border-color:var(--musgo);color:var(--linho)}
+.ico.inv svg{color:var(--linho)}
+.ico.ac svg .a{stroke:var(--verde)}
+.ico-rules{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:22px}
+.ico-rules div{background:#F7F5F1;border-radius:14px;padding:18px 22px;font-size:15px;line-height:1.55}
+.ico-rules b{display:block;font-size:16px;margin-bottom:4px}
+
+/* tipografia */
+.tcard{border:2px solid var(--line);border-radius:16px;padding:40px 36px;position:relative}
+.tgrid{display:grid;grid-template-columns:1fr 1.45fr;gap:24px}
+.tcard .lab{font-size:18px;font-weight:500;line-height:1.25;text-transform:uppercase}
+.tcard .fam{font-size:42px;margin-top:8px}
+.tcard .aa{position:absolute;right:36px;top:14px;font-size:150px;line-height:1}
+.tcard .chars{margin-top:58px;font-size:19px;letter-spacing:.32em;line-height:2}
+.tcard .chars small{display:block;font-size:13px;line-height:1.5}
+.samp div{margin-bottom:18px;line-height:1.1;color:#2b2b2b}
+
+/* aplicações */
+.apps{margin-top:70px}
+.mock{position:relative;overflow:hidden}
+.footer{position:absolute;right:58px;bottom:44px;font-size:22px;color:var(--linho);display:flex;align-items:center;gap:8px;font-weight:500}
+.linen{background-color:var(--linho);background-image:
+  repeating-linear-gradient(0deg,rgba(120,100,70,.07) 0 1px,transparent 1px 4px),
+  repeating-linear-gradient(90deg,rgba(255,255,255,.35) 0 1px,transparent 1px 5px)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 class="manual">MANUAL DA MARCA<small>PLANO TECIDOS</small></h1>
+
+  <!-- ===== LOGOTIPOS ===== -->
+  <div class="logos">
+    <div class="lcard">
+      <h3>LOGOTIPO PRINCIPAL</h3>
+      <div class="stage"><div data-logo="main" data-size="88"></div></div>
+      <div class="stage fill" style="background:var(--verde)"><div data-logo="main" data-size="88" data-mode="rev" data-sym="mono" data-bg="#4E8C34"></div></div>
+      <p>Versão empilhada, fiel ao desenho original. Assinatura preferencial em fachada, embalagens e comunicação institucional.</p>
+    </div>
+    <div class="lcard">
+      <h3>LOGOTIPO SECUNDÁRIO</h3>
+      <div class="stage"><div data-logo="h" data-size="58"></div></div>
+      <div class="stage fill" style="background:var(--musgo)"><div data-logo="h" data-size="58" data-mode="rev"></div></div>
+      <p>Variação horizontal em linha única. Para espaços estreitos e alongados: rodapés, assinaturas de e-mail, faixas e etiquetas de ourela.</p>
+    </div>
+    <div class="lcard">
+      <h3>VERSÕES ALTERNATIVAS</h3>
+      <div class="stage" style="background:var(--linho)"><div data-logo="main" data-size="88" data-mode="mono" data-color="#2B2B29" data-bg="#F1EADF"></div></div>
+      <div class="stage fill" style="background:var(--grafite)"><div data-logo="main" data-size="88" data-mode="mono" data-color="#F1EADF" data-bg="#2B2B29"></div></div>
+      <p>Monocromáticas positiva e negativa, para carimbo, bordado, serigrafia e qualquer meio onde a reprodução em cores não é viável.</p>
+    </div>
+    <div class="lcard">
+      <h3>ÍCONE</h3>
+      <div class="icons" id="icons"></div>
+      <p>O "L-rolo" isolado como símbolo. Para avatar de redes sociais, favicon, etiquetas pequenas e selos de qualidade.</p>
+    </div>
+  </div>
+
+  <!-- ===== PALETA ===== -->
+  <div class="sec">
+    <div class="intro">
+      <h2>PALETA DE CORES</h2>
+      <b>Cores primárias</b>
+      <p>Verde Trama e Linho Cru carregam a essência da marca: o fio natural e o tecido cru.</p>
+      <b>Cores secundárias</b>
+      <p>Musgo e Areia dão profundidade e calor sem competir com as primárias.</p>
+      <b>Cor de destaque</b>
+      <p>Grafite: o tom do logotipo. Alto contraste para títulos, preços e chamadas.</p>
+    </div>
+    <div>
+      <div class="pal" id="pal"></div>
+      <div class="tints" id="tints"></div>
+      <div class="contrast">
+        <div style="background:var(--grafite);color:var(--linho)">Aa <span>Grafite / Linho · AAA</span></div>
+        <div style="background:var(--musgo);color:var(--linho)">Aa <span>Musgo / Linho · AAA</span></div>
+        <div style="background:var(--linho);color:var(--musgo)">Aa <span>Linho / Musgo · AAA</span></div>
+        <div style="background:var(--verde);color:#fff">Aa <span>Verde / Branco · títulos</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CONSTRUÇÃO & GESTALT ===== -->
+  <div class="sec">
+    <div class="intro">
+      <h2>CONSTRUÇÃO &amp; GESTALT</h2>
+      <p>O redesenho preserva a ideia central: a letra <strong>L</strong> é um rolo de tecido que se desenrola e dobra num gesto de "check", sinal de qualidade conferida. A ilustração 3D virou vetor plano, construído sobre módulos.</p>
+      <b>Módulo x</b>
+      <p>x = largura da haste do rolo. Ele define a área de proteção e todas as proporções do símbolo.</p>
+    </div>
+    <div>
+      <div class="cons">
+        <div class="box"><h4>Grid de construção</h4><div id="grid"></div></div>
+        <div class="box"><h4>Área de proteção</h4><div id="clear" style="display:flex;align-items:center;justify-content:center;height:330px"></div></div>
+        <div class="box"><h4>Redução mínima</h4><div id="minsize" style="height:330px;display:flex;flex-direction:column;justify-content:center;gap:34px"></div></div>
+      </div>
+      <div class="gest" id="gest"></div>
+    </div>
+  </div>
+
+  <!-- ===== ATIVOS ===== -->
+  <div class="sec">
+    <div class="intro">
+      <h2>ATIVOS DA MARCA</h2>
+      <p>A trama do tecido plano (fios que se cruzam em ângulo reto) gera os padrões da marca. Somados ao símbolo em repetição e à textura de linho, formam um sistema reconhecível mesmo sem o logotipo.</p>
+    </div>
+    <div class="assets">
+      <div id="a1"><span class="cap">Padrão Trama</span></div>
+      <div id="a2"><span class="cap">Padrão Símbolo</span></div>
+      <div id="a3" class="linen"><span class="cap">Textura Linho</span></div>
+    </div>
+  </div>
+
+  <!-- ===== ICONOGRAFIA ===== -->
+  <div class="sec">
+    <div class="intro">
+      <h2>ICONOGRAFIA</h2>
+      <p>Ícones lineares desenhados em grid de 48 px, com traço de 3 px e terminais arredondados, herdando as curvas suaves do rolo. Usar em sinalização da loja, site, redes sociais e embalagens.</p>
+    </div>
+    <div>
+      <div class="ico-grid" id="icoGrid"></div>
+      <div class="ico-rules">
+        <div><b>Grid 48 · traço 3 px</b>Área viva de 40 px, com 4 px de respiro. Cantos e terminais sempre arredondados.</div>
+        <div><b>Uma cor + acento</b>Grafite ou Linho como base. O Verde Trama aparece em um único detalhe, nunca no ícone inteiro.</div>
+        <div><b>Tamanho mínimo</b>20 px no digital e 6 mm no impresso. Abaixo disso, use a versão preenchida.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TIPOGRAFIA ===== -->
+  <div class="sec">
+    <div class="intro">
+      <h2>TIPOGRAFIA</h2>
+      <p>Montserrat é a fonte de títulos. Geométrica e robusta, ela conversa com as letras do logotipo. Use em caixa alta, em peso ExtraBold ou Bold.</p>
+    </div>
+    <div class="tgrid">
+      <div class="tcard" style="font-family:Montserrat">
+        <div class="lab">Família<br>tipográfica:</div>
+        <div class="fam" style="font-weight:800">Montserrat</div>
+        <div class="aa" style="font-weight:800">Aa</div>
+        <div class="chars" style="font-weight:700">ABCDEFGHIJKLMNOPQRSTUVWXYZ<br><span style="font-weight:500">abcdefghijklmnopqrstuvwxyz</span><small style="font-weight:600;letter-spacing:.3em">0123456789<br>!@#$%^&amp;*()_+-=<br>{}[]|\:;"'&lt;&gt;,.?/~`</small></div>
+      </div>
+      <div class="tcard samp" style="font-family:Montserrat">
+        <div style="font-weight:800;font-size:36px">Aqui um exemplo de título</div>
+        <div style="font-weight:700;font-size:32px">Aqui um exemplo de título</div>
+        <div style="font-weight:600;font-size:29px">Aqui um exemplo de subtítulo</div>
+        <div style="font-weight:500;font-size:26px">Aqui um exemplo de texto</div>
+        <div style="font-weight:600;font-size:15px;letter-spacing:.3em">AQUI UM EXEMPLO DE TEXTO COMPLEMENTAR</div>
+      </div>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="intro">
+      <h2>TIPOGRAFIA</h2>
+      <p>DM Sans é a fonte de apoio para textos corridos, descrições de produto, preços e interfaces. Humanista, legível e leve.</p>
+    </div>
+    <div class="tgrid">
+      <div class="tcard" style="font-family:'DM Sans'">
+        <div class="lab">Família<br>tipográfica:</div>
+        <div class="fam" style="font-weight:500">DM Sans</div>
+        <div class="aa" style="font-weight:500">Aa</div>
+        <div class="chars">ABCDEFGHIJKLMNOPQRSTUVWXYZ<br>abcdefghijklmnopqrstuvwxyz<small>0123456789<br>!@#$%^&amp;*()_+-=<br>{}[]|\:;"'&lt;&gt;,.?/~`</small></div>
+      </div>
+      <div class="tcard samp" style="font-family:'DM Sans'">
+        <div style="font-weight:700;font-size:52px">Aqui um exemplo de título</div>
+        <div style="font-weight:500;font-size:44px">Aqui um exemplo de título</div>
+        <div style="font-weight:400;font-size:36px">Aqui um exemplo de subtítulo</div>
+        <div style="font-weight:400;font-size:26px">Aqui um exemplo de texto</div>
+        <div style="font-weight:400;font-size:16px">Aqui um exemplo de texto complementar</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== APLICAÇÕES ===== -->
+<div class="apps">
+  <div class="mock" id="m1" style="height:580px"></div>
+  <div style="display:flex">
+    <div class="mock" id="m2" style="width:960px;height:520px;background:var(--verde)"></div>
+    <div class="mock" id="m3" style="width:960px;height:520px;background:var(--grafite)"></div>
+  </div>
+  <div class="mock" id="m4" style="height:940px;background:var(--areia)">
+    <div class="footer" style="color:var(--grafite)">Feito com <svg width="24" height="22" viewBox="0 0 24 22"><path d="M12 21 2.6 11.8A5.8 5.8 0 0 1 12 4.3a5.8 5.8 0 0 1 9.4 7.5Z" fill="#2B2B29"/></svg> por Upe Criativo</div>
+  </div>
+</div>
+
+<script>
+/* ================= SÍMBOLO "L-ROLO" =================
+   Unidades: altura de versal = 100. Haste (x) = 26.
+   Partes: corpo do rolo, face superior (espiral), base desenrolada, dobra (check). */
+let uid=0;
+const C={verde:'#4E8C34',claro:'#86BC5F',flap:'#6FAA48',sombra:'#3C7429',musgo:'#24402A',linho:'#F1EADF',areia:'#D6CAB4',grafite:'#2B2B29'};
+function symbol(o={}){
+  const id='t'+(uid++);
+  const mono=o.mode==='mono'||o.mode==='monorev';
+  const c=o.color||C.verde, bg=o.bg||'#fff';
+  const stem=mono?c:C.verde, top=mono?c:C.claro, foot=mono?c:C.sombra, flap=mono?c:C.flap, core=mono?bg:C.musgo;
+  const body='M0,0 A14,5.5 0 0 0 28,0 L28,100 L0,100Z';
+  const tex=(o.texture!==false&&!mono)?`<path d="${body}" fill="url(#${id})"/>`:'';
+  const seps=mono?`<g stroke="${bg}" stroke-width="2.6" fill="none" stroke-linecap="butt">
+      <path d="M0,0 A14,5.5 0 0 0 28,0"/><line x1="28" y1="75" x2="28" y2="100"/><line x1="50" y1="75" x2="50" y2="100"/></g>`:'';
+  return `<svg viewBox="-1 -6.5 72 107.5" xmlns="http://www.w3.org/2000/svg">
+  <defs><pattern id="${id}" width="4" height="3.2" patternUnits="userSpaceOnUse"><rect width="4" height="1" fill="#fff" opacity=".10"/><rect x="0" width="1" height="3.2" fill="#000" opacity=".05"/></pattern></defs>
+  <path d="M50,75 L70,55 L70,80 L50,100Z" fill="${flap}"/>
+  ${mono?'':'<path d="M50,75 L70,55 L70,61 L50,81Z" fill="#000" opacity=".08"/>'}
+  <path d="M28,75 L50,75 L50,100 L28,100Z" fill="${foot}"/>
+  <path d="${body}" fill="${stem}"/>
+  ${tex}
+  ${mono?'':'<path d="M21,0 A14,5.5 0 0 0 28,0 L28,100 L21,100Z" fill="#000" opacity=".10"/>'}
+  <ellipse cx="14" cy="0" rx="14" ry="5.5" fill="${top}"/>
+  <path d="M14,-2.8 a6,2.6 0 1 1 -0.2,0 M14,-1.3 a2.6,1.2 0 1 0 0.2,0" fill="none" stroke="${core}" stroke-width="1.1" opacity="${mono?1:.75}"/>
+  <ellipse cx="14" cy="0" rx="1.7" ry=".85" fill="${core}"/>
+  ${seps}</svg>`;
+}
+/* ================= LOGOTIPO ================= */
+function logo(el){
+  const s=+el.dataset.size, mode=el.dataset.mode||'color', type=el.dataset.logo;
+  const rev=mode==='rev';
+  const ink=el.dataset.color||(rev?C.linho:C.grafite);
+  const symMono=mode==='mono'||el.dataset.sym==='mono';
+  const symHtml=symbol({mode:symMono?'mono':'color',color:el.dataset.color||(symMono?ink:undefined),bg:el.dataset.bg});
+  const word=`<div class="word" style="font-size:${s}px;color:${ink}">P<span class="l">${symHtml}</span>ANO</div>`;
+  if(type==='h'){
+    el.innerHTML=`<div class="logo h" style="color:${ink}">${word}<span class="sep" style="font-size:${s}px"></span><div class="sub" style="font-size:${s*.34}px;letter-spacing:.32em;line-height:1.25">TECIDOS</div></div>`;
+  }else{
+    el.innerHTML=`<div class="logo" style="color:${ink}">${word}<div class="sub" style="font-size:${s*.36}px;font-weight:700;color:${ink}">TECIDOS</div></div>`;
+  }
+}
+function fitSubs(){
+  document.querySelectorAll('.logo:not(.h)').forEach(l=>{
+    const w=l.querySelector('.word'), sub=l.querySelector('.sub');
+    sub.style.letterSpacing='0px';
+    const target=w.getBoundingClientRect().width*0.8, cur=sub.getBoundingClientRect().width, n=sub.textContent.length;
+    const ls=(target-cur)/n;
+    sub.style.letterSpacing=ls+'px'; sub.style.marginRight=(-ls)+'px';
+  });
+}
+/* ================= CORES ================= */
+function rgb(h){h=h.replace('#','');return [0,2,4].map(i=>parseInt(h.substr(i,2),16))}
+function cmyk([r,g,b]){r/=255;g/=255;b/=255;const k=1-Math.max(r,g,b);if(k===1)return[0,0,0,100];return[(1-r-k)/(1-k),(1-g-k)/(1-k),(1-b-k)/(1-k),k].map(v=>Math.round(v*100))}
+function specs(h){const R=rgb(h),K=cmyk(R);return `<table><tr><td>CMYK</td><td>C:${K[0]} M:${K[1]} Y:${K[2]} K:${K[3]}</td></tr><tr><td>RGB</td><td>R:${R[0]} G:${R[1]} B:${R[2]}</td></tr><tr><td>HEX</td><td>${h.toUpperCase()}</td></tr><tr><td>PANTONE</td><td>${{'#4E8C34':'7741 C','#F1EADF':'7527 C (20%)','#24402A':'5605 C','#D6CAB4':'7527 C','#2B2B29':'Black 7 C'}[h]}</td></tr></table>`}
+document.getElementById('pal').innerHTML=`
+ <div class="sw big" style="background:${C.verde}"><div><div class="nm">Verde<br>Trama</div><div class="rl">Cor Primária</div></div>${specs(C.verde)}</div>
+ <div class="sw big dark" style="background:${C.linho}"><div><div class="nm">Linho<br>Cru</div><div class="rl">Cor Primária</div></div>${specs(C.linho)}</div>
+ <div style="display:flex;flex-direction:column;gap:22px">
+   <div class="sw row" style="background:${C.musgo}"><div><div class="nm">Musgo</div><div class="rl">Cor Secundária</div></div>${specs(C.musgo)}</div>
+   <div class="sw row dark" style="background:${C.areia}"><div><div class="nm">Areia</div><div class="rl">Cor Secundária</div></div>${specs(C.areia)}</div>
+   <div class="sw row" style="background:${C.grafite}"><div><div class="nm">Grafite</div><div class="rl">Cor de destaque</div></div>${specs(C.grafite)}</div>
+ </div>`;
+document.getElementById('tints').innerHTML=['#24402A','#3C7429','#4E8C34','#6FAA48','#86BC5F','#B8D7A2','#DCEBD0','#F1EADF','#E6DCCB','#D6CAB4','#9B9486','#2B2B29'].map(c=>`<div style="background:${c}"></div>`).join('');
+
+/* ================= ÍCONES (símbolo) ================= */
+const badges=[
+ ['circle',C.linho,'color'],['circle',C.verde,'mono',C.linho,C.verde],['sq',C.grafite,'color'],
+ ['circle',C.musgo,'color'],['sq',C.linho,'mono',C.grafite,C.linho],['sq',C.verde,'mono','#fff',C.verde],
+ ['plain','transparent','color'],['circle','#fff','color','', '', '2px solid #E3E3E3'],['plain','transparent','mono',C.grafite,'#fff']
+];
+document.getElementById('icons').innerHTML=badges.map(([sh,bg,m,col,bgc,bd])=>`<div class="badge ${sh}" style="background:${bg};${bd?'border:'+bd:''}">${symbol({mode:m,color:col,bg:bgc})}</div>`).join('');
+
+/* ================= GRID DE CONSTRUÇÃO ================= */
+(function(){
+  const g=[];for(let x=-14;x<=84;x+=14)g.push(`<line x1="${x}" y1="-20" x2="${x}" y2="114" />`);
+  for(let y=-14;y<=114;y+=14)g.push(`<line x1="-20" y1="${y}" x2="80" y2="${y}"/>`);
+  document.getElementById('grid').innerHTML=`<svg viewBox="-22 -22 104 140" style="width:100%;height:330px">
+   <g stroke="#E3E3E3" stroke-width=".4">${g.join('')}</g>
+   <g transform="translate(0,0)" opacity=".92">${symbol().replace(/^<svg[^>]*>/,'').replace('</svg>','')}</g>
+   <g fill="none" stroke="#C05A3A" stroke-width=".55" stroke-dasharray="1.6 1.2">
+     <ellipse cx="14" cy="0" rx="14" ry="5.5"/><line x1="50" y1="100" x2="70" y2="80"/><line x1="28" y1="100" x2="73" y2="55" />
+     <line x1="0" y1="75" x2="80" y2="75"/></g>
+   <g fill="#C05A3A" font-family="Poppins" font-size="5" font-weight="600">
+     <text x="11" y="110">x</text><text x="33" y="110">0,8x</text><text x="56" y="110">0,7x</text>
+     <text x="72" y="72">45°</text><text x="-21" y="52">3,6x</text></g>
+   <g stroke="#C05A3A" stroke-width=".5"><line x1="0" y1="105" x2="28" y2="105"/><line x1="-8" y1="0" x2="-8" y2="100"/></g>
+  </svg>`;
+})();
+/* área de proteção */
+document.getElementById('clear').innerHTML=`<div style="position:relative;padding:38px;border:1.5px dashed #C05A3A;border-radius:4px">
+  <div data-logo="main" data-size="62"></div>
+  ${['top:6px;left:50%','bottom:6px;left:50%','left:8px;top:45%','right:8px;top:45%'].map(p=>`<span style="position:absolute;${p};font:600 14px Poppins;color:#C05A3A">x</span>`).join('')}
+  </div>`;
+document.getElementById('minsize').innerHTML=`
+  <div style="display:flex;align-items:flex-end;gap:22px"><div data-logo="main" data-size="34"></div><div style="font:500 14px Poppins;color:#666">Impresso 25 mm<br>Digital 120 px</div></div>
+  <div style="display:flex;align-items:flex-end;gap:22px"><div data-logo="h" data-size="22"></div><div style="font:500 14px Poppins;color:#666">Impresso 35 mm<br>Digital 160 px</div></div>
+  <div style="display:flex;align-items:flex-end;gap:22px"><div style="height:24px;width:16px">${symbol()}</div><div style="font:500 14px Poppins;color:#666">Símbolo 6 mm<br>Favicon 16 px</div></div>`;
+
+/* princípios de gestalt */
+const S=(inner)=>`<svg viewBox="0 0 120 76">${inner}</svg>`;
+document.getElementById('gest').innerHTML=[
+ ['Continuidade','O fio não se interrompe: o tecido sai do rolo, forma a base do L e sobe na dobra, numa só leitura.',S(`<path d="M20 8 V60 H70 L96 30" fill="none" stroke="${C.verde}" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>`)],
+ ['Fechamento','O olho completa o cilindro a partir de uma elipse e duas retas. Não é preciso desenhar volume.',S(`<ellipse cx="60" cy="14" rx="22" ry="8" fill="${C.claro}"/><path d="M38 14 V68 M82 14 V68" stroke="${C.verde}" stroke-width="5" stroke-dasharray="7 5"/>`)],
+ ['Figura-fundo','O L-rolo é objeto e letra ao mesmo tempo. A palavra PLANO continua legível.',S(`<rect x="10" y="6" width="100" height="64" rx="8" fill="${C.linho}"/><text x="60" y="52" font-family="Montserrat" font-weight="800" font-size="34" text-anchor="middle" fill="${C.grafite}">P<tspan fill="${C.verde}">L</tspan>A</text>`)],
+ ['Semelhança','A haste do rolo e as hastes de P, A, N e O têm o mesmo peso óptico. A família de formas fica coesa.',S(`<g fill="${C.grafite}"><rect x="14" y="10" width="13" height="56"/><rect x="44" y="10" width="13" height="56" fill="${C.verde}"/><rect x="74" y="10" width="13" height="56"/></g><path d="M8 72 H104" stroke="#C05A3A" stroke-dasharray="3 2"/>`)],
+ ['Pregnância','Formas simples e chapadas, sem sombras realistas. Leitura imediata em 16 px ou numa fachada.',S(`<g transform="translate(40,4) scale(.66)">${symbol().replace(/^<svg[^>]*>/,'').replace('</svg>','')}</g>`)]
+].map(([t,d,svg])=>`<div class="g">${svg}<b>${t}</b><p>${d}</p></div>`).join('');
+
+/* ================= ATIVOS ================= */
+(function(){
+  // padrão trama (tecido plano: sarja/tela)
+  let cells='';const n=16,sz=30;
+  for(let r=0;r<n;r++)for(let c=0;c<n*1.6;c++){
+    const over=(r+c)%2===0;
+    cells+= over?`<rect x="${c*sz}" y="${r*sz+4}" width="${sz}" height="${sz-8}" rx="4" fill="${C.verde}"/>`
+               :`<rect x="${c*sz+4}" y="${r*sz}" width="${sz-8}" height="${sz}" rx="4" fill="${C.claro}"/>`;
+  }
+  document.getElementById('a1').insertAdjacentHTML('afterbegin',`<svg width="100%" height="100%" style="background:${C.musgo}">${cells}</svg>`);
+  // padrão símbolo
+  let sy='';const inner=symbol({mode:'mono',color:C.verde,bg:C.linho}).replace(/^<svg[^>]*>/,'').replace('</svg>','');
+  for(let r=0;r<7;r++)for(let c=0;c<7;c++){const x=c*70+(r%2?35:0)-20,y=r*76-20;sy+=`<g transform="translate(${x},${y}) scale(.42)">${inner}</g>`}
+  document.getElementById('a2').insertAdjacentHTML('afterbegin',`<svg width="100%" height="100%" style="background:${C.linho}">${sy}</svg>`);
+  document.getElementById('a3').insertAdjacentHTML('afterbegin',`<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center"><div data-logo="main" data-size="64"></div></div>`);
+})();
+
+/* ================= ICONOGRAFIA ================= */
+const I={
+ 'Tesoura':'<circle cx="14" cy="35" r="6"/><circle cx="34" cy="35" r="6"/><path d="M18.5 31 34 6"/><path class="a" d="M29.5 31 14 6"/>',
+ 'Rolo de tecido':'<ellipse cx="13" cy="15" rx="5" ry="9"/><path d="M13 6h22M13 24h22M35 6c3 0 5 4 5 9s-2 9-5 9"/><path class="a" d="M24 24v18l8-6 8 6V24"/>',
+ 'Carretel':'<path d="M12 7h24M12 41h24M16 7v34M32 7v34"/><path class="a" d="M16 15l16 6M16 23l16 6M16 31l16 6"/>',
+ 'Fita métrica':'<circle cx="18" cy="22" r="12"/><circle cx="18" cy="22" r="3"/><path d="M18 34h24v-7H26"/><path class="a" d="M32 34v-3M37 34v-3"/>',
+ 'Agulha e linha':'<path d="M9 39 37 11"/><ellipse cx="38.5" cy="9.5" rx="2" ry="3.5" transform="rotate(45 38.5 9.5)"/><path class="a" d="M38 13c6 8-4 14-12 12s-12 6-6 14"/>',
+ 'Amostras':'<rect x="8" y="12" width="22" height="28" rx="3" transform="rotate(-10 19 26)"/><rect class="a" x="18" y="8" width="22" height="28" rx="3"/><path d="M18 30h22"/>',
+ 'Etiqueta / preço':'<path d="M24 6h16v16L22 40 8 26Z"/><circle class="a" cx="33" cy="13" r="3"/>',
+ 'Metro a metro':'<rect x="5" y="17" width="38" height="14" rx="3"/><path class="a" d="M12 17v6M19 17v4M26 17v6M33 17v4M40 17v6"/>',
+ 'Botão':'<circle cx="24" cy="24" r="16"/><circle cx="24" cy="24" r="11" class="a"/><circle cx="20.5" cy="20.5" r="1.5"/><circle cx="27.5" cy="20.5" r="1.5"/><circle cx="20.5" cy="27.5" r="1.5"/><circle cx="27.5" cy="27.5" r="1.5"/>',
+ 'Sacola':'<path d="M10 16h28l-2 26H12Z"/><path class="a" d="M18 20v-6a6 6 0 0 1 12 0v6"/>',
+ 'Entrega':'<path d="M4 12h24v20H4ZM28 18h9l6 7v7H28"/><circle class="a" cx="12" cy="35" r="4"/><circle class="a" cx="35" cy="35" r="4"/>',
+ 'Fibra natural':'<path d="M10 40C10 20 22 8 40 8c0 18-12 30-30 32Z"/><path class="a" d="M10 40 30 18"/>'
+};
+document.getElementById('icoGrid').innerHTML=Object.entries(I).map(([n,p],i)=>`<div class="ico ac ${[2,9].includes(i)?'inv':''}"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">${p}</svg>${n}</div>`).join('');
+
+/* ================= APLICAÇÕES ================= */
+// m1 — fachada da loja
+document.getElementById('m1').innerHTML=`
+ <div class="linen" style="position:absolute;inset:0"></div>
+ <div style="position:absolute;left:0;right:0;bottom:0;height:70px;background:#CFC3AE"></div>
+ <div style="position:absolute;left:260px;right:260px;top:70px;height:150px;background:${C.musgo};border-radius:6px;display:flex;align-items:center;justify-content:center;box-shadow:0 18px 30px rgba(0,0,0,.18)">
+   <div data-logo="h" data-size="70" data-mode="rev"></div></div>
+ <div style="position:absolute;left:260px;right:260px;top:220px;height:46px;background:repeating-linear-gradient(90deg,${C.verde} 0 70px,${C.linho} 70px 140px);clip-path:polygon(0 0,100% 0,100% 60%,${Array.from({length:20},(_,i)=>`${100-(i*5+2.5)}% 100%,${100-(i+1)*5}% 60%`).join(',')})"></div>
+ <div style="position:absolute;left:330px;top:300px;width:560px;height:210px;background:linear-gradient(135deg,#3b4a43,#22302a);border:10px solid ${C.grafite};border-bottom:none">
+   ${[0,1,2,3,4].map(i=>`<div style="position:absolute;bottom:0;left:${30+i*100}px;width:70px;height:${120+(i%2)*40}px;background:${[C.verde,C.areia,C.claro,C.linho,C.flap][i]};border-radius:35px 35px 4px 4px;opacity:.9"></div>`).join('')}</div>
+ <div style="position:absolute;left:960px;top:300px;width:190px;height:210px;background:${C.grafite}"><div style="position:absolute;right:18px;top:100px;width:8px;height:34px;background:${C.claro};border-radius:4px"></div></div>
+ <div style="position:absolute;left:1200px;top:300px;width:390px;height:210px;background:linear-gradient(135deg,#3b4a43,#22302a);border:10px solid ${C.grafite};border-bottom:none;display:flex;align-items:center;justify-content:center">
+   <div style="font:800 34px Montserrat;color:${C.linho};text-align:center;line-height:1.1">TECIDOS<br><span style="color:${C.claro}">POR METRO</span></div></div>
+ <div style="position:absolute;left:70px;top:40px;font:600 16px Poppins;letter-spacing:.2em;color:${C.grafite}">FACHADA</div>`;
+// m2 — tag
+document.getElementById('m2').innerHTML=`
+ <svg width="960" height="520" style="position:absolute;inset:0"><defs><pattern id="tw" width="24" height="24" patternUnits="userSpaceOnUse"><path d="M0 24 24 0" stroke="#fff" stroke-opacity=".09" stroke-width="7"/></pattern></defs><rect width="960" height="520" fill="url(#tw)"/>
+ <path d="M410 30 C420 120 440 150 470 120" stroke="${C.linho}" stroke-width="3" fill="none"/></svg>
+ <div style="position:absolute;left:330px;top:100px;width:290px;height:380px;background:${C.linho};clip-path:polygon(20% 0,80% 0,100% 13%,100% 100%,0 100%,0 13%);transform:rotate(-6deg);box-shadow:0 20px 40px rgba(0,0,0,.25);display:flex;flex-direction:column;align-items:center;padding-top:28px">
+   <div style="width:26px;height:26px;border-radius:50%;background:${C.verde}"></div>
+   <div style="margin-top:44px" data-logo="main" data-size="50"></div>
+   <div style="width:200px;border-top:2px solid ${C.areia};margin:30px 0 16px"></div>
+   <div style="font:500 15px 'DM Sans';color:${C.grafite};text-align:center;line-height:1.6">Linho misto · 1,40 m<br>55% linho · 45% algodão</div>
+   <div style="font:800 32px Montserrat;color:${C.verde};margin-top:12px">R$ 49,90<span style="font-size:15px;color:${C.grafite}"> /m</span></div></div>
+ <div style="position:absolute;left:70px;top:40px;font:600 16px Poppins;letter-spacing:.2em;color:${C.linho}">ETIQUETA</div>`;
+// m3 — sacola
+document.getElementById('m3').innerHTML=`
+ <div style="position:absolute;left:230px;top:150px;width:290px;height:330px;background:${C.linho};border-radius:4px 4px 10px 10px;box-shadow:0 26px 50px rgba(0,0,0,.4)">
+   <div style="position:absolute;left:80px;top:-70px;width:130px;height:110px;border:9px solid ${C.verde};border-bottom:none;border-radius:65px 65px 0 0"></div>
+   <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:34px"><div style="width:96px;height:150px">${symbol()}</div>
+   <div style="font:700 15px Montserrat;letter-spacing:.42em;color:${C.grafite}">PLANO TECIDOS</div></div></div>
+ <div style="position:absolute;left:600px;top:250px;width:220px;height:230px;background:${C.verde};border-radius:4px 4px 10px 10px;box-shadow:0 26px 50px rgba(0,0,0,.4)">
+   <div style="position:absolute;left:60px;top:-56px;width:100px;height:86px;border:8px solid ${C.linho};border-bottom:none;border-radius:50px 50px 0 0"></div>
+   <div style="position:absolute;inset:0;border-radius:4px 4px 10px 10px;background:repeating-linear-gradient(0deg,rgba(255,255,255,.08) 0 2px,transparent 2px 6px)"></div>
+   <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center"><div data-logo="main" data-size="40" data-mode="rev" data-sym="mono" data-bg="#4E8C34"></div></div></div>
+ <div style="position:absolute;left:70px;top:40px;font:600 16px Poppins;letter-spacing:.2em;color:${C.linho}">SACOLAS</div>`;
+// m4 — redes sociais + cartão
+const post=(bg,html)=>`<div style="width:330px;height:330px;border-radius:14px;background:${bg};position:relative;overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,.18)">${html}</div>`;
+document.getElementById('m4').insertAdjacentHTML('afterbegin',`
+ <div style="position:absolute;left:70px;top:40px;font:600 16px Poppins;letter-spacing:.2em;color:${C.grafite}">REDES SOCIAIS &amp; PAPELARIA</div>
+ <div style="position:absolute;left:150px;top:120px;width:420px;height:720px;background:#111;border-radius:56px;padding:16px;box-shadow:0 30px 60px rgba(0,0,0,.3)">
+  <div style="background:#fff;border-radius:42px;height:100%;overflow:hidden;font-family:'DM Sans'">
+   <div style="padding:46px 22px 14px;display:flex;align-items:center;gap:16px">
+     <div class="badge circle" style="width:78px;height:78px;background:${C.linho}">${symbol()}</div>
+     <div style="font-size:14px;color:#333;line-height:1.4"><b style="font-size:17px">plano.tecidos</b><br>Tecidos por metro · Linho, algodão &amp; viscose</div></div>
+   <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:3px">
+     ${[C.verde,C.linho,C.musgo,C.areia,C.grafite,C.claro,C.linho,C.verde,C.areia,C.musgo,C.claro,C.linho].map((c,i)=>`<div style="aspect-ratio:1;background:${c};display:flex;align-items:center;justify-content:center">${i%4===0?`<div style="width:36px;height:56px">${symbol({mode:'mono',color:i%2?C.verde:C.linho,bg:c})}</div>`:''}</div>`).join('')}
+   </div></div></div>
+ <div style="position:absolute;left:660px;top:120px;display:grid;grid-template-columns:repeat(3,330px);gap:30px">
+  ${post(C.verde,`<div style="position:absolute;inset:34px;color:${C.linho}"><div style="font:600 14px Montserrat;letter-spacing:.3em">NOVA COLEÇÃO</div><div style="font:800 46px Montserrat;line-height:1;margin-top:14px">LINHO<br>DE VERÃO</div><div style="position:absolute;bottom:0;font:500 16px 'DM Sans'">a partir de R$ 39,90/m</div><div style="position:absolute;right:0;bottom:0;width:58px;height:90px">${symbol({mode:'mono',color:C.linho,bg:C.verde})}</div></div>`)}
+  ${post(C.linho,`<div class="linen" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center"><div data-logo="main" data-size="62"></div></div>`)}
+  ${post(C.musgo,`<div style="position:absolute;inset:34px;color:${C.linho}"><div style="font:800 40px Montserrat;line-height:1.05">CORTE<br>NA HORA,<br><span style="color:${C.claro}">DO JEITO<br>QUE VOCÊ<br>PRECISA.</span></div><div style="position:absolute;bottom:0;right:0;width:64px;height:64px;color:${C.claro}"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">${I['Tesoura']}</svg></div></div>`)}
+ </div>
+ <div style="position:absolute;left:660px;top:500px;width:520px;height:300px;background:${C.linho};border-radius:12px;box-shadow:0 18px 40px rgba(0,0,0,.18);display:flex;align-items:center;justify-content:center;transform:rotate(-3deg)"><div data-logo="main" data-size="74"></div></div>
+ <div style="position:absolute;left:1150px;top:540px;width:520px;height:300px;background:${C.verde};border-radius:12px;box-shadow:0 18px 40px rgba(0,0,0,.25);padding:44px 46px;color:${C.linho};font-family:'DM Sans';transform:rotate(2deg)">
+   <div style="font:800 30px Montserrat">Ana Ribeiro</div><div style="font-size:17px;opacity:.9;margin-top:4px">Consultora de tecidos</div>
+   <div style="font-size:17px;line-height:1.7;margin-top:34px">(11) 98765-4321<br>@plano.tecidos<br>planotecidos.com.br</div>
+   <div style="position:absolute;right:46px;bottom:44px;width:56px;height:88px">${symbol({mode:'mono',color:C.linho,bg:C.verde})}</div></div>`);
+
+/* render dos logotipos */
+document.querySelectorAll('[data-logo]').forEach(logo);
+document.fonts.ready.then(()=>{fitSubs();document.body.dataset.ready='1'});
+</script>
+</body>
+</html>
