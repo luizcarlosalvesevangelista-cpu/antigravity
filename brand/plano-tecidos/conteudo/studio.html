@@ -6,6 +6,7 @@
 <link href="../fonts/fonts.css" rel="stylesheet">
 <script src="../assets/plano.js"></script>
 <script src="calendario.js"></script>
+<script src="historia.js"></script>
 <style>
 :root{--verde:#4E8C34;--claro:#86BC5F;--musgo:#24402A;--linho:#F1EADF;--areia:#D6CAB4;--grafite:#2B2B29}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -132,29 +133,28 @@ const E=x=>{x=cl(x);return 1-Math.pow(1-x,3)};            // easeOutCubic
 const EB=x=>{x=cl(x);const c=1.6;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)}; // easeOutBack
 const seg=(t,a,b)=>cl((t-a)/(b-a));
 const M={
- 'm1-logo':{dur:8,html:()=>`<div class="art tall linen" id="m">
-   <div id="word" style="position:absolute;left:0;right:0;top:760px;display:flex;justify-content:center">
-    <div style="font:800 236px Montserrat;color:${C.grafite};display:flex;align-items:baseline;letter-spacing:.02em">
-     <span id="lP">P</span><span id="L" style="display:inline-block;position:relative;width:calc(.7em*72/100);height:.7em;margin:0 .05em 0 .01em"><span style="position:absolute;left:0;bottom:-.007em;width:100%;height:calc(.7em*107.5/100)">${symbol({})}</span></span><span id="lA">A</span><span id="lN">N</span><span id="lO">O</span></div></div>
-   <div id="tec" style="position:absolute;left:0;right:0;top:1020px;text-align:center;font:700 84px Montserrat;color:${C.grafite}">TECIDOS</div>
-   <div id="tag" style="position:absolute;left:120px;right:120px;top:1260px;text-align:center;font:500 48px/1.35 'DM Sans';color:${C.grafite}">O nosso plano é dar vida<br>ao seu projeto.</div>
+ 'm1-logo':{dur:8,cues:[{t:.15,s:'rise'},{t:1.0,s:'unroll',d:.6},{t:1.5,s:'pop'},{t:2.1,s:'tick'},{t:2.25,s:'tick'},{t:2.4,s:'tick'},{t:2.55,s:'tick'},{t:3.0,s:'whoosh'},{t:3.6,s:'logo'}],html:()=>`<div class="art tall linen" id="m">
+   <div style="position:absolute;left:0;right:0;top:640px;display:flex;justify-content:center"><div id="lg" data-logo="main" data-size="240"></div></div>
+   <div id="tag" style="position:absolute;left:120px;right:120px;top:1260px;text-align:center;font:500 52px/1.35 'DM Sans';color:${C.grafite}">O nosso plano é dar vida<br>ao seu projeto.</div>
    <div id="hd" style="position:absolute;left:0;right:0;bottom:200px;text-align:center" class="handle">@planotecidos</div>
    <div class="strip" id="st" style="height:40px;background:repeating-linear-gradient(90deg,${C.verde} 0 60px,${C.claro} 60px 120px,${C.areia} 120px 180px)"></div></div>`,
   render:t=>{
    const g=s=>document.querySelector(s);
-   const stem=g('#L .s-stem'),foot=g('#L .s-foot'),flaps=document.querySelectorAll('#L .s-flap');
+   const w=g('#lg .w');
+   if(!w.dataset.split){const l=w.querySelector('.l');w.innerHTML='';[['lP','P'],null,['lA','A'],['lN','N'],['lO','O']].forEach(x=>{if(!x){w.appendChild(l);return}const s=document.createElement('span');s.id=x[0];s.textContent=x[1];s.style.display='inline-block';w.appendChild(s)});w.dataset.split=1;Plano.fit(g('#lg'))}
+   const L=g('#lg .l'),stem=L.querySelector('.s-stem'),foot=L.querySelector('.s-foot'),flaps=L.querySelectorAll('.s-flap');
    [stem,foot,...flaps].forEach(e=>{e.style.transformBox='fill-box'});
    stem.style.transformOrigin='50% 100%';stem.style.transform=`scaleY(${E(seg(t,.2,1.1))})`;
    foot.style.transformOrigin='0% 50%';foot.style.transform=`scaleX(${E(seg(t,1.0,1.5))})`;
    flaps.forEach(f=>{f.style.transformOrigin='0% 100%';f.style.transform=`scale(${E(seg(t,1.45,2.0))})`});
-   const L=g('#L');const z=1+ .9*(1-E(seg(t,1.9,2.9)));L.style.transform=`scale(${z})`;L.style.transformOrigin='50% 100%';
-   [['#lP',2.1,-1],['#lA',2.25,1],['#lN',2.4,1],['#lO',2.55,1]].forEach(([s,a,d])=>{const p=EB(seg(t,a,a+.6));const e=g(s);e.style.display='inline-block';e.style.opacity=cl(seg(t,a,a+.3));e.style.transform=`translateX(${(1-p)*90*d}px)`});
-   const tp=E(seg(t,3.0,3.9));const tec=g('#tec');tec.style.opacity=tp;tec.style.letterSpacing=(10+tp*32)+'px';tec.style.textIndent=(10+tp*32)+'px';
+   const z=1+.6*(1-E(seg(t,1.9,2.9)));L.style.transformOrigin='50% 100%';L.style.transform=`scale(${z})`;
+   [['#lP',2.1,-1],['#lA',2.25,1],['#lN',2.4,1],['#lO',2.55,1]].forEach(([s,a,d])=>{const p=EB(seg(t,a,a+.6));const e=g(s);e.style.opacity=cl(seg(t,a,a+.3));e.style.transform=`translateX(${(1-p)*90*d}px)`});
+   const tec=g('#lg .t');const tp=E(seg(t,3.0,3.7));tec.style.opacity=tp;tec.style.transform=`translateY(${(1-tp)*30}px)`;
    const tg=g('#tag');tg.style.opacity=E(seg(t,4.0,4.6));tg.style.transform=`translateY(${(1-E(seg(t,4,4.6)))*30}px)`;
-   const hd=g('#hd');hd.style.opacity=E(seg(t,5.0,5.6));
+   g('#hd').style.opacity=E(seg(t,5.0,5.6));
    g('#st').style.transform=`translateX(${-180+((t*60)%180)}px)`;g('#st').style.width='calc(100% + 180px)';
   }},
- 'm2-novidades':{dur:12,html:()=>{
+ 'm2-novidades':{dur:12,cues:[{t:.1,s:'whoosh'},...[1,3,5,7].map(a=>({t:a+.1,s:'swoosh'})),...[1,3,5,7].map(a=>({t:a+.6,s:'pop'})),{t:9,s:'whoosh'},{t:9.4,s:'logo'}],html:()=>{
    const it=[['tricoline-rosa-listrada.jpg','Tricoline listrada rosa'],['tricoline-azul-listrada.jpg','Tricoline listrada azul'],['cetim-azul.jpg','Cetim azul'],['cristal-furtacor.jpg','Cristal furta-cor']];
    return `<div class="art tall bg-musgo weave">
    <div id="t1" class="ttl" style="position:absolute;left:90px;top:170px;color:${C.linho};font-size:130px">Chegou<br>na <em>Plano</em></div>
@@ -170,22 +170,22 @@ const M={
     e.style.opacity=cl(seg(t,a,a+.3))*(1-out);e.style.transform=`translateX(${(1-pin)*900-out*900}px) rotate(${(1-pin)*8-out*-6}deg)`}
    const en=E(seg(t,9,9.6));g('#end').style.opacity=en;g('#end').style.transform=`scale(${1.06-.06*en})`;
   }},
- 'm3-comprar':{dur:14,html:()=>`<div class="art tall linen">
+ 'm3-comprar':{dur:14,cues:[{t:.1,s:'whoosh'},{t:1.2,s:'pop'},{t:3.8,s:'pop'},{t:6.4,s:'pop'},{t:8.2,s:'tap'},{t:8.4,s:'success'},{t:10.1,s:'whoosh'},{t:10.6,s:'logo'}],html:()=>`<div class="art tall linen">
    <div id="hd" style="position:absolute;left:90px;top:160px"><div class="kick" style="color:${C.verde}">COMO COMPRAR</div><div class="ttl" style="font-size:120px;margin-top:30px">Tecido por metro em <em>3 passos</em></div></div>
-   ${[['olho','Escolha o tecido','No Instagram ou na Shopee.'],['zap','Informe a metragem','No WhatsApp (11) 99383-9570.'],['entrega','Receba em casa','Cortado, dobrado e embalado.']].map(([i,a,b],k)=>`<div id="p${k}" style="position:absolute;left:90px;right:90px;top:${760+k*300}px;display:flex;gap:40px;align-items:center;background:#fff;border-radius:36px;padding:44px;box-shadow:0 20px 50px rgba(0,0,0,.08);opacity:0"><div class="n" style="width:110px;height:110px;font-size:52px">${k+1}</div><div style="flex:1"><div class="ttl" style="font-size:58px">${a}</div><div class="sub" style="font-size:36px;margin-top:8px">${b}</div></div><div style="color:${C.verde}">${icon(i,C.verde)}</div></div>`).join('')}
+   ${[['olho','Escolha o tecido','Na loja Plano Tecidos da Shopee.'],['metro','Selecione a metragem','Quantos metros o seu projeto pede.'],['sacola','Finalize na Shopee','Pagamento seguro e envio rápido.']].map(([i,a,b],k)=>`<div id="p${k}" style="position:absolute;left:90px;right:90px;top:${760+k*300}px;display:flex;gap:40px;align-items:center;background:#fff;border-radius:36px;padding:44px;box-shadow:0 20px 50px rgba(0,0,0,.08);opacity:0"><div class="n" style="width:110px;height:110px;font-size:52px">${k+1}</div><div style="flex:1"><div class="ttl" style="font-size:58px">${a}</div><div class="sub" style="font-size:36px;margin-top:8px">${b}</div></div><div style="color:${C.verde}">${icon(i,C.verde)}</div></div>`).join('')}
    <div id="bar" style="position:absolute;left:90px;top:700px;height:14px;background:${C.verde};border-radius:7px;width:0"></div>
    <div id="end" class="bg-verde weave" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:70px;opacity:0">
     <div data-logo="main" data-size="150" data-mode="rev" data-sym="mono" data-bg="${C.verde}"></div>
     <div class="ttl" style="font-size:86px;text-align:center;color:${C.linho}">Seu projeto<br>começa aqui.</div>
-    <div style="font:700 46px Montserrat;color:${C.linho}">(11) 99383-9570</div></div></div>`,
+    <div style="display:flex;align-items:center;gap:20px;font:700 46px Montserrat;color:${C.musgo};background:${C.linho};border-radius:999px;padding:24px 44px">${icon('sacola',C.verde)}shopee.com.br/planotecidos</div></div></div>`,
   render:t=>{
    const g=s=>document.querySelector(s);
    g('#hd').style.opacity=E(seg(t,0,.6));
    g('#bar').style.width=(900*E(seg(t,.6,9)))+'px';
-   for(let k=0;k<3;k++){const a=1.2+k*2.6,e=g('#p'+k);const p=EB(seg(t,a,a+.7));e.style.opacity=cl(seg(t,a,a+.3));e.style.transform=`translateY(${(1-p)*120}px)`}
+   for(let k=0;k<3;k++){const a=1.2+k*2.6,e=g('#p'+k);const p=EB(seg(t,a,a+.7));e.style.opacity=cl(seg(t,a,a+.3));e.style.transform=`translateY(${(1-p)*120}px) scale(${k===2&&t>8.2&&t<8.45?.97:1})`}
    const en=E(seg(t,10.2,10.9));g('#end').style.opacity=en;g('#end').style.transform=`translateY(${(1-en)*80}px)`;
   }},
- 'm4-blackfriday':{dur:8,html:()=>{let ticks='';for(let i=0;i<=40;i++)ticks+=`<div style="position:absolute;left:${i*60}px;bottom:0;width:4px;height:${i%5?36:70}px;background:${C.grafite}"></div>${i%5?'':`<div style="position:absolute;left:${i*60-20}px;bottom:84px;font:700 30px Montserrat;color:${C.grafite}">${i}</div>`}`;
+ 'm4-blackfriday':{dur:8,cues:[{t:.2,s:'boom'},{t:.3,s:'unroll',d:2.9},{t:1,s:'whoosh'},{t:3.4,s:'ding'}],html:()=>{let ticks='';for(let i=0;i<=40;i++)ticks+=`<div style="position:absolute;left:${i*60}px;bottom:0;width:4px;height:${i%5?36:70}px;background:${C.grafite}"></div>${i%5?'':`<div style="position:absolute;left:${i*60-20}px;bottom:84px;font:700 30px Montserrat;color:${C.grafite}">${i}</div>`}`;
    return `<div class="art tall bg-grafite weave">
    <div class="kick" style="position:absolute;left:90px;top:170px;color:${C.claro}">BLACK FRIDAY PLANO · 27/11</div>
    <div id="big" style="position:absolute;left:90px;top:300px;font:800 520px/0.9 Montserrat;color:${C.linho}">9</div>
@@ -208,12 +208,13 @@ const M={
 (async function(){
  const root=document.getElementById('root');
  let html,mot=null;
+ Object.assign(M,window.M_EXTRA||{});
  if(q.get('motion')){mot=M[q.get('motion')];html=mot.html();}
  else{const p=POSTS.find(x=>x.id===q.get('id'));const a=p.slides?p.slides[+(q.get('slide')||0)]:p.art;html=T[a.tpl](a);}
  root.innerHTML=html;
  await Plano.renderAll(root);
  await Promise.all([...document.images].map(i=>i.complete?0:new Promise(r=>{i.onload=i.onerror=r})));
- if(mot){window.__duration=mot.dur;window.__render=t=>mot.render(t);mot.render(q.has('t')?+q.get('t'):mot.dur-.01);
+ if(mot){window.__duration=mot.dur;window.__cues=mot.cues||[];window.__poster=mot.poster;window.__render=t=>mot.render(t);mot.render(q.has('t')?+q.get('t'):mot.dur-.01);
    if(q.has('play')){const t0=performance.now();(function f(){mot.render(((performance.now()-t0)/1000)%mot.dur);requestAnimationFrame(f)})()}}
  document.body.dataset.ready='1';
 })();

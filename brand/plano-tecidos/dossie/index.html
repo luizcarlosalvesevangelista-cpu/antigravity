@@ -34,6 +34,43 @@
 .vids{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:12px}
 .vids video{width:100%;border-radius:10px;background:#111;display:block}
 .files a{font-weight:700}
+.hero-mo{display:grid;grid-template-columns:minmax(0,340px) 1fr;gap:20px;align-items:start}
+@media (max-width:760px){.hero-mo{grid-template-columns:1fr}}
+.mo-player video{width:100%;border-radius:14px;background:#111;display:block;aspect-ratio:9/16}
+.sb{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media (min-width:1000px){.sb{grid-template-columns:repeat(6,1fr)}}
+.vids5{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.vids5 video{width:100%;border-radius:10px;background:#111;display:block;aspect-ratio:9/16}
+@media (max-width:820px){.vids5{grid-template-columns:repeat(2,1fr)}.vids5 figure:first-child{grid-column:1/-1}}
+.sb figure,.vids figure,.mobs figure{margin:0;display:grid;gap:6px;min-width:0}
+.sb img{border-radius:8px;aspect-ratio:9/16;object-fit:cover;width:100%;border:1px solid var(--line)}
+.sb figcaption,.vids figcaption,.mobs figcaption{font-size:.78rem;color:var(--muted);line-height:1.35}
+.sb b{color:var(--accent)}
+.vids video{aspect-ratio:9/16}
+.dev-ctl{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center}
+.auto{font-size:.85rem;font-weight:700;display:flex;gap:8px;align-items:center}
+.devs{background:linear-gradient(180deg,var(--surface),var(--bg));border:1px solid var(--line);border-radius:14px;padding:28px 16px;display:flex;justify-content:center;align-items:flex-end;gap:22px;overflow:hidden}
+.dev{display:none;flex-direction:column;background:#151515;box-shadow:0 24px 50px rgba(0,0,0,.18)}
+.devs[data-dev="desktop"] .desktop,.devs[data-dev="tablet"] .tablet,.devs[data-dev="mobile"] .mobile,.devs[data-dev="all"] .dev{display:flex}
+.dev .scr{overflow-y:auto;background:#fff;scrollbar-width:thin}
+.dev .scr img{display:block;width:100%}
+.dev.desktop{width:min(100%,860px);border-radius:12px;overflow:hidden}
+.dev.desktop .bar{display:flex;align-items:center;gap:6px;padding:9px 12px;background:#e9e6dc}
+.dev.desktop .bar i{width:10px;height:10px;border-radius:50%;background:#cfc8b8}
+.dev.desktop .bar span{margin-left:12px;font-size:.72rem;color:#555;background:#fff;border-radius:6px;padding:3px 12px;flex:1;max-width:320px}
+.dev.desktop .scr{aspect-ratio:1440/900}
+.dev.tablet{width:min(100%,380px);border-radius:28px;padding:14px}
+.dev.tablet .scr{aspect-ratio:834/1112;border-radius:14px}
+.dev.mobile{width:min(100%,250px);border-radius:34px;padding:10px}
+.dev.mobile .scr{aspect-ratio:390/844;border-radius:26px}
+.devs[data-dev="all"] .desktop{width:min(56%,620px)}
+.devs[data-dev="all"] .tablet{width:min(26%,250px);border-radius:20px;padding:9px}
+.devs[data-dev="all"] .mobile{width:min(17%,160px);border-radius:24px;padding:7px}
+@media (max-width:640px){.devs[data-dev="all"]{flex-wrap:wrap}.devs[data-dev="all"] .desktop{width:100%}.devs[data-dev="all"] .tablet{width:52%}.devs[data-dev="all"] .mobile{width:36%}}
+.mobs{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media (max-width:520px){.mobs{grid-template-columns:repeat(2,1fr)}}
+.mobs img{width:100%;border-radius:18px;border:5px solid #151515;display:block}
+
 .funil{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-radius:12px;overflow:hidden}
 @media (max-width:720px){.funil{grid-template-columns:1fr 1fr}}
 .funil div{padding:18px;color:#fff;display:grid;gap:6px;font-size:.9rem}
@@ -218,7 +255,7 @@
   <p class="lede">O L-rolo redesenhado como vetor plano e o sistema visual que nasce dele: cores, tipografia, padrões de trama, ícones e aplicações.</p>
   <div class="meta"><span><b>Manual:</b> <a href="../index.html">abrir o brand book</a></span><span><b>Apresentação:</b> <a href="../apresentacao/index.html">abrir o deck</a></span></div>
  </header>
- <nav class="subtoc"><a href="#antesdepois">Antes e depois</a><a href="#gestalt">Gestalt</a><a href="#sistema">Sistema</a><a href="#aplic">Aplicações</a><a href="#motion">Motion</a></nav>
+ <nav class="subtoc"><a href="#antesdepois">Antes e depois</a><a href="#gestalt">Gestalt</a><a href="#sistema">Sistema</a><a href="#aplic">Aplicações</a><a href="#motion">Motion principal</a><a href="#motions">Série de motions</a></nav>
 
  <section id="antesdepois">
   <div class="sec-head"><div class="eyebrow">Redesenho</div><h2>Mesma ideia, mais nítida</h2></div>
@@ -255,12 +292,32 @@
  </section>
 
  <section id="motion">
-  <div class="sec-head"><div class="eyebrow">Motion</div><h2>A marca em movimento</h2><p>Quatro vídeos 9:16 produzidos para o cronograma.</p></div>
-  <div class="vids">
-   <video src="../conteudo/motion/m1-logo.mp4" poster="../conteudo/motion/m1-logo.jpg" controls muted loop playsinline preload="none"></video>
-   <video src="../conteudo/motion/m2-novidades.mp4" poster="../conteudo/motion/m2-novidades.jpg" controls muted loop playsinline preload="none"></video>
-   <video src="../conteudo/motion/m3-comprar.mp4" poster="../conteudo/motion/m3-comprar.jpg" controls muted loop playsinline preload="none"></video>
-   <video src="../conteudo/motion/m4-blackfriday.mp4" poster="../conteudo/motion/m4-blackfriday.jpg" controls muted loop playsinline preload="none"></video>
+  <div class="sec-head"><div class="eyebrow">Motion principal · 56 s · com som</div><h2>Do sonho ao vestido</h2><p>Ela precisa de um vestido e não encontra nenhum do seu gosto. Então decide criar o próprio: encontra a tricoline listrada rosa na loja da Plano na Shopee, recebe rápido, leva ao ateliê, veste e se sente confortável. No fim, avalia a loja com 5 estrelas. O tecido é o mesmo das fotos do Instagram da Plano.</p></div>
+  <div class="hero-mo">
+   <div class="mo-player"><video src="../conteudo/motion/m5-historia.mp4" poster="../conteudo/motion/m5-historia.jpg" controls playsinline preload="metadata"></video><p class="cap">Toque para ver com som. Trilha e efeitos sintetizados pela Upe, sem uso de músicas de terceiros.</p></div>
+   <div class="sb"><figure><img src="../conteudo/motion/storyboard/m5-historia-01.jpg" alt="Ela precisa de um vestido" loading="lazy"><figcaption><b>01</b> Ela precisa de um vestido</figcaption></figure><figure><img src="../conteudo/motion/storyboard/m5-historia-02.jpg" alt="Nenhum serve" loading="lazy"><figcaption><b>02</b> Nenhum serve</figcaption></figure><figure><img src="../conteudo/motion/storyboard/m5-historia-03.jpg" alt="A ideia: criar o próprio" loading="lazy"><figcaption><b>03</b> A ideia: criar o próprio</figcaption></figure><figure><img src="../conteudo/motion/storyboard/m5-historia-04.jpg" alt="Busca o tecido" loading="lazy"><figcaption><b>04</b> Busca o tecido</figcaption></figure><figure><img src="../conteudo/motion/storyboard/m5-historia-05.jpg" alt="Tricoline listrada da Plano" loading="lazy"><figcaption><b>05</b> Tricoline listrada da Plano</figcaption></figure><figure><img src="../conteudo/motion/storyboard/m5-historia-06.jpg" alt="Pedido confirmado na Shopee" loading="lazy"><figcaption><b>06</b> Pedido confirmado na Shopee</figcaption></figure><figure><img src="../conteudo/motion/storyboard/m5-historia-07.jpg" alt="Chega rápido e bem dobrado" loading="lazy"><figcaption><b>07</b> Chega rápido e bem dobrado</figcaption></figure><figure><img src="../conteudo/motion/storyboard/m5-historia-08.jpg" alt="O ateliê costura" loading="lazy"><figcaption><b>08</b> O ateliê costura</figcaption></figure><figure><img src="../conteudo/motion/storyboard/m5-historia-09.jpg" alt="Veste e se sente confortável" loading="lazy"><figcaption><b>09</b> Veste e se sente confortável</figcaption></figure><figure><img src="../conteudo/motion/storyboard/m5-historia-10.jpg" alt="Tecido certo, entrega rápida" loading="lazy"><figcaption><b>10</b> Tecido certo, entrega rápida</figcaption></figure><figure><img src="../conteudo/motion/storyboard/m5-historia-11.jpg" alt="Avaliação 5 estrelas" loading="lazy"><figcaption><b>11</b> Avaliação 5 estrelas</figcaption></figure><figure><img src="../conteudo/motion/storyboard/m5-historia-12.jpg" alt="Assinatura da marca" loading="lazy"><figcaption><b>12</b> Assinatura da marca</figcaption></figure></div>
+  </div>
+  <div class="tbl"><table>
+   <thead><tr><th>Cena</th><th>Tempo</th><th>O que acontece</th><th>Som</th></tr></thead>
+   <tbody>
+    <tr><td>Provador</td><td>0–7 s</td><td>Quatro vestidos, quatro "não"</td><td>Trilha entra; um "não" grave a cada vestido</td></tr>
+    <tr><td>A ideia</td><td>7–11 s</td><td>Ela rabisca o vestido que imaginou</td><td>Lápis riscando, acorde de ideia</td></tr>
+    <tr><td>Busca e compra</td><td>11–21 s</td><td>Encontra a Plano, escolhe 2,5 m e finaliza na Shopee</td><td>Digitação, toques, contador, acorde de sucesso</td></tr>
+    <tr><td>Entrega</td><td>21–26 s</td><td>O pacote chega e o tecido aparece</td><td>Caminhão, caixa, embalagem abrindo</td></tr>
+    <tr><td>Ateliê</td><td>26–33 s</td><td>A costureira transforma o tecido no vestido</td><td>Máquina de costura</td></tr>
+    <tr><td>Vestindo</td><td>33–39 s</td><td>Ela gira, sorri e se sente confortável</td><td>Brilhos e giro</td></tr>
+    <tr><td>Percepção e avaliação</td><td>39–51 s</td><td>Tecido certo, entrega rápida, qualidade. 5 estrelas e comentário</td><td>Três confirmações, notas subindo nas estrelas, digitação</td></tr>
+    <tr><td>Assinatura</td><td>51–56 s</td><td>Logo, frase da marca e endereço da loja na Shopee</td><td>Acorde final</td></tr>
+   </tbody></table></div>
+ </section>
+ <section id="motions">
+  <div class="sec-head"><div class="eyebrow">Motion · série para reels</div><h2>A marca em movimento</h2><p>Cinco vídeos 9:16 com trilha e efeitos. O logo reveal foi realinhado ao manual e o "Como comprar" agora termina a compra na Shopee.</p></div>
+  <div class="vids5">
+   <figure><video src="../conteudo/motion/m5-historia.mp4" poster="../conteudo/motion/m5-historia.jpg" controls playsinline preload="none"></video><figcaption><b>Do sonho ao vestido</b> · 56 s</figcaption></figure>
+   <figure><video src="../conteudo/motion/m1-logo.mp4" poster="../conteudo/motion/m1-logo.jpg" controls playsinline preload="none"></video><figcaption><b>Logo reveal</b> · 8 s</figcaption></figure>
+   <figure><video src="../conteudo/motion/m2-novidades.mp4" poster="../conteudo/motion/m2-novidades.jpg" controls playsinline preload="none"></video><figcaption><b>Chegou na Plano</b> · 12 s</figcaption></figure>
+   <figure><video src="../conteudo/motion/m3-comprar.mp4" poster="../conteudo/motion/m3-comprar.jpg" controls playsinline preload="none"></video><figcaption><b>Como comprar na Shopee</b> · 14 s</figcaption></figure>
+   <figure><video src="../conteudo/motion/m4-blackfriday.mp4" poster="../conteudo/motion/m4-blackfriday.jpg" controls playsinline preload="none"></video><figcaption><b>Contagem Black Friday</b> · 8 s</figcaption></figure>
   </div>
  </section>
 </div>
@@ -277,7 +334,7 @@
    <div class="card"><div class="label">01 · Manual da marca</div><p>Logotipos, cores (CMYK, RGB, HEX, Pantone), construção, ícones, tipografia e aplicações.</p><a href="../index.html">Abrir HTML</a><a href="../Plano_Tecidos_Brand_Book.pdf">Baixar PDF</a></div>
    <div class="card"><div class="label">02 · Apresentação de redesign</div><p>17 slides para apresentar a proposta à Plano. Navegue com as setas do teclado.</p><a href="../apresentacao/index.html">Abrir deck</a><a href="../apresentacao/Plano_Tecidos_Redesign.pdf">Baixar PDF</a></div>
    <div class="card"><div class="label">03 · Landing page institucional</div><p>Página única, responsiva, com todos os botões levando ao WhatsApp com mensagem pronta e à Shopee.</p><a href="../site/index.html">Abrir site</a></div>
-   <div class="card"><div class="label">04 · Cronograma de conteúdo</div><p>24 publicações de 12/10 a 22/11, com roteiros, legendas, 38 artes e 4 motions.</p><a href="../conteudo/index.html">Abrir cronograma</a></div>
+   <div class="card"><div class="label">04 · Cronograma de conteúdo</div><p>25 publicações de 12/10 a 22/11, com roteiros, legendas, 38 artes e 5 motions com som.</p><a href="../conteudo/index.html">Abrir cronograma</a></div>
   </div>
  </section>
  <section>
@@ -285,8 +342,26 @@
   <div class="posts" id="posts"></div>
  </section>
  <section>
-  <div class="sec-head"><div class="eyebrow">Landing page</div><h2>Desktop e celular</h2></div>
-  <div style="display:grid;grid-template-columns:3fr 1fr;gap:16px;align-items:start"><div class="shot"><img src="../assets/site/site-desktop.jpg" alt="Landing page no desktop"></div><div class="shot" style="border:6px solid #111;border-radius:24px"><img src="../assets/site/site-mobile.jpg" alt="Landing page no celular"></div></div>
+  <div class="sec-head"><div class="eyebrow">Landing page · simulação responsiva</div><h2>Desktop, tablet e celular</h2><p>A mesma página em três larguras reais (1440, 834 e 390 px). Escolha o aparelho e role dentro da tela, ou deixe a rolagem automática.</p></div>
+  <div class="dev-ctl"><div class="filter" role="group" aria-label="Aparelho">
+    <button aria-pressed="true" data-dev="desktop">Desktop · 1440 px</button><button aria-pressed="false" data-dev="tablet">Tablet · 834 px</button><button aria-pressed="false" data-dev="mobile">Celular · 390 px</button><button aria-pressed="false" data-dev="all">Os três lado a lado</button></div>
+   <label class="auto"><input type="checkbox" id="autoscroll" checked> Rolar automaticamente</label></div>
+  <div class="devs" id="devs" data-dev="desktop">
+   <div class="dev desktop"><div class="bar"><i></i><i></i><i></i><span>planotecidos.com.br</span></div><div class="scr"><img src="../assets/site/lp-desktop-full.jpg" alt="Landing page completa no desktop"></div></div>
+   <div class="dev tablet"><div class="scr"><img src="../assets/site/lp-tablet-full.jpg" alt="Landing page completa no tablet"></div></div>
+   <div class="dev mobile"><div class="scr"><img src="../assets/site/lp-mobile-full.jpg" alt="Landing page completa no celular"></div></div>
+  </div>
+  <div class="sec-head" style="margin-top:12px"><h3>Tela a tela no celular</h3><p>Como cada seção aparece num celular de 390 px, com o menu fixo e o botão de WhatsApp para dúvidas.</p></div>
+  <div class="mobs"><figure><img src="../assets/site/lp-mobile-01.jpg" alt="Celular: Topo" loading="lazy"><figcaption>01 · Topo</figcaption></figure><figure><img src="../assets/site/lp-mobile-02.jpg" alt="Celular: Diferenciais" loading="lazy"><figcaption>02 · Diferenciais</figcaption></figure><figure><img src="../assets/site/lp-mobile-03.jpg" alt="Celular: Tecidos" loading="lazy"><figcaption>03 · Tecidos</figcaption></figure><figure><img src="../assets/site/lp-mobile-04.jpg" alt="Celular: Projetos" loading="lazy"><figcaption>04 · Projetos</figcaption></figure><figure><img src="../assets/site/lp-mobile-05.jpg" alt="Celular: Como comprar" loading="lazy"><figcaption>05 · Como comprar</figcaption></figure><figure><img src="../assets/site/lp-mobile-06.jpg" alt="Celular: Sobre" loading="lazy"><figcaption>06 · Sobre</figcaption></figure><figure><img src="../assets/site/lp-mobile-07.jpg" alt="Celular: Dúvidas" loading="lazy"><figcaption>07 · Dúvidas</figcaption></figure><figure><img src="../assets/site/lp-mobile-08.jpg" alt="Celular: Rodapé" loading="lazy"><figcaption>08 · Rodapé</figcaption></figure></div>
+  <div class="tbl"><table>
+   <thead><tr><th>Elemento</th><th>Desktop</th><th>Tablet</th><th>Celular</th></tr></thead>
+   <tbody>
+    <tr><td>Menu</td><td>Links das seções + WhatsApp</td><td>Logo + WhatsApp</td><td>Logo + WhatsApp, fixo no topo</td></tr>
+    <tr><td>Topo</td><td>Texto e fotos lado a lado</td><td>Texto em cima, fotos embaixo</td><td>Uma coluna, botões em largura cheia</td></tr>
+    <tr><td>Tecidos</td><td>3 colunas</td><td>2 colunas</td><td>1 coluna</td></tr>
+    <tr><td>Como comprar</td><td>3 passos em linha</td><td>3 passos empilhados</td><td>3 passos empilhados</td></tr>
+    <tr><td>Compra</td><td colspan="3">Todos os botões de compra levam à loja na Shopee. O WhatsApp fica para dúvidas e cálculo de metragem.</td></tr>
+   </tbody></table></div>
  </section>
  <section>
   <div class="sec-head"><div class="eyebrow">Antes e depois do envio</div><h2>Checklist</h2></div>
@@ -310,6 +385,18 @@ tabs.forEach(t=>t.onclick=()=>sel(t.dataset.tab,true));
 const h=location.hash.slice(1);if(/^t[1-4]$/.test(h))sel(h);
 const P=['s1-01-1','s1-01-2','s1-01-3','s1-03','s1-04-1','s2-01-1','s2-01-2','s2-03','s2-04','s3-01-1','s3-02','s3-03','s4-02-1','s4-03','s5-01-1','s5-02','s5-04','s6-01','s6-03-1','s6-04'];
 document.getElementById('posts').innerHTML=P.map(f=>`<a href="../conteudo/posts/${f}.jpg"><img src="../conteudo/posts/${f}.jpg" alt="" loading="lazy"></a>`).join('');
+
+/* simulação responsiva */
+const devs=document.getElementById('devs');
+document.querySelectorAll('[data-dev]').forEach(b=>{if(b.tagName!=='BUTTON')return;b.onclick=()=>{devs.dataset.dev=b.dataset.dev;document.querySelectorAll('button[data-dev]').forEach(x=>x.setAttribute('aria-pressed',x===b))}});
+const auto=document.getElementById('autoscroll');let hold=0;
+devs.querySelectorAll('.scr').forEach(sc=>['wheel','touchstart','pointerdown'].forEach(ev=>sc.addEventListener(ev,()=>{hold=performance.now()+4000},{passive:true})));
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;if(reduce)auto.checked=false;
+let last=performance.now();
+(function tick(now){const dt=Math.min(64,now-last);last=now;
+ if(auto.checked&&now>hold&&!document.getElementById('t4').hidden){devs.querySelectorAll('.dev').forEach(d=>{if(getComputedStyle(d).display==='none')return;const sc=d.querySelector('.scr');const max=sc.scrollHeight-sc.clientHeight;if(max<=0)return;
+  sc._p=(sc._p??sc.scrollTop)+dt*sc.clientHeight/7000;if(sc._p>=max+sc.clientHeight*.6)sc._p=0;sc.scrollTop=Math.min(sc._p,max)})}
+ requestAnimationFrame(tick)})(last);
 Plano.renderAll();
 </script>
 </body>

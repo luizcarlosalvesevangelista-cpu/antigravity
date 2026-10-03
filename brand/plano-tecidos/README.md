@@ -10,7 +10,7 @@ Projeto da Upe Criativo para a Plano Tecidos (@planotecidos). Todas as páginas 
 | Landing page institucional | `site/index.html` |
 | Cronograma de conteúdo (12/10 a 22/11/2026) | `conteudo/index.html` |
 | Artes do Instagram (JPG 1080×1350 e 1080×1920) | `conteudo/posts/` |
-| Motions para reels (MP4 1080×1920, 30 fps, sem trilha) | `conteudo/motion/` |
+| Motions para reels (MP4 1080×1920, 30 fps, com trilha e efeitos) | `conteudo/motion/`, storyboard em `conteudo/motion/storyboard/` |
 
 ## Como regerar artes e motions
 
@@ -19,7 +19,7 @@ O conteúdo do cronograma fica em `conteudo/calendario.js`. As artes são desenh
 ```sh
 cd conteudo
 node render.js posts        # todas as artes
-node render.js motion m2    # só os motions que contêm "m2" no nome
+node render.js motion m2    # só os motions que contêm "m2" no nome (trilha gerada por audio.py)
 ```
 
 `assets/plano.js` tem o símbolo L-rolo e o logotipo em código, com a mesma geometria do manual.
