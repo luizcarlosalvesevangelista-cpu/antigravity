@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dossiê Plano Tecidos</title>
+<link href="../fonts/fonts.css" rel="stylesheet">
+<link href="../assets/upe-doc.css" rel="stylesheet">
+<script src="../assets/plano.js"></script>
+<style>
+.panel[hidden]{display:none}
+.audit{display:grid;grid-template-columns:minmax(0,300px) 1fr;gap:24px;align-items:start}
+@media (max-width:720px){.audit{grid-template-columns:1fr}}
+.stage{display:grid;gap:10px}
+.stage .box{border-radius:10px;padding:24px;display:grid;place-items:center;background:#1b1b1a}
+.stage .tiny{display:flex;gap:16px;align-items:end;justify-content:center;background:#fff;border-radius:10px;padding:14px;border:1px solid var(--line)}
+.shots3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media (max-width:720px){.shots3{grid-template-columns:1fr}}
+.shots3 img{border-radius:8px;border:1px solid var(--line);display:block;width:100%}
+.voice{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.voice>div{background:var(--surface);padding:18px 20px;display:grid;gap:8px;align-content:start}
+.ex{font-style:italic;color:var(--muted);font-size:.9rem}
+.terr{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media (max-width:800px){.terr{grid-template-columns:1fr 1fr}}
+.terr .t{border-radius:10px;overflow:hidden;border:1px solid var(--line);background:var(--surface)}
+.terr .sw{display:flex;height:54px}.terr .sw i{flex:1}
+.terr .t div.b{padding:14px 16px;display:grid;gap:6px;font-size:.9rem}
+.terr .t.us{outline:3px solid var(--verde);outline-offset:2px}
+.ba{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:720px){.ba{grid-template-columns:1fr}}
+.ba .x{border-radius:12px;min-height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px}
+.posts{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.posts img{border-radius:6px;display:block;width:100%;aspect-ratio:4/5;object-fit:cover}
+.vids{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:12px}
+.vids video{width:100%;border-radius:10px;background:#111;display:block}
+.files a{font-weight:700}
+.funil{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-radius:12px;overflow:hidden}
+@media (max-width:720px){.funil{grid-template-columns:1fr 1fr}}
+.funil div{padding:18px;color:#fff;display:grid;gap:6px;font-size:.9rem}
+.funil b{font-family:var(--f-display);font-size:1.05rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <div class="topbar"><img class="upe-logo" src="../assets/upe-logo.png" alt="Upe Criativo"><span class="doc">Projeto Plano Tecidos · Documento interno</span></div>
+ <div class="tabs" role="tablist" aria-label="Abas do dossiê">
+  <button role="tab" aria-selected="true" data-tab="t1"><span>01</span>Diagnóstico</button>
+  <button role="tab" aria-selected="false" data-tab="t2"><span>02</span>Pesquisa e estratégia</button>
+  <button role="tab" aria-selected="false" data-tab="t3"><span>03</span>Redesign</button>
+  <button role="tab" aria-selected="false" data-tab="t4"><span>04</span>Entregáveis</button>
+ </div>
+
+<!-- ======================= ABA 01 ======================= -->
+<div class="panel" id="t1" role="tabpanel">
+ <header class="hero">
+  <div class="eyebrow">Aba 01 · O que encontramos</div>
+  <h1>Diagnóstico<br>Plano Tecidos</h1>
+  <p class="lede">Leitura da marca a partir do perfil @planotecidos, da loja na Shopee e do logotipo atual. Esta aba registra o ponto de partida. As decisões de redesign estão nas abas 02 e 03.</p>
+  <div class="meta"><span><b>Cliente:</b> Plano Tecidos</span><span><b>Data da leitura:</b> 03/10/2026</span><span><b>Fontes:</b> prints do Instagram, links e manual enviados</span></div>
+ </header>
+ <nav class="subtoc"><a href="#ficha">Ficha</a><a href="#diz">O que a marca diz</a><a href="#logo">Logotipo</a><a href="#perfil">Perfil atual</a><a href="#vozes">Três vozes</a><a href="#leitura">Leitura Upe</a></nav>
+
+ <section id="ficha">
+  <div class="sec-head"><div class="eyebrow">Ficha da marca</div><h2>A Plano em uma página</h2></div>
+  <dl class="ficha">
+   <div><dt>Negócio</dt><dd>Loja de tecidos vendidos por metro, com venda pelo WhatsApp e pela Shopee.</dd></div>
+   <div><dt>Canais</dt><dd><a href="https://www.instagram.com/planotecidos/" target="_blank" rel="noopener">instagram.com/planotecidos</a> · <a href="https://shopee.com.br/planotecidos" target="_blank" rel="noopener">shopee.com.br/planotecidos</a> · WhatsApp +55 11 99383-9570</dd></div>
+   <div><dt>Instagram (03/10)</dt><dd>25 posts · 8 seguidores · 47 seguindo</dd></div>
+   <div><dt>Bio</dt><dd>"O nosso plano é dar vida ao seu projeto. E quando o seu projeto ganha forma, o nosso também se realiza."</dd></div>
+   <div><dt>Prova social</dt><dd>Nota 5 e selo de vendedor indicado na Shopee (segundo o post "Estamos na Shopee!").</dd></div>
+   <div><dt>Produtos vistos no feed</dt><dd><div class="attrs"><span>Tricoline listrada</span><span>Linho</span><span>Cetim</span><span>Organza</span><span>Cristal furta-cor</span><span>Tule com flocos</span><span>Sarja</span><span>Algodão cru</span></div><p class="small muted" style="margin-top:8px">Identificados pelas fotos. Confirmar os nomes comerciais com a Plano.</p></dd></div>
+   <div><dt>Diferenciais declarados</dt><dd>Atendimento especializado · Tecidos de qualidade · Envio rápido e seguro</dd></div>
+   <div><dt>Região</dt><dd>DDD 11 (Grande São Paulo). Endereço físico não informado.</dd></div>
+  </dl>
+ </section>
+
+ <section id="diz">
+  <div class="sec-head"><div class="eyebrow">Fonte primária</div><h2>O que a marca já diz</h2><p>Frases que já estão nos posts e na bio. Elas são o melhor material para a voz da marca.</p></div>
+  <div class="says">
+   <div class="say"><div class="src"><b>Bio do Instagram</b></div><div class="txt"><b>"O nosso plano é dar vida ao seu projeto."</b><span class="imp">→ Vira a assinatura da marca e o título da landing page.</span></div></div>
+   <div class="say"><div class="src"><b>Post "sonho costurado"</b></div><div class="txt"><b>"Porque todo sonho costurado começa com um PLANO e um PANO."</b><span class="imp">→ O jogo plano/pano é memorável. Vira o manifesto (post de 15/10).</span></div></div>
+   <div class="say"><div class="src"><b>Post de texto</b></div><div class="txt"><b>"Feito à mão leva muito tempo. E tempo é muita coisa hoje em dia."</b><span class="imp">→ Empatia com quem costura. Entra no "Sobre" do site.</span></div></div>
+   <div class="say"><div class="src"><b>Post "Estamos na Shopee!"</b></div><div class="txt"><b>"Somos nota 5 · Somos vendedor indicado · Nosso Plano é dar vida ao seu projeto."</b><span class="imp">→ Prova social forte, mas o laranja da Shopee apaga a marca. Redesenhado no post de 25/10.</span></div></div>
+  </div>
+ </section>
+
+ <section id="logo">
+  <div class="sec-head"><div class="eyebrow">Diagnóstico visual</div><h2>O logotipo atual</h2></div>
+  <div class="audit">
+   <div class="stage">
+    <div class="box"><img src="../assets/atual/logo-atual.jpg" alt="Logotipo atual da Plano Tecidos" style="width:200px;border-radius:50%"></div>
+    <div class="tiny"><img src="../assets/atual/logo-atual.jpg" alt="" style="width:64px;border-radius:50%"><img src="../assets/atual/logo-atual.jpg" alt="" style="width:32px;border-radius:50%"><img src="../assets/atual/logo-atual.jpg" alt="" style="width:16px;border-radius:50%"></div>
+    <p class="cap">Avatar atual em 64, 32 e 16 px. Em 32 px o rolo vira um traço verde.</p>
+   </div>
+   <div class="grid2">
+    <div class="card"><span class="pill ok">Ativo</span><p>A ideia do <b>L como rolo de tecido</b> é única e liga o nome ao produto. Fica.</p></div>
+    <div class="card"><span class="pill ok">Ativo</span><p>Tipografia sem serifa pesada e o verde como cor de marca. Fica, com ajuste fino.</p></div>
+    <div class="card"><span class="pill risk">Legibilidade</span><p>O rolo é uma imagem 3D com textura e sombra. Nos tamanhos pequenos (avatar, adesivo) ele perde a forma.</p></div>
+    <div class="card"><span class="pill warn">Reprodução</span><p>Não existe versão em uma cor nem vetor. Carimbo, bordado, etiqueta e serigrafia ficam inviáveis.</p></div>
+   </div>
+  </div>
+ </section>
+
+ <section id="perfil">
+  <div class="sec-head"><div class="eyebrow">Como a marca aparece hoje</div><h2>O perfil no Instagram (out/2026)</h2><p>Prints enviados pela Plano em 03/10/2026.</p></div>
+  <div class="shots3">
+   <img src="../assets/atual/instagram-atual-1.jpg" alt="Perfil @planotecidos, topo">
+   <img src="../assets/atual/instagram-atual-2.jpg" alt="Perfil @planotecidos, grade">
+   <img src="../assets/atual/instagram-atual-3.jpg" alt="Perfil @planotecidos, posts desenhados">
+  </div>
+  <div class="grid2">
+   <div class="card"><div class="label">O que já funciona (manter)</div><ul><li><b>Foto de produto real</b>, com boa variedade de cores e texturas.</li><li><b>Tom acolhedor</b> ("carinho", "sonho", "projeto").</li><li><b>O adesivo da marca</b> no pacote: ótimo ponto de contato, só precisa do novo logo.</li></ul></div>
+   <div class="card"><div class="label">O que a nova marca resolve</div><ul><li>Fotos sem nome do tecido, uso ou chamada para compra.</li><li>Luz e fundo mudam a cada post. A grade não forma uma identidade.</li><li>Três estilos de design convivem (ver abaixo).</li><li>Nenhum post explica <b>como comprar</b> por metro.</li></ul></div>
+  </div>
+ </section>
+
+ <section id="vozes">
+  <div class="sec-head"><div class="eyebrow">Linguagem visual</div><h2>Três vozes que hoje não conversam</h2></div>
+  <div class="voice">
+   <div><div class="label">Fotos</div><h3>Tecido cru</h3><p>Close do tecido, sem texto. Bonito, mas mudo.</p><img src="../assets/fotos/sarja-azul.jpg" alt="" style="border-radius:8px;aspect-ratio:1;object-fit:cover"></div>
+   <div><div class="label">Posts desenhados</div><h3>Convite de ateliê</h3><p>Serifa clássica, script, folhas e corações. Não conversa com o logo geométrico.</p><img src="../assets/fotos/post-sonho.jpg" alt="" style="border-radius:8px;aspect-ratio:1;object-fit:cover"></div>
+   <div><div class="label">Marketplace</div><h3>Laranja Shopee</h3><p>Cores e ícones da plataforma ocupam a peça. A Plano vira coadjuvante.</p><img src="../assets/fotos/post-shopee.jpg" alt="" style="border-radius:8px;aspect-ratio:1;object-fit:cover;object-position:top"></div>
+  </div>
+ </section>
+
+ <section id="leitura">
+  <div class="callout"><div class="label">Leitura Upe</div><p><b>A Plano já tem conceito, nome e propósito. Falta sistema.</b> O redesign não troca a marca: redesenha o L-rolo para funcionar em qualquer tamanho e cria um sistema de cor, tipografia e post. Com ele, cada foto de tecido passa a vender.</p></div>
+  <p class="small muted">Próxima aba: público, posicionamento, tom de voz, território de cor e a jornada até o pedido.</p>
+ </section>
+</div>
+
+<!-- ======================= ABA 02 ======================= -->
+<div class="panel" id="t2" role="tabpanel" hidden>
+ <header class="hero">
+  <div class="eyebrow">Aba 02 · Pesquisa e estratégia</div>
+  <h1>Para quem<br>e como falar</h1>
+  <p class="lede">Hipóteses de público, posicionamento, tom de voz e território visual que orientaram o redesign e o plano de conteúdo. As hipóteses de público devem ser validadas com os pedidos reais da loja.</p>
+ </header>
+ <nav class="subtoc"><a href="#publico">Público</a><a href="#posic">Posicionamento</a><a href="#voz">Tom de voz</a><a href="#territorio">Território</a><a href="#jornada">Jornada</a><a href="#riscos">Riscos</a></nav>
+
+ <section id="publico">
+  <div class="sec-head"><div class="eyebrow">Público (hipóteses)</div><h2>Quem compra tecido por metro</h2><p>Perfis deduzidos do catálogo (tricoline, cetim, organza, tule) e dos canais (Shopee + WhatsApp).</p></div>
+  <div class="grid3">
+   <div class="card"><div class="label">01</div><h3>Costureira de casa</h3><p>Costura para si e para a família. Precisa de ajuda com metragem e tipo de tecido.</p><p class="ex">"Quanto eu compro para um vestido?"</p></div>
+   <div class="card"><div class="label">02</div><h3>Artesã que vende</h3><p>Faz necessaires, laços e kits para vender. Compra com frequência e busca variedade de cores.</p><p class="ex">"Tem essa cor em mais metragem?"</p></div>
+   <div class="card"><div class="label">03</div><h3>Datas e fantasias</h3><p>Mães, pais e escolas em datas como Halloween, festa junina e Natal. Compra sazonal e urgente.</p><p class="ex">"Chega até sexta?"</p></div>
+   <div class="card"><div class="label">04</div><h3>Casa e decoração</h3><p>Toalhas, caminhos de mesa, almofadas. Valoriza a textura natural (linho, algodão cru).</p></div>
+   <div class="card"><div class="label">05</div><h3>Pequena confecção</h3><p>Compra volume de poucos tecidos. Quer constância de cor e atendimento rápido.</p></div>
+   <div class="card" style="background:var(--accent);color:var(--on-accent);border-color:var(--accent)"><div class="label" style="color:var(--on-accent)">Em comum</div><p>Todos têm um <b>projeto</b> antes de ter o tecido. A marca entra como parceira do projeto, não como depósito de tecido.</p></div>
+  </div>
+ </section>
+
+ <section id="posic">
+  <div class="sec-head"><div class="eyebrow">Posicionamento</div><h2>A parceira do seu projeto</h2></div>
+  <dl class="ficha">
+   <div><dt>Para</dt><dd>Quem costura, cria e decora com as próprias mãos.</dd></div>
+   <div><dt>A Plano é</dt><dd>A loja de tecidos por metro que ajuda a escolher, corta na medida e envia rápido.</dd></div>
+   <div><dt>Porque</dt><dd>Atendimento especializado de verdade (nota 5 na Shopee) e conteúdo que ensina.</dd></div>
+   <div><dt>Diferente de</dt><dd>Marketplaces genéricos, onde o cliente escolhe sozinho entre milhares de anúncios.</dd></div>
+   <div><dt>Assinatura</dt><dd><b>"O nosso plano é dar vida ao seu projeto."</b> (já é da marca)</dd></div>
+  </dl>
+  <div class="attrs"><span>Acolhedora</span><span>Prática</span><span>Cuidadosa</span><span>Natural</span><span>Confiável</span></div>
+ </section>
+
+ <section id="voz">
+  <div class="sec-head"><div class="eyebrow">Tom de voz</div><h2>Como a Plano fala</h2></div>
+  <div class="tbl"><table>
+   <thead><tr><th>Princípio</th><th>É</th><th>Não é</th><th>Exemplo</th></tr></thead>
+   <tbody>
+    <tr><td>Próxima</td><td>Conversa como quem atende no balcão</td><td>Formal ou corporativa</td><td>"Manda o molde que a gente calcula com você."</td></tr>
+    <tr><td>Útil</td><td>Ensina algo em cada post</td><td>Só "chegou novidade"</td><td>"Listras pedem um pouco a mais de tecido."</td></tr>
+    <tr><td>Concreta</td><td>Nome do tecido, uso e metragem</td><td>Adjetivo vazio</td><td>"Tricoline listrada: camisa, vestido, pijama."</td></tr>
+    <tr><td>Carinhosa</td><td>Celebra o projeto do cliente</td><td>Melosa ou infantil</td><td>"Costurou com a Plano? Mostra pra gente."</td></tr>
+   </tbody></table></div>
+ </section>
+
+ <section id="territorio">
+  <div class="sec-head"><div class="eyebrow">Território visual</div><h2>Onde a Plano se posiciona</h2><p>Leitura qualitativa dos estilos mais comuns no varejo de tecidos e armarinhos no Instagram. São arquétipos, não marcas específicas.</p></div>
+  <div class="terr">
+   <div class="t"><div class="sw"><i style="background:#d62828"></i><i style="background:#fcbf49"></i><i style="background:#fff"></i></div><div class="b"><b>Armarinho de preço</b><span class="muted">Vermelho e amarelo, preço grande, muitos produtos na mesma peça.</span></div></div>
+   <div class="t"><div class="sw"><i style="background:#f4c2c2"></i><i style="background:#c9b6e4"></i><i style="background:#fdf6ec"></i></div><div class="b"><b>Ateliê delicado</b><span class="muted">Pastel, script, flores. Afetivo, mas parecido com todos.</span></div></div>
+   <div class="t"><div class="sw"><i style="background:#ee4d2d"></i><i style="background:#fff"></i><i style="background:#333"></i></div><div class="b"><b>Marketplace</b><span class="muted">Cores da plataforma. A loja some atrás da Shopee.</span></div></div>
+   <div class="t us"><div class="sw"><i style="background:#4E8C34"></i><i style="background:#F1EADF"></i><i style="background:#24402A"></i></div><div class="b"><b>Fibra natural · Plano</b><span class="muted">Verde e linho cru, tipografia firme, foto real. Afetivo sem ser genérico.</span></div></div>
+  </div>
+ </section>
+
+ <section id="jornada">
+  <div class="sec-head"><div class="eyebrow">Jornada</div><h2>Do feed ao pedido</h2><p>Cada conteúdo tem um papel. Toda peça termina em WhatsApp ou Shopee.</p></div>
+  <div class="funil">
+   <div style="background:#24402A"><b>Descobrir</b>Reels, motions e carrosséis educativos geram alcance.</div>
+   <div style="background:#3C7429"><b>Confiar</b>Nota 5, bastidores e #FeitoComPlano.</div>
+   <div style="background:#4E8C34"><b>Escolher</b>Posts de produto com nome e uso. Landing page.</div>
+   <div style="background:#2B2B29"><b>Pedir</b>WhatsApp com mensagem pronta ou loja na Shopee.</div>
+  </div>
+ </section>
+
+ <section id="riscos">
+  <div class="sec-head"><div class="eyebrow">Atenção</div><h2>Riscos e decisões para alinhar</h2></div>
+  <div class="tbl"><table>
+   <thead><tr><th>Ponto</th><th>Risco ou decisão</th><th>Encaminhamento</th></tr></thead>
+   <tbody>
+    <tr><td>Constância</td><td>4 posts por semana pedem cerca de 3 a 4 horas semanais (foto, agendamento, respostas).</td><td>Artes das 6 semanas já prontas. Agendar em lote no Meta Business Suite.</td></tr>
+    <tr><td>WhatsApp na Shopee</td><td>Marketplaces costumam proibir levar o cliente para fora da plataforma.</td><td>Não divulgar o WhatsApp dentro da Shopee. Confirmar a regra atual da Shopee.</td></tr>
+    <tr><td>Black Friday</td><td>O cronograma anuncia a data, mas não define descontos.</td><td>Plano decide quais tecidos e percentuais até 16/11.</td></tr>
+    <tr><td>Fotos</td><td>As fotos do site e dos posts vêm do próprio feed, em baixa resolução.</td><td>Fotografar os tecidos com o guia do cronograma e trocar as imagens.</td></tr>
+    <tr><td>Domínio</td><td>A landing page precisa de um endereço próprio.</td><td>Verificar disponibilidade de um domínio (ex.: planotecidos.com.br) e publicar.</td></tr>
+    <tr><td>Pantone</td><td>As referências Pantone do manual são aproximações.</td><td>Conferir na escala física antes de imprimir adesivos e etiquetas.</td></tr>
+    <tr><td>Nomes dos tecidos</td><td>Nomes foram inferidos pelas fotos.</td><td>Plano revisa os nomes nas legendas antes de publicar.</td></tr>
+   </tbody></table></div>
+ </section>
+</div>
+
+<!-- ======================= ABA 03 ======================= -->
+<div class="panel" id="t3" role="tabpanel" hidden>
+ <header class="hero">
+  <div class="eyebrow">Aba 03 · Proposta</div>
+  <h1>Do rolo<br>ao projeto</h1>
+  <p class="lede">O L-rolo redesenhado como vetor plano e o sistema visual que nasce dele: cores, tipografia, padrões de trama, ícones e aplicações.</p>
+  <div class="meta"><span><b>Manual:</b> <a href="../index.html">abrir o brand book</a></span><span><b>Apresentação:</b> <a href="../apresentacao/index.html">abrir o deck</a></span></div>
+ </header>
+ <nav class="subtoc"><a href="#antesdepois">Antes e depois</a><a href="#gestalt">Gestalt</a><a href="#sistema">Sistema</a><a href="#aplic">Aplicações</a><a href="#motion">Motion</a></nav>
+
+ <section id="antesdepois">
+  <div class="sec-head"><div class="eyebrow">Redesenho</div><h2>Mesma ideia, mais nítida</h2></div>
+  <div class="ba">
+   <div class="x" style="background:#1b1b1a"><img src="../assets/atual/logo-atual.jpg" alt="Logo atual" style="width:220px;border-radius:50%"><span class="pill" style="color:#f2efe0">Antes</span></div>
+   <div class="x" style="background:var(--verde)"><div data-logo="main" data-size="84" data-mode="rev" data-sym="mono" data-bg="#4E8C34"></div><span class="pill" style="color:#f1eadf">Depois</span></div>
+  </div>
+  <div class="tbl"><table>
+   <thead><tr><th>Elemento</th><th>Antes</th><th>Depois</th></tr></thead>
+   <tbody>
+    <tr><td>Símbolo</td><td>Rolo 3D fotográfico</td><td>Rolo vetorial em 4 formas: haste, topo em espiral, base e dobra</td></tr>
+    <tr><td>Versões</td><td>Uma só</td><td>Principal, horizontal, uma cor positiva e negativa, ícone</td></tr>
+    <tr><td>Tamanho mínimo</td><td>Ilegível abaixo de cerca de 64 px</td><td>Símbolo legível em 16 px (favicon)</td></tr>
+    <tr><td>Cor</td><td>Verde fotográfico variável</td><td>Verde Trama #4E8C34 + Linho Cru #F1EADF</td></tr>
+    <tr><td>Tipografia</td><td>Sem família definida</td><td>Montserrat (títulos) + DM Sans (textos)</td></tr>
+   </tbody></table></div>
+ </section>
+
+ <section id="gestalt">
+  <div class="sec-head"><div class="eyebrow">Construção</div><h2>Gestalt aplicada ao símbolo</h2><p>O módulo x é a largura da haste. A dobra sobe a 45° e forma o "check".</p></div>
+  <div class="shot"><img src="../assets/bb-gestalt.jpg" alt="Construção e gestalt do símbolo"></div>
+ </section>
+
+ <section id="sistema">
+  <div class="sec-head"><div class="eyebrow">Sistema</div><h2>Logotipos, cor, padrões e ícones</h2></div>
+  <div class="shot"><img src="../assets/bb-logos.jpg" alt="Versões do logotipo"></div>
+  <div class="shot"><img src="../assets/bb-paleta.jpg" alt="Paleta de cores"></div>
+  <div class="grid2"><div class="shot"><img src="../assets/bb-ativos.jpg" alt="Ativos da marca"></div><div class="shot"><img src="../assets/bb-icones.jpg" alt="Iconografia"></div></div>
+ </section>
+
+ <section id="aplic">
+  <div class="sec-head"><div class="eyebrow">Aplicações</div><h2>Fachada, etiqueta, sacola e papelaria</h2></div>
+  <div class="shot"><img src="../assets/bb-aplicacoes.jpg" alt="Aplicações da marca"></div>
+ </section>
+
+ <section id="motion">
+  <div class="sec-head"><div class="eyebrow">Motion</div><h2>A marca em movimento</h2><p>Quatro vídeos 9:16 produzidos para o cronograma.</p></div>
+  <div class="vids">
+   <video src="../conteudo/motion/m1-logo.mp4" poster="../conteudo/motion/m1-logo.jpg" controls muted loop playsinline preload="none"></video>
+   <video src="../conteudo/motion/m2-novidades.mp4" poster="../conteudo/motion/m2-novidades.jpg" controls muted loop playsinline preload="none"></video>
+   <video src="../conteudo/motion/m3-comprar.mp4" poster="../conteudo/motion/m3-comprar.jpg" controls muted loop playsinline preload="none"></video>
+   <video src="../conteudo/motion/m4-blackfriday.mp4" poster="../conteudo/motion/m4-blackfriday.jpg" controls muted loop playsinline preload="none"></video>
+  </div>
+ </section>
+</div>
+
+<!-- ======================= ABA 04 ======================= -->
+<div class="panel" id="t4" role="tabpanel" hidden>
+ <header class="hero">
+  <div class="eyebrow">Aba 04 · O que vai para o cliente</div>
+  <h1>Entregáveis</h1>
+  <p class="lede">Os documentos do projeto e como cada um deve ser usado. Este dossiê é o documento de trabalho da Upe.</p>
+ </header>
+ <section>
+  <div class="grid2 files" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr))">
+   <div class="card"><div class="label">01 · Manual da marca</div><p>Logotipos, cores (CMYK, RGB, HEX, Pantone), construção, ícones, tipografia e aplicações.</p><a href="../index.html">Abrir HTML</a><a href="../Plano_Tecidos_Brand_Book.pdf">Baixar PDF</a></div>
+   <div class="card"><div class="label">02 · Apresentação de redesign</div><p>17 slides para apresentar a proposta à Plano. Navegue com as setas do teclado.</p><a href="../apresentacao/index.html">Abrir deck</a><a href="../apresentacao/Plano_Tecidos_Redesign.pdf">Baixar PDF</a></div>
+   <div class="card"><div class="label">03 · Landing page institucional</div><p>Página única, responsiva, com todos os botões levando ao WhatsApp com mensagem pronta e à Shopee.</p><a href="../site/index.html">Abrir site</a></div>
+   <div class="card"><div class="label">04 · Cronograma de conteúdo</div><p>24 publicações de 12/10 a 22/11, com roteiros, legendas, 38 artes e 4 motions.</p><a href="../conteudo/index.html">Abrir cronograma</a></div>
+  </div>
+ </section>
+ <section>
+  <div class="sec-head"><div class="eyebrow">Prévia</div><h2>Artes do cronograma</h2></div>
+  <div class="posts" id="posts"></div>
+ </section>
+ <section>
+  <div class="sec-head"><div class="eyebrow">Landing page</div><h2>Desktop e celular</h2></div>
+  <div style="display:grid;grid-template-columns:3fr 1fr;gap:16px;align-items:start"><div class="shot"><img src="../assets/site/site-desktop.jpg" alt="Landing page no desktop"></div><div class="shot" style="border:6px solid #111;border-radius:24px"><img src="../assets/site/site-mobile.jpg" alt="Landing page no celular"></div></div>
+ </section>
+ <section>
+  <div class="sec-head"><div class="eyebrow">Antes e depois do envio</div><h2>Checklist</h2></div>
+  <ul class="card" style="list-style:none;padding:20px 22px">
+   <li>☐ Plano revisa nomes dos tecidos e legendas das semanas 1 e 2</li>
+   <li>☐ Trocar avatar, bio e destaques do Instagram</li>
+   <li>☐ Conferir Pantone e imprimir adesivo do pedido</li>
+   <li>☐ Registrar domínio e publicar a landing page (pasta <code>site/</code>)</li>
+   <li>☐ Agendar as semanas 1 e 2 no Meta Business Suite</li>
+   <li>☐ Definir os descontos da Black Friday até 16/11</li>
+  </ul>
+ </section>
+</div>
+
+ <div class="foot-note">Upe Criativo · Projeto Plano Tecidos · Documento interno</div>
+</div>
+<script>
+const tabs=[...document.querySelectorAll('[role=tab]')];
+function sel(id,push){tabs.forEach(t=>t.setAttribute('aria-selected',t.dataset.tab===id));document.querySelectorAll('.panel').forEach(p=>p.hidden=p.id!==id);if(push)history.replaceState(null,'','#'+id);window.scrollTo({top:0})}
+tabs.forEach(t=>t.onclick=()=>sel(t.dataset.tab,true));
+const h=location.hash.slice(1);if(/^t[1-4]$/.test(h))sel(h);
+const P=['s1-01-1','s1-01-2','s1-01-3','s1-03','s1-04-1','s2-01-1','s2-01-2','s2-03','s2-04','s3-01-1','s3-02','s3-03','s4-02-1','s4-03','s5-01-1','s5-02','s5-04','s6-01','s6-03-1','s6-04'];
+document.getElementById('posts').innerHTML=P.map(f=>`<a href="../conteudo/posts/${f}.jpg"><img src="../conteudo/posts/${f}.jpg" alt="" loading="lazy"></a>`).join('');
+Plano.renderAll();
+</script>
+</body>
+</html>

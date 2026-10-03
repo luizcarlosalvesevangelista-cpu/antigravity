@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Plano Tecidos | Estúdio de artes</title>
+<link href="../fonts/fonts.css" rel="stylesheet">
+<script src="../assets/plano.js"></script>
+<script src="calendario.js"></script>
+<style>
+:root{--verde:#4E8C34;--claro:#86BC5F;--musgo:#24402A;--linho:#F1EADF;--areia:#D6CAB4;--grafite:#2B2B29}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#ddd;font-family:'DM Sans',sans-serif}
+.art{position:relative;overflow:hidden;width:1080px;height:1350px;color:var(--grafite)}
+.art.tall{height:1920px}
+.linen{background-color:var(--linho);background-image:repeating-linear-gradient(0deg,rgba(120,100,70,.07) 0 1px,transparent 1px 4px),repeating-linear-gradient(90deg,rgba(255,255,255,.35) 0 1px,transparent 1px 5px)}
+.bg-verde{background:var(--verde);color:var(--linho)}
+.bg-musgo{background:var(--musgo);color:var(--linho)}
+.bg-grafite{background:var(--grafite);color:var(--linho)}
+.weave{background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0 2px,transparent 2px 7px),repeating-linear-gradient(90deg,rgba(0,0,0,.05) 0 2px,transparent 2px 7px)}
+.kick{font:700 30px Montserrat;letter-spacing:.32em}
+.ttl{font:800 112px/1.02 Montserrat;letter-spacing:-.01em}
+.ttl em{font-style:normal;color:var(--verde)}
+.bg-verde .ttl em,.bg-musgo .ttl em,.bg-grafite .ttl em{color:var(--claro)}
+.bg-verde .ttl em{color:var(--musgo)}
+.sub{font:500 40px/1.35 'DM Sans'}
+.handle{font:700 28px Montserrat;letter-spacing:.06em}
+.pad{position:absolute;inset:96px 96px 96px 96px;display:flex;flex-direction:column}
+.foot{margin-top:auto;display:flex;align-items:flex-end;justify-content:space-between}
+.strip{position:absolute;left:0;right:0;bottom:0;height:26px}
+.photo{border-radius:28px;overflow:hidden;background:#ccc}
+.photo img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(1.05) contrast(1.03)}
+.tag{display:inline-block;background:var(--verde);color:var(--linho);font:700 26px Montserrat;letter-spacing:.24em;padding:14px 24px;border-radius:999px}
+.ico{width:84px;height:84px}
+.n{font:800 34px Montserrat;width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--verde);color:var(--linho);flex:none}
+.mot{position:absolute;will-change:transform,opacity}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const {C,symbol}=Plano;
+const q=new URLSearchParams(location.search);
+const IMG=f=>`../assets/fotos/${f}`;
+const ICON={
+ tesoura:'<circle cx="14" cy="35" r="6"/><circle cx="34" cy="35" r="6"/><path d="M18.5 31 34 6"/><path d="M29.5 31 14 6"/>',
+ metro:'<rect x="5" y="17" width="38" height="14" rx="3"/><path d="M12 17v6M19 17v4M26 17v6M33 17v4M40 17v6"/>',
+ entrega:'<path d="M4 12h24v20H4ZM28 18h9l6 7v7H28"/><circle cx="12" cy="35" r="4"/><circle cx="35" cy="35" r="4"/>',
+ coracao:'<path d="M24 40 9 25a9 9 0 0 1 15-10 9 9 0 0 1 15 10Z"/>',
+ selo:'<circle cx="24" cy="20" r="13"/><path d="M17 31 13 44l11-5 11 5-4-13"/><path d="m18 20 4 4 8-8"/>',
+ zap:'<path d="M8 40l3-9a16 16 0 1 1 6 6Z"/><path d="M18 18c0 6 6 12 12 12l2-4-4-2-2 2c-2-1-4-3-5-5l2-2-2-4Z"/>',
+ sacola:'<path d="M10 16h28l-2 26H12Z"/><path d="M18 20v-6a6 6 0 0 1 12 0v6"/>',
+ olho:'<path d="M4 24s7-12 20-12 20 12 20 12-7 12-20 12S4 24 4 24Z"/><circle cx="24" cy="24" r="6"/>'
+};
+const icon=(n,c='currentColor',sw=3)=>`<svg class="ico" viewBox="0 0 48 48" fill="none" stroke="${c}" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round">${ICON[n]}</svg>`;
+const sym=(w,o={})=>`<div style="width:${w}px;height:${w*107.5/72}px">${symbol(o)}</div>`;
+const bgClass=b=>b==='linho'?'linen':'bg-'+b+' weave';
+const dark=b=>b!=='linho';
+const sig=(b,s=44)=>`<div data-logo="h" data-size="${s}" ${dark(b)?`data-mode="rev" ${b==='verde'?'data-sym="mono" data-bg="#4E8C34"':''}`:''}></div>`;
+
+/* ================= TEMPLATES ================= */
+const T={
+ texto:(a)=>`<div class="art ${bgClass(a.bg)}"><div class="pad">
+   <div class="kick">${a.kicker||''}</div>
+   <div style="margin:auto 0"><div class="ttl" style="font-size:${a.title.length>60?100:120}px">${a.title}</div>
+   ${a.sub?`<div class="sub" style="margin-top:44px;opacity:.9">${a.sub}</div>`:''}</div>
+   <div class="foot" style="margin-top:0">${a.logo?`<div data-logo="main" data-size="96" ${dark(a.bg)?`data-mode="rev" data-sym="mono" data-bg="${C[a.bg]}"`:''}></div>`:`<div class="handle">@planotecidos</div>`}
+   ${a.sym?sym(120,dark(a.bg)?{mode:'mono',color:C.linho,bg:C[a.bg]}:{}):''}</div></div>
+   <div class="strip" style="background:repeating-linear-gradient(90deg,${C.verde} 0 60px,${C.claro} 60px 120px,${C.linho} 120px 180px)"></div></div>`,
+ foto:(a)=>`<div class="art linen"><div class="pad">
+   <div class="photo" style="height:780px">${`<img src="${IMG(a.img)}">`}</div>
+   <div style="margin-top:46px"><span class="tag">${a.kicker}</span></div>
+   <div class="ttl" style="font-size:88px;margin-top:30px">${a.title}</div>
+   <div class="foot" style="margin-top:22px"><div class="sub" style="font-size:36px;max-width:640px">${a.sub}</div>${sym(66)}</div></div></div>`,
+ lista:(a)=>`<div class="art ${bgClass(a.bg)}"><div class="pad">
+   <div class="kick" style="color:${C.verde}">${a.kicker}</div>
+   <div class="ttl" style="font-size:92px;margin-top:40px">${a.title}</div>
+   <div style="margin-top:70px;display:grid;gap:34px">${a.items.map((t,i)=>`<div style="display:flex;gap:30px;align-items:center"><div class="n">${i+1}</div><div class="sub" style="font-size:44px;font-weight:500">${t}</div></div>`).join('')}</div>
+   <div class="foot"><div class="handle">@planotecidos</div>${sym(66)}</div></div></div>`,
+ antesdepois:()=>`<div class="art linen"><div class="pad">
+   <div class="kick" style="color:${C.verde}">ANTES E DEPOIS</div>
+   <div class="ttl" style="font-size:88px;margin-top:30px">A mesma ideia, mais nítida.</div>
+   <div style="display:grid;grid-template-columns:1fr 1fr;gap:36px;margin-top:70px">
+     <div><div style="height:560px;border-radius:28px;background:#ebe6dc;display:flex;align-items:center;justify-content:center"><img src="../assets/atual/logo-atual.jpg" style="width:400px;border-radius:50%"></div><div class="kick" style="font-size:24px;margin-top:22px;color:#8a8478">ANTES</div><div class="sub" style="font-size:30px">Rolo 3D: some nos tamanhos pequenos.</div></div>
+     <div><div style="height:560px;border-radius:28px;background:${C.verde};display:flex;align-items:center;justify-content:center"><div data-logo="main" data-size="96" data-mode="rev" data-sym="mono" data-bg="${C.verde}"></div></div><div class="kick" style="font-size:24px;margin-top:22px;color:${C.verde}">DEPOIS</div><div class="sub" style="font-size:30px">Vetor plano: nítido do adesivo à fachada.</div></div>
+   </div></div></div>`,
+ simbolo:()=>`<div class="art bg-musgo weave"><div class="pad">
+   <div class="kick" style="color:${C.claro}">O SÍMBOLO</div>
+   <div class="ttl" style="font-size:88px;margin-top:30px">O L é um rolo de tecido.</div>
+   <div style="position:relative;margin:80px auto 0;width:420px;height:627px">${symbol({})}
+     ${[['O ROLO',-330,40],['O TECIDO DESENROLA',-360,520],['A DOBRA VIRA UM "CHECK"',300,200]].map(([t,x,y])=>`<div style="position:absolute;left:${x}px;top:${y}px;width:300px;font:700 24px Montserrat;letter-spacing:.14em;color:${C.linho};${x>0?'width:240px':'text-align:right'}">${t}</div>`).join('')}
+   </div></div></div>`,
+ compare:()=>{
+   let w='';for(let r=0;r<9;r++)for(let c=0;c<9;c++){const o=(r+c)%2;w+=o?`<rect x="${c*40}" y="${r*40+6}" width="40" height="28" rx="6" fill="${C.verde}"/>`:`<rect x="${c*40+6}" y="${r*40}" width="28" height="40" rx="6" fill="${C.claro}"/>`}
+   let k='';for(let r=0;r<6;r++)for(let c=0;c<6;c++){const x=c*60+30,y=r*60+30;k+=`<path d="M${x-24} ${y-22} Q${x-24} ${y+26} ${x} ${y+26} Q${x+24} ${y+26} ${x+24} ${y-22}" fill="none" stroke="${C.areia}" stroke-width="12" stroke-linecap="round"/>`}
+   return `<div class="art linen"><div class="pad">
+   <div class="kick" style="color:${C.verde}">A DIFERENÇA</div>
+   <div class="ttl" style="font-size:84px;margin-top:30px">Cruzado ou laçado?</div>
+   <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:70px">
+    <div><div style="background:${C.musgo};border-radius:28px;padding:38px;height:440px"><svg viewBox="0 0 360 360" width="100%" height="100%">${w}</svg></div><div class="ttl" style="font-size:56px;margin-top:30px">Plano</div><div class="sub" style="font-size:32px">Fios que se cruzam. Firme, quase não estica. Tricoline, linho, sarja, cetim.</div></div>
+    <div><div style="background:${C.grafite};border-radius:28px;padding:38px;height:440px"><svg viewBox="0 0 360 360" width="100%" height="100%">${k}</svg></div><div class="ttl" style="font-size:56px;margin-top:30px">Malha</div><div class="sub" style="font-size:32px">Um fio em laçadas. Estica e volta. Camiseta, moletom, legging.</div></div>
+   </div></div></div>`},
+ prova:()=>`<div class="art bg-verde weave"><div class="pad" style="align-items:center;text-align:center">
+   <div data-logo="main" data-size="70" data-mode="rev" data-sym="mono" data-bg="${C.verde}"></div>
+   <div style="margin-top:80px;font:800 300px/0.9 Montserrat;color:${C.linho}">5<span style="font-size:120px">,0</span></div>
+   <div style="font-size:70px;letter-spacing:12px;color:#F4C542;margin-top:10px">★★★★★</div>
+   <div class="ttl" style="font-size:72px;margin-top:36px">Nota máxima e<br>vendedor indicado</div>
+   <div class="sub" style="margin-top:18px;opacity:.85">na Shopee · shopee.com.br/planotecidos</div>
+   <div class="foot" style="width:100%;justify-content:space-around;color:${C.linho}">
+     ${[['coracao','Atendimento<br>especializado'],['selo','Tecidos de<br>qualidade'],['entrega','Envio rápido<br>e seguro']].map(([i,t])=>`<div style="display:grid;justify-items:center;gap:14px">${icon(i,C.linho)}<div style="font:600 26px/1.3 Montserrat">${t}</div></div>`).join('')}
+   </div></div></div>`,
+ paleta:()=>`<div class="art linen"><div class="pad">
+   <div class="kick" style="color:${C.verde}">INSPIRAÇÃO</div>
+   <div class="ttl" style="font-size:96px;margin-top:30px">3 combinações pastel</div>
+   <div style="display:grid;gap:30px;margin-top:70px">${[['#F2B8C6','#EFE6D6','Rosa + cru'],['#A9CBEA','#FFFFFF','Azul + listra'],['#A7B9A0','#E8DFCF','Sálvia + linho']].map(([a,b,t],i)=>`<div style="display:flex;align-items:center;gap:34px"><div class="n">${i+1}</div><div style="display:flex;border-radius:22px;overflow:hidden;height:150px;width:420px;box-shadow:0 10px 24px rgba(0,0,0,.08)"><div style="flex:1.4;background:${a}"></div><div style="flex:1;background:${b};${i===1?`background:repeating-linear-gradient(90deg,${a} 0 10px,#fff 10px 22px)`:''}"></div></div><div class="sub" style="font-size:44px;font-weight:700">${t}</div></div>`).join('')}</div>
+   <div class="foot"><div class="handle">@planotecidos</div>${sym(66)}</div></div></div>`,
+ capa:(a)=>`<div class="art tall" style="background:${C.grafite}">
+   <img src="${IMG(a.img)}" style="position:absolute;inset:-40px;width:calc(100% + 80px);height:calc(100% + 80px);object-fit:cover;filter:blur(30px) brightness(.55)">
+   <div class="photo" style="position:absolute;left:90px;right:90px;top:250px;height:1000px;box-shadow:0 40px 80px rgba(0,0,0,.4)"><img src="${IMG(a.img)}"></div>
+   <div style="position:absolute;left:90px;top:120px"><span class="tag">${a.kicker}</span></div>
+   <div class="ttl" style="position:absolute;left:90px;right:90px;top:1310px;color:${C.linho};font-size:130px">${a.title}</div>
+   <div style="position:absolute;left:90px;bottom:120px" data-logo="h" data-size="46" data-mode="rev"></div></div>`,
+ story:(a)=>`<div class="art tall linen"><div class="pad" style="inset:200px 90px">
+   <div data-logo="h" data-size="46"></div>
+   <div class="ttl" style="font-size:118px;margin-top:220px">${a.title}</div>
+   <div style="margin-top:90px;background:#fff;border-radius:36px;padding:40px;box-shadow:0 20px 50px rgba(0,0,0,.1);display:grid;gap:22px">${a.opts.map((o,i)=>`<div style="border:3px solid ${C.areia};border-radius:22px;padding:30px;font:700 46px Montserrat;color:${i?C.grafite:C.verde}">${o}</div>`).join('')}</div>
+   <div class="foot"><div class="sub" style="font-size:34px">Enquete nos stories</div>${sym(80)}</div></div></div>`
+};
+
+/* ================= MOTIONS (9:16, renderizados quadro a quadro) ================= */
+const cl=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
+const E=x=>{x=cl(x);return 1-Math.pow(1-x,3)};            // easeOutCubic
+const EB=x=>{x=cl(x);const c=1.6;return 1+(c+1)*Math.pow(x-1,3)+c*Math.pow(x-1,2)}; // easeOutBack
+const seg=(t,a,b)=>cl((t-a)/(b-a));
+const M={
+ 'm1-logo':{dur:8,html:()=>`<div class="art tall linen" id="m">
+   <div id="word" style="position:absolute;left:0;right:0;top:760px;display:flex;justify-content:center">
+    <div style="font:800 236px Montserrat;color:${C.grafite};display:flex;align-items:baseline;letter-spacing:.02em">
+     <span id="lP">P</span><span id="L" style="display:inline-block;position:relative;width:calc(.7em*72/100);height:.7em;margin:0 .05em 0 .01em"><span style="position:absolute;left:0;bottom:-.007em;width:100%;height:calc(.7em*107.5/100)">${symbol({})}</span></span><span id="lA">A</span><span id="lN">N</span><span id="lO">O</span></div></div>
+   <div id="tec" style="position:absolute;left:0;right:0;top:1020px;text-align:center;font:700 84px Montserrat;color:${C.grafite}">TECIDOS</div>
+   <div id="tag" style="position:absolute;left:120px;right:120px;top:1260px;text-align:center;font:500 48px/1.35 'DM Sans';color:${C.grafite}">O nosso plano é dar vida<br>ao seu projeto.</div>
+   <div id="hd" style="position:absolute;left:0;right:0;bottom:200px;text-align:center" class="handle">@planotecidos</div>
+   <div class="strip" id="st" style="height:40px;background:repeating-linear-gradient(90deg,${C.verde} 0 60px,${C.claro} 60px 120px,${C.areia} 120px 180px)"></div></div>`,
+  render:t=>{
+   const g=s=>document.querySelector(s);
+   const stem=g('#L .s-stem'),foot=g('#L .s-foot'),flaps=document.querySelectorAll('#L .s-flap');
+   [stem,foot,...flaps].forEach(e=>{e.style.transformBox='fill-box'});
+   stem.style.transformOrigin='50% 100%';stem.style.transform=`scaleY(${E(seg(t,.2,1.1))})`;
+   foot.style.transformOrigin='0% 50%';foot.style.transform=`scaleX(${E(seg(t,1.0,1.5))})`;
+   flaps.forEach(f=>{f.style.transformOrigin='0% 100%';f.style.transform=`scale(${E(seg(t,1.45,2.0))})`});
+   const L=g('#L');const z=1+ .9*(1-E(seg(t,1.9,2.9)));L.style.transform=`scale(${z})`;L.style.transformOrigin='50% 100%';
+   [['#lP',2.1,-1],['#lA',2.25,1],['#lN',2.4,1],['#lO',2.55,1]].forEach(([s,a,d])=>{const p=EB(seg(t,a,a+.6));const e=g(s);e.style.display='inline-block';e.style.opacity=cl(seg(t,a,a+.3));e.style.transform=`translateX(${(1-p)*90*d}px)`});
+   const tp=E(seg(t,3.0,3.9));const tec=g('#tec');tec.style.opacity=tp;tec.style.letterSpacing=(10+tp*32)+'px';tec.style.textIndent=(10+tp*32)+'px';
+   const tg=g('#tag');tg.style.opacity=E(seg(t,4.0,4.6));tg.style.transform=`translateY(${(1-E(seg(t,4,4.6)))*30}px)`;
+   const hd=g('#hd');hd.style.opacity=E(seg(t,5.0,5.6));
+   g('#st').style.transform=`translateX(${-180+((t*60)%180)}px)`;g('#st').style.width='calc(100% + 180px)';
+  }},
+ 'm2-novidades':{dur:12,html:()=>{
+   const it=[['tricoline-rosa-listrada.jpg','Tricoline listrada rosa'],['tricoline-azul-listrada.jpg','Tricoline listrada azul'],['cetim-azul.jpg','Cetim azul'],['cristal-furtacor.jpg','Cristal furta-cor']];
+   return `<div class="art tall bg-musgo weave">
+   <div id="t1" class="ttl" style="position:absolute;left:90px;top:170px;color:${C.linho};font-size:130px">Chegou<br>na <em>Plano</em></div>
+   ${it.map(([f,n],i)=>`<div class="card" id="c${i}" style="position:absolute;left:110px;top:620px;width:860px;height:1000px;opacity:0"><div class="photo" style="height:880px;box-shadow:0 40px 80px rgba(0,0,0,.35)"><img src="${IMG(f)}"></div><div style="margin-top:-60px;margin-left:40px;position:relative"><span class="tag" style="font-size:30px;background:${C.linho};color:${C.musgo}">${String(i+1).padStart(2,'0')} · ${n.toUpperCase()}</span></div></div>`).join('')}
+   <div id="end" style="position:absolute;inset:0;background:${C.linho};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:60px;opacity:0" class="linen">
+     <div data-logo="main" data-size="150"></div>
+     <div class="ttl" style="font-size:84px;text-align:center">Compre<br>por metro</div>
+     <div style="display:grid;gap:22px;justify-items:center">${[['zap','(11) 99383-9570'],['sacola','shopee.com.br/planotecidos']].map(([i,t])=>`<div style="display:flex;align-items:center;gap:20px;font:700 44px Montserrat;color:${C.musgo}">${icon(i,C.verde)}${t}</div>`).join('')}</div></div></div>`},
+  render:t=>{
+   const g=s=>document.querySelector(s);
+   g('#t1').style.opacity=E(seg(t,0,.5));g('#t1').style.transform=`translateY(${(1-E(seg(t,0,.6)))*60}px)`;
+   for(let i=0;i<4;i++){const a=1+i*2,e=g('#c'+i);const pin=EB(seg(t,a,a+.7)),out=E(seg(t,a+1.8,a+2.3));
+    e.style.opacity=cl(seg(t,a,a+.3))*(1-out);e.style.transform=`translateX(${(1-pin)*900-out*900}px) rotate(${(1-pin)*8-out*-6}deg)`}
+   const en=E(seg(t,9,9.6));g('#end').style.opacity=en;g('#end').style.transform=`scale(${1.06-.06*en})`;
+  }},
+ 'm3-comprar':{dur:14,html:()=>`<div class="art tall linen">
+   <div id="hd" style="position:absolute;left:90px;top:160px"><div class="kick" style="color:${C.verde}">COMO COMPRAR</div><div class="ttl" style="font-size:120px;margin-top:30px">Tecido por metro em <em>3 passos</em></div></div>
+   ${[['olho','Escolha o tecido','No Instagram ou na Shopee.'],['zap','Informe a metragem','No WhatsApp (11) 99383-9570.'],['entrega','Receba em casa','Cortado, dobrado e embalado.']].map(([i,a,b],k)=>`<div id="p${k}" style="position:absolute;left:90px;right:90px;top:${760+k*300}px;display:flex;gap:40px;align-items:center;background:#fff;border-radius:36px;padding:44px;box-shadow:0 20px 50px rgba(0,0,0,.08);opacity:0"><div class="n" style="width:110px;height:110px;font-size:52px">${k+1}</div><div style="flex:1"><div class="ttl" style="font-size:58px">${a}</div><div class="sub" style="font-size:36px;margin-top:8px">${b}</div></div><div style="color:${C.verde}">${icon(i,C.verde)}</div></div>`).join('')}
+   <div id="bar" style="position:absolute;left:90px;top:700px;height:14px;background:${C.verde};border-radius:7px;width:0"></div>
+   <div id="end" class="bg-verde weave" style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:70px;opacity:0">
+    <div data-logo="main" data-size="150" data-mode="rev" data-sym="mono" data-bg="${C.verde}"></div>
+    <div class="ttl" style="font-size:86px;text-align:center;color:${C.linho}">Seu projeto<br>começa aqui.</div>
+    <div style="font:700 46px Montserrat;color:${C.linho}">(11) 99383-9570</div></div></div>`,
+  render:t=>{
+   const g=s=>document.querySelector(s);
+   g('#hd').style.opacity=E(seg(t,0,.6));
+   g('#bar').style.width=(900*E(seg(t,.6,9)))+'px';
+   for(let k=0;k<3;k++){const a=1.2+k*2.6,e=g('#p'+k);const p=EB(seg(t,a,a+.7));e.style.opacity=cl(seg(t,a,a+.3));e.style.transform=`translateY(${(1-p)*120}px)`}
+   const en=E(seg(t,10.2,10.9));g('#end').style.opacity=en;g('#end').style.transform=`translateY(${(1-en)*80}px)`;
+  }},
+ 'm4-blackfriday':{dur:8,html:()=>{let ticks='';for(let i=0;i<=40;i++)ticks+=`<div style="position:absolute;left:${i*60}px;bottom:0;width:4px;height:${i%5?36:70}px;background:${C.grafite}"></div>${i%5?'':`<div style="position:absolute;left:${i*60-20}px;bottom:84px;font:700 30px Montserrat;color:${C.grafite}">${i}</div>`}`;
+   return `<div class="art tall bg-grafite weave">
+   <div class="kick" style="position:absolute;left:90px;top:170px;color:${C.claro}">BLACK FRIDAY PLANO · 27/11</div>
+   <div id="big" style="position:absolute;left:90px;top:300px;font:800 520px/0.9 Montserrat;color:${C.linho}">9</div>
+   <div id="lb" class="ttl" style="position:absolute;left:90px;top:800px;font-size:120px;color:${C.linho}">dias para a<br><em>Black Friday</em></div>
+   <div style="position:absolute;left:0;top:1260px;width:100%;height:220px;overflow:hidden">
+     <div id="tape" style="position:absolute;left:0;top:40px;height:180px;width:2600px;background:#F4C542;transform-origin:0 50%">${ticks}</div>
+     <div style="position:absolute;left:-30px;top:10px;width:220px;height:240px;border-radius:40px;background:${C.verde};box-shadow:0 20px 40px rgba(0,0,0,.4)"></div></div>
+   <div id="cta" style="position:absolute;left:90px;right:90px;bottom:170px;display:flex;justify-content:space-between;align-items:center;opacity:0">
+     <div style="font:700 48px Montserrat;color:${C.linho}">Ative o lembrete 🔔</div><div data-logo="h" data-size="40" data-mode="rev"></div></div></div>`},
+  render:t=>{
+   const g=s=>document.querySelector(s);
+   g('#tape').style.transform=`scaleX(${E(seg(t,.3,3.2))})`;
+   const p=EB(seg(t,.2,1));g('#big').style.transform=`scale(${.6+.4*p})`;g('#big').style.transformOrigin='0 100%';g('#big').style.opacity=cl(seg(t,.2,.5));
+   g('#lb').style.opacity=E(seg(t,1,1.6));g('#lb').style.transform=`translateY(${(1-E(seg(t,1,1.6)))*40}px)`;
+   g('#cta').style.opacity=E(seg(t,3.4,4));
+  }}
+};
+
+/* ================= BOOT ================= */
+(async function(){
+ const root=document.getElementById('root');
+ let html,mot=null;
+ if(q.get('motion')){mot=M[q.get('motion')];html=mot.html();}
+ else{const p=POSTS.find(x=>x.id===q.get('id'));const a=p.slides?p.slides[+(q.get('slide')||0)]:p.art;html=T[a.tpl](a);}
+ root.innerHTML=html;
+ await Plano.renderAll(root);
+ await Promise.all([...document.images].map(i=>i.complete?0:new Promise(r=>{i.onload=i.onerror=r})));
+ if(mot){window.__duration=mot.dur;window.__render=t=>mot.render(t);mot.render(q.has('t')?+q.get('t'):mot.dur-.01);
+   if(q.has('play')){const t0=performance.now();(function f(){mot.render(((performance.now()-t0)/1000)%mot.dur);requestAnimationFrame(f)})()}}
+ document.body.dataset.ready='1';
+})();
+</script>
+</body>
+</html>

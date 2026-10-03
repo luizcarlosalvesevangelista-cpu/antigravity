@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cronograma Plano Tecidos</title>
+<link href="../fonts/fonts.css" rel="stylesheet">
+<link href="../assets/upe-doc.css" rel="stylesheet">
+<script src="../assets/plano.js"></script>
+<script src="calendario.js"></script>
+<style>
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.kpi b{display:block;font:800 2.2rem/1 var(--f-display)}
+.bars{display:grid;gap:8px}
+.bar{display:grid;grid-template-columns:110px 1fr 30px;gap:10px;align-items:center;font-size:.86rem}
+.bar i{display:block;height:12px;border-radius:6px}
+.cal{display:grid;grid-template-columns:90px repeat(7,1fr);border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface);font-size:.78rem}
+.cal>div{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:8px;min-height:74px;min-width:0}
+.cal .hd{min-height:0;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-size:.68rem}
+.cal .wk{font-weight:700;font-size:.74rem;line-height:1.3}
+.cal .d{color:var(--muted);font-size:.7rem}
+.chip{display:block;margin-top:4px;border-radius:6px;padding:4px 6px;color:#fff;font-weight:700;font-size:.72rem;line-height:1.25;text-decoration:none}
+.chip.st{background:transparent;color:var(--muted);border:1px dashed var(--line);font-weight:500}
+@media (max-width:760px){.cal{display:none}}
+.feed-wrap{display:grid;grid-template-columns:340px 1fr;gap:28px;align-items:start}
+@media (max-width:820px){.feed-wrap{grid-template-columns:1fr}}
+.phone{background:#111;border-radius:40px;padding:12px;max-width:340px;box-shadow:0 20px 50px rgba(0,0,0,.18)}
+.phone .scr{background:#fff;border-radius:30px;overflow:hidden;height:640px;overflow-y:auto;color:#111;font-family:'DM Sans'}
+.phone .prof{display:flex;gap:14px;align-items:center;padding:34px 16px 12px}
+.phone .av{width:70px;height:70px;border-radius:50%;background:var(--linho);display:flex;align-items:center;justify-content:center;flex:none;border:1px solid #ddd}
+.phone .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.phone .grid div{aspect-ratio:4/5;background:#eee center/cover}
+.post{display:grid;grid-template-columns:minmax(0,300px) 1fr;gap:24px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px}
+@media (max-width:720px){.post{grid-template-columns:1fr}}
+.post .media{display:grid;gap:8px;align-content:start}
+.post .media img,.post .media video{width:100%;border-radius:8px;display:block;background:#ddd}
+.post .thumbs{display:flex;gap:6px;overflow-x:auto}
+.post .thumbs img{width:56px;flex:none;border-radius:4px;cursor:pointer;opacity:.6}
+.post .thumbs img.on{opacity:1;outline:2px solid var(--accent)}
+.post .hd{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.post .when{font:800 1rem var(--f-display)}
+.post ol{padding-left:18px;font-size:.92rem;display:grid;gap:3px}
+.leg{white-space:pre-line;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px 14px;font-size:.9rem}
+.tags{font-size:.82rem;color:var(--accent);font-weight:700}
+.copy{font:700 .76rem var(--f-display);background:transparent;border:1.5px solid var(--accent);color:var(--accent);border-radius:999px;padding:4px 12px;cursor:pointer;width:max-content}
+.fmt{color:#fff;border:0}
+.wkhead{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-top:18px}
+.wkhead h3{font-size:1.4rem}
+.motions{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:14px}
+.motions video{width:100%;border-radius:10px;display:block;background:#111}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <div class="topbar"><img class="upe-logo" src="../assets/upe-logo.png" alt="Upe Criativo"><span class="doc">Projeto Plano Tecidos · Cronograma de conteúdo</span></div>
+ <nav class="tabs" aria-label="Documentos do projeto">
+  <a href="../dossie/index.html"><span>01</span>Dossiê</a>
+  <a href="../apresentacao/index.html"><span>02</span>Apresentação</a>
+  <a href="../index.html"><span>03</span>Manual da marca</a>
+  <a href="../site/index.html"><span>04</span>Landing page</a>
+  <a href="index.html" aria-selected="true"><span>05</span>Cronograma</a>
+ </nav>
+
+ <header class="hero">
+  <div class="eyebrow">Instagram @planotecidos · 6 semanas</div>
+  <h1>Cronograma<br>de conteúdo</h1>
+  <p class="lede">Seis semanas de posts, carrosséis, motions e reels para lançar a nova marca e transformar seguidores em pedidos no WhatsApp e na Shopee. Todas as artes e vídeos abaixo já estão produzidos no novo sistema visual.</p>
+  <div class="meta"><span><b>Período:</b> 12/10 a 22/11/2026</span><span><b>Ritmo:</b> 4 posts por semana + stories diários</span><span><b>Fotos:</b> produtos reais do perfil</span></div>
+ </header>
+ <nav class="subtoc"><a href="#resumo">Resumo</a><a href="#feed">Prévia do feed</a><a href="#calendario">Calendário</a><a href="#motions">Motions</a><a href="#posts">Posts semana a semana</a><a href="#stories">Rotina de stories</a><a href="#foto">Guia de fotos</a><a href="#metas">Metas</a></nav>
+
+ <section id="resumo">
+  <div class="sec-head"><div class="eyebrow">Resumo</div><h2>O plano em números</h2><p>O perfil tem 25 posts e 8 seguidores (em 03/10/2026). O primeiro objetivo é ganhar constância e ser encontrado. Converter vem logo depois.</p></div>
+  <div class="kpis" id="kpis"></div>
+  <div class="grid2">
+   <div class="card"><div class="label">Pilares de conteúdo</div><div class="bars" id="bars"></div></div>
+   <div class="card"><div class="label">Cadência semanal</div>
+    <ul><li><b>Segunda 19h:</b> carrossel (educação ou marca)</li><li><b>Quarta 12h:</b> motion ou reels</li><li><b>Sexta 19h:</b> produto (estático)</li><li><b>Sábado ou domingo 11h:</b> prova social, oferta ou bastidor</li><li><b>Todos os dias:</b> 2 a 4 stories</li></ul>
+    <p class="small muted">Os horários são um ponto de partida. Depois de 3 semanas, ajustar pelo Insights (aba "Público": horários mais ativos).</p></div>
+  </div>
+ </section>
+
+ <section id="feed">
+  <div class="sec-head"><div class="eyebrow">Prévia</div><h2>Como o feed vai ficar</h2><p>A grade alterna fundos linho, verde e grafite com fotos de produto, para o perfil ler como uma marca só.</p></div>
+  <div class="feed-wrap">
+   <div class="phone"><div class="scr">
+    <div class="prof"><div class="av"><div data-sym-only style="width:30px;height:45px"></div></div><div style="font-size:.82rem;line-height:1.35"><b style="font-size:.95rem">planotecidos</b><br>Plano Tecidos<br><span style="color:#555">O nosso plano é dar vida ao seu projeto. 🧵<br>Tecidos por metro · WhatsApp e Shopee</span></div></div>
+    <div class="grid" id="grid"></div>
+   </div></div>
+   <div class="card"><div class="label">O que a grade resolve</div>
+    <ul><li><b>Uma voz visual:</b> uma família tipográfica (Montserrat), uma paleta e o L-rolo como assinatura. Antes eram três estilos: fotos cruas, serifa clássica com script e o laranja da Shopee.</li>
+    <li><b>Produto real primeiro:</b> as fotos continuam sendo as da loja, agora com moldura, nome do tecido e uso.</li>
+    <li><b>Ritmo de cor:</b> verde e grafite seguram a grade entre as fotos pastel dos tecidos.</li>
+    <li><b>Capas de reels com o mesmo padrão:</b> tag + título grande + assinatura horizontal.</li>
+    <li><b>Destaques sugeridos:</b> Tecidos · Como comprar · Shopee · Clientes · Novidades (capas com ícones do manual).</li></ul></div>
+  </div>
+ </section>
+
+ <section id="calendario">
+  <div class="sec-head"><div class="eyebrow">Calendário</div><h2>Seis semanas, dia a dia</h2><p>Clique num item para ir ao roteiro completo.</p></div>
+  <div class="filter" id="fmtLegend"></div>
+  <div class="cal" id="cal"></div>
+ </section>
+
+ <section id="motions">
+  <div class="sec-head"><div class="eyebrow">Motions 9:16</div><h2>Quatro vídeos prontos para reels</h2><p>Renderizados em 1080 × 1920, 30 fps, sem trilha. Escolha um áudio em alta na biblioteca do Instagram na hora de postar, para ganhar alcance.</p></div>
+  <div class="motions" id="motionList"></div>
+ </section>
+
+ <section id="posts">
+  <div class="sec-head"><div class="eyebrow">Roteiros, artes e legendas</div><h2>Posts semana a semana</h2></div>
+  <div class="filter" id="filter"></div>
+  <div id="weeks" style="display:grid;gap:16px"></div>
+ </section>
+
+ <section id="stories">
+  <div class="sec-head"><div class="eyebrow">Stories</div><h2>Rotina diária de stories</h2><p>Stories mantêm a conversa. O objetivo é levar para o WhatsApp.</p></div>
+  <div class="tbl"><table>
+   <thead><tr><th>Dia</th><th>Story</th><th>Recurso</th><th>Objetivo</th></tr></thead>
+   <tbody>
+    <tr><td>Segunda</td><td>"Bom dia" + tecido da semana em vídeo curto (mão no tecido)</td><td>Link para WhatsApp</td><td>Abrir a semana</td></tr>
+    <tr><td>Terça</td><td>Repost do post de segunda + "Você sabia?"</td><td>Quiz</td><td>Educar e engajar</td></tr>
+    <tr><td>Quarta</td><td>Bastidor: cortando um pedido</td><td>Enquete</td><td>Mostrar cuidado</td></tr>
+    <tr><td>Quinta</td><td>Caixa "Que tecido você procura?"</td><td>Caixa de perguntas</td><td>Ouvir demanda</td></tr>
+    <tr><td>Sexta</td><td>Produto do dia com metragem disponível</td><td>Link Shopee</td><td>Venda</td></tr>
+    <tr><td>Sábado</td><td>Repost de cliente (#FeitoComPlano)</td><td>Menção</td><td>Prova social</td></tr>
+    <tr><td>Domingo</td><td>Resumo da semana + o que vem</td><td>Contagem regressiva (datas)</td><td>Expectativa</td></tr>
+   </tbody></table></div>
+ </section>
+
+ <section id="foto">
+  <div class="sec-head"><div class="eyebrow">Produção</div><h2>Guia rápido de fotos no celular</h2><p>As fotos atuais mostram bem o tecido, mas mudam muito de luz e de fundo. Cinco regras para padronizar sem estúdio.</p></div>
+  <div class="grid3">
+   <div class="card"><div class="label">01 · Luz</div><p>Perto de uma janela, sem sol direto e sem flash. Sempre no mesmo horário (de manhã).</p></div>
+   <div class="card"><div class="label">02 · Fundo</div><p>Linho cru ou mesa clara. O tecido é a cor, o fundo é neutro.</p></div>
+   <div class="card"><div class="label">03 · Três enquadramentos</div><p>Rolo inteiro, dobra (caimento) e close da trama. Esses três viram carrossel.</p></div>
+   <div class="card"><div class="label">04 · Escala</div><p>Inclua uma mão, uma fita métrica ou uma tesoura para mostrar o tamanho.</p></div>
+   <div class="card"><div class="label">05 · Formato</div><p>Fotografe em pé (4:5) e grave vídeos em pé (9:16) com 5 s de sobra no começo e no fim.</p></div>
+   <div class="card"><div class="label">06 · Edição</div><p>Só luz e contraste. Não use filtros que mudem a cor real do tecido: o cliente compra pela cor.</p></div>
+  </div>
+ </section>
+
+ <section id="metas">
+  <div class="sec-head"><div class="eyebrow">Métricas</div><h2>O que medir em 6 semanas</h2><p>Metas propostas para validar com a Plano. São alcançáveis partindo de 8 seguidores, sem anúncio pago.</p></div>
+  <div class="tbl"><table>
+   <thead><tr><th>Indicador</th><th>Hoje (03/10)</th><th>Meta em 22/11</th><th>Onde ver</th></tr></thead>
+   <tbody>
+    <tr><td>Seguidores</td><td>8</td><td>150+</td><td>Perfil</td></tr>
+    <tr><td>Posts publicados</td><td>25 no total</td><td>+24 no período</td><td>Perfil</td></tr>
+    <tr><td>Contas alcançadas por reels</td><td>a medir</td><td>500+ por reels</td><td>Insights</td></tr>
+    <tr><td>Salvamentos nos carrosséis educativos</td><td>a medir</td><td>10+ por carrossel</td><td>Insights do post</td></tr>
+    <tr><td>Conversas no WhatsApp vindas do Instagram</td><td>a medir</td><td>Anotar a origem de cada pedido</td><td>WhatsApp Business (etiquetas)</td></tr>
+    <tr><td>Cliques no link da Shopee</td><td>a medir</td><td>Usar link rastreável</td><td>Insights · toques no link</td></tr>
+   </tbody></table></div>
+  <div class="callout"><div class="label">Próximo passo</div><p>Aprovar o cronograma, agendar as semanas 1 e 2 no Meta Business Suite e separar 1 hora por semana para fotografar os tecidos novos com o guia acima.</p></div>
+ </section>
+ <div class="foot-note">Upe Criativo · Projeto Plano Tecidos · Documento de trabalho</div>
+</div>
+<script>
+const FMT={carrossel:{n:'Carrossel',c:'#0b4b7c'},estatico:{n:'Estático',c:'#4E8C34'},motion:{n:'Motion',c:'#7a3fa0'},reels:{n:'Reels filmado',c:'#c2410c'},stories:{n:'Stories',c:'#55585e'}};
+const DIAS=['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+const fd=s=>{const [y,m,d]=s.split('-');return `${d}/${m}`};
+const wd=s=>{const d=new Date(s+'T12:00:00');return DIAS[(d.getDay()+6)%7]};
+const files=p=>p.slides?p.slides.map((_,i)=>`posts/${p.id}-${i+1}.jpg`):p.art?[`posts/${p.id}.jpg`]:[];
+/* KPIs */
+const cnt=f=>POSTS.filter(p=>p.fmt===f).length;
+document.getElementById('kpis').innerHTML=[[POSTS.length,'publicações'],[cnt('carrossel'),'carrosséis'],[cnt('estatico'),'estáticos'],[cnt('motion'),'motions prontos'],[cnt('reels'),'reels filmados'],[POSTS.reduce((a,p)=>a+files(p).length,0),'artes geradas']].map(([n,t])=>`<div class="kpi"><b>${n}</b>${t}</div>`).join('');
+const pc={};POSTS.forEach(p=>pc[p.pilar]=(pc[p.pilar]||0)+1);
+document.getElementById('bars').innerHTML=Object.entries(PILARES).map(([k,v])=>`<div class="bar"><span><b>${v.nome}</b></span><span><i style="width:${(pc[k]||0)/POSTS.length*100*2.4}%;background:${v.cor}"></i></span><span>${pc[k]||0}</span></div>`).join('')+`<p class="small muted">${Object.values(PILARES).map(v=>`<b>${v.nome}:</b> ${v.desc}`).join(' ')}</p>`;
+/* feed preview (mais recente primeiro) */
+document.getElementById('grid').innerHTML=POSTS.filter(p=>p.fmt!=='stories').slice().reverse().map(p=>{const src=p.motion?`motion/${p.motion}.jpg`:files(p)[0];return `<div style="background-image:url('${src}')" title="${p.titulo}"></div>`}).join('');
+/* calendário */
+const cal=document.getElementById('cal');
+let h='<div class="hd"></div>'+DIAS.map(d=>`<div class="hd">${d}</div>`).join('');
+SEMANAS.forEach(w=>{h+=`<div class="wk">Sem ${w.n}<br><span class="d">${w.tema}</span></div>`;
+ for(let i=0;i<7;i++){const d=new Date(w.ini+'T12:00:00');d.setDate(d.getDate()+i);const iso=d.toISOString().slice(0,10);
+  const ps=POSTS.filter(p=>p.date===iso);
+  h+=`<div><span class="d">${fd(iso)}</span>${ps.map(p=>`<a class="chip" href="#${p.id}" style="background:${FMT[p.fmt].c}">${p.titulo}</a>`).join('')}<span class="chip st">stories</span></div>`}});
+cal.innerHTML=h;
+document.getElementById('fmtLegend').innerHTML=Object.values(FMT).map(f=>`<span class="pill" style="color:${f.c}">${f.n}</span>`).join('');
+/* motions */
+document.getElementById('motionList').innerHTML=POSTS.filter(p=>p.motion).map(p=>`<figure style="margin:0;display:grid;gap:8px"><video src="motion/${p.motion}.mp4" poster="motion/${p.motion}.jpg" muted loop playsinline autoplay controls preload="metadata"></video><figcaption><b>${p.titulo}</b><br><span class="cap">${fd(p.date)} · <a href="motion/${p.motion}.mp4" download>baixar MP4</a></span></figcaption></figure>`).join('');
+/* posts */
+let filt='todos';
+function renderPosts(){
+ document.getElementById('weeks').innerHTML=SEMANAS.map(w=>{
+  const ini=new Date(w.ini+'T12:00:00'),fim=new Date(ini);fim.setDate(fim.getDate()+6);
+  const ps=POSTS.filter(p=>{const d=new Date(p.date+'T12:00:00');return d>=ini&&d<=fim&&(filt==='todos'||p.fmt===filt)});
+  if(!ps.length)return'';
+  return `<div class="wkhead"><span class="eyebrow">Semana ${w.n} · ${fd(w.ini)} a ${fd(fim.toISOString().slice(0,10))}</span><h3>${w.tema}</h3><span class="muted small">${w.meta}</span></div>`+ps.map(p=>{
+   const fs=files(p);
+   const media=p.motion?`<video src="motion/${p.motion}.mp4" poster="motion/${p.motion}.jpg" muted loop playsinline controls preload="none"></video><a class="small" href="motion/${p.motion}.mp4" download>Baixar MP4</a>`
+     :`<img src="${fs[0]}" alt="${p.titulo}" data-main>${fs.length>1?`<div class="thumbs">${fs.map((f,i)=>`<img src="${f}" class="${i?'':'on'}" data-src="${f}" alt="Slide ${i+1}">`).join('')}</div>`:''}<span class="small">${fs.map((f,i)=>`<a href="${f}" download>${fs.length>1?'slide '+(i+1):'baixar JPG'}</a>`).join(' · ')}</span>`;
+   return `<article class="post" id="${p.id}"><div class="media">${media}</div><div style="display:grid;gap:12px;align-content:start;min-width:0">
+    <div class="hd"><span class="when">${wd(p.date)} ${fd(p.date)} · ${p.hora}</span><span class="pill fmt" style="background:${FMT[p.fmt].c}">${FMT[p.fmt].n}</span><span class="pill" style="color:${PILARES[p.pilar].cor==='#D6CAB4'?'#8a7a55':PILARES[p.pilar].cor}">${PILARES[p.pilar].nome}</span></div>
+    <h3>${p.titulo}</h3><p class="muted small">${p.objetivo}</p>
+    <div><div class="label">Roteiro</div><ol>${p.roteiro.map(r=>`<li>${r}</li>`).join('')}</ol></div>
+    <div><div class="label" style="display:flex;justify-content:space-between;align-items:center">Legenda <button class="copy" data-copy="${p.id}">Copiar legenda</button></div><div class="leg">${p.legenda}${p.tags?`\n\n<span class="tags">${p.tags}</span>`:''}</div></div>
+    <div class="small"><b>CTA:</b> ${p.cta}</div></div></article>`}).join('')}).join('');
+}
+renderPosts();
+document.getElementById('filter').innerHTML=[['todos','Todos'],...Object.entries(FMT).map(([k,v])=>[k,v.n])].map(([k,n])=>`<button aria-pressed="${k==='todos'}" data-f="${k}">${n}</button>`).join('');
+document.getElementById('filter').onclick=e=>{const b=e.target.closest('button');if(!b)return;filt=b.dataset.f;document.querySelectorAll('#filter button').forEach(x=>x.setAttribute('aria-pressed',x===b));renderPosts()};
+document.addEventListener('click',e=>{
+ const t=e.target.closest('.thumbs img');if(t){const m=t.closest('.media');m.querySelector('[data-main]').src=t.dataset.src;m.querySelectorAll('.thumbs img').forEach(x=>x.classList.toggle('on',x===t))}
+ const c=e.target.closest('[data-copy]');if(c){const p=POSTS.find(x=>x.id===c.dataset.copy);const txt=p.legenda+(p.tags?'\n\n'+p.tags:'');
+  (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>{c.textContent='Copiado ✓';setTimeout(()=>c.textContent='Copiar legenda',1500)}).catch(()=>{c.textContent='Selecione e copie'})}
+});
+Plano.renderAll();
+</script>
+</body>
+</html>

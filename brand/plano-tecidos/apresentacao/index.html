@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Redesign Plano Tecidos</title>
+<link href="../fonts/fonts.css" rel="stylesheet">
+<script src="../assets/plano.js"></script>
+<style>
+:root{--verde:#4E8C34;--claro:#86BC5F;--musgo:#24402A;--linho:#F1EADF;--areia:#D6CAB4;--grafite:#2B2B29;--upe:#0b4b7c}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#151614;overflow:hidden;font-family:'DM Sans',sans-serif}
+#deck{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:50% 50%}
+.s{position:absolute;inset:0;overflow:hidden;color:var(--grafite);opacity:0;pointer-events:none;transition:opacity .45s}
+.s.on{opacity:1;pointer-events:auto}
+.linen{background-color:var(--linho);background-image:repeating-linear-gradient(0deg,rgba(120,100,70,.07) 0 1px,transparent 1px 4px),repeating-linear-gradient(90deg,rgba(255,255,255,.35) 0 1px,transparent 1px 5px)}
+.weave{background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.04) 0 2px,transparent 2px 7px),repeating-linear-gradient(90deg,rgba(0,0,0,.06) 0 2px,transparent 2px 7px)}
+.dk{background-color:var(--musgo);color:var(--linho)}
+.gr{background-color:var(--verde);color:var(--linho)}
+.gf{background-color:var(--grafite);color:var(--linho)}
+.in{position:absolute;inset:110px 130px 100px}
+.k{font:700 22px Montserrat;letter-spacing:.3em;text-transform:uppercase;color:var(--verde)}
+.dk .k,.gf .k{color:var(--claro)}.gr .k{color:var(--musgo)}
+h1,h2,h3{font-family:Montserrat;font-weight:800;letter-spacing:-.015em;line-height:1.04}
+h1{font-size:120px}h2{font-size:76px;margin-top:22px}h3{font-size:34px}
+h1 em,h2 em{font-style:normal;color:var(--verde)}
+.dk h2 em,.gf h2 em,.dk h1 em{color:var(--claro)}.gr h2 em{color:var(--musgo)}
+p{font-size:28px;line-height:1.5}
+.lead{font-size:32px;line-height:1.45;max-width:1000px;margin-top:28px;opacity:.9}
+.row{display:flex;gap:40px}
+.col{flex:1;min-width:0}
+.card{background:#fff;border-radius:24px;padding:36px;box-shadow:0 10px 30px rgba(0,0,0,.06)}
+.dk .card,.gf .card{background:rgba(255,255,255,.06);box-shadow:none;border:1px solid rgba(241,234,223,.15)}
+.card h3{margin-bottom:12px}
+.card p{font-size:24px;opacity:.85}
+.num{font:800 22px Montserrat;color:var(--verde);letter-spacing:.2em}
+.shot{border-radius:20px;overflow:hidden;box-shadow:0 30px 60px rgba(0,0,0,.18);background:#fff}
+.shot img{display:block;width:100%}
+.foot{position:absolute;left:130px;right:130px;bottom:44px;display:flex;justify-content:space-between;font:600 16px Montserrat;letter-spacing:.14em;text-transform:uppercase;opacity:.55}
+ul.l{list-style:none;display:grid;gap:18px;margin-top:30px}
+ul.l li{font-size:28px;line-height:1.4;padding-left:44px;position:relative}
+ul.l li::before{content:"";position:absolute;left:0;top:10px;width:22px;height:22px;border-radius:6px;background:var(--verde)}
+.dk ul.l li::before,.gf ul.l li::before{background:var(--claro)}
+.tag{display:inline-block;font:700 18px Montserrat;letter-spacing:.2em;padding:10px 18px;border-radius:999px;background:var(--verde);color:var(--linho)}
+.tag.o{background:transparent;border:2px solid currentColor;color:inherit}
+/* controles */
+#ui{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;gap:10px;padding:12px;z-index:5;opacity:.25;transition:opacity .3s}
+#ui:hover{opacity:1}
+#ui button{font:700 14px Montserrat;background:#fff;border:0;border-radius:999px;padding:8px 16px;cursor:pointer}
+#ui span{color:#fff;font:600 14px Montserrat;align-self:center;min-width:70px;text-align:center}
+@media print{html,body{overflow:visible;height:auto;background:none}#ui{display:none}#deck{position:static;transform:none!important;width:1920px;height:auto}.s{position:relative;opacity:1;page-break-after:always;break-after:page;width:1920px;height:1080px}@page{size:1920px 1080px;margin:0}}
+</style>
+</head>
+<body>
+<div id="deck">
+
+<!-- 1 CAPA -->
+<section class="s linen">
+ <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:56px">
+  <div data-logo="main" data-size="210"></div>
+  <div class="k" style="color:var(--grafite)">Redesign de marca · Proposta</div>
+ </div>
+ <div class="foot" style="opacity:.7"><span>Upe Criativo</span><span>Outubro 2026</span></div>
+ <div style="position:absolute;left:0;right:0;bottom:0;height:30px;background:repeating-linear-gradient(90deg,#4E8C34 0 70px,#86BC5F 70px 140px,#D6CAB4 140px 210px)"></div>
+</section>
+
+<!-- 2 PONTO DE PARTIDA -->
+<section class="s linen"><div class="in">
+ <div class="k">01 · Ponto de partida</div>
+ <h2>Uma marca com uma ideia <em>muito boa</em>.</h2>
+ <div class="row" style="margin-top:60px;align-items:center">
+  <div style="flex:none;width:420px;display:grid;gap:22px;justify-items:center"><img src="../assets/atual/logo-atual.jpg" style="width:340px;border-radius:50%;box-shadow:0 30px 60px rgba(0,0,0,.15)"><div class="tag o" style="color:var(--grafite)">Logo atual</div></div>
+  <div class="col"><ul class="l" style="gap:30px">
+   <li>O <b>L é um rolo de tecido</b> que se desenrola: o nome e o produto numa letra só.</li>
+   <li>A bio já tem um propósito claro: <b>"O nosso plano é dar vida ao seu projeto."</b></li>
+   <li>Loja na Shopee com <b>nota 5 e selo de vendedor indicado</b>.</li>
+   <li>No Instagram: 25 posts e 8 seguidores (03/10/2026). Há espaço para crescer.</li>
+  </ul></div>
+ </div></div><div class="foot"><span>Plano Tecidos · Redesign</span><span>02</span></div></section>
+
+<!-- 3 DIAGNÓSTICO -->
+<section class="s gf"><div class="in">
+ <div class="k">02 · Diagnóstico</div>
+ <h2>Hoje o perfil fala com <em>três vozes</em>.</h2>
+ <div class="row" style="margin-top:56px">
+  
+  <div class="col"><div style="height:380px;border-radius:20px;overflow:hidden"><img src="../assets/fotos/sarja-azul.jpg" style="width:100%;height:100%;object-fit:cover"></div><h3 style="margin-top:26px">Foto crua</h3><p style="font-size:24px;opacity:.75;margin-top:8px">Tecido bonito, mas sem nome, preço ou uso. A luz muda a cada foto.</p></div>
+  <div class="col"><div style="height:380px;border-radius:20px;overflow:hidden"><img src="../assets/fotos/post-sonho.jpg" style="width:100%;height:100%;object-fit:cover"></div><h3 style="margin-top:26px">Serifa + script</h3><p style="font-size:24px;opacity:.75;margin-top:8px">Estilo delicado de convite, que não conversa com o logotipo geométrico.</p></div>
+  <div class="col"><div style="height:380px;border-radius:20px;overflow:hidden"><img src="../assets/fotos/post-shopee.jpg" style="width:100%;height:100%;object-fit:cover;object-position:top"></div><h3 style="margin-top:26px">Laranja Shopee</h3><p style="font-size:24px;opacity:.75;margin-top:8px">A cor da plataforma domina e a marca Plano fica em segundo plano.</p></div>
+ </div></div><div class="foot"><span>Plano Tecidos · Redesign</span><span>03</span></div></section>
+
+<!-- 4 PROBLEMAS DO LOGO -->
+<section class="s linen"><div class="in">
+ <div class="k">03 · O logotipo atual</div>
+ <h2>O rolo 3D <em>some</em> quando a marca diminui.</h2>
+ <div class="row" style="margin-top:60px">
+  <div class="card col"><div class="num">LEGIBILIDADE</div><h3 style="margin-top:14px">Detalhe demais</h3><p>Textura, sombra e volume viram uma mancha verde no avatar do Instagram e no adesivo.</p></div>
+  <div class="card col"><div class="num">REPRODUÇÃO</div><h3 style="margin-top:14px">Não tem versão em uma cor</h3><p>Um rolo fotográfico não vira carimbo, bordado, serigrafia ou etiqueta tecida.</p></div>
+  <div class="card col"><div class="num">SISTEMA</div><h3 style="margin-top:14px">Sem cores e fontes definidas</h3><p>Cada post escolhe a sua tipografia e a sua paleta. A marca não se repete, então não é lembrada.</p></div>
+ </div>
+ <div style="margin-top:46px;display:flex;gap:30px;align-items:center"><img src="../assets/fotos/adesivo-sarja-2.jpg" style="height:190px;border-radius:16px"><p style="font-size:26px;max-width:900px">No adesivo atual (lilás sobre sarja verde), o L já perde a forma de rolo. É onde o cliente mais vê a marca.</p></div>
+ </div><div class="foot"><span>Plano Tecidos · Redesign</span><span>04</span></div></section>
+
+<!-- 5 CONCEITO -->
+<section class="s dk weave"><div class="in" style="display:flex;align-items:center;gap:120px">
+ <div style="flex:none;width:420px;height:627px" data-sym-only></div>
+ <div><div class="k">04 · Conceito</div><h1 style="margin-top:26px">Do rolo<br>ao <em>projeto</em>.</h1>
+ <p class="lead">Tecido plano é o tecido de fios que se cruzam. O rolo se desenrola e dobra num "check": o tecido certo, conferido, pronto para virar o projeto de alguém.</p></div>
+ </div><div class="foot"><span>Plano Tecidos · Redesign</span><span>05</span></div></section>
+
+<!-- 6 ANTES/DEPOIS -->
+<section class="s linen"><div class="in">
+ <div class="k">05 · Redesenho</div>
+ <h2>Mesma essência, <em>desenho profissional</em>.</h2>
+ <div class="row" style="margin-top:60px">
+  <div class="col" style="background:#e9e3d8;border-radius:28px;height:560px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:30px"><img src="../assets/atual/logo-atual.jpg" style="width:360px;border-radius:50%"><div class="tag o" style="color:var(--grafite)">Antes</div></div>
+  <div class="col gr weave" style="border-radius:28px;height:560px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:50px"><div data-logo="main" data-size="130" data-mode="rev" data-sym="mono" data-bg="#4E8C34"></div><div class="tag" style="background:var(--linho);color:var(--musgo)">Depois</div></div>
+ </div>
+ <p style="margin-top:30px;font-size:24px">Ficaram o nome, o peso das letras, o verde e o L de tecido. Mudou o desenho: vetor plano, construído em módulos, com versões colorida, uma cor e negativa.</p>
+ </div><div class="foot"><span>Plano Tecidos · Redesign</span><span>06</span></div></section>
+
+<!-- 7 GESTALT -->
+<section class="s linen"><div class="in">
+ <div class="k">06 · Construção e Gestalt</div>
+ <h2>Cada parte tem uma <em>razão</em>.</h2>
+ <div class="shot" style="margin-top:40px;height:700px;background:#fff;display:flex;align-items:center;justify-content:center"><img src="../assets/bb-gestalt.jpg" style="height:100%;width:auto;max-width:100%;object-fit:contain"></div>
+ </div><div class="foot"><span>Plano Tecidos · Redesign</span><span>07</span></div></section>
+
+<!-- 8 VERSÕES -->
+<section class="s linen"><div class="in">
+ <div class="k">07 · Versões</div>
+ <h2>Uma marca para <em>cada lugar</em>.</h2>
+ <div class="shot" style="margin-top:44px"><img src="../assets/bb-logos.jpg"></div>
+ </div><div class="foot"><span>Plano Tecidos · Redesign</span><span>08</span></div></section>
+
+<!-- 9 PALETA + TIPO -->
+<section class="s linen"><div class="in">
+ <div class="k">08 · Cor e tipografia</div>
+ <h2>Verde de fibra, linho de <em>tecido cru</em>.</h2>
+ <div class="row" style="margin-top:50px;align-items:stretch">
+  <div class="col" style="display:grid;grid-template-columns:1.3fr 1.3fr 1fr;gap:16px;height:520px">
+   <div style="background:#4E8C34;border-radius:20px;padding:30px;color:#F1EADF;display:flex;flex-direction:column;justify-content:space-between"><h3>Verde<br>Trama</h3><span style="font:600 20px Montserrat">#4E8C34</span></div>
+   <div style="background:#F1EADF;border:1px solid #ddd3c2;border-radius:20px;padding:30px;display:flex;flex-direction:column;justify-content:space-between"><h3>Linho<br>Cru</h3><span style="font:600 20px Montserrat">#F1EADF</span></div>
+   <div style="display:grid;gap:16px">
+    <div style="background:#24402A;border-radius:20px;padding:22px;color:#F1EADF;font:700 22px Montserrat">Musgo<br><span style="font-weight:500;font-size:16px">#24402A</span></div>
+    <div style="background:#D6CAB4;border-radius:20px;padding:22px;font:700 22px Montserrat">Areia<br><span style="font-weight:500;font-size:16px">#D6CAB4</span></div>
+    <div style="background:#2B2B29;border-radius:20px;padding:22px;color:#F1EADF;font:700 22px Montserrat">Grafite<br><span style="font-weight:500;font-size:16px">#2B2B29</span></div></div>
+  </div>
+  <div class="card" style="width:600px;display:grid;gap:26px;align-content:center">
+   <div><div class="num">TÍTULOS</div><div style="font:800 80px/1 Montserrat;margin-top:10px">Montserrat</div></div>
+   <div><div class="num">TEXTOS</div><div style="font:500 70px/1 'DM Sans';margin-top:10px">DM Sans</div></div>
+   <p style="font-size:22px;opacity:.75">Geométrica nos títulos, como as letras do logo. Humanista e leve nos textos, legível no celular.</p>
+  </div>
+ </div></div><div class="foot"><span>Plano Tecidos · Redesign</span><span>09</span></div></section>
+
+<!-- 10 ATIVOS + ICONES -->
+<section class="s linen"><div class="in">
+ <div class="k">09 · Padrões e iconografia</div>
+ <h2>A trama vira <em>linguagem</em>.</h2>
+ <div style="margin-top:36px;display:grid;gap:22px;justify-items:center">
+  <div class="shot" style="width:1020px"><img src="../assets/bb-ativos.jpg"></div>
+  <div class="shot" style="width:1020px"><img src="../assets/bb-icones.jpg"></div>
+ </div></div><div class="foot"><span>Plano Tecidos · Redesign</span><span>10</span></div></section>
+
+<!-- 11 APLICAÇÕES -->
+<section class="s" style="background:#D6CAB4"><div class="in">
+ <div class="k" style="color:var(--musgo)">10 · Aplicações</div>
+ <h2>Da fachada ao <em>adesivo do pedido</em>.</h2>
+ <div class="row" style="margin-top:44px;height:620px">
+  <div class="shot" style="flex:1.25"><img src="../assets/bb-fachada.jpg" style="height:100%;object-fit:cover"></div>
+  <div class="shot col" style="background:#4E8C34"><img src="../assets/bb-aplicacoes.jpg" style="height:100%;object-fit:cover;object-position:50% 46%"></div>
+ </div></div><div class="foot"><span>Plano Tecidos · Redesign</span><span>11</span></div></section>
+
+<!-- 12 INSTAGRAM -->
+<section class="s linen"><div class="in" style="display:flex;gap:80px;align-items:center">
+ <div style="flex:none;width:520px"><div class="k">11 · Instagram</div><h2>Um feed que parece <em>uma loja</em>.</h2>
+  <ul class="l"><li>Fotos reais com nome do tecido e uso</li><li>Carrosséis que ensinam (e são salvos)</li><li>Reels com motion da marca</li><li>Sempre levando ao WhatsApp e à Shopee</li></ul></div>
+ <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:640px;margin-left:auto" id="feed"></div>
+ </div><div class="foot"><span>Plano Tecidos · Redesign</span><span>12</span></div></section>
+
+<!-- 13 MOTION -->
+<section class="s gf"><div class="in">
+ <div class="k">12 · Motion</div>
+ <h2>A marca <em>em movimento</em>.</h2>
+ <div class="row" style="margin-top:44px;gap:30px">
+  
+  <figure class="col" style="margin:0"><video src="../conteudo/motion/m1-logo.mp4" poster="../conteudo/motion/m1-logo.jpg" muted loop playsinline autoplay style="width:100%;border-radius:18px;height:600px;object-fit:cover;background:#111"></video><figcaption style="font:700 20px Montserrat;margin-top:14px">Logo reveal · 8 s</figcaption></figure>
+  <figure class="col" style="margin:0"><video src="../conteudo/motion/m2-novidades.mp4" poster="../conteudo/motion/m2-novidades.jpg" muted loop playsinline autoplay style="width:100%;border-radius:18px;height:600px;object-fit:cover;background:#111"></video><figcaption style="font:700 20px Montserrat;margin-top:14px">Novidades · 12 s</figcaption></figure>
+  <figure class="col" style="margin:0"><video src="../conteudo/motion/m3-comprar.mp4" poster="../conteudo/motion/m3-comprar.jpg" muted loop playsinline autoplay style="width:100%;border-radius:18px;height:600px;object-fit:cover;background:#111"></video><figcaption style="font:700 20px Montserrat;margin-top:14px">Como comprar · 14 s</figcaption></figure>
+  <figure class="col" style="margin:0"><video src="../conteudo/motion/m4-blackfriday.mp4" poster="../conteudo/motion/m4-blackfriday.jpg" muted loop playsinline autoplay style="width:100%;border-radius:18px;height:600px;object-fit:cover;background:#111"></video><figcaption style="font:700 20px Montserrat;margin-top:14px">Black Friday · 8 s</figcaption></figure>
+ </div></div><div class="foot"><span>Plano Tecidos · Redesign</span><span>13</span></div></section>
+
+<!-- 14 SITE -->
+<section class="s linen"><div class="in" style="display:flex;gap:60px;align-items:center">
+ <div style="flex:none;width:560px"><div class="k">13 · Landing page</div><h2>Uma casa própria <em>fora da Shopee</em>.</h2>
+  <ul class="l"><li>WhatsApp com mensagem pronta em todos os botões</li><li>Tecidos por tipo e por projeto</li><li>Como comprar e cálculo de metragem</li><li>Funciona no celular, onde o cliente está</li></ul></div>
+ <div style="flex:1;position:relative;height:760px">
+  <div class="shot" style="position:absolute;left:0;top:30px;width:860px"><img src="../assets/site/site-desktop.jpg"></div>
+  <div class="shot" style="position:absolute;right:0;bottom:0;width:250px;border:8px solid #111;border-radius:36px"><img src="../assets/site/site-mobile.jpg"></div>
+ </div></div><div class="foot"><span>Plano Tecidos · Redesign</span><span>14</span></div></section>
+
+<!-- 15 CRONOGRAMA -->
+<section class="s linen"><div class="in">
+ <div class="k">14 · Plano de conteúdo</div>
+ <h2>Seis semanas <em>prontas para postar</em>.</h2>
+ <div class="row" style="margin-top:50px">
+  
+  <div class="card col"><div style="font:800 96px/1 Montserrat;color:var(--verde)">24</div><h3 style="margin-top:12px">publicações</h3><p>12/10 a 22/11, 4 por semana, com roteiro e legenda.</p></div>
+  <div class="card col"><div style="font:800 96px/1 Montserrat;color:var(--verde)">38</div><h3 style="margin-top:12px">artes prontas</h3><p>Estáticos, carrosséis completos e capas de reels.</p></div>
+  <div class="card col"><div style="font:800 96px/1 Montserrat;color:var(--verde)">4</div><h3 style="margin-top:12px">motions 9:16</h3><p>Logo reveal, novidades, como comprar e Black Friday.</p></div>
+  <div class="card col"><div style="font:800 96px/1 Montserrat;color:var(--verde)">6</div><h3 style="margin-top:12px">temas semanais</h3><p>Nova marca, tecidos, Halloween, como comprar, fim de ano, Black Friday.</p></div>
+ </div>
+ <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-top:40px">
+  <div style="border-top:6px solid #24402A;padding-top:16px"><div class="num" style="font-size:15px;letter-spacing:.14em">SEMANA 1 · 12/10</div><div style="font:700 26px/1.2 Montserrat;margin-top:8px">Nova fase da marca</div></div><div style="border-top:6px solid #4E8C34;padding-top:16px"><div class="num" style="font-size:15px;letter-spacing:.14em">SEMANA 2 · 19/10</div><div style="font:700 26px/1.2 Montserrat;margin-top:8px">Conheça os tecidos</div></div><div style="border-top:6px solid #2B2B29;padding-top:16px"><div class="num" style="font-size:15px;letter-spacing:.14em">SEMANA 3 · 26/10</div><div style="font:700 26px/1.2 Montserrat;margin-top:8px">Halloween & fantasias</div></div><div style="border-top:6px solid #86BC5F;padding-top:16px"><div class="num" style="font-size:15px;letter-spacing:.14em">SEMANA 4 · 02/11</div><div style="font:700 26px/1.2 Montserrat;margin-top:8px">Como comprar</div></div><div style="border-top:6px solid #D6CAB4;padding-top:16px"><div class="num" style="font-size:15px;letter-spacing:.14em">SEMANA 5 · 09/11</div><div style="font:700 26px/1.2 Montserrat;margin-top:8px">Fim de ano no ateliê</div></div><div style="border-top:6px solid #2B2B29;padding-top:16px"><div class="num" style="font-size:15px;letter-spacing:.14em">SEMANA 6 · 16/11</div><div style="font:700 26px/1.2 Montserrat;margin-top:8px">Aquecimento Black Friday</div></div>
+ </div></div><div class="foot"><span>Plano Tecidos · Redesign</span><span>15</span></div></section>
+
+<!-- 16 PRÓXIMOS PASSOS -->
+<section class="s dk weave"><div class="in">
+ <div class="k">15 · Próximos passos</div>
+ <h2>Para colocar a marca <em>na rua</em>.</h2>
+ <div class="row" style="margin-top:60px">
+  <div class="card col"><div class="num" style="color:var(--claro)">SEMANA 1</div><h3 style="margin-top:14px">Aprovar</h3><p>Validar marca, paleta e cronograma. Ajustes finos.</p></div>
+  <div class="card col"><div class="num" style="color:var(--claro)">SEMANA 1</div><h3 style="margin-top:14px">Trocar o perfil</h3><p>Avatar, bio, destaques e capa da loja na Shopee.</p></div>
+  <div class="card col"><div class="num" style="color:var(--claro)">SEMANA 2</div><h3 style="margin-top:14px">Imprimir</h3><p>Adesivo do pedido, etiqueta de preço e cartão.</p></div>
+  <div class="card col"><div class="num" style="color:var(--claro)">SEMANA 2</div><h3 style="margin-top:14px">Publicar o site</h3><p>Domínio próprio e link na bio do Instagram.</p></div>
+ </div>
+ <div class="card" style="margin-top:36px"><div class="num" style="color:var(--claro)">O QUE ESTÁ SENDO ENTREGUE</div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px 40px;margin-top:18px;font-size:24px">
+   <span>✓ Manual da marca (PDF + PNG)</span><span>✓ Dossiê de diagnóstico e estratégia</span><span>✓ Esta apresentação (PDF)</span>
+   <span>✓ Landing page institucional</span><span>✓ Cronograma de 6 semanas</span><span>✓ 38 artes + 4 motions</span></div></div></div><div class="foot"><span>Plano Tecidos · Redesign</span><span>16</span></div></section>
+
+<!-- 17 FIM -->
+<section class="s gr weave">
+ <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:50px;text-align:center">
+  <div data-logo="main" data-size="160" data-mode="rev" data-sym="mono" data-bg="#4E8C34"></div>
+  <h2 style="font-size:64px">O nosso plano é dar vida<br>ao seu <em>projeto</em>.</h2>
+  <p style="font:600 24px Montserrat;letter-spacing:.12em;opacity:.85">Proposta por Upe Criativo · Outubro 2026</p>
+ </div></section>
+
+</div>
+<div id="ui"><button id="prev">←</button><span id="pg"></span><button id="next">→</button><button id="fs">Tela cheia</button></div>
+<script>
+const S=[...document.querySelectorAll('.s')];
+const feed=['s1-01-1','s1-03','s1-04-1','s2-01-1','s2-03','s2-04','s3-01-1','s4-02-1','s5-02'];
+document.getElementById('feed').innerHTML=feed.map(f=>`<img src="../conteudo/posts/${f}.jpg" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:10px;box-shadow:0 10px 24px rgba(0,0,0,.08)">`).join('');
+let i=Math.max(0,Math.min(S.length-1,(+location.hash.slice(1)||1)-1));
+const deck=document.getElementById('deck');
+function fit(){const k=Math.min(innerWidth/1920,innerHeight/1080);deck.style.transform=`translate(-50%,-50%) scale(${k})`}
+function show(n){i=Math.max(0,Math.min(S.length-1,n));S.forEach((s,k)=>s.classList.toggle('on',k===i));document.getElementById('pg').textContent=`${i+1} / ${S.length}`;history.replaceState(null,'','#'+(i+1))}
+addEventListener('resize',fit);fit();show(i);
+addEventListener('keydown',e=>{if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();show(i+1)}if(['ArrowLeft','PageUp'].includes(e.key))show(i-1);if(e.key==='Home')show(0);if(e.key==='End')show(S.length-1)});
+document.getElementById('next').onclick=()=>show(i+1);document.getElementById('prev').onclick=()=>show(i-1);
+document.getElementById('fs').onclick=()=>document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();
+let tx=null;addEventListener('touchstart',e=>tx=e.touches[0].clientX);addEventListener('touchend',e=>{if(tx==null)return;const d=e.changedTouches[0].clientX-tx;if(Math.abs(d)>40)show(i+(d<0?1:-1));tx=null});
+Plano.renderAll().then(()=>document.body.dataset.ready='1');
+</script>
+</body>
+</html>
