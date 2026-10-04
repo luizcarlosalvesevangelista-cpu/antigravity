@@ -26,7 +26,7 @@ document.addEventListener("error", e => {
   if (!t.closest("#app, dialog")) return; t.dataset.miss = "1";
   const nome = decodeURIComponent((t.getAttribute("src") || "").split("#")[0].split("/").slice(-2).join("/"));
   if (t instanceof HTMLVideoElement) { // pode ser só o navegador sem o formato do vídeo: mantém o player e oferece o arquivo
-    const n = document.createElement("div"); n.className = "vnote"; n.innerHTML = `Se o vídeo não tocar aqui, <a href="${esc(t.getAttribute("src") || "")}" target="_blank" rel="noopener" download>abra ou baixe o arquivo</a>.`; t.after(n); return; }
+    const n = document.createElement("div"); n.className = "vnote"; n.innerHTML = t.closest("[data-nodl]") ? "Se o vídeo não tocar aqui, tente outro navegador. O download libera depois da aprovação." : `Se o vídeo não tocar aqui, <a href="${esc(t.getAttribute("src") || "")}" target="_blank" rel="noopener" download>abra ou baixe o arquivo</a>.`; t.after(n); return; }
   const d = document.createElement("div"); d.className = "miss"; d.textContent = "Arquivo não encontrado · " + nome;
   t.replaceWith(d);
 }, true);
@@ -34,6 +34,24 @@ const dlBtn = (url, label = "Baixar") => resolveMedia(url) ? `<a class="btn sec 
 const imgTag = u => `<img src="${esc(resolveMedia(u))}" alt="" loading="lazy">`;
 const capaDe = x => x.capa || ((x.midias || []).find(u => kind(u) === "img") || "");
 const fileName = u => decodeURIComponent(String(u || "").split("?")[0].split("/").pop() || "arquivo");
+
+/* ---------- tags acima da prévia (repost, aprovado, reprovado, nova versão) ---------- */
+const TAGS_ST = { aprovado: ["Aprovado", "ok"], publicado: ["Publicado", "info"], ajustes: ["Reprovado · ajuste", "bad"], reprovado: ["Reprovado", "bad"] };
+const ehRepost = x => !!(x && (x.repost || x.repostDe || /^repost\b/i.test(x.titulo || "")));
+function tagsHTML(st, x = {}, sempre = false) {
+  const t = [];
+  if (ehRepost(x)) t.push(`<span class="tagx rp">Repost</span>`);
+  const m = TAGS_ST[st]; if (m) t.push(`<span class="tagx ${m[1]}">${m[0]}</span>`);
+  if (st === "pendente" && (x.versao || 1) > 1) t.push(`<span class="tagx warn">Nova versão · v${x.versao}</span>`);
+  if (x.historia) t.push(`<span class="tagx">História</span>`);
+  return t.length || sempre ? `<span class="tagbar">${t.join("")}</span>` : "";
+}
+// repost: o card mostra de novo a peça original (mídias, capa e legenda) com a tag
+function comRepost(x, lista) {
+  if (!x || !x.repostDe) return x;
+  const o = (lista || []).find(y => y.id === x.repostDe); if (!o) return x;
+  return { ...x, midias: (x.midias || []).length ? x.midias : o.midias || [], capa: x.capa || o.capa || "", legenda: x.legenda || o.legenda || "", _orig: o };
+}
 
 /* ---------- calendário genérico ---------- */
 const calState = {};
@@ -59,10 +77,10 @@ function calendar(el, key, events, onPick, opts = {}) {
 /* ---------- sininho ---------- */
 function bell(host, key, items) {
   const seen = +(ls.get(`upe-bell-${key}`) || 0), dia = ls.get(`upe-bell-dia-${key}`) === todayIso();
-  const fresh = items.filter(n => n.lembrete ? !dia : n.em > seen);
+  const isNew = n => n.prioridade || (n.lembrete ? !dia : n.em > seen), fresh = items.filter(isNew);
   host.innerHTML = `<div class="bellw"><button class="bellb" id="bellBtn" aria-label="Notificações${fresh.length ? `: ${fresh.length} novas` : ""}" aria-expanded="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>${fresh.length ? `<span class="bellc">${fresh.length > 99 ? "99+" : fresh.length}</span>` : ""}</button>
     <div class="bellp hide" id="bellP" role="dialog" aria-label="Notificações"><div class="spread" style="padding:12px 14px;border-bottom:1px solid var(--line)"><b>Notificações</b><button class="lnk small" id="bellAll">Marcar como lidas</button></div>
-    <div class="belll">${items.length ? items.map(n => `<a class="belli ${(n.lembrete ? !dia : n.em > seen) ? "new" : ""}" href="${esc(n.href || "#")}"><span class="bico ${n.cls || ""}"></span><span style="min-width:0"><b>${esc(n.titulo)}</b>${n.sub ? `<br><span class="muted small">${esc(n.sub)}</span>` : ""}</span><span class="muted small num" style="white-space:nowrap">${n.lembrete ? "lembrete" : fdt(n.em)}</span></a>`).join("") : `<div class="empty" style="margin:14px">Tudo em dia.</div>`}</div></div></div>`;
+    <div class="belll">${items.length ? items.map(n => `<a class="belli ${isNew(n) ? "new" : ""} ${n.prioridade ? "prio" : ""}" href="${esc(n.href || "#")}"><span class="bico ${n.cls || ""}"></span><span style="min-width:0">${n.prioridade ? '<span class="tagx bad">Prioridade</span><br>' : ""}<b>${esc(n.titulo)}</b>${n.sub ? `<br><span class="muted small">${esc(n.sub)}</span>` : ""}</span><span class="muted small num" style="white-space:nowrap">${n.lembrete ? "lembrete" : fdt(n.em)}</span></a>`).join("") : `<div class="empty" style="margin:14px">Tudo em dia.</div>`}</div></div></div>`;
   const btn = host.querySelector("#bellBtn"), p = host.querySelector("#bellP");
   const mark = () => { ls.set(`upe-bell-${key}`, String(Date.now())); ls.set(`upe-bell-dia-${key}`, todayIso()); };
   btn.onclick = e => { e.stopPropagation(); const open = p.classList.toggle("hide") === false; btn.setAttribute("aria-expanded", open); if (open) { mark(); btn.querySelector(".bellc")?.remove(); } };
@@ -72,22 +90,32 @@ function bell(host, key, items) {
 }
 function notifsCliente(doc, acoes) {
   const out = [], vis = it => it.status !== "rascunho" && it.status !== "orcamento", t = todayIso();
-  const pend = (doc.posts || []).filter(vis).filter(p => statusOf(p, acoes).status === "pendente");
-  if (pend.length === 1) out.push({ em: pend[0].statusEm || 0, titulo: `Post para aprovar: ${pend[0].titulo}`, sub: `${FMT_LBL[pend[0].tipo] || pend[0].tipo} · ${fdate(pend[0].data)}`, href: "#/c/conteudo", cls: "warn" });
+  const pend0 = (doc.posts || []).filter(vis).filter(p => statusOf(p, acoes).status === "pendente");
+  // ajuste devolvido pela Upe: aviso próprio, com link direto para o post
+  pend0.filter(p => (p.versao || 1) > 1).forEach(p => out.push({ em: p.statusEm || 0, titulo: `Ajuste pronto: nova versão de “${p.titulo}” para aprovar`, sub: `Versão ${p.versao} · ${fdate(p.data)}`, href: `#/c/conteudo/${p.id}`, cls: "warn" }));
+  const pend = pend0.filter(p => (p.versao || 1) <= 1);
+  if (pend.length === 1) out.push({ em: pend[0].statusEm || 0, titulo: `Post para aprovar: ${pend[0].titulo}`, sub: `${FMT_LBL[pend[0].tipo] || pend[0].tipo} · ${fdate(pend[0].data)}`, href: `#/c/conteudo/${pend[0].id}`, cls: "warn" });
   else if (pend.length) out.push({ em: Math.max(...pend.map(p => p.statusEm || 0)), titulo: `${pend.length} posts aguardando a sua aprovação`, sub: `O próximo é de ${fdate(pend.map(p => p.data).filter(Boolean).sort()[0])}`, href: "#/c/conteudo", cls: "warn" });
-  (doc.graficos || []).filter(vis).forEach(g => { if (statusOf(g, acoes).status === "pendente") out.push({ em: g.statusEm || 0, titulo: `Arte para aprovar: ${g.produto}`, href: "#/c/graficos", cls: "warn" }); });
+  (doc.graficos || []).filter(vis).forEach(g => { if (statusOf(g, acoes).status === "pendente") out.push({ em: g.statusEm || 0, titulo: (g.versao || 1) > 1 ? `Arte corrigida para aprovar: ${g.produto}` : `Arte para aprovar: ${g.produto}`, sub: (g.versao || 1) > 1 ? `Versão ${g.versao}` : "", href: "#/c/graficos", cls: "warn" }); });
   (doc.cobrancas || []).filter(c => c.liberada && cobStatus(c, acoes) === "aberta").forEach(c => { const n = daysTo(c.vencimento);
     out.push({ em: c.liberadaEm || 0, titulo: `Cobrança: ${c.descricao}`, sub: `${brl(c.valor)} · vence ${fdate(c.vencimento)}`, href: "#/c/pagamentos", cls: n < 0 ? "bad" : "info" });
     if (n <= 3) out.push({ lembrete: true, em: 0, titulo: n < 0 ? `Cobrança vencida: ${c.descricao}` : `Vencimento ${quando(c.vencimento)}: ${c.descricao}`, href: "#/c/pagamentos", cls: n < 0 ? "bad" : "warn" }); });
   thread(doc, acoes).filter(m => m.autor === "upe").slice(-5).forEach(m => out.push({ em: m.em, titulo: "Mensagem da Upe", sub: m.texto.slice(0, 80), href: "#/c/mensagens", cls: "info" }));
   (doc.reunioes || []).filter(r => r.data >= t && daysTo(r.data) <= 2).forEach(r => out.push({ lembrete: true, em: 0, titulo: `Reunião ${quando(r.data)} às ${r.hora}`, sub: r.titulo, href: "#/c/agenda", cls: "info" }));
   (doc.entregas || []).filter(e => e.status !== "entregue" && daysTo(e.data) <= 3).forEach(e => out.push({ lembrete: true, em: 0, titulo: `Entrega ${quando(e.data)}: ${e.titulo}`, href: "#/c/agenda", cls: daysTo(e.data) < 0 ? "bad" : "warn" }));
-  return out.sort((a, b) => (b.lembrete - a.lembrete) || b.em - a.em);
+  return out.sort((a, b) => (!!b.lembrete - !!a.lembrete) || b.em - a.em);
 }
 function notifsAdmin({ clients, contatos, reunioes, crono }) {
   const out = [], t = todayIso(), nm = c => c.doc.marca || c.doc.nome;
   contatos.filter(c => (c.status || "novo") === "novo").forEach(c => out.push({ em: c.em || 0, titulo: `Novo contato: ${c.nome}`, sub: `${c.assunto || ""} · ${c.contato || ""}`, href: "#/admin/contatos", cls: "warn" }));
+  // PRIORIDADE: pedidos de ajuste do cliente ainda sem nova versão
+  const prio = new Set();
+  clients.forEach(c => [...(c.doc.posts || []).map(x => [x, "conteudo"]), ...(c.doc.graficos || []).map(x => [x, "graficos"])].forEach(([x, aba]) => {
+    const ef = statusOf(x, c.acoes); if (ef.status !== "ajustes" || ef.por !== "cliente") return; prio.add(x.id);
+    out.push({ prioridade: true, em: ef.em, titulo: `${nm(c)} pediu ajuste: ${x.titulo || x.produto}`, sub: ef.texto ? `“${ef.texto.slice(0, 90)}”` : "", href: `#/admin/cliente/${c.id}/${aba}/${x.id}`, cls: "bad" });
+  }));
   clients.forEach(c => c.acoes.slice(-30).forEach(a => {
+    if (a.tipo === "ajuste" && prio.has(a.alvo)) return;
     const alvo = [...(c.doc.posts || []), ...(c.doc.graficos || [])].find(x => x.id === a.alvo);
     const map = { aprovar: ["aprovou", "ok", alvo?.produto ? "graficos" : "conteudo"], ajuste: ["pediu ajuste em", "bad", alvo?.produto ? "graficos" : "conteudo"], mensagem: ["enviou uma mensagem", "info", "mensagens"], pedido: ["pediu recompra", "warn", "graficos"], pagamento: ["informou um pagamento", "info", "pagamentos"] }[a.tipo];
     if (map) out.push({ em: a.em, titulo: `${nm(c)} ${map[0]}${alvo ? " " + (alvo.titulo || alvo.produto) : ""}`, sub: a.texto ? a.texto.slice(0, 80) : "", href: `#/admin/cliente/${c.id}/${map[2]}`, cls: map[1] });
@@ -100,7 +128,7 @@ function notifsAdmin({ clients, contatos, reunioes, crono }) {
     (c.doc.entregas || []).filter(e => e.status !== "entregue" && daysTo(e.data) <= 3).forEach(e => out.push({ lembrete: true, em: 0, titulo: `Entrega ${quando(e.data)}: ${e.titulo}`, sub: nm(c), href: `#/admin/cliente/${c.id}/projeto`, cls: daysTo(e.data) < 0 ? "bad" : "warn" }));
     (c.doc.posts || []).filter(p => p.status !== "rascunho" && daysTo(p.data) >= 0 && daysTo(p.data) <= 1 && statusOf(p, c.acoes).status === "pendente").forEach(p => out.push({ lembrete: true, em: 0, titulo: `Post de ${quando(p.data)} sem aprovação: ${nm(c)}`, sub: p.titulo, href: `#/admin/cliente/${c.id}/conteudo`, cls: "warn" }));
   });
-  return out.sort((a, b) => (b.lembrete - a.lembrete) || b.em - a.em).slice(0, 60);
+  return out.sort((a, b) => (!!b.prioridade - !!a.prioridade) || (!!b.lembrete - !!a.lembrete) || b.em - a.em).slice(0, 60);
 }
 
 /* ---------- eventos do cliente (agenda) ---------- */
@@ -124,7 +152,7 @@ function cAgenda(m, c) {
   const ev = eventosCliente(c.doc, c.acoes);
   m.innerHTML = `<div class="grid" style="gap:6px"><span class="eb">Agenda</span><h1>Tudo o que está marcado</h1><p class="muted small">Postagens agendadas, prazos de entrega, vencimentos e reuniões.</p></div><div id="calA" class="grid"></div>`;
   calendar($("#calA"), "cli-" + c.id, ev, e => {
-    if (e.k === "post") { const p = { ...e.ref, ef: statusOf(e.ref, c.acoes) }; postModal(p, c); }
+    if (e.k === "post") { const p = { ...comRepost(e.ref, c.doc.posts), ef: statusOf(e.ref, c.acoes) }; postModal(p, c); }
     else if (e.k === "cob") go("#/c/pagamentos");
     else if (e.k === "reuniao") reuniaoView(e.ref, false);
     else modal(esc(e.ref.titulo), `<div class="row">${e.pill}<span class="muted">Prazo: ${fdate(e.ref.data)} (${quando(e.ref.data)})</span></div>${e.ref.descricao ? `<p>${esc(e.ref.descricao)}</p>` : ""}`);
@@ -132,14 +160,16 @@ function cAgenda(m, c) {
 }
 function proximos(doc, acoes) { return eventosCliente(doc, acoes).filter(e => e.data >= todayIso() && e.cls !== "ok").sort((a, b) => (a.data + (a.hora || "")).localeCompare(b.data + (b.hora || ""))).slice(0, 5); }
 function cKit(m, c, kitId) {
-  const k = (c.doc.kits || []).find(x => x.id === kitId), posts = (c.doc.posts || []).filter(p => p.kitId === kitId && p.status !== "rascunho").sort((a, b) => (a.data || "z").localeCompare(b.data || "z"));
+  const k = (c.doc.kits || []).find(x => x.id === kitId), todos = c.doc.posts || [], posts = todos.filter(p => p.kitId === kitId && p.status !== "rascunho").map(p => ({ ...comRepost(p, todos), ef: statusOf(p, c.acoes) })).sort((a, b) => (a.data || "z").localeCompare(b.data || "z"));
+  const lib = p => p.ef.status === "aprovado" || p.ef.status === "publicado";
   if (!k) { m.innerHTML = `<div class="empty">Kit não encontrado.</div>`; return; }
-  m.innerHTML = `<div class="grid" style="gap:6px"><a class="small" href="#/c/conteudo">← Conteúdo</a><span class="eb">Kit de conteúdo</span><h1>${esc(k.nome)}</h1><p class="muted small">${posts.length} peças. Baixe os arquivos e copie as legendas.</p></div>
-    <div class="g3">${posts.map(p => `<article class="card grid"><div class="thumb" style="aspect-ratio:${p.tipo === "reels" || p.tipo === "story" ? "9/16" : "4/5"}">${mediaHTML(p.capa && p.tipo === "reels" ? p.midias[0] : (p.midias || [])[0], p.tipo)}</div>
+  m.innerHTML = `<div class="grid" style="gap:6px"><a class="small" href="#/c/conteudo">← Conteúdo</a><span class="eb">Kit de conteúdo</span><h1>${esc(k.nome)}</h1><p class="muted small">${posts.length} peças. Aprove cada peça para liberar o download dos arquivos.</p></div>
+    <div class="g3">${posts.map(p => `<article class="card grid">${tagsHTML(p.ef.status, p, true)}<div class="thumb" ${lib(p) ? "" : "data-nodl"} style="aspect-ratio:${p.tipo === "reels" || p.tipo === "story" ? "9/16" : "4/5"}">${mediaHTML(p.capa && p.tipo === "reels" ? p.midias[0] : (p.midias || [])[0], p.tipo, "", !lib(p))}</div>
       <div class="spread"><b>${esc(p.titulo)}</b><span class="pill">${esc(FMT_LBL[p.tipo] || p.tipo)}</span></div><span class="muted small">${p.data ? fdate(p.data) : "Sem data"}${(p.midias || []).length > 1 ? ` · ${p.midias.length} arquivos` : ""}</span>
       ${p.legenda ? `<div class="legenda small" style="max-height:140px;overflow:auto">${esc(p.legenda)}</div>` : ""}
-      <div class="row">${p.legenda ? `<button class="btn sm" data-cp="${p.id}">Copiar legenda</button>` : ""}${(p.midias || []).map((u, i) => dlBtn(u, p.midias.length > 1 ? `Baixar ${i + 1}` : "Baixar arquivo")).join("")}${p.capa ? dlBtn(p.capa, "Baixar capa") : ""}</div></article>`).join("")}</div>`;
+      <div class="row">${p.legenda ? `<button class="btn sec sm" data-cp="${p.id}">Copiar legenda</button>` : ""}${lib(p) ? (p.midias || []).map((u, i) => dlBtn(u, p.midias.length > 1 ? `Baixar ${i + 1}` : "Baixar arquivo")).join("") + (p.capa ? dlBtn(p.capa, "Baixar capa") : "") : `<button class="btn sm" data-ap="${p.id}">${p.ef.status === "ajustes" ? "Ver o ajuste" : "Ver e aprovar"}</button><span class="muted small">Download libera após aprovar</span>`}</div></article>`).join("")}</div>`;
   m.querySelectorAll("[data-cp]").forEach(b => b.onclick = () => copy(posts.find(p => p.id === b.dataset.cp).legenda, "Legenda copiada"));
+  m.querySelectorAll("[data-ap]").forEach(b => b.onclick = () => postModal(posts.find(p => p.id === b.dataset.ap), c));
 }
 
 /* ---------- reuniões (admin) ---------- */
@@ -198,7 +228,7 @@ function aCalendario(w) {
     if (on.venc) (c.doc.cobrancas || []).filter(x => x.status !== "cancelado").forEach(x => { const s = cobStatus(x, c.acoes); ev.push({ id: `c:${c.id}:${x.id}`, data: x.vencimento, titulo: `${nm} · ${brl(x.valor)}`, tag: "Vence", sub: x.descricao + (x.liberada ? "" : " (oculta)"), cls: s === "paga" ? "ok" : daysTo(x.vencimento) < 0 ? "bad" : "warn", pill: pill(s), go: `#/admin/cliente/${c.id}/pagamentos` }); });
   });
   if (on.reunioes) reunioes.filter(r => r.status !== "cancelada").forEach(r => ev.push({ id: "r:" + r.id, data: r.data, hora: r.hora, titulo: r.titulo, tag: "Reunião", sub: `${r.com === "lead" ? "Lead" : r.com === "cliente" ? "Cliente" : ""}${r.nome ? " · " + r.nome : ""}`, cls: "info", pill: '<span class="pill info">Reunião</span>', r }));
-  crono.filter(x => x.data && ((x.canal === "youtube" && on.yt) || (x.canal !== "youtube" && on.insta))).forEach(x => ev.push({ id: "u:" + x.id, data: x.data, hora: x.hora, titulo: x.titulo, tag: x.canal === "youtube" ? (x.formato === "shorts" ? "Shorts" : "YouTube") : FMT_LBL[x.formato] || x.formato, sub: `Upe · ${x.pilar}`, cls: x.status === "publicado" ? "ok" : x.canal === "youtube" ? "bad" : "", pill: pill(x.status === "publicado" ? "publicado" : x.status === "pronto" ? "aprovado" : "rascunho").replace("Aprovado", "Pronto").replace("Rascunho", x.status === "roteiro" ? "Roteiro" : "Planejado"), u: x }));
+  crono.filter(x => x.data && ((x.canal === "youtube" && on.yt) || (x.canal !== "youtube" && on.insta))).forEach(x => ev.push({ id: "u:" + x.id, data: x.data, hora: x.hora, titulo: x.titulo, tag: x.canal === "youtube" ? (x.formato === "shorts" ? "Shorts" : "YouTube") : FMT_LBL[x.formato] || x.formato, sub: `Upe · ${x.pilar}`, cls: x.status === "publicado" || x.status === "aprovado" ? "ok" : x.status === "reprovado" ? "bad" : x.canal === "youtube" ? "info" : "", pill: cstPill(x.status), u: x }));
   w.innerHTML = `<div class="spread"><div class="grid" style="gap:4px"><span class="eb">Painel Upe</span><h1>Calendário</h1></div><div class="row"><button class="btn sec" id="nCr">Novo item no cronograma</button><button class="btn" id="nR">Agendar reunião</button></div></div>
     <div class="row" role="group" aria-label="Mostrar">${Object.entries(CAT).map(([k, l]) => `<button class="chip" data-cat="${k}" aria-pressed="${!!on[k]}">${l}</button>`).join("")}</div><div id="calAd" class="grid"></div>`;
   w.querySelectorAll("[data-cat]").forEach(b => b.onclick = () => { on[b.dataset.cat] = !on[b.dataset.cat]; ls.set("upe-calf", JSON.stringify(on)); aCalendario(w); });
@@ -208,32 +238,32 @@ function aCalendario(w) {
 
 /* ---------- cronograma da Upe ---------- */
 const PILARES = ["Branding", "Rebranding", "Marca", "Publicidade e marketing", "E-commerce", "Upe TV", "Upe ERP", "YouTube"];
-const CST = { planejado: "Planejado", roteiro: "Roteiro", pronto: "Pronto", publicado: "Publicado" };
-async function cronogramaPadrao() {
-  if (window.UPE_CRONOGRAMA) return window.UPE_CRONOGRAMA.itens;
-  try { const r = await fetch("cronograma/upe-cronograma.json"); if (r.ok) return (await r.json()).itens; } catch (e) {}
+const CST = { planejado: "Planejado", roteiro: "Roteiro", pronto: "Pronto", aprovado: "Aprovado", reprovado: "Reprovado", publicado: "Publicado" };
+const cstPill = s => `<span class="pill ${{ aprovado: "ok", publicado: "info", reprovado: "bad", pronto: "warn" }[s] || ""}">${esc(CST[s] || s)}</span>`;
+async function cronogramaArquivo() {
+  if (window.UPE_CRONOGRAMA) return window.UPE_CRONOGRAMA;
+  try { const r = await fetch("cronograma/upe-cronograma.json"); if (r.ok) return await r.json(); } catch (e) {}
   throw new Error("Não encontrei cronograma/upe-cronograma.json.");
 }
-async function carregarCronogramaPadrao() { const itens = await cronogramaPadrao(); for (const it of itens) await S.set(`cronograma/${it.id}`, it); return itens.length; }
+async function cronogramaPadrao() { return (await cronogramaArquivo()).itens; }
+// hashtags, bio e direct dos kits ficam num documento à parte da coleção do cronograma
+const EXTRAS_ID = "_extras";
+async function salvarExtras(lista) { await S.set(`cronograma/${EXTRAS_ID}`, { id: EXTRAS_ID, tipo: "extras", lista }); }
+async function carregarCronogramaPadrao() { const arq = await cronogramaArquivo(); for (const it of arq.itens) await S.set(`cronograma/${it.id}`, it); await salvarExtras(arq.extras || []); return arq.itens.length; }
 function aCronograma(w, aba = "instagram") {
   const crono = state.cache.crono;
-  const pf = ss.get("upe-pf") || "", rows = crono.filter(x => aba === "semdata" ? !x.data : x.data && (aba === "youtube" ? x.canal === "youtube" : x.canal !== "youtube")).filter(x => !pf || x.pilar === pf).sort((a, b) => (a.data + a.hora).localeCompare(b.data + b.hora));
+  const pf = ss.get("upe-pf") || "", rows = crono.filter(x => aba === "semdata" ? !x.data : x.data && (aba === "youtube" ? x.canal === "youtube" : x.canal !== "youtube")).filter(x => !pf || x.pilar === pf).sort((a, b) => (a.data + a.hora).localeCompare(b.data + b.hora)).map(x => comRepost(x, crono));
   const cnt = k => crono.filter(x => k === "semdata" ? !x.data : x.data && (k === "youtube" ? x.canal === "youtube" : x.canal !== "youtube")).length;
   const vw = ls.get("upe-cvw") || "lista";
   const semanas = {}; rows.forEach(x => { const d = new Date((x.data || todayIso()) + "T12:00"); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); const k = x.data ? isoDay(d) : "sem"; (semanas[k] = semanas[k] || []).push(x); });
+  const tabs = [["instagram", "Instagram", cnt("instagram")], ["youtube", "YouTube", cnt("youtube")], ["semdata", "Sem data", cnt("semdata")], ["timeline", "Timeline por app", 0]];
   w.innerHTML = `<div class="spread"><div class="grid" style="gap:4px"><span class="eb">@upecriativo · YouTube</span><h1>Cronograma Upe</h1><p class="muted small">Branding, rebranding, marca, publicidade e marketing, e-commerce, Upe TV e Upe ERP.</p></div>
       <div class="row"><button class="btn sec" id="cKit">Importar kit</button><button class="btn sec" id="cDup">Limpar duplicados</button><button class="btn sec" id="cPad">${crono.length ? "Refazer cronograma" : "Carregar cronograma padrão"}</button><button class="btn" id="cNew">Novo item</button></div></div>
-    <nav class="subtabs">${[["instagram", "Instagram"], ["youtube", "YouTube"], ["semdata", "Sem data"]].map(([k, l]) => `<a class="tab" href="#/admin/cronograma/${k}" ${k === aba ? 'aria-current="page"' : ""}>${l}<span class="cnt" style="background:var(--mute-bg);color:var(--fg-2)">${cnt(k)}</span></a>`).join("")}</nav>
-    <div class="row" style="align-items:flex-end"><div class="row" role="group" aria-label="Visualização" style="margin-right:8px"><button class="chip" data-vw="lista" aria-pressed="${vw === "lista"}">Lista</button><button class="chip" data-vw="grade" aria-pressed="${vw === "grade"}">Grade</button></div><label class="f" for="pf" style="max-width:240px">Pilar<select id="pf"><option value="">Todos</option>${PILARES.map(p => `<option ${pf === p ? "selected" : ""}>${p}</option>`).join("")}</select></label>
-      <span class="muted small">${rows.filter(x => x.status === "publicado").length} de ${rows.length} publicados</span></div>
-    ${rows.length && vw === "grade" ? gradeHTML(rows, aba === "youtube") : rows.length ? Object.entries(semanas).map(([k, its]) => `<section class="grid" style="gap:8px"><h3>${k === "sem" ? "Sem data" : `Semana de ${fdate(k)}`}</h3>
-      <div class="card pad0 tbl"><table><tbody>${its.map(x => `<tr class="click" data-u="${esc(x.id)}" tabindex="0"><td style="width:92px" class="num small">${x.data ? `<b>${fdate(x.data).slice(0, 5)}</b> ${DOW[new Date(x.data + "T12:00").getDay()].toLowerCase()}<br>${esc(x.hora || "")}` : "—"}</td>
-        <td style="width:64px"><div class="thumb" style="width:56px;aspect-ratio:${x.canal === "youtube" && x.formato === "youtube" ? "16/9" : "4/5"};border-radius:8px">${capaDe(x) ? imgTag(capaDe(x)) : `<span class="small">${esc(FMT_LBL[x.formato] || "")}</span>`}</div></td>
-        <td><b>${esc(x.titulo)}</b><br><span class="muted small">${esc(FMT_LBL[x.formato] || x.formato)} · ${esc(x.pilar || "")} · ${esc(x.origem || "")}</span></td>
-        <td style="width:150px"><select data-st="${esc(x.id)}" aria-label="Status">${Object.entries(CST).map(([s, l]) => `<option value="${s}" ${x.status === s ? "selected" : ""}>${l}</option>`).join("")}</select></td></tr>`).join("")}</tbody></table></div></section>`).join("") : `<div class="empty">${crono.length ? "Nada aqui com este filtro." : "Carregue o cronograma padrão da Upe (kits do Upe TV, do Upe ERP e o kit de branding) ou importe um kit."}</div>`}`;
-  $("#pf").onchange = e => { ss.set("upe-pf", e.target.value); aCronograma(w, aba); };
-  w.querySelectorAll("[data-vw]").forEach(b => b.onclick = () => { ls.set("upe-cvw", b.dataset.vw); aCronograma(w, aba); });
-  w.querySelectorAll("[data-g]").forEach(b => b.onclick = () => cronoModal(crono.find(x => x.id === b.dataset.g)));
+    <nav class="subtabs">${tabs.map(([k, l, n]) => `<a class="tab" href="#/admin/cronograma/${k}" ${k === aba ? 'aria-current="page"' : ""}>${l}${k !== "timeline" ? `<span class="cnt" style="background:var(--mute-bg);color:var(--fg-2)">${n}</span>` : ""}</a>`).join("")}</nav>
+    ${extrasHTML(state.cache.extras || [], pf)}
+    <div id="cBody" class="grid" style="gap:18px"></div>`;
+  const body = $("#cBody");
+  w.querySelectorAll("[data-xc]").forEach(b => b.onclick = () => copy((state.cache.extras || [])[+b.dataset.xc].texto, "Copiado"));
   $("#cDup").onclick = async () => { const r = await limparDuplicados(); toast(r.rem || r.fix ? `${r.rem} duplicados removidos · ${r.fix} pilares corrigidos` : "Nenhum duplicado encontrado"); reAdmin(); };
   $("#cNew").onclick = () => cronoModal(null);
   $("#cKit").onclick = () => kitImport({ alvo: "cronograma" });
@@ -241,18 +271,38 @@ function aCronograma(w, aba = "instagram") {
     modal("Refazer o cronograma?", `<p>Apaga os ${crono.length} itens atuais (inclusive os importados) e carrega de novo o cronograma padrão da Upe: kit de branding, Upe TV, Upe ERP e YouTube, com as datas organizadas.</p><p class="muted small">Depois, importe as pastas dos kits do Upe TV e do Upe ERP: os arquivos entram nos itens que já estão no cronograma, sem duplicar.</p>`, `<button class="btn sec" data-close>Cancelar</button><button class="btn bad" id="rfOk">Refazer</button>`);
     $("#rfOk").onclick = () => { dlg.close(); refazer(); }; };
   const refazer = async () => { try { for (const x of crono) await S.del(`cronograma/${x.id}`); const n = await carregarCronogramaPadrao(); toast(`Cronograma refeito: ${n} itens`); reAdmin(); } catch (e) { toast(e.message); } };
+  if (aba === "timeline") { body.innerHTML = timelineHTML(timelineApps(PERFIL_UPE, crono), "Sugestão de timeline para cada app da Upe, a partir do cronograma e dos públicos da marca."); return; }
+  body.innerHTML = `<div class="row" style="align-items:flex-end"><div class="row" role="group" aria-label="Visualização" style="margin-right:8px"><button class="chip" data-vw="lista" aria-pressed="${vw === "lista"}">Lista</button><button class="chip" data-vw="grade" aria-pressed="${vw === "grade"}">Grade</button></div><label class="f" for="pf" style="max-width:240px">Pilar<select id="pf"><option value="">Todos</option>${PILARES.map(p => `<option ${pf === p ? "selected" : ""}>${p}</option>`).join("")}</select></label>
+      <span class="muted small">${rows.filter(x => x.status === "publicado").length} de ${rows.length} publicados · ${rows.filter(x => x.status === "aprovado").length} aprovados · ${rows.filter(x => x.status === "reprovado").length} reprovados</span></div>
+    ${rows.length && vw === "grade" ? gradeHTML(rows, aba === "youtube") : rows.length ? Object.entries(semanas).map(([k, its]) => `<section class="grid" style="gap:8px"><h3>${k === "sem" ? "Sem data" : `Semana de ${fdate(k)}`}</h3>
+      <div class="card pad0 tbl"><table><tbody>${its.map(x => `<tr class="click" data-u="${esc(x.id)}" tabindex="0"><td style="width:92px" class="num small">${x.data ? `<b>${fdate(x.data).slice(0, 5)}</b> ${DOW[new Date(x.data + "T12:00").getDay()].toLowerCase()}<br>${esc(x.hora || "")}` : "—"}</td>
+        <td style="width:${x.canal === "youtube" && x.formato === "youtube" ? 116 : 84}px"><div class="lthumb">${tagsHTML(x.status, x)}<div class="thumb" style="width:${x.canal === "youtube" && x.formato === "youtube" ? 104 : 64}px;aspect-ratio:${x.canal === "youtube" && x.formato === "youtube" ? "16/9" : "4/5"};border-radius:8px">${capaDe(x) ? imgTag(capaDe(x)) : `<span class="small">${esc(FMT_LBL[x.formato] || "")}</span>`}</div></div></td>
+        <td><b>${esc(x.titulo)}</b><br><span class="muted small">${esc(FMT_LBL[x.formato] || x.formato)} · ${esc(x.pilar || "")} · ${esc(x.origem || "")}${x._orig ? ` · repost de “${esc(x._orig.titulo)}”` : ""}</span></td>
+        <td style="width:150px"><select data-st="${esc(x.id)}" aria-label="Status">${Object.entries(CST).map(([s, l]) => `<option value="${s}" ${x.status === s ? "selected" : ""}>${l}</option>`).join("")}</select></td></tr>`).join("")}</tbody></table></div></section>`).join("") : `<div class="empty">${crono.length ? "Nada aqui com este filtro." : "Carregue o cronograma padrão da Upe (kits do Upe TV, do Upe ERP e o kit de branding) ou importe um kit."}</div>`}`;
+  $("#pf").onchange = e => { ss.set("upe-pf", e.target.value); aCronograma(w, aba); };
+  w.querySelectorAll("[data-vw]").forEach(b => b.onclick = () => { ls.set("upe-cvw", b.dataset.vw); aCronograma(w, aba); });
+  w.querySelectorAll("[data-g]").forEach(b => b.onclick = () => cronoModal(crono.find(x => x.id === b.dataset.g)));
   w.querySelectorAll("tr[data-u]").forEach(r => { r.onclick = e => { if (e.target.closest("select")) return; cronoModal(crono.find(x => x.id === r.dataset.u)); }; r.onkeydown = e => { if (e.key === "Enter") r.click(); }; });
-  w.querySelectorAll("[data-st]").forEach(s => s.onchange = async () => { const x = crono.find(y => y.id === s.dataset.st); x.status = s.value; await S.set(`cronograma/${x.id}`, x); toast("Status atualizado"); });
+  w.querySelectorAll("[data-st]").forEach(s => s.onchange = async () => { const x = crono.find(y => y.id === s.dataset.st); x.status = s.value; await S.set(`cronograma/${x.id}`, x); toast("Status atualizado"); aCronograma(w, aba); });
 }
+// "Hashtags, bio e direct" dos kits, logo abaixo das abas Instagram | YouTube | Sem data
+function extrasHTML(lista, pf) {
+  const idx = lista.map((e, i) => ({ ...e, i })).filter(e => !pf || !PILARES.includes(e.kit) || e.kit === pf || (pf === "Branding" && /branding/i.test(e.kit)));
+  if (!idx.length) return "";
+  const kits = [...new Set(idx.map(e => e.kit || "Kit"))], open = ls.get("upe-xopen") !== "0";
+  return `<details class="card xpanel" ${open ? "open" : ""} id="xPan"><summary><span class="eb">Copiar e colar</span><b>Hashtags, bio e direct</b><span class="muted small">${idx.length} textos · ${kits.join(" · ")}</span></summary>
+    <div class="xgrid">${kits.map(k => `<div class="grid" style="gap:8px;align-content:start"><span class="pill info" style="justify-self:start">${esc(k)}</span>${idx.filter(e => (e.kit || "Kit") === k).map(e => `<div class="xi"><div class="spread"><b class="small" style="text-transform:capitalize">${esc(e.rotulo)}</b><button class="btn sec sm" data-xc="${e.i}">Copiar</button></div><pre class="legenda small">${esc(e.texto)}</pre></div>`).join("")}</div>`).join("")}</div></details>`;
+}
+document.addEventListener("toggle", e => { if (e.target.id === "xPan") ls.set("upe-xopen", e.target.open ? "1" : "0"); }, true);
 function gradeHTML(rows, yt) {
   return `<div class="feedgrid ${yt ? "yt" : ""}">${rows.map(x => { const c = capaDe(x), vid = (x.midias || []).find(u => kind(u, "") === "video");
-    return `<button class="gcell" data-g="${esc(x.id)}" title="${esc(x.titulo)}">${c ? imgTag(c) : vid ? `<video src="${esc(resolveMedia(vid))}#t=1" muted preload="metadata"></video>` : `<span class="gph">${esc(FMT_LBL[x.formato] || "")}<br><small>${esc(x.titulo)}</small></span>`}
-      <span class="gtop">${x.data ? fdate(x.data).slice(0, 5) : "s/ data"}</span><span class="gfmt">${esc(FMT_LBL[x.formato] || x.formato)}${(x.midias || []).length > 1 ? " · " + x.midias.length : ""}</span>${x.status === "publicado" ? '<span class="gok">✓</span>' : ""}</button>`; }).join("")}</div>`;
+    return `<button class="gcell" data-g="${esc(x.id)}" title="${esc(x.titulo)}">${tagsHTML(x.status, x, true)}<span class="gimg">${c ? imgTag(c) : vid ? `<video src="${esc(resolveMedia(vid))}#t=1" muted preload="metadata"></video>` : `<span class="gph">${esc(FMT_LBL[x.formato] || "")}<br><small>${esc(x.titulo)}</small></span>`}
+      <span class="gtop">${x.data ? fdate(x.data).slice(0, 5) : "s/ data"}</span><span class="gfmt">${esc(FMT_LBL[x.formato] || x.formato)}${(x.midias || []).length > 1 ? " · " + x.midias.length : ""}</span></span></button>`; }).join("")}</div>`;
 }
 function gradePosts(posts) {
   if (!posts.length) return `<div class="empty">Nenhum post aqui.</div>`;
   return `<p class="muted small">Prévia do feed, na ordem de publicação.</p><div class="feedgrid">${[...posts].sort((a, b) => (b.data || "").localeCompare(a.data || "")).map(p => { const c = p.capa || (p.midias || []).find(u => kind(u) === "img"), vid = (p.midias || []).find(u => kind(u, p.tipo) === "video");
-    return `<button class="gcell" data-p="${esc(p.id)}" title="${esc(p.titulo)}">${c ? imgTag(c) : vid ? `<video src="${esc(resolveMedia(vid))}#t=1" muted preload="metadata"></video>` : `<span class="gph">${esc(FMT_LBL[p.tipo] || "")}<br><small>${esc(p.titulo)}</small></span>`}<span class="gtop">${p.data ? fdate(p.data).slice(0, 5) : "s/ data"}</span><span class="gfmt">${esc(FMT_LBL[p.tipo] || p.tipo)}</span>${p.ef.status === "aprovado" || p.ef.status === "publicado" ? '<span class="gok">✓</span>' : p.ef.status === "pendente" ? '<span class="gok" style="background:var(--warn)">!</span>' : p.ef.status === "ajustes" ? '<span class="gok" style="background:var(--bad)">↺</span>' : ""}</button>`; }).join("")}</div>`;
+    return `<button class="gcell" data-p="${esc(p.id)}" title="${esc(p.titulo)}">${tagsHTML(p.ef.status, p, true)}<span class="gimg">${c ? imgTag(c) : vid ? `<video src="${esc(resolveMedia(vid))}#t=1" muted preload="metadata"></video>` : `<span class="gph">${esc(FMT_LBL[p.tipo] || "")}<br><small>${esc(p.titulo)}</small></span>`}<span class="gtop">${p.data ? fdate(p.data).slice(0, 5) : "s/ data"}</span><span class="gfmt">${esc(FMT_LBL[p.tipo] || p.tipo)}</span>${p.ef.status === "pendente" ? '<span class="gok" style="background:var(--warn)">!</span>' : ""}</span></button>`; }).join("")}</div>`;
 }
 async function limparDuplicados() {
   const crono = state.cache.crono, keep = [], rem = []; let fix = 0;
@@ -268,24 +318,35 @@ async function limparDuplicados() {
   for (const x of keep) await S.set(`cronograma/${x.id}`, x);
   return { rem: rem.length, fix };
 }
-function cronoModal(x) {
-  const n = !x; x = x || { id: "upe-" + uid(8), data: todayIso(), hora: "12:00", canal: "instagram", formato: "feed", pilar: "Branding", titulo: "", legenda: "", roteiro: "", midias: [], capa: "", status: "planejado", origem: "Manual" };
-  const view = !n;
+function cronoModal(x0) {
+  const n = !x0, crono = state.cache.crono || [];
+  const x = x0 || { id: "upe-" + uid(8), data: todayIso(), hora: "12:00", canal: "instagram", formato: "feed", pilar: "Branding", titulo: "", legenda: "", roteiro: "", midias: [], capa: "", status: "planejado", origem: "Manual" };
+  const v = comRepost(x, crono), view = !n, H = x.historia, yt = x.canal === "youtube";
+  const outras = (v.midias || []).filter(u => !H || u !== H.video);
+  const origs = crono.filter(y => y.id !== x.id && y.canal === x.canal && !y.repostDe && (y.midias || []).length).sort((a, b) => (a.data || "z").localeCompare(b.data || "z"));
   modal(n ? "Novo item do cronograma" : esc(x.titulo), `
-    ${view ? `<div class="row"><span class="pill info">${esc(FMT_LBL[x.formato] || x.formato)}</span><span class="pill">${esc(x.pilar)}</span><span class="muted small">${x.data ? `${DOW[new Date(x.data + "T12:00").getDay()]}, ${fdate(x.data)} · ${esc(x.hora)}` : "Sem data"} · ${esc(x.origem || "")}</span></div>
-      ${(x.midias || []).length ? `<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px">${x.midias.map(u => `<div class="media-box" style="min-height:120px">${mediaHTML(u, x.formato === "reels" || x.formato === "shorts" || x.formato === "youtube" ? "video" : "")}</div>`).join("")}</div>` : x.capa ? `<div class="media-box">${imgTag(x.capa)}</div>` : ""}
-      <div class="row">${(x.midias || []).map((u, i) => dlBtn(u, x.midias.length > 1 ? `Baixar ${i + 1}` : "Baixar arquivo")).join("")}${x.capa ? dlBtn(x.capa, x.canal === "youtube" ? "Baixar thumbnail" : "Baixar capa") : ""}${x.legenda ? `<button class="btn sm" id="xCp">Copiar ${x.canal === "youtube" ? "descrição" : "legenda"}</button>` : ""}</div>` : ""}
+    ${view ? `${tagsHTML(x.status, x)}<div class="row">${cstPill(x.status)}<span class="pill info">${esc(FMT_LBL[x.formato] || x.formato)}</span><span class="pill">${esc(x.pilar)}</span><span class="muted small">${x.data ? `${DOW[new Date(x.data + "T12:00").getDay()]}, ${fdate(x.data)} · ${esc(x.hora)}` : "Sem data"} · ${esc(x.origem || "")}</span></div>
+      ${v._orig ? `<div class="card" style="background:var(--info-bg)"><b>Repost</b> de “${esc(v._orig.titulo)}”${v._orig.data ? ` (${fdate(v._orig.data)})` : ""}. O card mostra a peça original de novo.</div>` : ""}
+      ${H ? `<section class="card grid hist"><div class="spread"><div><span class="eb">Versão história do canal</span><h3>${esc(H.titulo)}</h3></div>${H.video ? dlBtn(H.video, "Baixar motion") : ""}</div>
+        ${H.video ? `<div class="media-box">${mediaHTML(H.video, "video")}</div>` : ""}
+        <ol class="beats">${(H.beats || []).map(b => `<li><b>${esc(b.rotulo)}</b><span>${esc(b.texto)}</span></li>`).join("")}</ol>
+        <p class="muted small">Motion com áudio e efeitos feito só com material próprio da Upe (marca, telas dos apps e textos). Sem trechos de vídeos ou prints de terceiros: sem risco de strike de direitos autorais.</p></section>` : ""}
+      ${outras.length ? `<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px">${outras.map(u => `<div class="media-box" style="min-height:120px">${mediaHTML(u, x.formato === "reels" || x.formato === "shorts" || x.formato === "youtube" ? "video" : "")}</div>`).join("")}</div>` : v.capa && !H ? `<div class="media-box">${imgTag(v.capa)}</div>` : ""}
+      <div class="row">${outras.map((u, i) => dlBtn(u, outras.length > 1 ? `Baixar ${i + 1}` : "Baixar arquivo")).join("")}${v.capa ? dlBtn(v.capa, yt ? "Baixar thumbnail" : "Baixar capa") : ""}${v.legenda ? `<button class="btn sm" id="xCp">Copiar ${yt ? "descrição" : "legenda"}</button>` : ""}</div>` : ""}
     <div class="g3"><label class="f" for="xD">Data<input id="xD" type="date" value="${esc(x.data)}"></label><label class="f" for="xH">Hora<input id="xH" type="time" value="${esc(x.hora)}"></label><label class="f" for="xSt">Status<select id="xSt">${Object.entries(CST).map(([s, l]) => `<option value="${s}" ${x.status === s ? "selected" : ""}>${l}</option>`).join("")}</select></label></div>
-    <div class="g3"><label class="f" for="xC">Canal<select id="xC"><option value="instagram" ${x.canal !== "youtube" ? "selected" : ""}>Instagram</option><option value="youtube" ${x.canal === "youtube" ? "selected" : ""}>YouTube</option></select></label><label class="f" for="xF">Formato<select id="xF">${["feed", "carrossel", "reels", "story", "youtube", "shorts"].map(f => `<option value="${f}" ${x.formato === f ? "selected" : ""}>${FMT_LBL[f]}</option>`).join("")}</select></label><label class="f" for="xP">Pilar<select id="xP">${PILARES.map(p => `<option ${x.pilar === p ? "selected" : ""}>${p}</option>`).join("")}</select></label></div>
+    <div class="g3"><label class="f" for="xC">Canal<select id="xC"><option value="instagram" ${!yt ? "selected" : ""}>Instagram</option><option value="youtube" ${yt ? "selected" : ""}>YouTube</option></select></label><label class="f" for="xF">Formato<select id="xF">${["feed", "carrossel", "reels", "story", "youtube", "shorts"].map(f => `<option value="${f}" ${x.formato === f ? "selected" : ""}>${FMT_LBL[f]}</option>`).join("")}</select></label><label class="f" for="xP">Pilar<select id="xP">${PILARES.map(p => `<option ${x.pilar === p ? "selected" : ""}>${p}</option>`).join("")}</select></label></div>
     <label class="f" for="xT">Título<input id="xT" value="${esc(x.titulo)}"></label>
-    <label class="f" for="xL">${x.canal === "youtube" ? "Descrição" : "Legenda"}<textarea id="xL" rows="6">${esc(x.legenda)}</textarea></label>
-    <label class="f" for="xR">Roteiro / notas<textarea id="xR" rows="3">${esc(x.roteiro || "")}</textarea></label>
+    <label class="f" for="xRp">Repost de (opcional: o card mostra a peça original com a tag Repost)<select id="xRp"><option value="">Não é repost</option>${origs.map(y => `<option value="${esc(y.id)}" ${x.repostDe === y.id ? "selected" : ""}>${y.data ? fdate(y.data).slice(0, 5) + " · " : ""}${esc(FMT_LBL[y.formato] || y.formato)} · ${esc(y.titulo.slice(0, 70))}</option>`).join("")}</select></label>
+    <label class="f" for="xL">${yt ? "Descrição" : "Legenda"}<textarea id="xL" rows="6">${esc(x.legenda)}</textarea></label>
+    <label class="f" for="xR">Roteiro / notas<textarea id="xR" rows="${H ? 8 : 3}">${esc(x.roteiro || "")}</textarea></label>
     <label class="f" for="xM">Arquivos (um link por linha)<textarea id="xM" rows="2">${esc((x.midias || []).join("\n"))}</textarea></label>`,
     `${!n ? `<button class="btn bad" id="xX">Excluir</button>` : ""}<button class="btn sec" data-close>Fechar</button><button class="btn" id="xOk">Salvar</button>`, true);
-  if ($("#xCp")) $("#xCp").onclick = () => copy(x.legenda, "Copiado");
+  if ($("#xCp")) $("#xCp").onclick = () => copy(v.legenda, "Copiado");
   $("#xOk").onclick = async () => {
     const t = $("#xT").value.trim(); if (!t) return $("#xT").focus();
-    Object.assign(x, { data: $("#xD").value, hora: $("#xH").value, status: $("#xSt").value, canal: $("#xC").value, formato: $("#xF").value, pilar: $("#xP").value, titulo: t, legenda: $("#xL").value, roteiro: $("#xR").value, midias: $("#xM").value.split("\n").map(s => s.trim()).filter(Boolean) });
+    const rp = $("#xRp").value;
+    Object.assign(x, { data: $("#xD").value, hora: $("#xH").value, status: $("#xSt").value, canal: $("#xC").value, formato: $("#xF").value, pilar: $("#xP").value, titulo: t, legenda: $("#xL").value, roteiro: $("#xR").value, midias: $("#xM").value.split("\n").map(s => s.trim()).filter(Boolean), repostDe: rp || "", repost: !!rp || (x.repost && !x.repostDe) });
+    if (!x.repostDe) delete x.repostDe;
     await S.set(`cronograma/${x.id}`, x); dlg.close(); toast("Cronograma salvo"); reAdmin();
   };
   if ($("#xX")) $("#xX").onclick = async () => { await S.del(`cronograma/${x.id}`); dlg.close(); toast("Item excluído"); reAdmin(); };
@@ -365,6 +426,7 @@ function kitImport(target) {
         const it = { id, data: i.data, hora: { reels: "19:00", story: "10:00", youtube: "18:00" }[i.formato] || "12:00", canal: i.formato === "youtube" || i.formato === "shorts" ? "youtube" : "instagram", formato: i.formato, pilar: i.formato === "youtube" ? "YouTube" : pil, titulo: i.titulo, legenda: i.legenda, roteiro: i.roteiro || "", midias: i.midias, capa: i.capa, status: "planejado", origem: nome };
         await S.set(`cronograma/${id}`, it); crono.push(it); novos++;
       }
+      if ((parsed.extras || []).length) { const kit = pil === "Branding" ? "Branding Upe" : pil, lista = (state.cache.extras || []).filter(e => e.kit !== kit); await salvarExtras([...lista, ...parsed.extras.map(e => ({ kit, ...e }))]); }
       dlg.close(); toast(`${novos} itens novos · ${atual} atualizados`); reAdmin();
     }
   };
@@ -378,4 +440,73 @@ function entregasHTML(doc) {
 }
 function entregasCollect(ct, doc) {
   doc.entregas = [...ct.querySelectorAll("[data-ent]")].map((i, k) => ({ id: (doc.entregas[k] || {}).id || uid(8), titulo: i.value.trim(), data: ct.querySelector(`[data-end="${k}"]`).value || todayIso(), status: ct.querySelector(`[data-enf="${k}"]`).checked ? "entregue" : "pendente", descricao: (doc.entregas[k] || {}).descricao || "" })).filter(e => e.titulo);
+}
+
+/* ---------- timeline sugerida por app (Upe e clientes, a partir do dossiê) ---------- */
+const APPS = {
+  instagram: { nome: "Instagram", re: /insta/i, freq: "4 a 5 posts por semana + stories todos os dias", hora: "12h e 19h (reels às 19h)", formatos: ["Reels", "Carrossel", "Feed", "Stories"],
+    fases: ["Apresentar a marca: quem é, o que entrega e bastidores", "Prova social: depoimentos, antes e depois, avaliações", "Conversão: oferta clara e CTA para o WhatsApp ou a loja", "Comunidade: enquetes, repost de clientes e colaborações"] },
+  youtube: { nome: "YouTube", re: /you ?tube/i, freq: "1 vídeo longo por semana + 2 Shorts", hora: "Ter e qui às 18h · Shorts no sábado às 10h", formatos: ["Vídeo história (8 atos)", "Tutorial", "Shorts"],
+    fases: ["Vídeo âncora: a história da marca em 8 atos (história, contexto, narrativa, clímax, pergunta, solução, fundamentação, CTA)", "Tutoriais e respostas às perguntas mais comuns", "Casos reais: problema, solução e resultado", "Séries fixas e Shorts recortados dos vídeos longos"] },
+  tiktok: { nome: "TikTok", re: /tik ?tok/i, freq: "3 a 5 vídeos curtos por semana", hora: "18h às 21h", formatos: ["Vídeo curto", "Tendência com áudio", "Bastidores"],
+    fases: ["Ganchos de 3 segundos com o problema do público", "Bastidores e processo", "Antes e depois / transformação", "Respostas a comentários em vídeo"] },
+  linkedin: { nome: "LinkedIn", re: /linked ?in/i, freq: "2 a 3 posts por semana", hora: "Ter a qui, 8h ou 12h", formatos: ["Texto com imagem", "Carrossel PDF", "Artigo"],
+    fases: ["Posicionamento: por que a marca existe", "Cases e números", "Opinião sobre o mercado", "Convite para conversa ou reunião"] },
+  facebook: { nome: "Facebook", re: /face/i, freq: "3 posts por semana (reaproveitando o Instagram)", hora: "12h e 20h", formatos: ["Feed", "Reels", "Eventos"],
+    fases: ["Espelhar os posts principais do Instagram", "Grupos e comunidade local", "Eventos e ofertas", "Avaliações e recomendações"] },
+  whatsapp: { nome: "WhatsApp", re: /whats|zap/i, freq: "Status diário + 1 lista de transmissão por semana", hora: "Status às 9h · lista na terça às 10h", formatos: ["Status", "Lista de transmissão", "Catálogo"],
+    fases: ["Catálogo e mensagem de boas-vindas", "Status com novidades e bastidores", "Oferta da semana para a lista", "Pós-venda: pedir avaliação e indicação"] },
+  google: { nome: "Google (Perfil da Empresa)", re: /google|maps/i, freq: "1 atualização por semana", hora: "Segunda pela manhã", formatos: ["Post de novidade", "Fotos", "Respostas a avaliações"],
+    fases: ["Perfil completo: horários, fotos e serviços", "Pedir avaliações aos clientes", "Posts semanais de novidade ou oferta", "Responder todas as avaliações"] },
+  pinterest: { nome: "Pinterest", re: /pinterest/i, freq: "5 pins por semana", hora: "Noite e fim de semana", formatos: ["Pin", "Pasta temática"],
+    fases: ["Pastas por tema e produto", "Pins com link para a loja", "Inspirações e usos do produto", "Coleções sazonais"] },
+  loja: { nome: "Site / loja online", re: /site|loja|e-?commerce|ifood|marketplace/i, freq: "1 novidade ou vitrine por semana", hora: "Antes do pico de vendas", formatos: ["Vitrine", "Banner", "Blog / FAQ"],
+    fases: ["Vitrine com os mais vendidos", "Banner da campanha do mês", "Página de perguntas frequentes", "Datas sazonais e kits"] },
+  email: { nome: "E-mail / newsletter", re: /e-?mail|newsletter/i, freq: "1 envio a cada 15 dias", hora: "Terça ou quinta às 10h", formatos: ["Newsletter", "Oferta", "Convite"],
+    fases: ["Boas-vindas e apresentação", "Conteúdo útil + novidade", "Oferta exclusiva para a lista", "Convite para recompra"] }
+};
+const PERFIL_UPE = { nome: "Upe Criativo", canais: ["instagram", "youtube", "linkedin", "tiktok", "whatsapp", "google"], negocio: "Branding e redesign, Upe ERP (loja, PDV e pedidos) e Upe TV (mídia em telas)",
+  publicos: ["Donos de pequenos negócios", "Lojistas e e-commerce", "Estabelecimentos parceiros e anunciantes"], atributos: ["Branding", "Upe ERP", "Upe TV"],
+  jornada: [{ etapa: "Descobrir", texto: "Reels e Shorts com antes e depois de marcas" }, { etapa: "Confiar", texto: "Cases, manual de marca e bastidores" }, { etapa: "Escolher", texto: "Tutoriais do Upe ERP e do Upe TV" }, { etapa: "Comprar", texto: "Conversa no WhatsApp e reunião" }] };
+const semPh = v => (typeof v === "string" && /^\s*\[.*\]\s*$/.test(v)) ? "" : (v || "");
+function perfilDoDossie(D, doc = {}) {
+  const fi = Object.fromEntries((D.diagnostico?.ficha || []).map(([k, v]) => [String(k).toLowerCase(), semPh(v)]));
+  const txt = [fi.canais, fi["negócio"], fi.negocio].join(" ");
+  let canais = Object.entries(APPS).filter(([, a]) => a.re.test(txt)).map(([k]) => k);
+  if (!canais.length) canais = ["instagram", "whatsapp", "google"];
+  if (doc.plano?.midias && !canais.includes("instagram")) canais.unshift("instagram");
+  return { nome: semPh(D.projeto?.marca) || doc.marca || "", canais, negocio: fi["negócio"] || fi.negocio || "", regiao: fi["região"] || fi.regiao || "",
+    publicos: (D.estrategia?.publicos || []).map(p => semPh(p.titulo)).filter(Boolean), atributos: [...(D.estrategia?.atributos || []), ...(D.diagnostico?.atributos || [])].map(semPh).filter(Boolean).slice(0, 5),
+    jornada: (D.estrategia?.jornada || []).map(j => ({ etapa: j.etapa, texto: semPh(j.texto) })).filter(j => j.texto), em: Date.now() };
+}
+function timelineApps(perfil, itens = []) {
+  const P = perfil || {}, at = P.atributos || [], jr = P.jornada || [], semana = ["Semanas 1 e 2", "Semanas 3 e 4", "Mês 2", "Mês 3 em diante"];
+  return (P.canais || []).filter(k => APPS[k]).map(k => {
+    const a = APPS[k], noCron = itens.filter(x => x.data && (k === "youtube" ? x.canal === "youtube" : k === "instagram" ? x.canal !== "youtube" : false));
+    let ritmo = "";
+    if (noCron.length) { const ds = noCron.map(x => x.data).sort(), sem = Math.max(1, Math.round((new Date(ds[ds.length - 1]) - new Date(ds[0])) / 6048e5)); ritmo = `No cronograma: ${noCron.length} peças · cerca de ${Math.round(noCron.length / sem * 10) / 10} por semana`; }
+    return { app: k, nome: a.nome, freq: a.freq, hora: a.hora, formatos: a.formatos, ritmo,
+      fases: a.fases.map((f, i) => ({ quando: semana[i], titulo: jr[i] ? jr[i].etapa : ["Apresentar", "Confiar", "Converter", "Fidelizar"][i], texto: f + (jr[i] ? `. Na marca: ${jr[i].texto}` : at[i] ? `. Foco: ${at[i]}` : "") })) };
+  });
+}
+function timelineHTML(apps, sub) {
+  if (!apps.length) return `<div class="empty">Sem canais definidos. Importe o dossiê com a ficha “Canais” preenchida.</div>`;
+  return `<p class="muted small">${esc(sub || "")}</p><div class="tlgrid">${apps.map(a => `<article class="card grid tlc"><div class="spread"><h3>${esc(a.nome)}</h3><span class="pill info">${esc(a.formatos[0])}</span></div>
+    <div class="grid" style="gap:2px"><span class="small"><b>Ritmo:</b> ${esc(a.freq)}</span><span class="small"><b>Horários:</b> ${esc(a.hora)}</span><span class="small"><b>Formatos:</b> ${esc(a.formatos.join(" · "))}</span>${a.ritmo ? `<span class="small muted">${esc(a.ritmo)}</span>` : ""}</div>
+    <ol class="tl">${a.fases.map(f => `<li><span class="eb">${esc(f.quando)} · ${esc(f.titulo)}</span><span class="small">${esc(f.texto)}</span></li>`).join("")}</ol></article>`).join("")}</div>`;
+}
+// posts que vêm no dossiê (DADOS.postagens ou o feed da aba 05) entram no calendário de aprovação
+function postsDoDossie(D, base, doc) {
+  const hoje = new Date(), R = u => resolveUrl(u, base), arr = [];
+  const iso = d => { d = semPh(d); if (/^\d{4}-\d{2}-\d{2}$/.test(d)) return d; const m = String(d).match(/^(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?$/); if (!m) return "";
+    let y = m[3] ? (+m[3] < 100 ? 2000 + +m[3] : +m[3]) : hoje.getFullYear(); const dt = new Date(y, m[2] - 1, m[1]); if (!m[3] && dt - hoje < -60 * 864e5) y++; return `${y}-${pad(+m[2])}-${pad(+m[1])}`; };
+  (D.postagens || []).forEach(p => { const midias = (p.midias || (p.img ? [p.img] : [])).filter(Boolean); if (!midias.length && !semPh(p.legenda)) return;
+    arr.push({ data: iso(p.data), hora: p.hora || "", tipo: p.tipo || (midias.length > 1 ? "carrossel" : midias.some(u => kind(u) === "video") ? "reels" : "imagem"), titulo: semPh(p.titulo) || "Post do dossiê", legenda: semPh(p.legenda), midias: midias.map(R), capa: p.capa ? R(p.capa) : "", semana: p.semana }); });
+  (D.apresentacao?.instagram || []).filter(p => p.img).forEach(p => arr.push({ data: iso(p.data), tipo: "imagem", titulo: semPh(p.titulo) || "Post do dossiê", legenda: semPh(p.legenda), midias: [R(p.img)], capa: "", semana: p.semana }));
+  const ex = doc.posts || [], visto = new Set(ex.flatMap(p => (p.midias || []).map(fkey))), out = [];
+  arr.forEach((p, i) => {
+    const ks = p.midias.map(fkey); if (ks.length && ks.every(k => visto.has(k))) return; if (!ks.length && ex.some(e => e.titulo === p.titulo)) return; ks.forEach(k => visto.add(k));
+    out.push({ id: uid(8), kitId: "dossie", data: p.data || addDays(todayIso(), 2 + ((+p.semana || 1) - 1) * 7 + out.length * 2), hora: p.hora || (p.tipo === "reels" ? "19:00" : "12:00"), tipo: p.tipo, titulo: p.titulo, midias: p.midias, capa: p.capa, legenda: p.legenda, versao: 1, status: "pendente", statusEm: Date.now(), origem: "Dossiê" });
+  });
+  return out;
 }

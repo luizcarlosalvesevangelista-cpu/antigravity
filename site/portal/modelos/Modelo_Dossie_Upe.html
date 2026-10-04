@@ -213,7 +213,16 @@ const DADOS = {
       { img: '', titulo: '[Post 2]', data: '[dd/mm]', semana: 1, legenda: '[Legenda]' },
       { img: '', titulo: '[Post 3]', data: '[dd/mm]', semana: 2, legenda: '[Legenda]' }
     ]
-  }
+  },
+
+  /* ---------------- POSTAGENS PARA APROVAÇÃO ----------------
+     Ao importar o dossiê no painel da Upe, cada postagem com arquivo entra no calendário
+     de aprovação do cliente (o feed da aba 05 também entra). O cliente aprova ou pede
+     ajuste por comentário, e só baixa os arquivos depois de aprovar.
+     tipo: 'imagem' | 'carrossel' | 'reels' | 'story' | 'video' · data: 'aaaa-mm-dd' ou 'dd/mm' */
+  postagens: [
+    { data: '[dd/mm]', hora: '12:00', tipo: 'imagem', titulo: '[Título do post]', legenda: '[Legenda]', midias: [''], capa: '' }
+  ]
 };
 </script>
 

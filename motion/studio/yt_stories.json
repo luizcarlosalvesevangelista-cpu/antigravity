@@ -1,0 +1,596 @@
+[
+ {
+  "id": "yt-01-filme-upe",
+  "titulo": "Da identidade à venda",
+  "beats": [
+   {
+    "k": "historia",
+    "rotulo": "A história",
+    "texto": "A dona de um café do bairro tinha um produto ótimo e uma marca que ninguém lembrava.",
+    "img": "redesign.jpg"
+   },
+   {
+    "k": "contexto",
+    "rotulo": "Contexto",
+    "texto": "Logo antigo, cores diferentes em cada lugar e pedidos anotados no caderno.",
+    "img": "redesign.jpg"
+   },
+   {
+    "k": "narrativa",
+    "rotulo": "Narrativa",
+    "texto": "Ela começou pela identidade: logotipo, paleta, tipografia e um manual.",
+    "img": "brand.jpg"
+   },
+   {
+    "k": "climax",
+    "rotulo": "Clímax",
+    "texto": "Com a marca pronta, o movimento cresceu. E os pedidos começaram a se perder.",
+    "img": "erp-pedidos.jpg"
+   },
+   {
+    "k": "questionamento",
+    "rotulo": "A pergunta",
+    "texto": "Como manter a marca forte sem perder nenhuma venda?",
+    "img": "erp-painel.jpg"
+   },
+   {
+    "k": "solucao",
+    "rotulo": "A solução",
+    "texto": "Loja online, PDV e pedidos num só painel. E a marca na TV do bairro.",
+    "img": "tv-tela.jpg"
+   },
+   {
+    "k": "fundamentacao",
+    "rotulo": "Por que funciona",
+    "texto": "Marca consistente gera reconhecimento. Processo organizado gera recompra.",
+    "img": "brand.jpg"
+   },
+   {
+    "k": "cta",
+    "rotulo": "Próximo passo",
+    "texto": "Fale com a Upe e leve a sua marca da identidade à venda.",
+    "img": "filme-h.jpg"
+   }
+  ]
+ },
+ {
+  "id": "yt-02-upe-erp",
+  "titulo": "Três lugares de venda, nenhum com todos os pedidos",
+  "beats": [
+   {
+    "k": "historia",
+    "rotulo": "A história",
+    "texto": "Uma doceria vendia pelo Instagram, pelo WhatsApp e no balcão.",
+    "img": "erp-pedidos.jpg"
+   },
+   {
+    "k": "contexto",
+    "rotulo": "Contexto",
+    "texto": "Três lugares de venda e nenhum com todos os pedidos.",
+    "img": "erp-pedidos.jpg"
+   },
+   {
+    "k": "narrativa",
+    "rotulo": "Narrativa",
+    "texto": "PIX conferido por print, estoque no papel e o cliente perguntando: cadê meu pedido?",
+    "img": "erp-painel.jpg"
+   },
+   {
+    "k": "climax",
+    "rotulo": "Clímax",
+    "texto": "Na semana mais movimentada, dois pedidos iguais saíram para o mesmo endereço.",
+    "img": "erp-pedidos.jpg"
+   },
+   {
+    "k": "questionamento",
+    "rotulo": "A pergunta",
+    "texto": "E se tudo chegasse organizado, com pagamento e rastreio?",
+    "img": "erp-painel.jpg"
+   },
+   {
+    "k": "solucao",
+    "rotulo": "A solução",
+    "texto": "Upe ERP: loja virtual, PDV, PIX com QR Code e gestão de pedidos.",
+    "img": "erp-pdv.jpg"
+   },
+   {
+    "k": "fundamentacao",
+    "rotulo": "Por que funciona",
+    "texto": "Cada venda baixa o estoque. Cada pedido tem status e link de acompanhamento.",
+    "img": "erp-pdv.jpg"
+   },
+   {
+    "k": "cta",
+    "rotulo": "Próximo passo",
+    "texto": "Teste 14 dias grátis em upe-erp.web.app.",
+    "img": "erp-painel.jpg"
+   }
+  ]
+ },
+ {
+  "id": "yt-03-upe-tv",
+  "titulo": "A tela que todo mundo olha",
+  "beats": [
+   {
+    "k": "historia",
+    "rotulo": "A história",
+    "texto": "Uma padaria queria ser lembrada por quem passa no bairro.",
+    "img": "tv-tela.jpg"
+   },
+   {
+    "k": "contexto",
+    "rotulo": "Contexto",
+    "texto": "Panfleto vai para o lixo. Anúncio online some no feed.",
+    "img": "tv-tela.jpg"
+   },
+   {
+    "k": "narrativa",
+    "rotulo": "Narrativa",
+    "texto": "Enquanto isso, na fila do café ao lado, todo mundo olhava para a TV.",
+    "img": "tv-tela.jpg"
+   },
+   {
+    "k": "climax",
+    "rotulo": "Clímax",
+    "texto": "E ninguém estava falando com essas pessoas.",
+    "img": "tv-qr.jpg"
+   },
+   {
+    "k": "questionamento",
+    "rotulo": "A pergunta",
+    "texto": "E se a sua marca estivesse nessa tela, com um jeito de chamar você na hora?",
+    "img": "tv-qr.jpg"
+   },
+   {
+    "k": "solucao",
+    "rotulo": "A solução",
+    "texto": "Upe TV: campanha nas TVs parceiras, com QR code para o seu WhatsApp.",
+    "img": "tv-tela.jpg"
+   },
+   {
+    "k": "fundamentacao",
+    "rotulo": "Por que funciona",
+    "texto": "Público local todos os dias, e cada leitura do QR aparece no relatório.",
+    "img": "tv-portal.jpg"
+   },
+   {
+    "k": "cta",
+    "rotulo": "Próximo passo",
+    "texto": "Anuncie ou seja um ponto parceiro: upe-tv.web.app.",
+    "img": "tv-tela.jpg"
+   }
+  ]
+ },
+ {
+  "id": "yt-04-branding-x-logo",
+  "titulo": "Eu só queria um logo novo",
+  "beats": [
+   {
+    "k": "historia",
+    "rotulo": "A história",
+    "texto": "Um cliente chegou pedindo: quero um logo novo.",
+    "img": "redesign.jpg"
+   },
+   {
+    "k": "contexto",
+    "rotulo": "Contexto",
+    "texto": "O logo era bom. O problema era todo o resto.",
+    "img": "redesign.jpg"
+   },
+   {
+    "k": "narrativa",
+    "rotulo": "Narrativa",
+    "texto": "Cada post de uma cor, a fachada diferente do Instagram, a embalagem sem padrão.",
+    "img": "brand.jpg"
+   },
+   {
+    "k": "climax",
+    "rotulo": "Clímax",
+    "texto": "Um logo novo, sozinho, não resolveria nada.",
+    "img": "redesign.jpg"
+   },
+   {
+    "k": "questionamento",
+    "rotulo": "A pergunta",
+    "texto": "Então, o que faz uma marca ser reconhecida?",
+    "img": "brand.jpg"
+   },
+   {
+    "k": "solucao",
+    "rotulo": "A solução",
+    "texto": "Um sistema: logo, paleta, tipografia, ícones, padrões e manual.",
+    "img": "brand.jpg"
+   },
+   {
+    "k": "fundamentacao",
+    "rotulo": "Por que funciona",
+    "texto": "Repetição consistente é o que cria memória de marca.",
+    "img": "brand.jpg"
+   },
+   {
+    "k": "cta",
+    "rotulo": "Próximo passo",
+    "texto": "Assista ao vídeo completo e fale com a Upe sobre a sua marca.",
+    "img": "filme-h.jpg"
+   }
+  ]
+ },
+ {
+  "id": "yt-05-tutorial-erp-1",
+  "titulo": "Sua loja no ar em menos de uma hora",
+  "beats": [
+   {
+    "k": "historia",
+    "rotulo": "A história",
+    "texto": "Abrir uma loja online parecia coisa de empresa grande.",
+    "img": "erp-painel.jpg"
+   },
+   {
+    "k": "contexto",
+    "rotulo": "Contexto",
+    "texto": "Site caro, sistema complicado e mensalidade alta.",
+    "img": "erp-painel.jpg"
+   },
+   {
+    "k": "narrativa",
+    "rotulo": "Narrativa",
+    "texto": "Neste tutorial: do primeiro acesso à primeira venda, em 7 passos.",
+    "img": "erp-painel.jpg"
+   },
+   {
+    "k": "climax",
+    "rotulo": "Clímax",
+    "texto": "Passo 3, ativar o PIX: é aqui que a loja começa a vender de verdade.",
+    "img": "erp-pdv.jpg"
+   },
+   {
+    "k": "questionamento",
+    "rotulo": "A pergunta",
+    "texto": "Quanto tempo leva para a loja ficar pronta?",
+    "img": "erp-painel.jpg"
+   },
+   {
+    "k": "solucao",
+    "rotulo": "A solução",
+    "texto": "Menos de uma hora, seguindo o roteiro da tela inicial.",
+    "img": "erp-painel.jpg"
+   },
+   {
+    "k": "fundamentacao",
+    "rotulo": "Por que funciona",
+    "texto": "Dados, marca, PIX, produto, banner, venda e assinatura: tudo guiado.",
+    "img": "erp-pedidos.jpg"
+   },
+   {
+    "k": "cta",
+    "rotulo": "Próximo passo",
+    "texto": "Assista ao passo a passo e teste 14 dias grátis.",
+    "img": "erp-painel.jpg"
+   }
+  ]
+ },
+ {
+  "id": "yt-06-rebranding-5-sinais",
+  "titulo": "A marca que tinha vergonha de aparecer",
+  "beats": [
+   {
+    "k": "historia",
+    "rotulo": "A história",
+    "texto": "Um café com 20 anos de história escondia o próprio logo.",
+    "img": "redesign.jpg"
+   },
+   {
+    "k": "contexto",
+    "rotulo": "Contexto",
+    "texto": "O nome não lia no celular e cada cardápio tinha uma cor.",
+    "img": "redesign.jpg"
+   },
+   {
+    "k": "narrativa",
+    "rotulo": "Narrativa",
+    "texto": "Listamos os sinais: leitura, consistência, cores, época e orgulho.",
+    "img": "brand.jpg"
+   },
+   {
+    "k": "climax",
+    "rotulo": "Clímax",
+    "texto": "O dono tinha vergonha de entregar o próprio cartão.",
+    "img": "redesign.jpg"
+   },
+   {
+    "k": "questionamento",
+    "rotulo": "A pergunta",
+    "texto": "Dá para mudar sem perder quem já conhece a marca?",
+    "img": "redesign.jpg"
+   },
+   {
+    "k": "solucao",
+    "rotulo": "A solução",
+    "texto": "Redesign: mantém a essência e corrige o que atrapalha.",
+    "img": "redesign.jpg"
+   },
+   {
+    "k": "fundamentacao",
+    "rotulo": "Por que funciona",
+    "texto": "O cliente reconhece a evolução quando os ativos certos ficam.",
+    "img": "brand.jpg"
+   },
+   {
+    "k": "cta",
+    "rotulo": "Próximo passo",
+    "texto": "Marcou 2 sinais ou mais? Fale com a Upe.",
+    "img": "filme-h.jpg"
+   }
+  ]
+ },
+ {
+  "id": "yt-07-tutorial-erp-black-friday",
+  "titulo": "A Black Friday que vendeu demais",
+  "beats": [
+   {
+    "k": "historia",
+    "rotulo": "A história",
+    "texto": "Na última Black Friday, a loja vendeu mais do que conseguia entregar.",
+    "img": "erp-pdv.jpg"
+   },
+   {
+    "k": "contexto",
+    "rotulo": "Contexto",
+    "texto": "Estoque errado, cupom que não funcionou e frete sem regra.",
+    "img": "erp-painel.jpg"
+   },
+   {
+    "k": "narrativa",
+    "rotulo": "Narrativa",
+    "texto": "Este ano, o checklist começa 30 dias antes.",
+    "img": "erp-painel.jpg"
+   },
+   {
+    "k": "climax",
+    "rotulo": "Clímax",
+    "texto": "27 de novembro chega rápido. Quem prepara antes vende sem susto.",
+    "img": "erp-pedidos.jpg"
+   },
+   {
+    "k": "questionamento",
+    "rotulo": "A pergunta",
+    "texto": "O que configurar primeiro?",
+    "img": "erp-painel.jpg"
+   },
+   {
+    "k": "solucao",
+    "rotulo": "A solução",
+    "texto": "Estoque, cupons, frete grátis, banners e newsletter no Upe ERP.",
+    "img": "erp-pdv.jpg"
+   },
+   {
+    "k": "fundamentacao",
+    "rotulo": "Por que funciona",
+    "texto": "Promoção organizada vende mais e gera menos reclamação.",
+    "img": "erp-pedidos.jpg"
+   },
+   {
+    "k": "cta",
+    "rotulo": "Próximo passo",
+    "texto": "Assista e deixe a sua loja pronta para a Black Friday.",
+    "img": "erp-painel.jpg"
+   }
+  ]
+ },
+ {
+  "id": "yt-08-upe-tv-na-pratica",
+  "titulo": "Viu na TV, pediu pelo celular",
+  "beats": [
+   {
+    "k": "historia",
+    "rotulo": "A história",
+    "texto": "Uma hamburgueria (exemplo) apareceu na TV do café ao lado.",
+    "img": "tv-tela.jpg"
+   },
+   {
+    "k": "contexto",
+    "rotulo": "Contexto",
+    "texto": "O cliente esperava o café e viu o cardápio na tela.",
+    "img": "tv-tela.jpg"
+   },
+   {
+    "k": "narrativa",
+    "rotulo": "Narrativa",
+    "texto": "Apontou a câmera para o QR e abriu o cardápio no celular.",
+    "img": "tv-qr.jpg"
+   },
+   {
+    "k": "climax",
+    "rotulo": "Clímax",
+    "texto": "Em minutos, o pedido chegou pronto no WhatsApp.",
+    "img": "tv-qr.jpg"
+   },
+   {
+    "k": "questionamento",
+    "rotulo": "A pergunta",
+    "texto": "Dá para saber de qual TV veio o pedido?",
+    "img": "tv-portal.jpg"
+   },
+   {
+    "k": "solucao",
+    "rotulo": "A solução",
+    "texto": "Sim: o pedido mostra em qual tela o cliente viu a marca.",
+    "img": "tv-qr.jpg"
+   },
+   {
+    "k": "fundamentacao",
+    "rotulo": "Por que funciona",
+    "texto": "Do olhar à conversa, com cada leitura medida no portal.",
+    "img": "tv-portal.jpg"
+   },
+   {
+    "k": "cta",
+    "rotulo": "Próximo passo",
+    "texto": "Anuncie no Upe TV: upe-tv.web.app.",
+    "img": "tv-tela.jpg"
+   }
+  ]
+ },
+ {
+  "id": "yt-09-manual-de-marca",
+  "titulo": "A marca que se desfez aos poucos",
+  "beats": [
+   {
+    "k": "historia",
+    "rotulo": "A história",
+    "texto": "A marca nova ficou linda no lançamento.",
+    "img": "brand.jpg"
+   },
+   {
+    "k": "contexto",
+    "rotulo": "Contexto",
+    "texto": "Seis meses depois, cada fornecedor usava uma versão diferente.",
+    "img": "redesign.jpg"
+   },
+   {
+    "k": "narrativa",
+    "rotulo": "Narrativa",
+    "texto": "Logo esticado, cor trocada e fonte improvisada.",
+    "img": "redesign.jpg"
+   },
+   {
+    "k": "climax",
+    "rotulo": "Clímax",
+    "texto": "A marca começou a se desfazer aos poucos.",
+    "img": "redesign.jpg"
+   },
+   {
+    "k": "questionamento",
+    "rotulo": "A pergunta",
+    "texto": "Como proteger a identidade no dia a dia?",
+    "img": "brand.jpg"
+   },
+   {
+    "k": "solucao",
+    "rotulo": "A solução",
+    "texto": "O manual da marca: versões, cores, tipografia e regras de uso.",
+    "img": "brand.jpg"
+   },
+   {
+    "k": "fundamentacao",
+    "rotulo": "Por que funciona",
+    "texto": "Quem aplica a marca precisa de regras claras, não de adivinhação.",
+    "img": "brand.jpg"
+   },
+   {
+    "k": "cta",
+    "rotulo": "Próximo passo",
+    "texto": "Assista e veja o que tem dentro de um manual.",
+    "img": "filme-h.jpg"
+   }
+  ]
+ },
+ {
+  "id": "yt-10-tutorial-erp-pdv",
+  "titulo": "A fila do balcão",
+  "beats": [
+   {
+    "k": "historia",
+    "rotulo": "A história",
+    "texto": "Fila no balcão e o cliente perguntando qual é a chave PIX.",
+    "img": "erp-pdv.jpg"
+   },
+   {
+    "k": "contexto",
+    "rotulo": "Contexto",
+    "texto": "Digitar o valor, conferir o print, anotar no caderno.",
+    "img": "erp-pdv.jpg"
+   },
+   {
+    "k": "narrativa",
+    "rotulo": "Narrativa",
+    "texto": "Com o PDV, o produto entra pelo código e o total aparece na hora.",
+    "img": "erp-pdv.jpg"
+   },
+   {
+    "k": "climax",
+    "rotulo": "Clímax",
+    "texto": "O QR Code do PIX sai com o valor certo, sem digitar nada.",
+    "img": "erp-pdv.jpg"
+   },
+   {
+    "k": "questionamento",
+    "rotulo": "A pergunta",
+    "texto": "E o estoque da loja online?",
+    "img": "erp-painel.jpg"
+   },
+   {
+    "k": "solucao",
+    "rotulo": "A solução",
+    "texto": "Baixa sozinho: balcão e internet usam o mesmo cadastro.",
+    "img": "erp-painel.jpg"
+   },
+   {
+    "k": "fundamentacao",
+    "rotulo": "Por que funciona",
+    "texto": "Menos erro, fila mais rápida e relatório no fim do dia.",
+    "img": "erp-pedidos.jpg"
+   },
+   {
+    "k": "cta",
+    "rotulo": "Próximo passo",
+    "texto": "Teste o Upe ERP 14 dias grátis.",
+    "img": "erp-painel.jpg"
+   }
+  ]
+ },
+ {
+  "id": "yt-11-retrospectiva",
+  "titulo": "O ano em que a Upe decolou",
+  "beats": [
+   {
+    "k": "historia",
+    "rotulo": "A história",
+    "texto": "2026 foi o ano em que a Upe Criativo decolou.",
+    "img": "filme-h.jpg"
+   },
+   {
+    "k": "contexto",
+    "rotulo": "Contexto",
+    "texto": "Começou com branding e redesign para negócios locais.",
+    "img": "brand.jpg"
+   },
+   {
+    "k": "narrativa",
+    "rotulo": "Narrativa",
+    "texto": "Vieram o Upe ERP, para vender, e o Upe TV, para aparecer.",
+    "img": "erp-painel.jpg"
+   },
+   {
+    "k": "climax",
+    "rotulo": "Clímax",
+    "texto": "Marcas novas, lojas no ar e telas pelo bairro.",
+    "img": "tv-tela.jpg"
+   },
+   {
+    "k": "questionamento",
+    "rotulo": "A pergunta",
+    "texto": "O que vem em 2027?",
+    "img": "filme-h.jpg"
+   },
+   {
+    "k": "solucao",
+    "rotulo": "A solução",
+    "texto": "Mais marcas, mais telas e o portal do cliente para acompanhar tudo.",
+    "img": "brand.jpg"
+   },
+   {
+    "k": "fundamentacao",
+    "rotulo": "Por que funciona",
+    "texto": "Da identidade à venda, com uma marca forte no centro.",
+    "img": "brand.jpg"
+   },
+   {
+    "k": "cta",
+    "rotulo": "Próximo passo",
+    "texto": "Obrigado por acompanhar! Siga @upecriativo.",
+    "img": "filme-h.jpg"
+   }
+  ]
+ }
+]

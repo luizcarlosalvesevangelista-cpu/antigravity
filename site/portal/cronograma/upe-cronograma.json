@@ -1,6 +1,53 @@
 {
- "versao": 1,
+ "versao": 2,
  "gerado": "2026-10-04",
+ "extras": [
+  {
+   "kit": "Upe TV",
+   "rotulo": "hashtags (anunciantes)",
+   "texto": "#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo"
+  },
+  {
+   "kit": "Upe TV",
+   "rotulo": "hashtags (parceiros)",
+   "texto": "#parceria #estabelecimento #midiaindoor #negociolocal #empreendedorismo #upetv #upecriativo"
+  },
+  {
+   "kit": "Upe TV",
+   "rotulo": "sugestão de bio",
+   "texto": "Sua marca na TV dos estabelecimentos parceiros 📺\nVídeo · QR code · cardápio com pedido · relatório\nAnuncie ou seja um ponto parceiro 👇\nupe-tv.web.app"
+  },
+  {
+   "kit": "Upe TV",
+   "rotulo": "resposta para o direct",
+   "texto": "Oi! Que bom que você se interessou pelo Upe TV. 😊\nA gente coloca a sua marca nas TVs de estabelecimentos parceiros, com QR code para o seu WhatsApp e relatório do tempo de tela.\nMe conta: qual é o seu negócio e em qual região estão os seus clientes? Assim te indico as telas e o plano que fazem sentido."
+  },
+  {
+   "kit": "Upe ERP",
+   "rotulo": "hashtags",
+   "texto": "#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo"
+  },
+  {
+   "kit": "Upe ERP",
+   "rotulo": "sugestão de bio",
+   "texto": "Loja online, PDV e pedidos num só painel 🛍️\nPIX com QR Code · estoque · frete · suporte\n14 dias grátis 👇\nupe-erp.web.app/video"
+  },
+  {
+   "kit": "Branding Upe",
+   "rotulo": "hashtags",
+   "texto": "#branding #identidadevisual #rebranding #designdemarca #marketingdigital #publicidade #empreendedorismo #pequenosnegocios #upecriativo"
+  },
+  {
+   "kit": "Branding Upe",
+   "rotulo": "sugestão de bio",
+   "texto": "Branding · Redesign · Mídias · Papelaria gráfica 🚀\nDa identidade à venda: Upe ERP e Upe TV\nFale comigo 👇 WhatsApp (11) 93439-3249"
+  },
+  {
+   "kit": "YouTube",
+   "rotulo": "descrição padrão do canal",
+   "texto": "Upe Criativo: branding, redesign, mídias e papelaria gráfica para negócios locais. Aqui você aprende a cuidar da sua marca e conhece o Upe ERP (loja online, PDV e pedidos) e o Upe TV (sua marca nas telas do bairro).\n\nWhatsApp (11) 93439-3249 · Instagram @upecriativo"
+  }
+ ],
  "periodo": [
   "2026-10-05",
   "2026-12-19"
@@ -117,9 +164,48 @@
    "canal": "youtube",
    "titulo": "Upe Criativo: da identidade à venda",
    "legenda": "O filme da Upe Criativo: Branding e Redesign, Upe ERP (loja online, PDV e pedidos) e Upe TV (mídia em telas parceiras).\n\nFale com a Upe: WhatsApp (11) 93439-3249\nInstagram: @upecriativo\n\nCapítulos:\n0:00 Abertura\n0:08 Branding e Redesign\n0:24 Lançamentos\n0:28 Upe ERP\n0:56 Upe TV\n1:26 Três frentes",
-   "roteiro": "• Vídeo pronto (filme institucional).",
+   "roteiro": "Versão história: Da identidade à venda\nA história: A dona de um café do bairro tinha um produto ótimo e uma marca que ninguém lembrava.\nContexto: Logo antigo, cores diferentes em cada lugar e pedidos anotados no caderno.\nNarrativa: Ela começou pela identidade: logotipo, paleta, tipografia e um manual.\nClímax: Com a marca pronta, o movimento cresceu. E os pedidos começaram a se perder.\nA pergunta: Como manter a marca forte sem perder nenhuma venda?\nA solução: Loja online, PDV e pedidos num só painel. E a marca na TV do bairro.\nPor que funciona: Marca consistente gera reconhecimento. Processo organizado gera recompra.\nPróximo passo: Fale com a Upe e leve a sua marca da identidade à venda.\n\nGravação:\n• Vídeo pronto (filme institucional).",
+   "historia": {
+    "titulo": "Da identidade à venda",
+    "video": "kits/upe-branding/youtube/historia-yt-01-filme-upe.mp4",
+    "beats": [
+     {
+      "rotulo": "A história",
+      "texto": "A dona de um café do bairro tinha um produto ótimo e uma marca que ninguém lembrava."
+     },
+     {
+      "rotulo": "Contexto",
+      "texto": "Logo antigo, cores diferentes em cada lugar e pedidos anotados no caderno."
+     },
+     {
+      "rotulo": "Narrativa",
+      "texto": "Ela começou pela identidade: logotipo, paleta, tipografia e um manual."
+     },
+     {
+      "rotulo": "Clímax",
+      "texto": "Com a marca pronta, o movimento cresceu. E os pedidos começaram a se perder."
+     },
+     {
+      "rotulo": "A pergunta",
+      "texto": "Como manter a marca forte sem perder nenhuma venda?"
+     },
+     {
+      "rotulo": "A solução",
+      "texto": "Loja online, PDV e pedidos num só painel. E a marca na TV do bairro."
+     },
+     {
+      "rotulo": "Por que funciona",
+      "texto": "Marca consistente gera reconhecimento. Processo organizado gera recompra."
+     },
+     {
+      "rotulo": "Próximo passo",
+      "texto": "Fale com a Upe e leve a sua marca da identidade à venda."
+     }
+    ]
+   },
    "midias": [
-    "{assets}video/filme-h.mp4"
+    "{assets}video/filme-h.mp4",
+    "kits/upe-branding/youtube/historia-yt-01-filme-upe.mp4"
    ],
    "capa": "kits/upe-branding/youtube/yt-01-filme-upe.jpg",
    "origem": "YouTube Upe",
@@ -306,9 +392,48 @@
    "canal": "youtube",
    "titulo": "Upe ERP em 40 segundos: loja online, PDV e pedidos num só painel",
    "legenda": "Conheça o Upe ERP: loja virtual com a sua marca, PDV no balcão, PIX com QR Code, gestão de pedidos, cupons e relatórios.\nTeste 14 dias grátis: upe-erp.web.app\n\nCapítulos:\n0:00 Abertura\n0:04 Painel\n0:14 Pedidos e rastreio\n0:24 PDV e PIX\n0:32 Como testar",
-   "roteiro": "• Vídeo pronto (lançamento Upe ERP).",
+   "roteiro": "Versão história: Três lugares de venda, nenhum com todos os pedidos\nA história: Uma doceria vendia pelo Instagram, pelo WhatsApp e no balcão.\nContexto: Três lugares de venda e nenhum com todos os pedidos.\nNarrativa: PIX conferido por print, estoque no papel e o cliente perguntando: cadê meu pedido?\nClímax: Na semana mais movimentada, dois pedidos iguais saíram para o mesmo endereço.\nA pergunta: E se tudo chegasse organizado, com pagamento e rastreio?\nA solução: Upe ERP: loja virtual, PDV, PIX com QR Code e gestão de pedidos.\nPor que funciona: Cada venda baixa o estoque. Cada pedido tem status e link de acompanhamento.\nPróximo passo: Teste 14 dias grátis em upe-erp.web.app.\n\nGravação:\n• Vídeo pronto (lançamento Upe ERP).",
+   "historia": {
+    "titulo": "Três lugares de venda, nenhum com todos os pedidos",
+    "video": "kits/upe-branding/youtube/historia-yt-02-upe-erp.mp4",
+    "beats": [
+     {
+      "rotulo": "A história",
+      "texto": "Uma doceria vendia pelo Instagram, pelo WhatsApp e no balcão."
+     },
+     {
+      "rotulo": "Contexto",
+      "texto": "Três lugares de venda e nenhum com todos os pedidos."
+     },
+     {
+      "rotulo": "Narrativa",
+      "texto": "PIX conferido por print, estoque no papel e o cliente perguntando: cadê meu pedido?"
+     },
+     {
+      "rotulo": "Clímax",
+      "texto": "Na semana mais movimentada, dois pedidos iguais saíram para o mesmo endereço."
+     },
+     {
+      "rotulo": "A pergunta",
+      "texto": "E se tudo chegasse organizado, com pagamento e rastreio?"
+     },
+     {
+      "rotulo": "A solução",
+      "texto": "Upe ERP: loja virtual, PDV, PIX com QR Code e gestão de pedidos."
+     },
+     {
+      "rotulo": "Por que funciona",
+      "texto": "Cada venda baixa o estoque. Cada pedido tem status e link de acompanhamento."
+     },
+     {
+      "rotulo": "Próximo passo",
+      "texto": "Teste 14 dias grátis em upe-erp.web.app."
+     }
+    ]
+   },
    "midias": [
-    "{assets}video/erp-h.mp4"
+    "{assets}video/erp-h.mp4",
+    "kits/upe-branding/youtube/historia-yt-02-upe-erp.mp4"
    ],
    "capa": "kits/upe-branding/youtube/yt-02-upe-erp.jpg",
    "origem": "YouTube Upe",
@@ -496,9 +621,48 @@
    "canal": "youtube",
    "titulo": "Upe TV: como anunciar nas telas dos estabelecimentos do bairro",
    "legenda": "Como funciona o Upe TV: campanhas em TVs e totens de cafés, academias, clínicas e lojas, com QR code para o seu WhatsApp e relatório do tempo de tela.\nupe-tv.web.app\n\nCapítulos:\n0:00 Abertura\n0:04 Na tela\n0:14 QR code e pedido\n0:26 Resultados\n0:34 Como anunciar",
-   "roteiro": "• Vídeo pronto (lançamento Upe TV).",
+   "roteiro": "Versão história: A tela que todo mundo olha\nA história: Uma padaria queria ser lembrada por quem passa no bairro.\nContexto: Panfleto vai para o lixo. Anúncio online some no feed.\nNarrativa: Enquanto isso, na fila do café ao lado, todo mundo olhava para a TV.\nClímax: E ninguém estava falando com essas pessoas.\nA pergunta: E se a sua marca estivesse nessa tela, com um jeito de chamar você na hora?\nA solução: Upe TV: campanha nas TVs parceiras, com QR code para o seu WhatsApp.\nPor que funciona: Público local todos os dias, e cada leitura do QR aparece no relatório.\nPróximo passo: Anuncie ou seja um ponto parceiro: upe-tv.web.app.\n\nGravação:\n• Vídeo pronto (lançamento Upe TV).",
+   "historia": {
+    "titulo": "A tela que todo mundo olha",
+    "video": "kits/upe-branding/youtube/historia-yt-03-upe-tv.mp4",
+    "beats": [
+     {
+      "rotulo": "A história",
+      "texto": "Uma padaria queria ser lembrada por quem passa no bairro."
+     },
+     {
+      "rotulo": "Contexto",
+      "texto": "Panfleto vai para o lixo. Anúncio online some no feed."
+     },
+     {
+      "rotulo": "Narrativa",
+      "texto": "Enquanto isso, na fila do café ao lado, todo mundo olhava para a TV."
+     },
+     {
+      "rotulo": "Clímax",
+      "texto": "E ninguém estava falando com essas pessoas."
+     },
+     {
+      "rotulo": "A pergunta",
+      "texto": "E se a sua marca estivesse nessa tela, com um jeito de chamar você na hora?"
+     },
+     {
+      "rotulo": "A solução",
+      "texto": "Upe TV: campanha nas TVs parceiras, com QR code para o seu WhatsApp."
+     },
+     {
+      "rotulo": "Por que funciona",
+      "texto": "Público local todos os dias, e cada leitura do QR aparece no relatório."
+     },
+     {
+      "rotulo": "Próximo passo",
+      "texto": "Anuncie ou seja um ponto parceiro: upe-tv.web.app."
+     }
+    ]
+   },
    "midias": [
-    "{assets}video/tv-h.mp4"
+    "{assets}video/tv-h.mp4",
+    "kits/upe-branding/youtube/historia-yt-03-upe-tv.mp4"
    ],
    "capa": "kits/upe-branding/youtube/yt-03-upe-tv.jpg",
    "origem": "YouTube Upe",
@@ -688,8 +852,48 @@
    "canal": "youtube",
    "titulo": "Branding x logo: por que a sua marca é mais do que um desenho",
    "legenda": "A diferença entre logo, identidade visual e marca, com exemplos e o que priorizar no seu negócio.\n\nCapítulos:\n0:00 A confusão\n1:00 O que é logo\n2:30 Identidade visual\n4:30 Marca\n6:30 Por onde começar",
-   "roteiro": "• Gancho: \"Você não precisa de um logo novo. Precisa de uma marca.\"\n• Mostrar o quadro da identidade Upe (paleta, Aa, ícone, padrão).\n• Explicar cada camada com um exemplo de negócio local.\n• Erros comuns: logo sem versões, cores sem regra.\n• CTA: portal do cliente e WhatsApp.",
-   "midias": [],
+   "roteiro": "Versão história: Eu só queria um logo novo\nA história: Um cliente chegou pedindo: quero um logo novo.\nContexto: O logo era bom. O problema era todo o resto.\nNarrativa: Cada post de uma cor, a fachada diferente do Instagram, a embalagem sem padrão.\nClímax: Um logo novo, sozinho, não resolveria nada.\nA pergunta: Então, o que faz uma marca ser reconhecida?\nA solução: Um sistema: logo, paleta, tipografia, ícones, padrões e manual.\nPor que funciona: Repetição consistente é o que cria memória de marca.\nPróximo passo: Assista ao vídeo completo e fale com a Upe sobre a sua marca.\n\nGravação:\n• Gancho: \"Você não precisa de um logo novo. Precisa de uma marca.\"\n• Mostrar o quadro da identidade Upe (paleta, Aa, ícone, padrão).\n• Explicar cada camada com um exemplo de negócio local.\n• Erros comuns: logo sem versões, cores sem regra.\n• CTA: portal do cliente e WhatsApp.",
+   "historia": {
+    "titulo": "Eu só queria um logo novo",
+    "video": "kits/upe-branding/youtube/historia-yt-04-branding-x-logo.mp4",
+    "beats": [
+     {
+      "rotulo": "A história",
+      "texto": "Um cliente chegou pedindo: quero um logo novo."
+     },
+     {
+      "rotulo": "Contexto",
+      "texto": "O logo era bom. O problema era todo o resto."
+     },
+     {
+      "rotulo": "Narrativa",
+      "texto": "Cada post de uma cor, a fachada diferente do Instagram, a embalagem sem padrão."
+     },
+     {
+      "rotulo": "Clímax",
+      "texto": "Um logo novo, sozinho, não resolveria nada."
+     },
+     {
+      "rotulo": "A pergunta",
+      "texto": "Então, o que faz uma marca ser reconhecida?"
+     },
+     {
+      "rotulo": "A solução",
+      "texto": "Um sistema: logo, paleta, tipografia, ícones, padrões e manual."
+     },
+     {
+      "rotulo": "Por que funciona",
+      "texto": "Repetição consistente é o que cria memória de marca."
+     },
+     {
+      "rotulo": "Próximo passo",
+      "texto": "Assista ao vídeo completo e fale com a Upe sobre a sua marca."
+     }
+    ]
+   },
+   "midias": [
+    "kits/upe-branding/youtube/historia-yt-04-branding-x-logo.mp4"
+   ],
    "capa": "kits/upe-branding/youtube/yt-04-branding-x-logo.jpg",
    "origem": "YouTube Upe",
    "pilar": "YouTube",
@@ -869,8 +1073,48 @@
    "canal": "youtube",
    "titulo": "Tutorial Upe ERP #1: primeiro acesso e os 7 primeiros passos",
    "legenda": "Do primeiro acesso à primeira venda: dados da empresa, marca, PIX, primeiro produto, banner, primeira venda e assinatura.\n\nCapítulos:\n0:00 Introdução\n0:40 Criar acesso\n2:00 Dados da empresa\n3:30 Sua marca\n5:00 PIX\n6:30 Primeiro produto\n8:30 Banner e primeira venda",
-   "roteiro": "• Gravar a tela do painel com dados de exemplo.\n• Seguir o roteiro de 7 etapas da tela inicial.\n• Mostrar o resultado na loja online.\n• CTA: 14 dias grátis.",
-   "midias": [],
+   "roteiro": "Versão história: Sua loja no ar em menos de uma hora\nA história: Abrir uma loja online parecia coisa de empresa grande.\nContexto: Site caro, sistema complicado e mensalidade alta.\nNarrativa: Neste tutorial: do primeiro acesso à primeira venda, em 7 passos.\nClímax: Passo 3, ativar o PIX: é aqui que a loja começa a vender de verdade.\nA pergunta: Quanto tempo leva para a loja ficar pronta?\nA solução: Menos de uma hora, seguindo o roteiro da tela inicial.\nPor que funciona: Dados, marca, PIX, produto, banner, venda e assinatura: tudo guiado.\nPróximo passo: Assista ao passo a passo e teste 14 dias grátis.\n\nGravação:\n• Gravar a tela do painel com dados de exemplo.\n• Seguir o roteiro de 7 etapas da tela inicial.\n• Mostrar o resultado na loja online.\n• CTA: 14 dias grátis.",
+   "historia": {
+    "titulo": "Sua loja no ar em menos de uma hora",
+    "video": "kits/upe-branding/youtube/historia-yt-05-tutorial-erp-1.mp4",
+    "beats": [
+     {
+      "rotulo": "A história",
+      "texto": "Abrir uma loja online parecia coisa de empresa grande."
+     },
+     {
+      "rotulo": "Contexto",
+      "texto": "Site caro, sistema complicado e mensalidade alta."
+     },
+     {
+      "rotulo": "Narrativa",
+      "texto": "Neste tutorial: do primeiro acesso à primeira venda, em 7 passos."
+     },
+     {
+      "rotulo": "Clímax",
+      "texto": "Passo 3, ativar o PIX: é aqui que a loja começa a vender de verdade."
+     },
+     {
+      "rotulo": "A pergunta",
+      "texto": "Quanto tempo leva para a loja ficar pronta?"
+     },
+     {
+      "rotulo": "A solução",
+      "texto": "Menos de uma hora, seguindo o roteiro da tela inicial."
+     },
+     {
+      "rotulo": "Por que funciona",
+      "texto": "Dados, marca, PIX, produto, banner, venda e assinatura: tudo guiado."
+     },
+     {
+      "rotulo": "Próximo passo",
+      "texto": "Assista ao passo a passo e teste 14 dias grátis."
+     }
+    ]
+   },
+   "midias": [
+    "kits/upe-branding/youtube/historia-yt-05-tutorial-erp-1.mp4"
+   ],
    "capa": "kits/upe-branding/youtube/yt-05-tutorial-erp-1.jpg",
    "origem": "YouTube Upe",
    "pilar": "YouTube",
@@ -1055,8 +1299,48 @@
    "canal": "youtube",
    "titulo": "Rebranding: 5 sinais de que é hora de redesenhar a sua marca",
    "legenda": "Como saber se a sua marca precisa de um redesign, e como fazer sem perder o que o cliente já reconhece.\n\nCapítulos:\n0:00 Gancho\n0:45 Sinal 1: não lê no celular\n2:00 Sinal 2: cada lugar de um jeito\n3:15 Sinal 3: cores sem regra\n4:30 Sinal 4: ficou datada\n5:30 Sinal 5: vergonha de mostrar\n6:30 Como a Upe faz",
-   "roteiro": "• Usar o antes e depois ilustrativo.\n• Para cada sinal, um exemplo visual.\n• Fechar com o processo em 4 etapas.",
-   "midias": [],
+   "roteiro": "Versão história: A marca que tinha vergonha de aparecer\nA história: Um café com 20 anos de história escondia o próprio logo.\nContexto: O nome não lia no celular e cada cardápio tinha uma cor.\nNarrativa: Listamos os sinais: leitura, consistência, cores, época e orgulho.\nClímax: O dono tinha vergonha de entregar o próprio cartão.\nA pergunta: Dá para mudar sem perder quem já conhece a marca?\nA solução: Redesign: mantém a essência e corrige o que atrapalha.\nPor que funciona: O cliente reconhece a evolução quando os ativos certos ficam.\nPróximo passo: Marcou 2 sinais ou mais? Fale com a Upe.\n\nGravação:\n• Usar o antes e depois ilustrativo.\n• Para cada sinal, um exemplo visual.\n• Fechar com o processo em 4 etapas.",
+   "historia": {
+    "titulo": "A marca que tinha vergonha de aparecer",
+    "video": "kits/upe-branding/youtube/historia-yt-06-rebranding-5-sinais.mp4",
+    "beats": [
+     {
+      "rotulo": "A história",
+      "texto": "Um café com 20 anos de história escondia o próprio logo."
+     },
+     {
+      "rotulo": "Contexto",
+      "texto": "O nome não lia no celular e cada cardápio tinha uma cor."
+     },
+     {
+      "rotulo": "Narrativa",
+      "texto": "Listamos os sinais: leitura, consistência, cores, época e orgulho."
+     },
+     {
+      "rotulo": "Clímax",
+      "texto": "O dono tinha vergonha de entregar o próprio cartão."
+     },
+     {
+      "rotulo": "A pergunta",
+      "texto": "Dá para mudar sem perder quem já conhece a marca?"
+     },
+     {
+      "rotulo": "A solução",
+      "texto": "Redesign: mantém a essência e corrige o que atrapalha."
+     },
+     {
+      "rotulo": "Por que funciona",
+      "texto": "O cliente reconhece a evolução quando os ativos certos ficam."
+     },
+     {
+      "rotulo": "Próximo passo",
+      "texto": "Marcou 2 sinais ou mais? Fale com a Upe."
+     }
+    ]
+   },
+   "midias": [
+    "kits/upe-branding/youtube/historia-yt-06-rebranding-5-sinais.mp4"
+   ],
    "capa": "kits/upe-branding/youtube/yt-06-rebranding-5-sinais.jpg",
    "origem": "YouTube Upe",
    "pilar": "YouTube",
@@ -1174,7 +1458,9 @@
    "data": "2026-11-18",
    "hora": "10:00",
    "status": "planejado",
-   "id": "upe-069"
+   "id": "upe-069",
+   "repostDe": "upe-015",
+   "repost": true
   },
   {
    "formato": "feed",
@@ -1229,8 +1515,48 @@
    "canal": "youtube",
    "titulo": "Tutorial Upe ERP #2: prepare a sua loja para a Black Friday",
    "legenda": "Cupons, frete grátis, estoque, banners e base de clientes: o checklist da Black Friday (27/11) no Upe ERP.\n\nCapítulos:\n0:00 Por que começar agora\n1:00 Estoque\n2:30 Cupons\n4:00 Frete grátis\n5:00 Banners\n6:00 Newsletter para clientes",
-   "roteiro": "• Publicar antes de 27/11.\n• Gravar cada configuração no painel.\n• Reaproveitar o carrossel do checklist.",
-   "midias": [],
+   "roteiro": "Versão história: A Black Friday que vendeu demais\nA história: Na última Black Friday, a loja vendeu mais do que conseguia entregar.\nContexto: Estoque errado, cupom que não funcionou e frete sem regra.\nNarrativa: Este ano, o checklist começa 30 dias antes.\nClímax: 27 de novembro chega rápido. Quem prepara antes vende sem susto.\nA pergunta: O que configurar primeiro?\nA solução: Estoque, cupons, frete grátis, banners e newsletter no Upe ERP.\nPor que funciona: Promoção organizada vende mais e gera menos reclamação.\nPróximo passo: Assista e deixe a sua loja pronta para a Black Friday.\n\nGravação:\n• Publicar antes de 27/11.\n• Gravar cada configuração no painel.\n• Reaproveitar o carrossel do checklist.",
+   "historia": {
+    "titulo": "A Black Friday que vendeu demais",
+    "video": "kits/upe-branding/youtube/historia-yt-07-tutorial-erp-black-friday.mp4",
+    "beats": [
+     {
+      "rotulo": "A história",
+      "texto": "Na última Black Friday, a loja vendeu mais do que conseguia entregar."
+     },
+     {
+      "rotulo": "Contexto",
+      "texto": "Estoque errado, cupom que não funcionou e frete sem regra."
+     },
+     {
+      "rotulo": "Narrativa",
+      "texto": "Este ano, o checklist começa 30 dias antes."
+     },
+     {
+      "rotulo": "Clímax",
+      "texto": "27 de novembro chega rápido. Quem prepara antes vende sem susto."
+     },
+     {
+      "rotulo": "A pergunta",
+      "texto": "O que configurar primeiro?"
+     },
+     {
+      "rotulo": "A solução",
+      "texto": "Estoque, cupons, frete grátis, banners e newsletter no Upe ERP."
+     },
+     {
+      "rotulo": "Por que funciona",
+      "texto": "Promoção organizada vende mais e gera menos reclamação."
+     },
+     {
+      "rotulo": "Próximo passo",
+      "texto": "Assista e deixe a sua loja pronta para a Black Friday."
+     }
+    ]
+   },
+   "midias": [
+    "kits/upe-branding/youtube/historia-yt-07-tutorial-erp-black-friday.mp4"
+   ],
    "capa": "kits/upe-branding/youtube/yt-07-tutorial-erp-black-friday.jpg",
    "origem": "YouTube Upe",
    "pilar": "YouTube",
@@ -1377,8 +1703,48 @@
    "canal": "youtube",
    "titulo": "Upe TV na prática: do QR code ao pedido no WhatsApp",
    "legenda": "Passo a passo de uma campanha no Upe TV: a tela, o QR, o cardápio e o pedido chegando no WhatsApp.\n\nCapítulos:\n0:00 A tela\n1:00 O QR code\n2:00 O cardápio\n3:00 O pedido\n4:00 O relatório",
-   "roteiro": "• Gravar a tela do Upe TV ao vivo.\n• Mostrar o celular lendo o QR.\n• Fechar no portal do anunciante.",
-   "midias": [],
+   "roteiro": "Versão história: Viu na TV, pediu pelo celular\nA história: Uma hamburgueria (exemplo) apareceu na TV do café ao lado.\nContexto: O cliente esperava o café e viu o cardápio na tela.\nNarrativa: Apontou a câmera para o QR e abriu o cardápio no celular.\nClímax: Em minutos, o pedido chegou pronto no WhatsApp.\nA pergunta: Dá para saber de qual TV veio o pedido?\nA solução: Sim: o pedido mostra em qual tela o cliente viu a marca.\nPor que funciona: Do olhar à conversa, com cada leitura medida no portal.\nPróximo passo: Anuncie no Upe TV: upe-tv.web.app.\n\nGravação:\n• Gravar a tela do Upe TV ao vivo.\n• Mostrar o celular lendo o QR.\n• Fechar no portal do anunciante.",
+   "historia": {
+    "titulo": "Viu na TV, pediu pelo celular",
+    "video": "kits/upe-branding/youtube/historia-yt-08-upe-tv-na-pratica.mp4",
+    "beats": [
+     {
+      "rotulo": "A história",
+      "texto": "Uma hamburgueria (exemplo) apareceu na TV do café ao lado."
+     },
+     {
+      "rotulo": "Contexto",
+      "texto": "O cliente esperava o café e viu o cardápio na tela."
+     },
+     {
+      "rotulo": "Narrativa",
+      "texto": "Apontou a câmera para o QR e abriu o cardápio no celular."
+     },
+     {
+      "rotulo": "Clímax",
+      "texto": "Em minutos, o pedido chegou pronto no WhatsApp."
+     },
+     {
+      "rotulo": "A pergunta",
+      "texto": "Dá para saber de qual TV veio o pedido?"
+     },
+     {
+      "rotulo": "A solução",
+      "texto": "Sim: o pedido mostra em qual tela o cliente viu a marca."
+     },
+     {
+      "rotulo": "Por que funciona",
+      "texto": "Do olhar à conversa, com cada leitura medida no portal."
+     },
+     {
+      "rotulo": "Próximo passo",
+      "texto": "Anuncie no Upe TV: upe-tv.web.app."
+     }
+    ]
+   },
+   "midias": [
+    "kits/upe-branding/youtube/historia-yt-08-upe-tv-na-pratica.mp4"
+   ],
    "capa": "kits/upe-branding/youtube/yt-08-upe-tv-na-pratica.jpg",
    "origem": "YouTube Upe",
    "pilar": "YouTube",
@@ -1489,8 +1855,48 @@
    "canal": "youtube",
    "titulo": "Manual de marca: o que tem dentro e como usar no dia a dia",
    "legenda": "Logotipos, cores, tipografia, padrões e regras: como ler e aplicar o manual da sua marca.\n\nCapítulos:\n0:00 Para que serve\n1:00 Logotipos\n2:30 Cores\n3:30 Tipografia\n4:30 Padrões e ícones\n5:30 Erros comuns",
-   "roteiro": "• Usar o manual da própria Upe como exemplo.\n• Mostrar aplicações certas e erradas.",
-   "midias": [],
+   "roteiro": "Versão história: A marca que se desfez aos poucos\nA história: A marca nova ficou linda no lançamento.\nContexto: Seis meses depois, cada fornecedor usava uma versão diferente.\nNarrativa: Logo esticado, cor trocada e fonte improvisada.\nClímax: A marca começou a se desfazer aos poucos.\nA pergunta: Como proteger a identidade no dia a dia?\nA solução: O manual da marca: versões, cores, tipografia e regras de uso.\nPor que funciona: Quem aplica a marca precisa de regras claras, não de adivinhação.\nPróximo passo: Assista e veja o que tem dentro de um manual.\n\nGravação:\n• Usar o manual da própria Upe como exemplo.\n• Mostrar aplicações certas e erradas.",
+   "historia": {
+    "titulo": "A marca que se desfez aos poucos",
+    "video": "kits/upe-branding/youtube/historia-yt-09-manual-de-marca.mp4",
+    "beats": [
+     {
+      "rotulo": "A história",
+      "texto": "A marca nova ficou linda no lançamento."
+     },
+     {
+      "rotulo": "Contexto",
+      "texto": "Seis meses depois, cada fornecedor usava uma versão diferente."
+     },
+     {
+      "rotulo": "Narrativa",
+      "texto": "Logo esticado, cor trocada e fonte improvisada."
+     },
+     {
+      "rotulo": "Clímax",
+      "texto": "A marca começou a se desfazer aos poucos."
+     },
+     {
+      "rotulo": "A pergunta",
+      "texto": "Como proteger a identidade no dia a dia?"
+     },
+     {
+      "rotulo": "A solução",
+      "texto": "O manual da marca: versões, cores, tipografia e regras de uso."
+     },
+     {
+      "rotulo": "Por que funciona",
+      "texto": "Quem aplica a marca precisa de regras claras, não de adivinhação."
+     },
+     {
+      "rotulo": "Próximo passo",
+      "texto": "Assista e veja o que tem dentro de um manual."
+     }
+    ]
+   },
+   "midias": [
+    "kits/upe-branding/youtube/historia-yt-09-manual-de-marca.mp4"
+   ],
    "capa": "kits/upe-branding/youtube/yt-09-manual-de-marca.jpg",
    "origem": "YouTube Upe",
    "pilar": "YouTube",
@@ -1609,8 +2015,48 @@
    "canal": "youtube",
    "titulo": "Tutorial Upe ERP #3: PDV no balcão e PIX com QR Code",
    "legenda": "Como vender no balcão com o PDV do Upe ERP e receber por PIX com QR Code e baixa automática de estoque.\n\nCapítulos:\n0:00 Abrir o PDV\n1:00 Adicionar produtos\n2:00 Cobrar com PIX\n3:00 Estoque\n4:00 Relatórios",
-   "roteiro": "• Gravar uma venda completa.\n• Mostrar o estoque baixando.",
-   "midias": [],
+   "roteiro": "Versão história: A fila do balcão\nA história: Fila no balcão e o cliente perguntando qual é a chave PIX.\nContexto: Digitar o valor, conferir o print, anotar no caderno.\nNarrativa: Com o PDV, o produto entra pelo código e o total aparece na hora.\nClímax: O QR Code do PIX sai com o valor certo, sem digitar nada.\nA pergunta: E o estoque da loja online?\nA solução: Baixa sozinho: balcão e internet usam o mesmo cadastro.\nPor que funciona: Menos erro, fila mais rápida e relatório no fim do dia.\nPróximo passo: Teste o Upe ERP 14 dias grátis.\n\nGravação:\n• Gravar uma venda completa.\n• Mostrar o estoque baixando.",
+   "historia": {
+    "titulo": "A fila do balcão",
+    "video": "kits/upe-branding/youtube/historia-yt-10-tutorial-erp-pdv.mp4",
+    "beats": [
+     {
+      "rotulo": "A história",
+      "texto": "Fila no balcão e o cliente perguntando qual é a chave PIX."
+     },
+     {
+      "rotulo": "Contexto",
+      "texto": "Digitar o valor, conferir o print, anotar no caderno."
+     },
+     {
+      "rotulo": "Narrativa",
+      "texto": "Com o PDV, o produto entra pelo código e o total aparece na hora."
+     },
+     {
+      "rotulo": "Clímax",
+      "texto": "O QR Code do PIX sai com o valor certo, sem digitar nada."
+     },
+     {
+      "rotulo": "A pergunta",
+      "texto": "E o estoque da loja online?"
+     },
+     {
+      "rotulo": "A solução",
+      "texto": "Baixa sozinho: balcão e internet usam o mesmo cadastro."
+     },
+     {
+      "rotulo": "Por que funciona",
+      "texto": "Menos erro, fila mais rápida e relatório no fim do dia."
+     },
+     {
+      "rotulo": "Próximo passo",
+      "texto": "Teste o Upe ERP 14 dias grátis."
+     }
+    ]
+   },
+   "midias": [
+    "kits/upe-branding/youtube/historia-yt-10-tutorial-erp-pdv.mp4"
+   ],
    "capa": "kits/upe-branding/youtube/yt-10-tutorial-erp-pdv.jpg",
    "origem": "YouTube Upe",
    "pilar": "YouTube",
@@ -1721,8 +2167,48 @@
    "canal": "youtube",
    "titulo": "Retrospectiva Upe 2026 e o que vem em 2027",
    "legenda": "Os projetos de branding do ano, os lançamentos Upe ERP e Upe TV e os planos para 2027.\n\nCapítulos:\n0:00 Abertura\n1:00 Projetos de branding\n3:00 Upe ERP\n4:30 Upe TV\n6:00 2027",
-   "roteiro": "• Reunir os destaques do portfólio.\n• Agradecer clientes e parceiros.",
-   "midias": [],
+   "roteiro": "Versão história: O ano em que a Upe decolou\nA história: 2026 foi o ano em que a Upe Criativo decolou.\nContexto: Começou com branding e redesign para negócios locais.\nNarrativa: Vieram o Upe ERP, para vender, e o Upe TV, para aparecer.\nClímax: Marcas novas, lojas no ar e telas pelo bairro.\nA pergunta: O que vem em 2027?\nA solução: Mais marcas, mais telas e o portal do cliente para acompanhar tudo.\nPor que funciona: Da identidade à venda, com uma marca forte no centro.\nPróximo passo: Obrigado por acompanhar! Siga @upecriativo.\n\nGravação:\n• Reunir os destaques do portfólio.\n• Agradecer clientes e parceiros.",
+   "historia": {
+    "titulo": "O ano em que a Upe decolou",
+    "video": "kits/upe-branding/youtube/historia-yt-11-retrospectiva.mp4",
+    "beats": [
+     {
+      "rotulo": "A história",
+      "texto": "2026 foi o ano em que a Upe Criativo decolou."
+     },
+     {
+      "rotulo": "Contexto",
+      "texto": "Começou com branding e redesign para negócios locais."
+     },
+     {
+      "rotulo": "Narrativa",
+      "texto": "Vieram o Upe ERP, para vender, e o Upe TV, para aparecer."
+     },
+     {
+      "rotulo": "Clímax",
+      "texto": "Marcas novas, lojas no ar e telas pelo bairro."
+     },
+     {
+      "rotulo": "A pergunta",
+      "texto": "O que vem em 2027?"
+     },
+     {
+      "rotulo": "A solução",
+      "texto": "Mais marcas, mais telas e o portal do cliente para acompanhar tudo."
+     },
+     {
+      "rotulo": "Por que funciona",
+      "texto": "Da identidade à venda, com uma marca forte no centro."
+     },
+     {
+      "rotulo": "Próximo passo",
+      "texto": "Obrigado por acompanhar! Siga @upecriativo."
+     }
+    ]
+   },
+   "midias": [
+    "kits/upe-branding/youtube/historia-yt-11-retrospectiva.mp4"
+   ],
    "capa": "kits/upe-branding/youtube/yt-11-retrospectiva.jpg",
    "origem": "YouTube Upe",
    "pilar": "YouTube",

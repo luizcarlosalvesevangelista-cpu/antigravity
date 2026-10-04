@@ -994,8 +994,38 @@ SCENES.end = (opt = {}) => ({
   }
 });
 
+/* HISTÓRIA (YouTube): uma batida da narrativa */
+SCENES.beat = (o) => ({
+  dur: o.dur || 5, bg: "azul",
+  cues: [[.15, "whoosh-soft"], [.6, "pop"], ...(o.k === "climax" ? [[1.2, "rise"]] : []), ...(o.k === "solucao" ? [[1.0, "chime"]] : [])],
+  build(root) {
+    const v = FMT === "v";
+    root.innerHTML = `<div class="pat"></div><div class="logo-corner">${wordmark()}</div>
+      <div style="position:absolute;${v ? "left:60px;right:60px;top:300px;height:540px" : "left:100px;top:276px;width:940px;height:529px"};border-radius:22px;overflow:hidden;box-shadow:0 30px 70px rgba(4,25,42,.45)" class="bimgw"><div class="bimg" style="position:absolute;inset:-4%;background:url('${o.img}') center/cover;transform-origin:center"></div></div>
+      <div class="btxt" style="position:absolute;${v ? "left:80px;right:80px;top:960px" : "left:1110px;right:100px;top:0;bottom:0;justify-content:center"};display:flex;flex-direction:column;gap:30px">
+        <div class="eb">${String(o.i + 1).padStart(2, "0")} · ${o.rotulo}</div>
+        <div class="h" style="font-size:${v ? 68 : (o.texto.length > 70 ? 54 : 62)}px;line-height:1.08">${o.texto}</div>
+      </div>
+      <div class="dots" style="position:absolute;${v ? "left:80px;bottom:110px" : "left:1110px;bottom:90px"};display:flex;gap:10px">${Array.from({ length: o.n }, (_, k) => `<i style="display:block;width:${k === o.i ? 46 : 14}px;height:14px;border-radius:7px;background:${k <= o.i ? "#F2F0E1" : "rgba(242,240,225,.25)"}"></i>`).join("")}</div>
+      ${o.nota ? `<div class="small-note">${o.nota}</div>` : ""}`;
+    root.querySelector(".pat").style.backgroundImage = patURL;
+    const words = splitWords(root.querySelector(".h"));
+    return {
+      anims: [...A(root.querySelector(".logo-corner"), 0, .5, { o: 0 }, { o: 1 }), ...A(root.querySelector(".bimgw"), 0, .7, { x: v ? 0 : -80, y: v ? 60 : 0, o: 0 }, { x: 0, y: 0, o: 1 }),
+        ...A(root.querySelector(".eb"), .3, .9, { y: 20, o: 0 }, { y: 0, o: 1 }), ...titleIn(words, .5, .045), ...A(root.querySelector(".dots"), .2, .8, { o: 0 }, { o: 1 })],
+      tick(t) { root.querySelector(".bimg").style.transform = `scale(${1 + .08 * (t / (o.dur || 5))}) translateX(${-1.5 * (t / (o.dur || 5))}%)`; root.querySelector(".pat").style.transform = `translate(${(t * 20) % 130}px,${-(t * 15) % 130}px)`; }
+    };
+  }
+});
+
 /* ---------- peças ---------- */
+const YT = __YT__;
+const IMG = "../../site/assets/img/";
 const PIECES = {
+  yt: () => { const st = YT[+qs.get("n") || 0]; return [
+    SCENES.title({ dur: 4, eb: "Upe Criativo · história", title: st.titulo }),
+    ...st.beats.map((b, i) => SCENES.beat({ ...b, i, n: st.beats.length, img: IMG + b.img, dur: 5, nota: /exemplo|ilustrativ/i.test(st.titulo + b.texto) || st.id === "yt-06-rebranding-5-sinais" || st.id === "yt-01-filme-upe" ? "Exemplo ilustrativo" : "" })),
+    SCENES.end({ dur: 6, prod: "UPE CRIATIVO · YOUTUBE", tag: st.beats[7].texto, urls: ["@upecriativo", "WhatsApp (11) 93439-3249"] })]; },
   logo: () => [SCENES.logo({ dur: 10 })],
   film: () => [
     SCENES.logo({ dur: 8, wipe: false }),

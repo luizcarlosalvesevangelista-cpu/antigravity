@@ -14,6 +14,16 @@ Portal do cliente e painel do administrador para os serviços de **Branding, Mí
 - **Cronograma Upe:** o plano de postagem do @upecriativo (abas Instagram, YouTube e Sem data), com status, legendas, roteiros e arquivos. "Carregar cronograma padrão" lê `cronograma/upe-cronograma.json`. "Importar kit" coloca qualquer kit novo no cronograma.
 - **Sininho (admin):** contatos novos, aprovações, ajustes, mensagens, pedidos, pagamentos informados, reuniões de hoje e amanhã, o que publicar hoje, vencimentos e prazos próximos.
 
+### Aprovação, ajustes e tags
+
+- **Tags acima da prévia** (grade e lista, no cronograma e no portal do cliente): **Repost**, **Aprovado**, **Reprovado** e **Nova versão**. O cronograma tem os status Planejado, Roteiro, Pronto, Aprovado, Reprovado e Publicado.
+- **Repost:** marque "Repost de" no item (cronograma ou post do cliente). O card mostra de novo a peça original no lugar, com a tag Repost.
+- **Download só depois de aprovar:** o cliente vê o post, a legenda e os comentários; os botões de baixar aparecem quando ele aprova.
+- **Ajuste por comentário:** o cliente pede ajuste escrevendo o que mudar. O pedido aparece como **Prioridade** no topo do seu sininho, com link direto para o post. Em **Devolver corrigido**, envie o arquivo novo (substitui o anterior) e uma mensagem opcional: o post vira a versão seguinte, o cliente recebe aviso no sininho e nas mensagens (e por e-mail, com a extensão Trigger Email do Firebase) e aprova de novo. Vale também para as artes gráficas.
+- **Hashtags, bio e direct:** os textos de copiar dos kits ficam logo abaixo das abas Instagram | YouTube | Sem data do cronograma (filtrados pelo pilar escolhido).
+- **Timeline por app:** aba do Cronograma Upe com ritmo, horários, formatos e fases para Instagram, YouTube, LinkedIn, TikTok, WhatsApp e Google. Para cada cliente, a timeline sai da ficha "Canais" e da jornada do dossiê e aparece em Conteúdo (para você e para o cliente).
+- **YouTube em versão história:** cada vídeo do canal tem um roteiro em 8 atos (história, contexto, narrativa, clímax, pergunta, solução, fundamentação e CTA) e um motion com áudio e efeitos em `kits/upe-branding/youtube/historia-*.mp4` (gerados em `motion/studio`, `run_yt.sh`). Só material próprio da Upe: nada de trechos de vídeos ou prints de terceiros, para não correr risco de strike.
+
 ### Kits da Upe
 
 - `kits/upe-branding/`: kit completo (artes, carrosséis, stories, reels com som, thumbnails e plano de YouTube).
@@ -59,6 +69,8 @@ Instale a extensão **Trigger Email from Firestore** (coleção `mail`) com o SM
 ## Dossiê
 
 Importe o dossiê preenchido (modelo em `portal/modelos/Modelo_Dossie_Upe.html`) na ficha do cliente, em **Apresentação e dossiê**. O arquivo completo fica salvo só para o administrador. O cliente vê apenas a aba 05 (apresentação, filme, motions, feed e PDF). Informe o endereço da pasta do dossiê publicado para o portal achar as imagens e os vídeos.
+
+Postagens no dossiê: preencha `postagens` (data, tipo, título, legenda e arquivos) ou o feed da aba 05. Ao importar, cada postagem com arquivo entra no calendário de aprovação do cliente (sem duplicar o que já existe), e a ficha "Canais" gera a timeline por app.
 
 ## Segurança, em resumo
 

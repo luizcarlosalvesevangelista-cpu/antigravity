@@ -53,9 +53,9 @@ function kind(url, tipo) {
   if (/\.pdf(\?|$)/i.test(url || "")) return "pdf";
   return url ? "img" : "none";
 }
-function mediaHTML(url, tipo, cls = "") {
+function mediaHTML(url, tipo, cls = "", nodl = false) {
   const k = kind(url, tipo), u = esc(resolveMedia(url));
-  if (k === "video") return `<video class="${cls}" src="${u}" controls playsinline preload="metadata"></video>`;
+  if (k === "video") return `<video class="${cls}" src="${u}" controls ${nodl ? 'controlslist="nodownload"' : ""} playsinline preload="metadata"></video>`;
   if (k === "audio") return `<audio src="${u}" controls preload="metadata"></audio>`;
   if (k === "pdf") return `<a class="btn sec sm" href="${u}" target="_blank" rel="noopener">Abrir PDF</a>`;
   if (k === "img") return `<img class="${cls}" src="${u}" alt="">`;
@@ -110,7 +110,7 @@ function pixPayload({ chave, nome, cidade, valor, txid, descricao }) {
 }
 
 /* ---------------- armazenamento ---------------- */
-const DEMO_KEY = "upe-portal-demo-v3";
+const DEMO_KEY = "upe-portal-demo-v4";
 class LocalStore {
   constructor() { this.mode = "demo"; let d = null; try { d = JSON.parse(ls.get(DEMO_KEY)); } catch (e) {} this.d = d && d.cols ? d : { cols: {} }; }
   async init() {
@@ -208,10 +208,13 @@ async function seedDemo(st) {
       motions: [], semanas: ["Semana 1 · lançamento"],
       instagram: [{ img: A + "img/brand.jpg", titulo: "Nova identidade", data: "", semana: 1, legenda: "" }, { img: A + "img/redesign.jpg", titulo: "Antes e depois", data: "", semana: 1, legenda: "" }, { img: A + "img/filme-h.jpg", titulo: "Assinatura", data: "", semana: 1, legenda: "" }]
     },
+    perfil: { nome: "Café Aurora", canais: ["instagram", "whatsapp", "google", "loja"], negocio: "Cafeteria de bairro com delivery", regiao: "São Paulo · zona oeste", publicos: ["Vizinhos que tomam café todo dia", "Quem trabalha perto e pede delivery"], atributos: ["Café coado", "Pão na chapa", "Bolos caseiros"],
+      jornada: [{ etapa: "Descobrir", texto: "Reels do café sendo coado e do balcão" }, { etapa: "Confiar", texto: "Avaliações do Google e fotos de clientes" }, { etapa: "Escolher", texto: "Cardápio da semana nos stories" }, { etapa: "Comprar", texto: "Pedido pelo WhatsApp e iFood" }], em: now - 72 * H },
     posts: [
-      { id: uid(8), data: day(1), tipo: "imagem", titulo: "Lançamento da nova marca", midias: [A + "img/brand.jpg"], legenda: "Chegou a nova cara do Café Aurora ☕\nMesma receita, marca nova. Vem conhecer!", versao: 1, status: "pendente", statusEm: now - 5 * H },
-      { id: uid(8), data: day(3), tipo: "carrossel", titulo: "Antes e depois", midias: [A + "img/redesign.jpg", A + "img/filme-h.jpg"], legenda: "Deslize para ver o antes e depois →", versao: 1, status: "pendente", statusEm: now - 4 * H },
-      { id: uid(8), data: day(-2), tipo: "reels", titulo: "Bastidores do redesign", midias: [A + "video/filme-h.mp4"], legenda: "Como nasceu a nova identidade.", versao: 1, status: "aprovado", statusEm: now - 50 * H },
+      { id: "p-lanc", data: day(1), tipo: "imagem", titulo: "Lançamento da nova marca", midias: [A + "img/brand.jpg"], legenda: "Chegou a nova cara do Café Aurora ☕\nMesma receita, marca nova. Vem conhecer!", versao: 2, status: "pendente", statusEm: now - 1 * H, historico: [{ em: now - 1 * H, v: 2, texto: "Troquei a foto pela versão com o letreiro novo." }] },
+      { id: "p-antes", data: day(3), tipo: "carrossel", titulo: "Antes e depois", midias: [A + "img/redesign.jpg", A + "img/filme-h.jpg"], legenda: "Deslize para ver o antes e depois →", versao: 1, status: "pendente", statusEm: now - 4 * H },
+      { id: "p-bast", data: day(-2), tipo: "reels", titulo: "Bastidores do redesign", midias: [A + "video/filme-h.mp4"], legenda: "Como nasceu a nova identidade.", versao: 1, status: "aprovado", statusEm: now - 50 * H },
+      { id: "p-repost", data: day(8), tipo: "story", titulo: "Repost: bastidores do redesign", repostDe: "p-bast", midias: [], legenda: "", versao: 1, status: "pendente", statusEm: now - 2 * H },
       { id: uid(8), data: day(6), tipo: "legenda", titulo: "Legenda do cardápio da semana", midias: [], legenda: "Cardápio da semana: pão na chapa, bolo de fubá e café coado. Peça pelo WhatsApp!", versao: 1, status: "pendente", statusEm: now - 2 * H }
     ],
     graficos: [
@@ -230,6 +233,8 @@ async function seedDemo(st) {
   const p = await st.get(`privado/${id}`); await st.del(`codigos/${p.codigoHash}`); const code = "AURO-RA26-DEMO", h = await sha256(normCode(code));
   await st.set(`codigos/${h}`, { clienteId: id }); await st.set(`privado/${id}`, { ...p, codigo: code, codigoHash: h });
   await st.add(`clientes/${id}/acoes`, { tipo: "mensagem", texto: "Perfeito! Vou olhar hoje à tarde.", em: now - 5 * H });
+  await st.add(`clientes/${id}/acoes`, { tipo: "ajuste", alvo: "p-lanc", versao: 1, texto: "Pode usar a foto com o letreiro novo?", em: now - 3 * H });
+  await st.add(`clientes/${id}/acoes`, { tipo: "ajuste", alvo: "p-antes", versao: 1, texto: "Na 2ª imagem, escrever “desde 1998” no rodapé.", em: now - 90 * 6e4 });
   await st.add(`clientes/${id}/acoes`, { tipo: "pedido", alvo: cs.graficos[0].id, quantidade: 1000, modo: "alterado", texto: "Trocar o telefone para (11) 90000-0000.", em: now - 30 * H });
   const d2 = Api.blankClient({ nome: "Rafael Souza", empresa: "Studio Bento (exemplo)", marca: "Studio Bento", plano: { branding: true, midias: false, grafica: false },
     acesso: { apresentacao: false, manual: false, calendario: false, graficos: false, recompra: false, pagamentos: true },
@@ -248,7 +253,9 @@ async function seedDemo(st) {
   await st.set(`clientes/${id}`, cli); await st.set(`reunioes/${r1.id}`, r1);
   const leads = await st.list("contatos"), lj = leads.find(l => l.nome === "Juliana Prado");
   if (lj) { const r2 = { id: uid(10), titulo: "Conversa sobre o redesign da floricultura", data: day(3), hora: "10:30", duracao: 30, com: "lead", contatoId: lj.id, nome: lj.nome, email: lj.contato, telefone: "", link: "", local: "WhatsApp vídeo", notas: "", status: "marcada" }; await st.set(`reunioes/${r2.id}`, r2); }
-  try { for (const it of await cronogramaPadrao()) await st.set(`cronograma/${it.id}`, it); } catch (e) {}
+  try { const arq = await cronogramaArquivo(); for (const it of arq.itens) await st.set(`cronograma/${it.id}`, it); await st.set(`cronograma/${EXTRAS_ID}`, { id: EXTRAS_ID, tipo: "extras", lista: arq.extras || [] });
+    // exemplo de aprovado e reprovado no cronograma
+    for (const [k, stt] of [[0, "publicado"], [1, "aprovado"], [2, "reprovado"]]) { const it = arq.itens.filter(x => x.canal !== "youtube" && x.data)[k]; if (it) await st.set(`cronograma/${it.id}`, { ...it, status: stt }); } } catch (e) {}
 }
 
 /* ---------------- modal ---------------- */
@@ -371,7 +378,7 @@ async function clientRoute(tab, arg) {
   if (voltar) $("#voltarAdm").onclick = () => { ss.set("upe-cliente", null); ss.set("upe-voltar", null); };
   const m = $("#cmain");
   if (kitView) return cKit(m, c, arg);
-  ({ inicio: cInicio, agenda: cAgenda, apresentacao: cApres, conteudo: cConteudo, graficos: cGraficos, produtos: cProdutos, pagamentos: cPagamentos, mensagens: cMensagens })[tab](m, c, { pend, recItems, tabs });
+  ({ inicio: cInicio, agenda: cAgenda, apresentacao: cApres, conteudo: cConteudo, graficos: cGraficos, produtos: cProdutos, pagamentos: cPagamentos, mensagens: cMensagens })[tab](m, c, { pend, recItems, tabs, arg });
 }
 const refreshClient = () => clientRoute((location.hash.split("/")[2]) || "inicio");
 
@@ -432,24 +439,28 @@ function cApres(m, { doc }) {
 
 /* ---------- conteúdo: calendário de aprovação ---------- */
 let calMonth = null;
-function cConteudo(m, c) {
+// link direto (#/…/post) abre o item uma vez; tira o id do endereço para não reabrir ao salvar
+const semAlvo = () => { try { history.replaceState(null, "", location.hash.replace(/\/[^/]+$/, "")); } catch (e) {} };
+function cConteudo(m, c, opt = {}) {
   const { doc, acoes } = c;
-  const posts = (doc.posts || []).filter(p => p.status !== "rascunho").map(p => ({ ...p, ef: statusOf(p, acoes) })).sort((a, b) => a.data.localeCompare(b.data));
-  if (!calMonth) { const nx = posts.find(p => p.ef.status === "pendente"); const d = nx ? new Date(nx.data + "T12:00") : new Date(); calMonth = [d.getFullYear(), d.getMonth()]; }
+  const posts = (doc.posts || []).filter(p => p.status !== "rascunho").map(p => ({ ...comRepost(p, doc.posts), ef: statusOf(p, acoes) })).sort((a, b) => (a.data || "").localeCompare(b.data || ""));
+  if (!calMonth) { const nx = posts.find(p => p.ef.status === "pendente"); const d = nx && nx.data ? new Date(nx.data + "T12:00") : new Date(); calMonth = [d.getFullYear(), d.getMonth()]; }
   const filt = ss.get("upe-cf") || "todos";
   const cvw = ls.get("upe-ccvw") || "cal";
   const draw = () => {
     const [Y, M] = calMonth, first = new Date(Y, M, 1), start = new Date(Y, M, 1 - first.getDay()), today = isoDay(new Date());
-    const inMonth = posts.filter(p => p.data.startsWith(`${Y}-${pad(M + 1)}`)).filter(p => filt === "todos" || p.ef.status === filt);
+    const inMonth = posts.filter(p => (p.data || "").startsWith(`${Y}-${pad(M + 1)}`)).filter(p => filt === "todos" || p.ef.status === filt);
     let cells = ""; for (let k = 0; k < 42; k++) { const d = new Date(start); d.setDate(start.getDate() + k); const iso = isoDay(d);
       const evs = posts.filter(p => p.data === iso && (filt === "todos" || p.ef.status === filt));
-      cells += `<div class="day ${d.getMonth() !== M ? "out" : ""} ${iso === today ? "today" : ""}"><span class="d">${d.getDate()}</span>${evs.map(p => `<button class="ev ${evCls(p.ef.status)}" data-p="${p.id}" title="${esc(p.titulo)}">${esc(TIPOS_POST[p.tipo] || p.tipo)} · ${esc(p.titulo)}</button>`).join("")}</div>`; }
+      cells += `<div class="day ${d.getMonth() !== M ? "out" : ""} ${iso === today ? "today" : ""}"><span class="d">${d.getDate()}</span>${evs.map(p => `<button class="ev ${evCls(p.ef.status)}" data-p="${p.id}" title="${esc(p.titulo)}">${ehRepost(p) ? "Repost · " : ""}${esc(TIPOS_POST[p.tipo] || p.tipo)} · ${esc(p.titulo)}</button>`).join("")}</div>`; }
     const kits = (doc.kits || []).filter(k => (doc.posts || []).some(p => p.kitId === k.id && p.status !== "rascunho"));
-    m.innerHTML = (kits.length ? `<section class="card grid"><span class="eb">Kits de conteúdo para baixar</span><div class="row">${kits.map(k => `<a class="btn sec sm" href="#/c/kit/${esc(k.id)}">${esc(k.nome)} · ${k.total} peças</a>`).join("")}</div></section>` : "") + `<div class="spread"><div class="grid" style="gap:6px"><span class="eb">Calendário de conteúdo</span><h1>Aprove os seus posts</h1><p class="muted small">Imagens, vídeos, legendas e áudios. Toque em um post para ver e aprovar.</p></div>
+    const tl = doc.perfil ? timelineApps(doc.perfil) : [];
+    m.innerHTML = (kits.length ? `<section class="card grid"><span class="eb">Kits de conteúdo</span><div class="row">${kits.map(k => `<a class="btn sec sm" href="#/c/kit/${esc(k.id)}">${esc(k.nome)} · ${(doc.posts || []).filter(p => p.kitId === k.id && p.status !== "rascunho").length} peças</a>`).join("")}</div><p class="muted small">Os arquivos ficam liberados para baixar depois que você aprova cada peça.</p></section>` : "") + `<div class="spread"><div class="grid" style="gap:6px"><span class="eb">Calendário de conteúdo</span><h1>Aprove os seus posts</h1><p class="muted small">Toque em um post para ver, aprovar ou pedir ajuste com um comentário. Depois de aprovado, o download fica liberado.</p></div>
       <div class="row"><button class="btn sec sm" id="mPrev" aria-label="Mês anterior">←</button><b style="min-width:150px;text-align:center;text-transform:capitalize">${MESES[M]} ${Y}</b><button class="btn sec sm" id="mNext" aria-label="Próximo mês">→</button></div></div>
       <div class="row" role="group" aria-label="Filtrar">${[["todos", "Todos"], ["pendente", "Aguardando aprovação"], ["aprovado", "Aprovados"], ["ajustes", "Ajustes pedidos"], ["publicado", "Publicados"]].map(([k, l]) => `<button class="chip" data-f="${k}" aria-pressed="${filt === k}">${l}</button>`).join("")}<span style="flex:1"></span><button class="chip" data-cv="cal" aria-pressed="${cvw !== "grade"}">Calendário</button><button class="chip" data-cv="grade" aria-pressed="${cvw === "grade"}">Grade</button></div>
       ${cvw === "grade" ? gradePosts(posts.filter(p => filt === "todos" || p.ef.status === filt)) : `<div class="card pad0"><div class="cal">${["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map(d => `<div class="dow">${d}</div>`).join("")}${cells}</div></div>
-      <div class="agenda" aria-label="Lista do mês">${inMonth.length ? inMonth.map(p => { const d = new Date(p.data + "T12:00"); return `<button class="agi" data-p="${p.id}"><span class="dt">${pad(d.getDate())}/${pad(d.getMonth() + 1)}<small>${["dom", "seg", "ter", "qua", "qui", "sex", "sáb"][d.getDay()]}</small></span><span><b>${esc(p.titulo)}</b><br><span class="muted small">${esc(TIPOS_POST[p.tipo] || p.tipo)}</span></span>${pill(p.ef.status)}</button>`; }).join("") : `<div class="empty">Nenhum post neste mês.</div>`}</div>`}`;
+      <div class="agenda" aria-label="Lista do mês">${inMonth.length ? inMonth.map(p => { const d = new Date(p.data + "T12:00"), cp = capaDe(p); return `<button class="agi agt" data-p="${p.id}"><span class="dt">${pad(d.getDate())}/${pad(d.getMonth() + 1)}<small>${["dom", "seg", "ter", "qua", "qui", "sex", "sáb"][d.getDay()]}</small></span><span class="lthumb">${tagsHTML(p.ef.status, p)}<span class="thumb" style="width:52px;aspect-ratio:4/5;border-radius:8px">${cp ? imgTag(cp) : `<span class="small">${esc(TIPOS_POST[p.tipo] || "")}</span>`}</span></span><span style="min-width:0"><b>${esc(p.titulo)}</b><br><span class="muted small">${esc(TIPOS_POST[p.tipo] || p.tipo)}${(p.versao || 1) > 1 ? ` · versão ${p.versao}` : ""}</span></span>${pill(p.ef.status)}</button>`; }).join("") : `<div class="empty">Nenhum post neste mês.</div>`}</div>`}
+      ${tl.length ? `<details class="card"><summary><b>Timeline sugerida para cada app</b> <span class="muted small">a partir do diagnóstico da sua marca</span></summary>${timelineHTML(tl, "")}</details>` : ""}`;
     if ($("#mPrev")) $("#mPrev").onclick = () => { calMonth = M ? [Y, M - 1] : [Y - 1, 11]; draw(); };
     if ($("#mNext")) $("#mNext").onclick = () => { calMonth = M < 11 ? [Y, M + 1] : [Y + 1, 0]; draw(); };
     $$("[data-f]", m).forEach(b => b.onclick = () => { ss.set("upe-cf", b.dataset.f); cConteudo(m, c); });
@@ -457,21 +468,30 @@ function cConteudo(m, c) {
     $$("[data-cv]", m).forEach(b => b.onclick = () => { ls.set("upe-ccvw", b.dataset.cv); cConteudo(m, c); });
   };
   draw();
+  const alvo = opt.arg && posts.find(p => p.id === opt.arg); if (alvo) { semAlvo(); postModal(alvo, c); }
+}
+// conversa do post: pedidos de ajuste do cliente e devoluções da Upe, por versão
+function conversaPost(p, acoes, adm = false) {
+  const its = [...acoes.filter(a => a.alvo === p.id && (a.tipo === "ajuste" || (a.tipo === "aprovar" && a.texto))).map(a => ({ em: a.em, por: "cliente", texto: a.texto, v: a.versao || 1, tipo: a.tipo })), ...(p.historico || []).map(h => ({ ...h, por: "upe" }))].sort((a, b) => a.em - b.em);
+  return its.length ? `<div style="display:flex;flex-direction:column;gap:6px"><span class="eb">Comentários</span>${its.map(i => `<div class="msg ${(i.por === "upe") === adm ? "me" : "them"}"><b class="small">${i.por === "upe" ? "Upe" : adm ? "Cliente" : "Você"} · v${i.v}${i.tipo === "aprovar" ? " · aprovou" : i.tipo === "ajuste" ? " · pediu ajuste" : ""}</b><div>${esc(i.texto || "")}</div><small>${fdt(i.em)}</small></div>`).join("")}</div>` : "";
 }
 function postModal(p, c) {
-  const can = p.ef.status === "pendente" || p.ef.status === "ajustes";
+  const can = p.ef.status === "pendente" || p.ef.status === "ajustes", lib = p.ef.status === "aprovado" || p.ef.status === "publicado";
   modal(esc(p.titulo), `
+    ${tagsHTML(p.ef.status, p)}
     <div class="row">${pill(p.ef.status)}<span class="muted small">${esc(TIPOS_POST[p.tipo] || p.tipo)} · ${fdate(p.data)}${(p.versao || 1) > 1 ? ` · versão ${p.versao}` : ""}</span></div>
-    ${(p.midias || []).map(u => `<div class="media-box">${mediaHTML(u, p.tipo)}</div>`).join("")}
+    ${p._orig ? `<div class="card" style="background:var(--info-bg)"><b>Repost</b> de “${esc(p._orig.titulo)}”${p._orig.data ? ` (${fdate(p._orig.data)})` : ""}.</div>` : ""}
+    ${p.ef.status === "pendente" && (p.versao || 1) > 1 ? `<div class="card" style="background:var(--warn-bg)"><b>Ajuste feito.</b> Esta é a versão ${p.versao}, corrigida a partir do seu comentário. Confira e aprove.</div>` : ""}
+    ${(p.midias || []).map(u => `<div class="media-box" ${lib ? "" : "data-nodl"}>${mediaHTML(u, p.tipo, "", !lib)}</div>`).join("")}
     ${p.legenda ? `<div><span class="eb">Legenda</span><div class="legenda">${esc(p.legenda)}</div></div>` : ""}
-    <div class="row">${p.legenda ? `<button class="btn sec sm" id="pCpL">Copiar legenda</button>` : ""}${(p.midias || []).map((u, i) => dlBtn(u, p.midias.length > 1 ? `Baixar arquivo ${i + 1}` : "Baixar arquivo")).join("")}${p.capa ? dlBtn(p.capa, "Baixar capa") : ""}</div>
-    ${p.ef.texto && p.ef.status === "ajustes" ? `<div class="card" style="background:var(--bad-bg)"><b>Seu pedido de ajuste:</b> ${esc(p.ef.texto)}</div>` : ""}
+    <div class="row">${p.legenda ? `<button class="btn sec sm" id="pCpL">Copiar legenda</button>` : ""}${lib ? (p.midias || []).map((u, i) => dlBtn(u, p.midias.length > 1 ? `Baixar arquivo ${i + 1}` : "Baixar arquivo")).join("") + (p.capa ? dlBtn(p.capa, "Baixar capa") : "") : (p.midias || []).length ? `<span class="pill">Download liberado depois da aprovação</span>` : ""}</div>
+    ${conversaPost(p, c.acoes)}
     ${can ? `<label class="f" for="pCom">Comentário (obrigatório para pedir ajuste)<textarea id="pCom" placeholder="Ex.: trocar a foto, mudar a primeira frase da legenda…"></textarea></label>` : ""}`,
     can ? `<button class="btn bad" id="pAj">Pedir ajuste</button><button class="btn ok" id="pOk">Aprovar</button>` : `<button class="btn sec" data-close>Fechar</button>`);
   if ($("#pCpL")) $("#pCpL").onclick = () => copy(p.legenda, "Legenda copiada");
   if (!can) return;
-  $("#pOk").onclick = async () => { await Api.act(c.id, { tipo: "aprovar", alvo: p.id, versao: p.versao || 1, texto: $("#pCom").value.trim() }); dlg.close(); toast("Post aprovado"); refreshClient(); };
-  $("#pAj").onclick = async () => { const t = $("#pCom").value.trim(); if (!t) { $("#pCom").focus(); return toast("Escreva o que precisa mudar"); } await Api.act(c.id, { tipo: "ajuste", alvo: p.id, versao: p.versao || 1, texto: t }); dlg.close(); toast("Pedido de ajuste enviado"); refreshClient(); };
+  $("#pOk").onclick = async () => { await Api.act(c.id, { tipo: "aprovar", alvo: p.id, versao: p.versao || 1, texto: $("#pCom").value.trim() }); dlg.close(); toast("Post aprovado. O download está liberado."); refreshClient(); };
+  $("#pAj").onclick = async () => { const t = $("#pCom").value.trim(); if (!t) { $("#pCom").focus(); return toast("Escreva o que precisa mudar"); } await Api.act(c.id, { tipo: "ajuste", alvo: p.id, versao: p.versao || 1, texto: t }); dlg.close(); toast("Pedido de ajuste enviado. A Upe avisa quando a nova versão estiver pronta."); refreshClient(); };
 }
 
 /* ---------- materiais gráficos ---------- */
@@ -555,9 +575,11 @@ function cMensagens(m, c) {
 async function adminRoute(rest) {
   if (!(await S.currentAdmin())) return gate("admin");
   state.admin = true;
-  const [sec = "clientes", a1, a2] = rest;
-  const [clients, contatos, reunioes, crono] = await Promise.all([Api.listClients(), S.list("contatos"), S.list("reunioes"), S.list("cronograma")]);
-  Object.assign(state.cache, { clients, contatos, reunioes, crono });
+  const [sec = "clientes", a1, a2, a3] = rest;
+  const [clients, contatos, reunioes, cron0] = await Promise.all([Api.listClients(), S.list("contatos"), S.list("reunioes"), S.list("cronograma")]);
+  const crono = cron0.filter(x => x.id !== EXTRAS_ID), exDoc = cron0.find(x => x.id === EXTRAS_ID);
+  let extras = exDoc ? exDoc.lista || [] : null; if (!extras) { try { extras = (await cronogramaArquivo()).extras || []; } catch (e) { extras = []; } }
+  Object.assign(state.cache, { clients, contatos, reunioes, crono, extras });
   const unread = clients.reduce((s, c) => s + c.acoes.filter(a => a.tipo === "mensagem" && a.em > (c.doc.lidoAdmEm || 0)).length, 0);
   const novos = contatos.filter(c => (c.status || "novo") === "novo").length;
   const hoje = todayIso(), agendaHoje = reunioes.filter(r => r.data === hoje && r.status !== "cancelada").length + crono.filter(x => x.data === hoje && x.status !== "publicado").length;
@@ -571,7 +593,7 @@ async function adminRoute(rest) {
   if (sec === "clientes") return aClientes(w, clients);
   if (sec === "calendario") return aCalendario(w);
   if (sec === "cronograma") return aCronograma(w, a1 || "instagram");
-  if (sec === "cliente") return aCliente(w, a1, a2 || "projeto");
+  if (sec === "cliente") return aCliente(w, a1, a2 || "projeto", a3);
   if (sec === "contatos") return aContatos(w, contatos);
   if (sec === "mensagens") return aInbox(w, clients, a1);
   if (sec === "newsletter") return a1 ? aNewsEditor(w, a1) : aNewsletter(w);
@@ -634,11 +656,12 @@ function codeModal(id, code, doc, priv) {
 }
 
 /* ---------- ficha do cliente ---------- */
-async function aCliente(w, id, tab) {
+async function aCliente(w, id, tab, alvo) {
   const c = state.cache.clients.find(x => x.id === id); if (!c) return go("#/admin/clientes");
   const doc = clone(c.doc), priv = clone(c.priv), acoes = c.acoes;
   const p = pendencias(doc, acoes), unread = acoes.filter(a => a.tipo === "mensagem" && a.em > (doc.lidoAdmEm || 0)).length, pedNovos = pedidosOf(doc, acoes).filter(x => x.status === "novo").length;
-  const tabs = [["projeto", "Projeto e acessos", 0], ["apresentacao", "Apresentação e dossiê", 0], ["conteudo", "Conteúdo", p.posts.length], ["graficos", "Gráficos e recompra", pedNovos], ["pagamentos", "Pagamentos", (doc.cobrancas || []).filter(x => cobStatus(x, acoes) === "informado").length], ["mensagens", "Inbox", unread]];
+  const ajustes = [...(doc.posts || []), ...(doc.graficos || [])].filter(x => statusOf(x, acoes).status === "ajustes");
+  const tabs = [["projeto", "Projeto e acessos", 0], ["apresentacao", "Apresentação e dossiê", 0], ["conteudo", "Conteúdo", p.posts.length + (doc.posts || []).filter(x => ajustes.includes(x)).length], ["graficos", "Gráficos e recompra", pedNovos], ["pagamentos", "Pagamentos", (doc.cobrancas || []).filter(x => cobStatus(x, acoes) === "informado").length], ["mensagens", "Inbox", unread]];
   w.innerHTML = `<div class="spread"><div class="grid" style="gap:4px"><a href="#/admin/clientes" class="small">← Clientes</a><h1>${esc(doc.marca || doc.empresa || doc.nome)}</h1><span class="muted">${esc(doc.nome)}${priv.email ? ` · ${esc(priv.email)}` : ""}</span></div>
     <div class="row"><button class="btn sec sm" id="vCli">Ver como cliente</button></div></div>
     <nav class="subtabs">${tabs.map(([k, l, n]) => `<a class="tab" href="#/admin/cliente/${id}/${k}" ${k === tab ? 'aria-current="page"' : ""}>${l}${n ? `<span class="cnt">${n}</span>` : ""}</a>`).join("")}</nav>
@@ -646,7 +669,7 @@ async function aCliente(w, id, tab) {
   $("#vCli").onclick = () => { ss.set("upe-cliente", id); ss.set("upe-voltar", `#/admin/cliente/${id}/projeto`); go("#/c/inicio"); };
   const save = async (msg = "Salvo") => { doc.atualizadoEm = Date.now(); await S.set(`clientes/${id}`, doc); toast(msg); reAdmin(); };
   const ct = $("#ct");
-  ({ projeto: aProjeto, apresentacao: aApres, conteudo: aConteudo, graficos: aGraficosA, pagamentos: aPagamentosA, mensagens: aMsgA })[tab](ct, { id, doc, priv, acoes, save });
+  ({ projeto: aProjeto, apresentacao: aApres, conteudo: aConteudo, graficos: aGraficosA, pagamentos: aPagamentosA, mensagens: aMsgA })[tab](ct, { id, doc, priv, acoes, save, alvo });
 }
 
 function aProjeto(ct, { id, doc, priv, save }) {
@@ -733,7 +756,7 @@ function aApres(ct, { id, doc, priv, save }) {
   ct.innerHTML = `
     <div class="g2">
       <section class="card grid"><h3>Dossiê do cliente</h3>
-        <p class="muted small">Importe o dossiê preenchido (arquivo do modelo Upe). O dossiê completo fica salvo só para você. O cliente vê apenas a <b>aba 05 · Apresentação</b>.</p>
+        <p class="muted small">Importe o dossiê preenchido (arquivo do modelo Upe). O dossiê completo fica salvo só para você. O cliente vê apenas a <b>aba 05 · Apresentação</b>. As postagens do dossiê (<code>postagens</code> e o feed da aba 05) entram no calendário de aprovação, e a ficha “Canais” gera a timeline por app.</p>
         <div class="row">${hasDossie ? `<span class="pill ok">Dossiê salvo${priv.dossieNome ? ` · ${esc(priv.dossieNome)}` : ""}</span>` : '<span class="pill">Nenhum dossiê salvo</span>'}<span class="muted small">${priv.dossieEm ? fdt(priv.dossieEm) : ""}</span></div>
         <label class="f" for="dBase">Endereço da pasta do dossiê (para achar imagens e vídeos)<input id="dBase" value="${esc(A.baseUrl || "")}" placeholder="https://seusite.web.app/clientes/marca/dossie/"></label>
         <div class="row"><label class="btn sm">Importar dossiê (.html)<input type="file" id="dFile" accept=".html,text/html" hidden></label>${hasDossie ? `<button class="btn sec sm" id="dOpen">Abrir dossiê completo</button>` : ""}<a class="btn sec sm" href="modelos/Modelo_Dossie_Upe.html" target="_blank" rel="noopener">Modelo em branco</a></div>
@@ -763,60 +786,86 @@ function aApres(ct, { id, doc, priv, save }) {
     try {
       const html = await f.text(), D = parseDossie(html), base = $("#dBase").value.trim();
       doc.apresentacao = apresFromDossie(D, base);
+      doc.perfil = perfilDoDossie(D, doc);
+      const novos = postsDoDossie(D, base, doc);
+      if (novos.length) { doc.posts = [...(doc.posts || []), ...novos]; doc.kits = [...(doc.kits || []).filter(k => k.id !== "dossie"), { id: "dossie", nome: "Posts do dossiê", importadoEm: Date.now(), total: (doc.posts || []).filter(p => p.kitId === "dossie").length }]; }
       Object.assign(priv, { dossie: html, dossieNome: f.name, dossieEm: Date.now() });
       if (html.length > 900000) toast("Dossiê grande: guarde as imagens fora do arquivo");
-      await S.set(`privado/${id}`, priv); await save("Dossiê importado. A aba 05 virou a apresentação do cliente.");
+      await S.set(`privado/${id}`, priv); await save(`Dossiê importado. A aba 05 virou a apresentação${novos.length ? ` e ${novos.length} post(s) entraram no calendário de aprovação` : ""}. Timeline por app atualizada.`);
     } catch (er) { toast(er.message); }
   };
   if ($("#dOpen")) $("#dOpen").onclick = () => { modal(`Dossiê · ${esc(priv.dossieNome || doc.marca || "")}`, `<iframe id="dosF" title="Dossiê completo" style="width:100%;height:75vh;border:0;border-radius:10px;background:#fff"></iframe>`, "", true); $("#dosF").srcdoc = priv.dossie; };
 }
 
 /* ---------- conteúdo (posts) ---------- */
-function aConteudo(ct, { id, doc, acoes, save }) {
-  const posts = (doc.posts || []).map(p => ({ ...p, ef: statusOf(p, acoes) })).sort((a, b) => b.data.localeCompare(a.data));
+// avisa o cliente: mensagem no portal (aparece no sininho) e e-mail pela fila do Firebase, se houver e-mail
+async function avisarCliente(doc, priv, texto, assunto) {
+  doc.mensagens = [...(doc.mensagens || []), { id: uid(8), texto, em: Date.now() }];
+  if (S.mode === "firebase" && priv?.email) try { await S.add("mail", { to: priv.email, message: { subject: assunto || "Novidade no seu portal Upe", html: `<p>Olá, ${esc((doc.nome || "").split(" ")[0])}!</p><p>${esc(texto)}</p><p>Acesse o portal da Upe Criativo com o seu código para ver e aprovar.</p>` } }); } catch (e) {}
+}
+function aConteudo(ct, { id, doc, priv, acoes, save, alvo }) {
+  const posts = (doc.posts || []).map(p => ({ ...comRepost(p, doc.posts), ef: statusOf(p, acoes) })).sort((a, b) => (b.data || "").localeCompare(a.data || ""));
+  const aj = posts.filter(p => p.ef.status === "ajustes" && p.ef.por === "cliente").sort((a, b) => b.ef.em - a.ef.em);
+  const tl = timelineApps(doc.perfil || { canais: ["instagram", "whatsapp", "google"] });
   ct.innerHTML = `${!doc.plano?.midias ? `<div class="card" style="background:var(--warn-bg)">Este cliente não está no plano Mídias digitais. Os posts só aparecem para ele com o plano e o acesso “Calendário de aprovação” ligados.</div>` : ""}
+    ${aj.length ? `<section class="card grid prio"><div class="spread"><div><span class="tagx bad">Prioridade</span> <b>${aj.length} ajuste${aj.length > 1 ? "s" : ""} pedido${aj.length > 1 ? "s" : ""} pelo cliente</b></div><span class="muted small">Ajuste e devolva o arquivo corrigido: o cliente é avisado na hora.</span></div>
+      ${aj.map(p => `<div class="row" style="flex-wrap:nowrap;align-items:flex-start"><div style="flex:1;min-width:0"><b>${esc(p.titulo)}</b> <span class="muted small">v${p.versao || 1} · ${fdate(p.data)} · ${fdt(p.ef.em)}</span><div class="small">“${esc(p.ef.texto)}”</div></div><button class="btn sm" data-ed="${p.id}">Devolver corrigido</button></div>`).join("")}</section>` : ""}
     <div class="spread"><h3>Posts para aprovação</h3><div class="row"><button class="btn sec" id="pKit">Importar kit (HTML + arquivos)</button><button class="btn" id="pNew">Novo post</button></div></div>
     ${(doc.kits || []).length ? `<div class="row small">${doc.kits.map(k => `<span class="pill info">${esc(k.nome)} · ${k.total}</span>`).join("")}</div>` : ""}
-    <div class="card pad0 tbl">${posts.length ? `<table><thead><tr><th>Data</th><th>Post</th><th>Tipo</th><th>Status</th><th>Retorno do cliente</th><th></th></tr></thead><tbody>${posts.map(p => `<tr><td class="num">${fdate(p.data)}</td><td><b>${esc(p.titulo)}</b>${(p.versao || 1) > 1 ? ` <span class="muted small">v${p.versao}</span>` : ""}</td><td>${esc(TIPOS_POST[p.tipo] || p.tipo)}</td><td>${pill(p.ef.status)}</td><td class="small">${p.ef.por === "cliente" ? esc(p.ef.texto || (p.ef.status === "aprovado" ? "Aprovou" : "")) + ` <span class="muted">· ${fdt(p.ef.em)}</span>` : '<span class="muted">—</span>'}</td><td><button class="btn sec sm" data-ed="${p.id}">Editar</button></td></tr>`).join("")}</tbody></table>` : `<div class="empty" style="margin:16px">Nenhum post ainda.</div>`}</div>`;
+    <div class="card pad0 tbl">${posts.length ? `<table><thead><tr><th>Data</th><th>Prévia</th><th>Post</th><th>Status</th><th>Retorno do cliente</th><th></th></tr></thead><tbody>${posts.map(p => { const cp = capaDe(p); return `<tr ${p.ef.status === "ajustes" ? 'class="rowprio"' : ""}><td class="num">${fdate(p.data)}</td><td style="width:84px"><div class="lthumb">${tagsHTML(p.ef.status, p)}<div class="thumb" style="width:56px;aspect-ratio:4/5;border-radius:8px">${cp ? imgTag(cp) : `<span class="small">${esc(TIPOS_POST[p.tipo] || "")}</span>`}</div></div></td><td><b>${esc(p.titulo)}</b>${(p.versao || 1) > 1 ? ` <span class="muted small">v${p.versao}</span>` : ""}<br><span class="muted small">${esc(TIPOS_POST[p.tipo] || p.tipo)}${p.origem ? " · " + esc(p.origem) : ""}${p._orig ? ` · repost de “${esc(p._orig.titulo)}”` : ""}</span></td><td>${pill(p.ef.status)}</td><td class="small">${p.ef.por === "cliente" ? esc(p.ef.texto || (p.ef.status === "aprovado" ? "Aprovou" : "")) + ` <span class="muted">· ${fdt(p.ef.em)}</span>` : '<span class="muted">—</span>'}</td><td><button class="btn ${p.ef.status === "ajustes" ? "" : "sec"} sm" data-ed="${p.id}">${p.ef.status === "ajustes" ? "Devolver corrigido" : "Editar"}</button></td></tr>`; }).join("")}</tbody></table>` : `<div class="empty" style="margin:16px">Nenhum post ainda. Importe um kit ou o dossiê com postagens (aba Apresentação e dossiê).</div>`}</div>
+    <details class="card" ${doc.perfil ? "" : ""}><summary><b>Timeline sugerida por app</b> <span class="muted small">${doc.perfil ? `a partir do dossiê${doc.perfil.em ? " · " + fdt(doc.perfil.em) : ""}` : "padrão: importe o dossiê para personalizar"}</span></summary>${timelineHTML(tl, doc.perfil ? `Canais do diagnóstico: ${doc.perfil.canais.map(k => APPS[k]?.nome || k).join(", ")}. O cliente também vê esta sugestão no portal.` : "")}</details>`;
   const edit = p => {
     const n = !p; p = p || { id: uid(8), data: isoDay(new Date()), tipo: "imagem", titulo: "", midias: [], legenda: "", versao: 1, status: "pendente" };
-    modal(n ? "Novo post" : "Editar post", `
+    const base0 = (doc.posts || []).find(x => x.id === p.id) || p, ajuste = p.ef?.status === "ajustes";
+    const origs = (doc.posts || []).filter(x => x.id !== p.id && !x.repostDe && (x.midias || []).length);
+    modal(n ? "Novo post" : ajuste ? "Devolver post corrigido" : "Editar post", `
+      ${ajuste ? `<div class="card" style="background:var(--bad-bg)"><span class="tagx bad">Prioridade</span> <b>O cliente pediu ajuste na versão ${p.versao || 1}:</b><div>“${esc(p.ef.texto)}”</div><span class="muted small">${fdt(p.ef.em)}</span></div>` : ""}
+      ${!n ? conversaPost(p, acoes, true) : ""}
       <div class="g3"><label class="f" for="eD">Data de publicação<input id="eD" type="date" value="${esc(p.data)}"></label><label class="f" for="eT">Tipo<select id="eT">${Object.entries(TIPOS_POST).map(([k, l]) => `<option value="${k}" ${p.tipo === k ? "selected" : ""}>${l}</option>`).join("")}</select></label>
       <label class="f" for="eS">Status<select id="eS">${["rascunho", "pendente", "aprovado", "ajustes", "publicado"].map(s => `<option value="${s}" ${(p.ef?.status || p.status) === s ? "selected" : ""}>${ST[s][0]}</option>`).join("")}</select></label></div>
       <label class="f" for="eTi">Título<input id="eTi" value="${esc(p.titulo)}"></label>
-      <label class="f" for="eM">Mídias (um link por linha: imagem, vídeo ou áudio)<textarea id="eM" rows="3">${esc((p.midias || []).join("\n"))}</textarea></label>
-      <div><label class="btn sec sm">Enviar arquivos<input type="file" id="eF" multiple accept="image/*,video/*,audio/*" hidden></label></div>
-      <label class="f" for="eL">Legenda<textarea id="eL" rows="5">${esc(p.legenda)}</textarea></label>
-      ${!n ? `<label class="tg"><input type="checkbox" id="eV"><span>Enviar como nova versão<small>Volta para “Aguardando aprovação” e o cliente aprova de novo</small></span></label>` : ""}`,
-      `${!n ? `<button class="btn bad" id="eX">Excluir</button>` : ""}<button class="btn sec" data-close>Cancelar</button><button class="btn" id="eOk">Salvar</button>`);
-    $("#eF").onchange = async e => { toast("Enviando…"); const urls = []; for (const f of e.target.files) { const u = await S.upload(f, `clientes/${id}/posts`); if (u) urls.push(u); } if (urls.length) { $("#eM").value = [$("#eM").value.trim(), ...urls].filter(Boolean).join("\n"); toast(S.mode === "demo" && !S.idb ? "Arquivos anexados só até fechar a página (modo demonstração)" : "Arquivos enviados"); } else toast("Ative o Firebase Storage para enviar arquivos"); };
+      <label class="f" for="eM">Mídias (um link por linha: imagem, vídeo ou áudio)${ajuste ? " · troque pelo arquivo corrigido" : ""}<textarea id="eM" rows="3">${esc((base0.midias || []).join("\n"))}</textarea></label>
+      <div><label class="btn ${ajuste ? "" : "sec"} sm">${ajuste ? "Enviar arquivo corrigido" : "Enviar arquivos"}<input type="file" id="eF" multiple accept="image/*,video/*,audio/*" hidden></label>${ajuste ? ' <label class="small row" style="display:inline-flex;gap:6px"><input type="checkbox" id="eRep" checked>Substituir os arquivos atuais</label>' : ""}</div>
+      <label class="f" for="eL">Legenda<textarea id="eL" rows="5">${esc(base0.legenda || "")}</textarea></label>
+      <label class="f" for="eRp">Repost de (opcional)<select id="eRp"><option value="">Não é repost</option>${origs.map(y => `<option value="${esc(y.id)}" ${base0.repostDe === y.id ? "selected" : ""}>${fdate(y.data)} · ${esc(y.titulo.slice(0, 60))}</option>`).join("")}</select></label>
+      ${!n ? `<label class="tg"><input type="checkbox" id="eV" ${ajuste ? "checked" : ""}><span>Enviar como nova versão${ajuste ? " (devolver corrigido)" : ""}<small>Volta para “Aguardando aprovação”, o cliente é avisado e aprova de novo</small></span></label>
+      <label class="f" for="eN">Mensagem para o cliente (opcional)<input id="eN" placeholder="Ex.: troquei a foto e encurtei a legenda"></label>` : ""}`,
+      `${!n ? `<button class="btn bad" id="eX">Excluir</button>` : ""}<button class="btn sec" data-close>Cancelar</button><button class="btn" id="eOk">${ajuste ? "Devolver corrigido" : "Salvar"}</button>`, true);
+    let trocou = false;
+    $("#eF").onchange = async e => { toast("Enviando…"); const urls = []; for (const f of e.target.files) { const u = await S.upload(f, `clientes/${id}/posts`); if (u) urls.push(u); } if (urls.length) { $("#eM").value = ($("#eRep")?.checked && !trocou ? urls : [$("#eM").value.trim(), ...urls].filter(Boolean)).join("\n"); trocou = true; toast(S.mode === "demo" && !S.idb ? "Arquivos anexados só até fechar a página (modo demonstração)" : "Arquivos enviados"); } else toast("Ative o Firebase Storage para enviar arquivos"); };
     $("#eOk").onclick = async () => {
       const t = $("#eTi").value.trim(); if (!t) return $("#eTi").focus();
       const base = (doc.posts || []).find(x => x.id === p.id) || {};
-      const newVer = $("#eV")?.checked, st = newVer ? "pendente" : $("#eS").value;
-      const np = { ...base, id: p.id, data: $("#eD").value, tipo: $("#eT").value, titulo: t, midias: $("#eM").value.split("\n").map(s => s.trim()).filter(Boolean), legenda: $("#eL").value, versao: (base.versao || 1) + (newVer ? 1 : 0) };
+      const newVer = $("#eV")?.checked, st = newVer ? "pendente" : $("#eS").value, nota = $("#eN")?.value.trim() || "";
+      const np = { ...base, id: p.id, data: $("#eD").value, tipo: $("#eT").value, titulo: t, midias: $("#eM").value.split("\n").map(s => s.trim()).filter(Boolean), legenda: $("#eL").value, versao: (base.versao || 1) + (newVer ? 1 : 0), repostDe: $("#eRp").value || undefined };
+      if (!np.repostDe) delete np.repostDe;
       if (n || newVer || st !== p.ef?.status) { np.status = st; np.statusEm = Date.now(); }
+      if (newVer) { np.historico = [...(base.historico || []), { em: Date.now(), v: np.versao, texto: nota || (ajuste ? "Ajuste feito. Nova versão para aprovar." : "Nova versão para aprovar.") }];
+        await avisarCliente(doc, priv, `${ajuste ? "Ajuste pronto" : "Nova versão"}: “${t}” (versão ${np.versao}) está no calendário para você aprovar.${nota ? " " + nota : ""}`, `Ajuste pronto: ${t}`); }
       doc.posts = n ? [...(doc.posts || []), np] : doc.posts.map(x => x.id === p.id ? np : x);
-      dlg.close(); await save("Post salvo");
+      dlg.close(); await save(newVer ? "Nova versão enviada. O cliente foi avisado." : "Post salvo");
     };
     if ($("#eX")) $("#eX").onclick = async () => { doc.posts = doc.posts.filter(x => x.id !== p.id); dlg.close(); await save("Post excluído"); };
   };
   $("#pNew").onclick = () => edit(null);
   $("#pKit").onclick = () => kitImport({ alvo: "cliente", id, doc, save });
   $$("[data-ed]", ct).forEach(b => b.onclick = () => edit(posts.find(p => p.id === b.dataset.ed)));
+  const a = alvo && posts.find(p => p.id === alvo); if (a) { semAlvo(); edit(a); }
 }
 
 /* ---------- gráficos e recompra ---------- */
-function aGraficosA(ct, { id, doc, acoes, save }) {
+function aGraficosA(ct, { id, doc, priv, acoes, save, alvo }) {
   const gs = (doc.graficos || []).map(g => ({ ...g, ef: statusOf(g, acoes) })), peds = pedidosOf(doc, acoes);
   ct.innerHTML = `${!doc.plano?.grafica ? `<div class="card" style="background:var(--warn-bg)">Este cliente não está no plano Papelaria gráfica. As artes só aparecem para ele com o plano e o acesso ligados.</div>` : ""}
     <div class="spread"><h3>Materiais gráficos</h3><button class="btn" id="gNew">Novo material</button></div>
-    <div class="card pad0 tbl">${gs.length ? `<table><thead><tr><th>Produto</th><th>Qtd.</th><th>Valor</th><th>Status</th><th>Recompra</th><th></th></tr></thead><tbody>${gs.map(g => `<tr><td><b>${esc(g.produto)}</b>${(g.versao || 1) > 1 ? ` <span class="muted small">v${g.versao}</span>` : ""}<br><span class="muted small">${esc(g.specs)}</span>${g.ef.por === "cliente" && g.ef.texto ? `<br><span class="small" style="color:var(--bad)">Cliente: ${esc(g.ef.texto)}</span>` : ""}</td><td class="num">${esc(Number(g.quantidade || 0).toLocaleString("pt-BR"))}</td><td class="num">${brl(g.valor)}</td><td>${pill(g.ef.status)}</td><td>${g.recompra ? `<span class="pill ok">Liberada · ${brl(g.precoRecompra || g.valor)}</span>` : '<span class="muted small">—</span>'}</td><td><button class="btn sec sm" data-ed="${g.id}">Editar</button></td></tr>`).join("")}</tbody></table>` : `<div class="empty" style="margin:16px">Nenhum material ainda.</div>`}</div>
+    <div class="card pad0 tbl">${gs.length ? `<table><thead><tr><th>Produto</th><th>Qtd.</th><th>Valor</th><th>Status</th><th>Recompra</th><th></th></tr></thead><tbody>${gs.map(g => `<tr><td><b>${esc(g.produto)}</b>${(g.versao || 1) > 1 ? ` <span class="muted small">v${g.versao}</span>` : ""}<br><span class="muted small">${esc(g.specs)}</span>${g.ef.por === "cliente" && g.ef.texto ? `<br><span class="small" style="color:var(--bad)">Cliente: ${esc(g.ef.texto)}</span>` : ""}</td><td class="num">${esc(Number(g.quantidade || 0).toLocaleString("pt-BR"))}</td><td class="num">${brl(g.valor)}</td><td>${pill(g.ef.status)}</td><td>${g.recompra ? `<span class="pill ok">Liberada · ${brl(g.precoRecompra || g.valor)}</span>` : '<span class="muted small">—</span>'}</td><td><button class="btn ${g.ef.status === "ajustes" ? "" : "sec"} sm" data-ed="${g.id}">${g.ef.status === "ajustes" ? "Devolver corrigido" : "Editar"}</button></td></tr>`).join("")}</tbody></table>` : `<div class="empty" style="margin:16px">Nenhum material ainda.</div>`}</div>
     <h3>Pedidos de recompra</h3>
     <div class="card pad0 tbl">${peds.length ? `<table><thead><tr><th>Data</th><th>Produto</th><th>Qtd.</th><th>Pedido</th><th>Status</th><th></th></tr></thead><tbody>${peds.map(p => { const g = gs.find(x => x.id === p.alvo); return `<tr><td class="num">${fdt(p.em)}</td><td>${esc(g?.produto || "—")}</td><td class="num">${esc(Number(p.quantidade).toLocaleString("pt-BR"))}</td><td class="small">${p.modo === "alterado" ? `<b>Com alterações:</b> ${esc(p.texto)}` : "Igual ao anterior"}</td><td><select data-ps="${p.id}" aria-label="Status do pedido">${["novo", "producao", "entregue", "cancelado"].map(s => `<option value="${s}" ${p.status === s ? "selected" : ""}>${ST[s][0]}</option>`).join("")}</select></td><td>${doc.pedidosAdm?.[p.id]?.cobrancaId ? '<span class="pill ok">Cobrança criada</span>' : `<button class="btn sec sm" data-pc="${p.id}">Gerar cobrança</button>`}</td></tr>`; }).join("")}</tbody></table>` : `<div class="empty" style="margin:16px">Nenhum pedido de recompra.</div>`}</div>`;
   const edit = g => {
     const n = !g; g = g || { id: uid(8), produto: "", specs: "", quantidade: 100, valor: 0, arte: "", versao: 1, status: "orcamento", recompra: false, precoRecompra: 0 };
-    modal(n ? "Novo material gráfico" : "Editar material", `
+    const ajuste = g.ef?.status === "ajustes" && g.ef.por === "cliente";
+    modal(n ? "Novo material gráfico" : ajuste ? "Devolver arte corrigida" : "Editar material", `
+      ${ajuste ? `<div class="card" style="background:var(--bad-bg)"><span class="tagx bad">Prioridade</span> <b>O cliente pediu ajuste na versão ${g.versao || 1}:</b><div>“${esc(g.ef.texto)}”</div></div>` : ""}
       <div class="g2"><label class="f" for="gP">Produto<input id="gP" value="${esc(g.produto)}" placeholder="Cartão de visita, flyer, cardápio…"></label><label class="f" for="gS">Status<select id="gS">${["orcamento", "pendente", "aprovado", "ajustes", "producao", "entregue"].map(s => `<option value="${s}" ${(g.ef?.status || g.status) === s ? "selected" : ""}>${ST[s][0]}${s === "orcamento" ? " (cliente não vê)" : ""}</option>`).join("")}</select></label></div>
       <label class="f" for="gSp">Especificação<input id="gSp" value="${esc(g.specs)}" placeholder="Formato · papel · cores · acabamento"></label>
       <div class="g2"><label class="f" for="gQ">Quantidade<input id="gQ" type="number" value="${esc(g.quantidade)}"></label><label class="f" for="gV">Valor (R$)<input id="gV" type="number" step="0.01" value="${esc(g.valor)}"></label></div>
@@ -824,7 +873,7 @@ function aGraficosA(ct, { id, doc, acoes, save }) {
       <div><label class="btn sec sm">Enviar arte<input type="file" id="gF" accept="image/*,.pdf" hidden></label></div>
       <span class="eb">Recompra</span>
       <div class="g2"><label class="tg"><input type="checkbox" id="gR" ${g.recompra ? "checked" : ""}><span>Liberar para comprar de novo<small>Aparece em “Comprar de novo” para o cliente</small></span></label><label class="f" for="gRP">Preço da recompra (R$)<input id="gRP" type="number" step="0.01" value="${esc(g.precoRecompra || "")}" placeholder="igual ao valor"></label></div>
-      ${!n ? `<label class="tg"><input type="checkbox" id="gNv"><span>Enviar como nova versão da arte<small>Volta para “Aguardando aprovação”</small></span></label>` : ""}`,
+      ${!n ? `<label class="tg"><input type="checkbox" id="gNv" ${ajuste ? "checked" : ""}><span>Enviar como nova versão da arte<small>Volta para “Aguardando aprovação”</small></span></label>` : ""}`,
       `${!n ? `<button class="btn bad" id="gX">Excluir</button>` : ""}<button class="btn sec" data-close>Cancelar</button><button class="btn" id="gOk">Salvar</button>`);
     $("#gF").onchange = async e => { const f = e.target.files[0]; if (!f) return; const u = await S.upload(f, `clientes/${id}/graficos`); if (u) { $("#gA").value = u; toast("Arte anexada"); } else toast("Ative o Firebase Storage para enviar arquivos"); };
     $("#gOk").onclick = async () => {
@@ -833,6 +882,7 @@ function aGraficosA(ct, { id, doc, acoes, save }) {
       const ng = { ...base, id: g.id, produto: pr, specs: $("#gSp").value.trim(), quantidade: +$("#gQ").value || 0, valor: +$("#gV").value || 0, arte: $("#gA").value.trim(), recompra: $("#gR").checked, precoRecompra: +$("#gRP").value || 0, versao: (base.versao || 1) + (nv ? 1 : 0) };
       if (n || nv || st !== g.ef?.status) { ng.status = st; ng.statusEm = Date.now(); }
       if (ng.recompra && !doc.acesso.recompra) doc.acesso.recompra = true;
+      if (nv) await avisarCliente(doc, priv, `${ajuste ? "Arte corrigida" : "Nova versão da arte"}: “${pr}” (versão ${ng.versao}) está pronta para você aprovar.`, `Arte corrigida: ${pr}`);
       doc.graficos = n ? [...(doc.graficos || []), ng] : doc.graficos.map(x => x.id === g.id ? ng : x);
       dlg.close(); await save("Material salvo");
     };
@@ -840,6 +890,7 @@ function aGraficosA(ct, { id, doc, acoes, save }) {
   };
   $("#gNew").onclick = () => edit(null);
   $$("[data-ed]", ct).forEach(b => b.onclick = () => edit(gs.find(g => g.id === b.dataset.ed)));
+  const ga = alvo && gs.find(g => g.id === alvo); if (ga) { semAlvo(); edit(ga); }
   $$("[data-ps]", ct).forEach(s => s.onchange = async () => { doc.pedidosAdm = doc.pedidosAdm || {}; doc.pedidosAdm[s.dataset.ps] = { ...(doc.pedidosAdm[s.dataset.ps] || {}), status: s.value }; await save("Pedido atualizado"); });
   $$("[data-pc]", ct).forEach(b => b.onclick = async () => {
     const p = peds.find(x => x.id === b.dataset.pc), g = gs.find(x => x.id === p.alvo), unit = (g?.precoRecompra || g?.valor || 0) / (g?.quantidade || 1);

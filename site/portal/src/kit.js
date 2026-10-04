@@ -68,6 +68,8 @@ function parseKit(doc, hoje = new Date()) {
   entradas.forEach((e, k) => itens.push({ ref: "story:" + e.data + ":" + k, formato: e.formato, titulo: e.titulo, legenda: e.legenda || "", midias: e.midias || [], capa: "", data: e.data }));
   // stories que não entraram no calendário ficam disponíveis sem data
   stories.filter(s => !itens.some(i => i.formato === "story" && i.midias.includes(s.src))).forEach(s => itens.push({ ref: "story:" + s.n, formato: "story", titulo: s.nome, legenda: s.inst, midias: s.src ? [s.src] : [], capa: "", data: "" }));
-  return { titulo: txt(doc.querySelector("header h1")) || txt(doc.querySelector("title")), itens };
+  // hashtags, bio e direct (blocos com botão "Copiar …")
+  const extras = after("hashtags").filter(n => n.matches && n.matches(".info")).map(n => ({ rotulo: txt(n.querySelector("button")).replace(/^copiar\s*/i, "") || "Texto", texto: txt(n.querySelector("pre")) })).filter(e => e.texto);
+  return { titulo: txt(doc.querySelector("header h1")) || txt(doc.querySelector("title")), itens, extras };
 }
 if (typeof module !== "undefined") module.exports = { parseKit };
