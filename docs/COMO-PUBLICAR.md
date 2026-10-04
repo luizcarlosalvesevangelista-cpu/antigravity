@@ -2,14 +2,15 @@
 
 A pasta `public_html/` é o site pronto. Não precisa de instalação nem de banco de dados: são arquivos estáticos.
 
-## Pacote em 5 partes
+## Pacote em 8 partes
 
-O site foi dividido em 5 arquivos .zip para caber no envio. **Extraia todos na mesma pasta**: cada um completa a pasta `public_html/`.
+O site foi dividido em 8 arquivos .zip para caber no envio. **Extraia todos na mesma pasta**: cada um completa a pasta `public_html/`.
 
-1. `upe-site-1-base.zip`: páginas, imagens, portal e este guia
-2. `upe-site-2-videos.zip`: vídeos e motions do site
-3. `upe-site-3-kits.zip`: kits de conteúdo (artes, carrosséis, stories e reels)
-4. `upe-site-4-historias-a.zip` e 5. `upe-site-5-historias-b.zip`: motions das histórias do YouTube
+1. `parte-1-base.zip`: páginas, imagens, portal e este guia
+2. `parte-2-kits.zip`: kits de conteúdo (artes, carrosséis, stories e reels)
+3. `parte-3-videos.zip` a `parte-8-videos.zip`: vídeos e motions do site e as histórias do YouTube
+
+O projeto completo (fontes, estúdio de motion e marca) também está no GitHub, na branch `claude/nifty-heisenberg-bbex8e`: em **Code → Download ZIP** você baixa tudo de uma vez.
 
 ## O que tem dentro
 
