@@ -211,7 +211,7 @@ class FireStore {
   async init() {
     const v = "10.12.2", base = `https://cdn.jsdelivr.net/npm/firebase@${v}/`;
     for (const f of ["firebase-app-compat.js", "firebase-auth-compat.js", "firebase-firestore-compat.js", "firebase-storage-compat.js"]) await new Promise((ok, no) => { const s = document.createElement("script"); s.src = base + f; s.onload = ok; s.onerror = () => no(new Error("Não foi possível carregar o Firebase.")); document.head.appendChild(s); });
-    firebase.initializeApp(this.cfg); this.db = firebase.firestore(); this.auth = firebase.auth(); try { this.st = firebase.storage(); } catch (e) { this.st = null; }
+    firebase.initializeApp(this.cfg); this.db = firebase.firestore(); this.auth = firebase.auth(); try { this.st = this.cfg.storageBucket ? firebase.storage() : null; } catch (e) { this.st = null; }
     if (CFG.emulador) { const h = location.hostname; this.auth.useEmulator(`http://${h}:9099`); this.db.useEmulator(h, 8080); if (this.st) this.st.useEmulator(h, 9199); } // testes locais (firebase emulators:start)
     this.ready = new Promise(r => { const off = this.auth.onAuthStateChanged(u => { off(); r(u); }); });
   }
@@ -221,7 +221,7 @@ class FireStore {
   async del(p) { await this.db.doc(p).delete(); }
   async list(c) { const s = await this.db.collection(c).get(); return s.docs.map(d => ({ id: d.id, ...d.data() })); }
   async login(email, pass) {
-    const r = await this.auth.signInWithEmailAndPassword(email.trim(), pass).catch(() => { throw new Error("E-mail ou senha incorretos."); });
+    const r = await this.auth.signInWithEmailAndPassword(email.trim(), pass).catch(e => { throw new Error({ "auth/too-many-requests": "Muitas tentativas. Aguarde alguns minutos ou redefina a senha.", "auth/network-request-failed": "Sem conexão com o Firebase. Verifique a internet.", "auth/user-disabled": "Este usuário está desativado." }[e.code] || "E-mail ou senha incorretos."); });
     if (!(await this.get(`admins/${r.user.uid}`))) { await this.auth.signOut(); throw new Error("Este usuário não está liberado como administrador."); }
     return true;
   }
@@ -1105,7 +1105,9 @@ function emailHTML(tpl, d) {
   return `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${E(tpl.assunto)}</title></head><body style="margin:0;background:#ECEADF"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ECEADF;padding:24px 12px"><tr><td align="center"><table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px;background:#FFFFFF;border-radius:14px;overflow:hidden">${body}<tr><td style="height:8px"></td></tr></table></td></tr></table></body></html>`;
 }
 async function aNewsletter(w) {
-  const tpls = await S.list("templates"), envios = (await S.list("envios")).sort((a, b) => b.em - a.em);
+  let tpls = await S.list("templates");
+  if (!tpls.length && !ls.get("upe-tpl-ok")) { for (const t of TEMPLATES()) await S.set(`templates/${t.id}`, t); ls.set("upe-tpl-ok", "1"); tpls = await S.list("templates"); } // primeiro acesso: modelos prontos
+  const envios = (await S.list("envios")).sort((a, b) => b.em - a.em);
   w.innerHTML = `<div class="spread"><div class="grid" style="gap:4px"><span class="eb">E-mail marketing</span><h1>Newsletter</h1><p class="muted small">Modelos editáveis por blocos, com os dados de cada cliente: nome, status do projeto, cobranças e produtos.</p></div><button class="btn" id="tNew">Novo modelo</button></div>
     <div class="g3">${tpls.map(t => `<a class="card grid" href="#/admin/newsletter/${esc(t.id)}" style="text-decoration:none;color:inherit"><span class="eb">${(t.blocos || []).length} blocos</span><h3>${esc(t.nome)}</h3><p class="muted small">${esc(t.assunto)}</p></a>`).join("")}</div>
     <section class="card grid"><h3>Envios</h3>${envios.length ? `<div class="tbl"><table><thead><tr><th>Data</th><th>Modelo</th><th>Destinatários</th><th>Como</th></tr></thead><tbody>${envios.map(e => `<tr><td class="num">${fdt(e.em)}</td><td>${esc(e.modelo)}</td><td class="num">${e.total}</td><td>${esc(e.via)}</td></tr>`).join("")}</tbody></table></div>` : `<p class="muted">Nenhum envio ainda.</p>`}</section>`;
