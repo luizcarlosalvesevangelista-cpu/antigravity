@@ -27,8 +27,11 @@ async function sha256(s) {
   let h = 0; for (const c of s) h = (h * 31 + c.charCodeAt(0)) | 0; return "x" + (h >>> 0).toString(16); // só para navegadores sem crypto.subtle no modo demo
 }
 const clone = o => o == null ? o : JSON.parse(JSON.stringify(o));
-const ss = { get(k) { try { return sessionStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { v == null ? sessionStorage.removeItem(k) : sessionStorage.setItem(k, v); } catch (e) {} } };
-const ls = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {} } };
+// armazenamento com reserva em memória: quando o navegador bloqueia o storage, o portal continua funcionando nesta aba
+const mkStore = name => { const mem = new Map(); const st = () => { try { return window[name]; } catch (e) { return null; } };
+  return { get(k) { try { const v = st()?.getItem(k); if (v != null) return v; } catch (e) {} return mem.has(k) ? mem.get(k) : null; },
+           set(k, v) { v == null ? mem.delete(k) : mem.set(k, String(v)); try { v == null ? st()?.removeItem(k) : st()?.setItem(k, v); } catch (e) {} } }; };
+const ss = mkStore("sessionStorage"), ls = mkStore("localStorage");
 let toastT; function toast(m) { const t = $("#toast"); t.textContent = m; t.classList.remove("hide"); clearTimeout(toastT); toastT = setTimeout(() => t.classList.add("hide"), 2600); }
 async function copy(text, okMsg = "Copiado") { try { await navigator.clipboard.writeText(text); toast(okMsg); } catch (e) { toast("Selecione o texto e copie manualmente"); } }
 const waLink = (num, txt) => `https://wa.me/${String(num || "").replace(/\D/g, "")}${txt ? `?text=${encodeURIComponent(txt)}` : ""}`;
@@ -329,13 +332,15 @@ async function clientRoute(tab) {
   ].filter(t => t[3]);
   if (!tabs.some(t => t[0] === tab)) tab = "inicio";
   if (tab === "mensagens") ls.set(seenKey, String(Date.now()));
-  app.innerHTML = demoBar() + `
+  const voltar = state.admin && ss.get("upe-voltar");
+  app.innerHTML = demoBar() + (voltar ? `<div class="asadm">Você está vendo o portal como este cliente.<a href="${esc(voltar)}" id="voltarAdm">Voltar ao painel</a></div>` : "") + `
     <header class="cl-top"><div class="in"><div class="logo">${WM}</div>
       <div class="who"><b>${esc(doc.marca || doc.empresa || doc.nome)}</b><span>${esc(doc.nome)}</span></div>
       <button class="btn sec sm" id="sair">Sair</button></div></header>
     <nav class="tabs" aria-label="Seções do portal"><div class="in">${tabs.map(([k, l, n]) => `<a class="tab" href="#/c/${k}" ${k === tab ? 'aria-current="page"' : ""}>${l}${n ? `<span class="cnt">${n}</span>` : ""}</a>`).join("")}</div></nav>
     <main class="cl-main" id="cmain"></main>`;
-  $("#sair").onclick = () => { ss.set("upe-cliente", null); go("#/"); };
+  $("#sair").onclick = () => { ss.set("upe-cliente", null); ss.set("upe-voltar", null); go(voltar || "#/"); };
+  if (voltar) $("#voltarAdm").onclick = () => { ss.set("upe-cliente", null); ss.set("upe-voltar", null); };
   const m = $("#cmain");
   ({ inicio: cInicio, apresentacao: cApres, conteudo: cConteudo, graficos: cGraficos, produtos: cProdutos, pagamentos: cPagamentos, mensagens: cMensagens })[tab](m, c, { pend, recItems, tabs });
 }
@@ -600,7 +605,7 @@ async function aCliente(w, id, tab) {
     <div class="row"><button class="btn sec sm" id="vCli">Ver como cliente</button></div></div>
     <nav class="subtabs">${tabs.map(([k, l, n]) => `<a class="tab" href="#/admin/cliente/${id}/${k}" ${k === tab ? 'aria-current="page"' : ""}>${l}${n ? `<span class="cnt">${n}</span>` : ""}</a>`).join("")}</nav>
     <div id="ct" class="grid" style="gap:16px"></div>`;
-  $("#vCli").onclick = () => { ss.set("upe-cliente", id); window.open(portalUrl() + "#/c/inicio", "_blank") || go("#/c/inicio"); };
+  $("#vCli").onclick = () => { ss.set("upe-cliente", id); ss.set("upe-voltar", `#/admin/cliente/${id}/projeto`); go("#/c/inicio"); };
   const save = async (msg = "Salvo") => { doc.atualizadoEm = Date.now(); await S.set(`clientes/${id}`, doc); toast(msg); reAdmin(); };
   const ct = $("#ct");
   ({ projeto: aProjeto, apresentacao: aApres, conteudo: aConteudo, graficos: aGraficosA, pagamentos: aPagamentosA, mensagens: aMsgA })[tab](ct, { id, doc, priv, acoes, save });
@@ -720,7 +725,7 @@ function aApres(ct, { id, doc, priv, save }) {
       await S.set(`privado/${id}`, priv); await save("Dossiê importado. A aba 05 virou a apresentação do cliente.");
     } catch (er) { toast(er.message); }
   };
-  if ($("#dOpen")) $("#dOpen").onclick = () => { const b = new Blob([priv.dossie], { type: "text/html" }); const u = URL.createObjectURL(b); if (!window.open(u, "_blank")) toast("Permita pop-ups para abrir o dossiê"); };
+  if ($("#dOpen")) $("#dOpen").onclick = () => { modal(`Dossiê · ${esc(priv.dossieNome || doc.marca || "")}`, `<iframe id="dosF" title="Dossiê completo" style="width:100%;height:75vh;border:0;border-radius:10px;background:#fff"></iframe>`, "", true); $("#dosF").srcdoc = priv.dossie; };
 }
 
 /* ---------- conteúdo (posts) ---------- */
@@ -906,7 +911,7 @@ function emailHTML(tpl, d) {
     case "cabecalho": return `<tr><td style="background:${esc(P.fundo)};padding:26px 32px"><img src="${esc(logoSrc)}" alt="Upe Criativo" width="180" style="display:block;width:180px;height:auto;border:0"></td></tr>`;
     case "titulo": return row(`<h1 style="font:900 28px/1.15 Arial,sans-serif;color:#0C4F7F;margin:28px 0 8px;text-align:${esc(P.alinhar)}">${E(P.texto)}</h1>`);
     case "texto": return row(`<p style="font:400 16px/1.55 Arial,sans-serif;color:#172431;margin:12px 0">${E(P.texto).replace(/\n/g, "<br>")}</p>`);
-    case "imagem": return P.url ? row(`${P.link ? `<a href="${E(P.link)}">` : ""}<img src="${E(P.url)}" alt="${E(P.alt)}" width="536" style="display:block;width:100%;height:auto;border:0;border-radius:10px;margin:12px 0">${P.link ? "</a>" : ""}`) : row(`<div style="background:#ECEADF;border-radius:10px;padding:40px;text-align:center;font:700 13px Arial,sans-serif;color:#56636F;margin:12px 0">Imagem</div>`);
+    case "imagem": return P.url ? row(`${P.link ? `<a href="${E(P.link)}">` : ""}<img src="${E(P.url)}" alt="${E(P.alt)}" width="536" style="display:block;width:100%;max-width:536px;height:auto;border:0;border-radius:10px;margin:12px 0">${P.link ? "</a>" : ""}`) : row(`<div style="background:#ECEADF;border-radius:10px;padding:40px;text-align:center;font:700 13px Arial,sans-serif;color:#56636F;margin:12px 0">Imagem</div>`);
     case "botao": return row(`<table role="presentation" cellpadding="0" cellspacing="0" style="margin:20px 0"><tr><td style="background:${esc(P.cor)};border-radius:999px"><a href="${E(P.link)}" style="display:inline-block;padding:14px 26px;font:900 15px Arial,sans-serif;color:#F2F0E1;text-decoration:none">${E(P.texto)}</a></td></tr></table>`);
     case "status": { const items = [...d.p.posts.map(x => [`Post: ${esc(x.titulo)}`, "Aguardando aprovação"]), ...d.p.artes.map(x => [`Arte: ${esc(x.produto)}`, "Aguardando aprovação"]), ...(d.doc.incluso || []).map(i => [esc(i.item), i.feito ? "Feito ✓" : "Em andamento"])];
       return row(h3(P.titulo) + list(items)); }
@@ -922,7 +927,7 @@ function emailHTML(tpl, d) {
     case "divisor": return row(`<hr style="border:0;border-top:1px solid #E6E3D6;margin:20px 0">`);
     case "rodape": return `<tr><td style="padding:26px 32px;background:#F2F0E1;font:400 12px/1.6 Arial,sans-serif;color:#56636F">${E(P.texto).replace(/\n/g, "<br>")}</td></tr>`;
     default: return ""; } }).join("");
-  return `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${E(tpl.assunto)}</title></head><body style="margin:0;background:#ECEADF"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ECEADF;padding:24px 0"><tr><td align="center"><table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:100%;background:#FFFFFF;border-radius:14px;overflow:hidden">${body}<tr><td style="height:8px"></td></tr></table></td></tr></table></body></html>`;
+  return `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${E(tpl.assunto)}</title></head><body style="margin:0;background:#ECEADF"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#ECEADF;padding:24px 12px"><tr><td align="center"><table role="presentation" width="600" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px;background:#FFFFFF;border-radius:14px;overflow:hidden">${body}<tr><td style="height:8px"></td></tr></table></td></tr></table></body></html>`;
 }
 async function aNewsletter(w) {
   const tpls = await S.list("templates"), envios = (await S.list("envios")).sort((a, b) => b.em - a.em);
