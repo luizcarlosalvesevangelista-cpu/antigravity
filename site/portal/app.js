@@ -173,7 +173,7 @@ function pixPayload({ chave, nome, cidade, valor, txid, descricao }) {
 }
 
 /* ---------------- armazenamento ---------------- */
-const DEMO_KEY = "upe-portal-demo-v1";
+const DEMO_KEY = "upe-portal-demo-v2";
 class LocalStore {
   constructor() { this.mode = "demo"; let d = null; try { d = JSON.parse(ls.get(DEMO_KEY)); } catch (e) {} this.d = d && d.cols ? d : { cols: {} }; }
   async init() { if (!this.d.seeded) { await seedDemo(this); this.d.seeded = true; this.save(); } }
