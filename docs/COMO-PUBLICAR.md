@@ -2,6 +2,15 @@
 
 A pasta `public_html/` é o site pronto. Não precisa de instalação nem de banco de dados: são arquivos estáticos.
 
+## Pacote em 5 partes
+
+O site foi dividido em 5 arquivos .zip para caber no envio. **Extraia todos na mesma pasta**: cada um completa a pasta `public_html/`.
+
+1. `upe-site-1-base.zip`: páginas, imagens, portal e este guia
+2. `upe-site-2-videos.zip`: vídeos e motions do site
+3. `upe-site-3-kits.zip`: kits de conteúdo (artes, carrosséis, stories e reels)
+4. `upe-site-4-historias-a.zip` e 5. `upe-site-5-historias-b.zip`: motions das histórias do YouTube
+
 ## O que tem dentro
 
 | Caminho | O que é |
