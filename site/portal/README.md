@@ -5,6 +5,21 @@ Portal do cliente e painel do administrador para os serviços de **Branding, Mí
 - **Cliente:** entra com o código `XXXX-XXXX-XXXX`. Vê só o que você liberar: a apresentação (aba 05 do dossiê), o manual da marca, o calendário de aprovação de posts, a aprovação de artes gráficas, a tela "Comprar de novo", os pagamentos por PIX ou cartão e as mensagens.
 - **Administrador:** entra com e-mail e senha. Cadastra clientes (manualmente ou a partir dos contatos do site), gera e reenvia códigos, escolhe o que está incluso e o que o cliente vê, publica posts e artes para aprovação, libera recompras, cria e libera cobranças, responde mensagens e monta newsletters.
 
+## Agenda, reuniões, cronograma e notificações
+
+- **Cliente:** menu na barra lateral com a **Agenda** (postagens agendadas, prazos de entrega, vencimentos e reuniões) e a lista "Próximos" sempre à vista. O sininho avisa sobre posts e artes para aprovar, cobranças, mensagens, reuniões e prazos.
+- **Kits de conteúdo:** na ficha do cliente → Conteúdo → **Importar kit (HTML + arquivos)**. Escolha a pasta do "Kit Instagram" (index.html + feed/, carrossel/, reels/, stories/). Os posts entram no calendário de aprovação com legenda, data e arquivos, e o cliente ganha a página do kit para baixar tudo e copiar as legendas.
+- **Prazos de entrega:** em Projeto e acessos. Aparecem na agenda do cliente e no seu calendário.
+- **Calendário (admin):** posts de todos os clientes, entregas, vencimentos, reuniões e o cronograma da Upe, com filtros. **Agendar reunião** com cliente ou lead (contato do site): gera o convite para WhatsApp, e-mail, Google Agenda e arquivo .ics; a reunião aparece na agenda do cliente.
+- **Cronograma Upe:** o plano de postagem do @upecriativo (abas Instagram, YouTube e Sem data), com status, legendas, roteiros e arquivos. "Carregar cronograma padrão" lê `cronograma/upe-cronograma.json`. "Importar kit" coloca qualquer kit novo no cronograma.
+- **Sininho (admin):** contatos novos, aprovações, ajustes, mensagens, pedidos, pagamentos informados, reuniões de hoje e amanhã, o que publicar hoje, vencimentos e prazos próximos.
+
+### Kits da Upe
+
+- `kits/upe-branding/`: kit completo (artes, carrosséis, stories, reels com som, thumbnails e plano de YouTube).
+- `kits/upe-tv/` e `kits/upe-erp/`: só o `index.html` dos seus kits está aqui. **Copie para cada pasta as subpastas `feed/`, `carrossel/`, `reels/` e `stories/` dos kits originais** para as imagens e vídeos aparecerem no cronograma.
+- Para refazer o cronograma depois de mudar um kit, rode de novo o gerador (instruções em `cronograma/README.md`).
+
 ## Modo demonstração
 
 Sem Firebase configurado, o portal funciona com dados de exemplo guardados só no navegador:

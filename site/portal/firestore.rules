@@ -46,6 +46,9 @@ service cloud.firestore {
     match /config/publico { allow get: if true; allow write: if isAdmin(); }
     match /templates/{t} { allow read, write: if isAdmin(); }
     match /envios/{e} { allow read, write: if isAdmin(); }
+    // agenda do admin: reuniões (clientes e leads) e cronograma de postagens da Upe
+    match /reunioes/{r} { allow read, write: if isAdmin(); }
+    match /cronograma/{c} { allow read, write: if isAdmin(); }
     // fila da extensão "Trigger Email from Firestore"
     match /mail/{m} { allow read, create: if isAdmin(); }
   }

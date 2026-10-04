@@ -226,6 +226,15 @@ async function seedDemo(st) {
   await st.add("contatos", { nome: "Pedro Lima", contato: "11 98888-7777", assunto: "Branding", mensagem: "Vou abrir uma hamburgueria e preciso da marca completa.", em: now - 70 * H, status: "novo" });
   await st.set("config/publico", { pixChave: "upecriativo@gmail.com", pixNome: "Upe Criativo", pixCidade: "Sao Paulo", linkCartao: "", whatsapp: CFG.whatsappUpe || "" });
   for (const t of TEMPLATES()) await st.set(`templates/${t.id}`, t);
+  // prazos, reuniões e cronograma da Upe
+  const cli = await st.get(`clientes/${id}`);
+  cli.entregas = [{ id: uid(8), titulo: "Manual da marca (versão final)", data: day(4), status: "pendente" }, { id: uid(8), titulo: "Artes do cardápio de balcão", data: day(9), status: "pendente" }, { id: uid(8), titulo: "Redesign do logotipo", data: day(-12), status: "entregue" }];
+  const r1 = { id: uid(10), titulo: "Apresentação do calendário de novembro", data: day(2), hora: "15:00", duracao: 45, com: "cliente", clienteId: id, nome: cs.nome, email: "marina@cafeaurora.exemplo", telefone: "5511900000000", link: "https://meet.google.com/abc-defg-hij", local: "", notas: "Revisar posts de novembro e a campanha de fim de ano.", status: "marcada" };
+  cli.reunioes = [{ id: r1.id, titulo: r1.titulo, data: r1.data, hora: r1.hora, duracao: r1.duracao, link: r1.link, local: "", notas: r1.notas, status: "marcada" }];
+  await st.set(`clientes/${id}`, cli); await st.set(`reunioes/${r1.id}`, r1);
+  const leads = await st.list("contatos"), lj = leads.find(l => l.nome === "Juliana Prado");
+  if (lj) { const r2 = { id: uid(10), titulo: "Conversa sobre o redesign da floricultura", data: day(3), hora: "10:30", duracao: 30, com: "lead", contatoId: lj.id, nome: lj.nome, email: lj.contato, telefone: "", link: "", local: "WhatsApp vídeo", notas: "", status: "marcada" }; await st.set(`reunioes/${r2.id}`, r2); }
+  try { for (const it of await cronogramaPadrao()) await st.set(`cronograma/${it.id}`, it); } catch (e) {}
 }
 
 /* ---------------- modal ---------------- */
@@ -248,7 +257,7 @@ async function route() {
   const [area, ...rest] = h.split("/");
   try {
     if (area === "admin") return await adminRoute(rest);
-    if (area === "c") return await clientRoute(rest[0] || "inicio");
+    if (area === "c") return await clientRoute(rest[0] || "inicio", rest[1]);
     const cid = ss.get("upe-cliente");
     if (cid) return go("#/c/inicio");
     return gate();
@@ -313,7 +322,7 @@ function gate(mode = "cliente", err = "") {
 /* =====================================================================
    ÁREA DO CLIENTE
    ===================================================================== */
-async function clientRoute(tab) {
+async function clientRoute(tab, arg) {
   const id = ss.get("upe-cliente"); if (!id) return go("#/");
   const c = await Api.loadClient(id); if (!c || c.doc.ativo === false) { ss.set("upe-cliente", null); return gate("cliente", "Este acesso não está ativo. Fale com a Upe."); }
   state.client = c; state.cfg = await Api.config();
@@ -323,6 +332,7 @@ async function clientRoute(tab) {
   const recItems = (doc.graficos || []).filter(g => g.recompra && statusOf(g, acoes).status !== "rascunho");
   const tabs = [
     ["inicio", "Início", 0, true],
+    ["agenda", "Agenda", 0, true],
     ["apresentacao", "Apresentação", 0, ac.apresentacao && doc.apresentacao],
     ["conteudo", "Conteúdo", pend.posts.length, pl.midias && ac.calendario],
     ["graficos", "Materiais gráficos", pend.artes.length, pl.grafica && ac.graficos],
@@ -330,19 +340,24 @@ async function clientRoute(tab) {
     ["pagamentos", "Pagamentos", pend.cobs.length, ac.pagamentos],
     ["mensagens", "Mensagens", tab === "mensagens" ? 0 : pend.msgs.length, true]
   ].filter(t => t[3]);
-  if (!tabs.some(t => t[0] === tab)) tab = "inicio";
+  const kitView = tab === "kit" && pl.midias && ac.calendario;
+  if (kitView) tab = "conteudo"; else if (!tabs.some(t => t[0] === tab)) tab = "inicio";
   if (tab === "mensagens") ls.set(seenKey, String(Date.now()));
   const voltar = state.admin && ss.get("upe-voltar");
+  const prox = proximos(doc, acoes);
   app.innerHTML = demoBar() + (voltar ? `<div class="asadm">Você está vendo o portal como este cliente.<a href="${esc(voltar)}" id="voltarAdm">Voltar ao painel</a></div>` : "") + `
-    <header class="cl-top"><div class="in"><div class="logo">${WM}</div>
-      <div class="who"><b>${esc(doc.marca || doc.empresa || doc.nome)}</b><span>${esc(doc.nome)}</span></div>
-      <button class="btn sec sm" id="sair">Sair</button></div></header>
-    <nav class="tabs" aria-label="Seções do portal"><div class="in">${tabs.map(([k, l, n]) => `<a class="tab" href="#/c/${k}" ${k === tab ? 'aria-current="page"' : ""}>${l}${n ? `<span class="cnt">${n}</span>` : ""}</a>`).join("")}</div></nav>
-    <main class="cl-main" id="cmain"></main>`;
+    <div class="adm cli"><aside class="side cside"><div class="logo">${WM}</div>
+      <div class="cname"><b>${esc(doc.marca || doc.empresa || doc.nome)}</b><span>${esc(doc.nome)}</span></div>
+      <nav class="nav" aria-label="Seções do portal">${tabs.map(([k, l, n]) => `<a href="#/c/${k}" ${k === tab ? 'aria-current="page"' : ""}><span>${l}</span>${n ? `<span class="cnt">${n}</span>` : ""}</a>`).join("")}</nav>
+      <div class="prox"><span class="eb">Próximos</span>${prox.length ? prox.map(e => `<a href="#/c/agenda" class="proxi"><b>${fdate(e.data).slice(0, 5)}${e.hora ? " · " + e.hora : ""}</b><span>${esc(e.tag)}: ${esc(e.titulo)}</span></a>`).join("") : '<span class="small" style="opacity:.7">Nada marcado.</span>'}</div>
+      <div class="foot"><button class="lnk" id="sair">Sair</button></div></aside>
+    <main class="work"><div class="wtop"><span class="eb">Portal do cliente</span><div id="bellH"></div></div><div id="cmain" class="grid" style="gap:18px"></div></main></div>`;
+  bell($("#bellH"), "cli-" + id, notifsCliente(doc, acoes));
   $("#sair").onclick = () => { ss.set("upe-cliente", null); ss.set("upe-voltar", null); go(voltar || "#/"); };
   if (voltar) $("#voltarAdm").onclick = () => { ss.set("upe-cliente", null); ss.set("upe-voltar", null); };
   const m = $("#cmain");
-  ({ inicio: cInicio, apresentacao: cApres, conteudo: cConteudo, graficos: cGraficos, produtos: cProdutos, pagamentos: cPagamentos, mensagens: cMensagens })[tab](m, c, { pend, recItems, tabs });
+  if (kitView) return cKit(m, c, arg);
+  ({ inicio: cInicio, agenda: cAgenda, apresentacao: cApres, conteudo: cConteudo, graficos: cGraficos, produtos: cProdutos, pagamentos: cPagamentos, mensagens: cMensagens })[tab](m, c, { pend, recItems, tabs });
 }
 const refreshClient = () => clientRoute((location.hash.split("/")[2]) || "inicio");
 
@@ -414,7 +429,8 @@ function cConteudo(m, c) {
     let cells = ""; for (let k = 0; k < 42; k++) { const d = new Date(start); d.setDate(start.getDate() + k); const iso = isoDay(d);
       const evs = posts.filter(p => p.data === iso && (filt === "todos" || p.ef.status === filt));
       cells += `<div class="day ${d.getMonth() !== M ? "out" : ""} ${iso === today ? "today" : ""}"><span class="d">${d.getDate()}</span>${evs.map(p => `<button class="ev ${evCls(p.ef.status)}" data-p="${p.id}" title="${esc(p.titulo)}">${esc(TIPOS_POST[p.tipo] || p.tipo)} · ${esc(p.titulo)}</button>`).join("")}</div>`; }
-    m.innerHTML = `<div class="spread"><div class="grid" style="gap:6px"><span class="eb">Calendário de conteúdo</span><h1>Aprove os seus posts</h1><p class="muted small">Imagens, vídeos, legendas e áudios. Toque em um post para ver e aprovar.</p></div>
+    const kits = (doc.kits || []).filter(k => (doc.posts || []).some(p => p.kitId === k.id && p.status !== "rascunho"));
+    m.innerHTML = (kits.length ? `<section class="card grid"><span class="eb">Kits de conteúdo para baixar</span><div class="row">${kits.map(k => `<a class="btn sec sm" href="#/c/kit/${esc(k.id)}">${esc(k.nome)} · ${k.total} peças</a>`).join("")}</div></section>` : "") + `<div class="spread"><div class="grid" style="gap:6px"><span class="eb">Calendário de conteúdo</span><h1>Aprove os seus posts</h1><p class="muted small">Imagens, vídeos, legendas e áudios. Toque em um post para ver e aprovar.</p></div>
       <div class="row"><button class="btn sec sm" id="mPrev" aria-label="Mês anterior">←</button><b style="min-width:150px;text-align:center;text-transform:capitalize">${MESES[M]} ${Y}</b><button class="btn sec sm" id="mNext" aria-label="Próximo mês">→</button></div></div>
       <div class="row" role="group" aria-label="Filtrar">${[["todos", "Todos"], ["pendente", "Aguardando aprovação"], ["aprovado", "Aprovados"], ["ajustes", "Ajustes pedidos"], ["publicado", "Publicados"]].map(([k, l]) => `<button class="chip" data-f="${k}" aria-pressed="${filt === k}">${l}</button>`).join("")}</div>
       <div class="card pad0"><div class="cal">${["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map(d => `<div class="dow">${d}</div>`).join("")}${cells}</div></div>
@@ -432,9 +448,11 @@ function postModal(p, c) {
     <div class="row">${pill(p.ef.status)}<span class="muted small">${esc(TIPOS_POST[p.tipo] || p.tipo)} · ${fdate(p.data)}${(p.versao || 1) > 1 ? ` · versão ${p.versao}` : ""}</span></div>
     ${(p.midias || []).map(u => `<div class="media-box">${mediaHTML(u, p.tipo)}</div>`).join("")}
     ${p.legenda ? `<div><span class="eb">Legenda</span><div class="legenda">${esc(p.legenda)}</div></div>` : ""}
+    <div class="row">${p.legenda ? `<button class="btn sec sm" id="pCpL">Copiar legenda</button>` : ""}${(p.midias || []).map((u, i) => dlBtn(u, p.midias.length > 1 ? `Baixar arquivo ${i + 1}` : "Baixar arquivo")).join("")}${p.capa ? dlBtn(p.capa, "Baixar capa") : ""}</div>
     ${p.ef.texto && p.ef.status === "ajustes" ? `<div class="card" style="background:var(--bad-bg)"><b>Seu pedido de ajuste:</b> ${esc(p.ef.texto)}</div>` : ""}
     ${can ? `<label class="f" for="pCom">Comentário (obrigatório para pedir ajuste)<textarea id="pCom" placeholder="Ex.: trocar a foto, mudar a primeira frase da legenda…"></textarea></label>` : ""}`,
     can ? `<button class="btn bad" id="pAj">Pedir ajuste</button><button class="btn ok" id="pOk">Aprovar</button>` : `<button class="btn sec" data-close>Fechar</button>`);
+  if ($("#pCpL")) $("#pCpL").onclick = () => copy(p.legenda, "Legenda copiada");
   if (!can) return;
   $("#pOk").onclick = async () => { await Api.act(c.id, { tipo: "aprovar", alvo: p.id, versao: p.versao || 1, texto: $("#pCom").value.trim() }); dlg.close(); toast("Post aprovado"); refreshClient(); };
   $("#pAj").onclick = async () => { const t = $("#pCom").value.trim(); if (!t) { $("#pCom").focus(); return toast("Escreva o que precisa mudar"); } await Api.act(c.id, { tipo: "ajuste", alvo: p.id, versao: p.versao || 1, texto: t }); dlg.close(); toast("Pedido de ajuste enviado"); refreshClient(); };
@@ -522,17 +540,21 @@ async function adminRoute(rest) {
   if (!(await S.currentAdmin())) return gate("admin");
   state.admin = true;
   const [sec = "clientes", a1, a2] = rest;
-  const [clients, contatos] = await Promise.all([Api.listClients(), S.list("contatos")]);
-  state.cache.clients = clients; state.cache.contatos = contatos;
+  const [clients, contatos, reunioes, crono] = await Promise.all([Api.listClients(), S.list("contatos"), S.list("reunioes"), S.list("cronograma")]);
+  Object.assign(state.cache, { clients, contatos, reunioes, crono });
   const unread = clients.reduce((s, c) => s + c.acoes.filter(a => a.tipo === "mensagem" && a.em > (c.doc.lidoAdmEm || 0)).length, 0);
   const novos = contatos.filter(c => (c.status || "novo") === "novo").length;
-  const nav = [["clientes", "Clientes", 0], ["contatos", "Contatos do site", novos], ["mensagens", "Inbox", unread], ["newsletter", "Newsletter", 0], ["config", "Configurações", 0]];
+  const hoje = todayIso(), agendaHoje = reunioes.filter(r => r.data === hoje && r.status !== "cancelada").length + crono.filter(x => x.data === hoje && x.status !== "publicado").length;
+  const nav = [["clientes", "Clientes", 0], ["calendario", "Calendário", agendaHoje], ["cronograma", "Cronograma Upe", 0], ["contatos", "Contatos do site", novos], ["mensagens", "Inbox", unread], ["newsletter", "Newsletter", 0], ["config", "Configurações", 0]];
   const cur = sec === "cliente" ? "clientes" : sec;
   app.innerHTML = demoBar() + `<div class="adm"><aside class="side"><div class="logo">${WM}</div><nav class="nav">${nav.map(([k, l, n]) => `<a href="#/admin/${k}" ${k === cur ? 'aria-current="page"' : ""}><span>${l}</span>${n ? `<span class="cnt">${n}</span>` : ""}</a>`).join("")}</nav>
-    <div class="foot"><span>${S.mode === "demo" ? "Modo demonstração" : "Firebase conectado"}</span><button class="lnk" id="logout">Sair</button></div></aside><main class="work" id="w"></main></div>`;
+    <div class="foot"><span>${S.mode === "demo" ? "Modo demonstração" : "Firebase conectado"}</span><button class="lnk" id="logout">Sair</button></div></aside><main class="work"><div class="wtop"><button class="btn sec sm" id="topReu">Agendar reunião</button><div id="bellH"></div></div><div id="w" class="grid" style="gap:18px"></div></main></div>`;
+  bell($("#bellH"), "adm", notifsAdmin(state.cache)); $("#topReu").onclick = () => reuniaoModal();
   $("#logout").onclick = async () => { await S.logout(); state.admin = false; go("#/"); };
   const w = $("#w");
   if (sec === "clientes") return aClientes(w, clients);
+  if (sec === "calendario") return aCalendario(w);
+  if (sec === "cronograma") return aCronograma(w, a1 || "instagram");
   if (sec === "cliente") return aCliente(w, a1, a2 || "projeto");
   if (sec === "contatos") return aContatos(w, contatos);
   if (sec === "mensagens") return aInbox(w, clients, a1);
@@ -643,7 +665,11 @@ function aProjeto(ct, { id, doc, priv, save }) {
         <div class="row"><label class="f" for="mNome" style="flex:1">Nome do arquivo<input id="mNome" value="${esc(doc.manual?.nome || "")}"></label><label class="btn sec sm" style="align-self:end">Enviar arquivo<input type="file" id="mFile" accept=".pdf,image/*" hidden></label></div>
       </section>
     </div>
-    <div class="spread"><button class="btn bad sm" id="del">Excluir cliente</button><button class="btn" id="sv">Salvar alterações</button></div>`;
+    ${entregasHTML(doc)}
+    <div class="spread"><div class="row"><button class="btn bad sm" id="del">Excluir cliente</button><button class="btn sec sm" id="reu">Agendar reunião</button></div><button class="btn" id="sv">Salvar alterações</button></div>`;
+  $("#reu").onclick = () => reuniaoModal({}, { com: "cliente", clienteId: id, titulo: `Reunião · ${doc.marca || doc.nome}` });
+  $("#enAdd").onclick = () => { collect(); doc.entregas.push({ id: uid(8), titulo: "", data: addDays(todayIso(), 7), status: "pendente" }); aProjeto(ct, { id, doc, priv, save }); const l = [...ct.querySelectorAll("[data-ent]")].pop(); l && l.focus(); };
+  ct.querySelectorAll("[data-endel]").forEach(b => b.onclick = () => { collect(); doc.entregas.splice(+b.dataset.endel, 1); aProjeto(ct, { id, doc, priv, save }); });
   $("#incAdd").onclick = () => { collect(); doc.incluso.push({ item: "", feito: false }); aProjeto(ct, { id, doc, priv, save }); $$("[data-inct]", ct).pop().focus(); };
   $$("[data-incd]", ct).forEach(b => b.onclick = () => { collect(); doc.incluso.splice(+b.dataset.incd, 1); aProjeto(ct, { id, doc, priv, save }); });
   $("#mFile").onchange = async e => { const f = e.target.files[0]; if (!f) return; toast("Enviando…"); const u = await S.upload(f, `clientes/${id}/manual`); if (u) { $("#mUrl").value = u; if (!$("#mNome").value) $("#mNome").value = f.name; toast(S.mode === "demo" ? "Arquivo anexado só nesta sessão (modo demonstração)" : "Arquivo enviado"); } else toast("Ative o Firebase Storage para enviar arquivos"); };
@@ -655,6 +681,7 @@ function aProjeto(ct, { id, doc, priv, save }) {
     doc.recorrente = { ativo: $("#rAt").checked, descricao: $("#rDesc").value.trim(), valor: +$("#rVal").value || 0, dia: +$("#rDia").value || 10 };
     doc.manual = { url: $("#mUrl").value.trim(), nome: $("#mNome").value.trim() };
     Object.assign(priv, { email: $("#dEmail").value.trim(), telefone: $("#dTel").value.replace(/\D/g, ""), notas: $("#dNotas").value });
+    doc.entregas = doc.entregas || []; entregasCollect(ct, doc);
   }
   $("#sv").onclick = async () => { collect(); doc.incluso = doc.incluso.filter(i => i.item); await S.set(`privado/${id}`, priv); await save(); };
   $("#cShow").onclick = () => codeModal(id, priv.codigo, doc, priv);
@@ -732,7 +759,8 @@ function aApres(ct, { id, doc, priv, save }) {
 function aConteudo(ct, { id, doc, acoes, save }) {
   const posts = (doc.posts || []).map(p => ({ ...p, ef: statusOf(p, acoes) })).sort((a, b) => b.data.localeCompare(a.data));
   ct.innerHTML = `${!doc.plano?.midias ? `<div class="card" style="background:var(--warn-bg)">Este cliente não está no plano Mídias digitais. Os posts só aparecem para ele com o plano e o acesso “Calendário de aprovação” ligados.</div>` : ""}
-    <div class="spread"><h3>Posts para aprovação</h3><button class="btn" id="pNew">Novo post</button></div>
+    <div class="spread"><h3>Posts para aprovação</h3><div class="row"><button class="btn sec" id="pKit">Importar kit (HTML + arquivos)</button><button class="btn" id="pNew">Novo post</button></div></div>
+    ${(doc.kits || []).length ? `<div class="row small">${doc.kits.map(k => `<span class="pill info">${esc(k.nome)} · ${k.total}</span>`).join("")}</div>` : ""}
     <div class="card pad0 tbl">${posts.length ? `<table><thead><tr><th>Data</th><th>Post</th><th>Tipo</th><th>Status</th><th>Retorno do cliente</th><th></th></tr></thead><tbody>${posts.map(p => `<tr><td class="num">${fdate(p.data)}</td><td><b>${esc(p.titulo)}</b>${(p.versao || 1) > 1 ? ` <span class="muted small">v${p.versao}</span>` : ""}</td><td>${esc(TIPOS_POST[p.tipo] || p.tipo)}</td><td>${pill(p.ef.status)}</td><td class="small">${p.ef.por === "cliente" ? esc(p.ef.texto || (p.ef.status === "aprovado" ? "Aprovou" : "")) + ` <span class="muted">· ${fdt(p.ef.em)}</span>` : '<span class="muted">—</span>'}</td><td><button class="btn sec sm" data-ed="${p.id}">Editar</button></td></tr>`).join("")}</tbody></table>` : `<div class="empty" style="margin:16px">Nenhum post ainda.</div>`}</div>`;
   const edit = p => {
     const n = !p; p = p || { id: uid(8), data: isoDay(new Date()), tipo: "imagem", titulo: "", midias: [], legenda: "", versao: 1, status: "pendente" };
@@ -758,6 +786,7 @@ function aConteudo(ct, { id, doc, acoes, save }) {
     if ($("#eX")) $("#eX").onclick = async () => { doc.posts = doc.posts.filter(x => x.id !== p.id); dlg.close(); await save("Post excluído"); };
   };
   $("#pNew").onclick = () => edit(null);
+  $("#pKit").onclick = () => kitImport({ alvo: "cliente", id, doc, save });
   $$("[data-ed]", ct).forEach(b => b.onclick = () => edit(posts.find(p => p.id === b.dataset.ed)));
 }
 
@@ -820,7 +849,7 @@ function aPagamentosA(ct, { id, doc, acoes, save }) {
       <label class="f" for="xS">Status<select id="xS">${["aberta", "paga", "cancelado"].map(s => `<option value="${s}" ${x.status === s ? "selected" : ""}>${ST[s][0]}</option>`).join("")}</select></label>`,
       `${!n ? `<button class="btn bad" id="xX">Excluir</button>` : ""}<button class="btn sec" data-close>Cancelar</button><button class="btn" id="xOk">Salvar</button>`);
     $("#xOk").onclick = async () => { const d = $("#xD").value.trim(); if (!d) return $("#xD").focus();
-      const nx = { ...x, descricao: d, valor: +$("#xV").value || 0, vencimento: $("#xVe").value, pix: $("#xP").checked, cartao: $("#xC").checked, liberada: $("#xL").checked, linkCartao: $("#xLk").value.trim(), status: $("#xS").value };
+      const nx = { ...x, liberadaEm: !x.liberada && $("#xL").checked ? Date.now() : (x.liberadaEm || 0), descricao: d, valor: +$("#xV").value || 0, vencimento: $("#xVe").value, pix: $("#xP").checked, cartao: $("#xC").checked, liberada: $("#xL").checked, linkCartao: $("#xLk").value.trim(), status: $("#xS").value };
       doc.cobrancas = n ? [...(doc.cobrancas || []), nx] : doc.cobrancas.map(y => y.id === x.id ? nx : y); dlg.close(); await save("Cobrança salva"); };
     if ($("#xX")) $("#xX").onclick = async () => { doc.cobrancas = doc.cobrancas.filter(y => y.id !== x.id); dlg.close(); await save("Cobrança excluída"); };
   };
@@ -828,7 +857,7 @@ function aPagamentosA(ct, { id, doc, acoes, save }) {
   if ($("#cMes")) $("#cMes").onclick = () => { const d = new Date(), v = new Date(d.getFullYear(), d.getMonth() + (d.getDate() > (doc.recorrente.dia || 10) ? 1 : 0), doc.recorrente.dia || 10);
     edit(null); $("#xD").value = `${doc.recorrente.descricao || "Mensalidade"} · ${MESES[v.getMonth()]}`; $("#xV").value = doc.recorrente.valor; $("#xVe").value = isoDay(v); };
   $$("[data-ed]", ct).forEach(b => b.onclick = () => edit(doc.cobrancas.find(x => x.id === b.dataset.ed)));
-  $$("[data-lib]", ct).forEach(i => i.onchange = async () => { doc.cobrancas = doc.cobrancas.map(x => x.id === i.dataset.lib ? { ...x, liberada: i.checked } : x); await save(i.checked ? "Cobrança liberada ao cliente" : "Cobrança oculta"); });
+  $$("[data-lib]", ct).forEach(i => i.onchange = async () => { doc.cobrancas = doc.cobrancas.map(x => x.id === i.dataset.lib ? { ...x, liberada: i.checked, liberadaEm: i.checked ? Date.now() : x.liberadaEm } : x); await save(i.checked ? "Cobrança liberada ao cliente" : "Cobrança oculta"); });
   $$("[data-pg]", ct).forEach(b => b.onclick = async () => { doc.cobrancas = doc.cobrancas.map(x => x.id === b.dataset.pg ? { ...x, status: "paga", pagaEm: Date.now() } : x); await save("Pagamento confirmado"); });
 }
 
@@ -858,9 +887,10 @@ function aContatos(w, contatos) {
       <p>${esc(c.mensagem)}</p>
       <div class="row">${c.status !== "convertido" ? `<button class="btn sm" data-cv="${c.id}">Criar cliente</button>` : `<a class="btn sec sm" href="#/admin/cliente/${esc(c.clienteId)}/projeto">Abrir cliente</a>`}
       ${/@/.test(c.contato) ? `<a class="btn sec sm" href="mailto:${esc(c.contato)}">Responder por e-mail</a>` : `<a class="btn sec sm" href="${esc(waLink(c.contato.replace(/\D/g, "").length <= 11 ? "55" + c.contato.replace(/\D/g, "") : c.contato, `Olá, ${c.nome}! Aqui é da Upe Criativo, recebi a sua mensagem.`))}" target="_blank" rel="noopener">Responder no WhatsApp</a>`}
-      ${c.status === "novo" ? `<button class="btn sec sm" data-ar="${c.id}">Arquivar</button>` : ""}</div></article>`).join("") : `<div class="empty">Nenhum contato aqui.</div>`}</div>
+      <button class="btn sec sm" data-reu="${c.id}">Agendar reunião</button>${c.status === "novo" ? `<button class="btn sec sm" data-ar="${c.id}">Arquivar</button>` : ""}</div></article>`).join("") : `<div class="empty">Nenhum contato aqui.</div>`}</div>
     <p class="muted small">Os contatos chegam pelo formulário do site quando o Firebase está configurado no site (veja o README).</p>`;
   $$("[data-f]", w).forEach(b => b.onclick = () => { ss.set("upe-cf2", b.dataset.f); aContatos(w, contatos); });
+  $$("[data-reu]", w).forEach(b => b.onclick = () => { const c = contatos.find(x => x.id === b.dataset.reu); reuniaoModal({}, { com: "lead", contatoId: c.id, titulo: `Conversa com ${c.nome} · ${c.assunto || "Upe"}` }); });
   $$("[data-ar]", w).forEach(b => b.onclick = async () => { await S.set(`contatos/${b.dataset.ar}`, { status: "arquivado" }, true); toast("Contato arquivado"); reAdmin(); });
   $$("[data-cv]", w).forEach(b => b.onclick = () => { const c = contatos.find(x => x.id === b.dataset.cv); const em = /@/.test(c.contato) ? c.contato.trim() : "", tel = em ? "" : c.contato;
     newClientModal({ nome: c.nome, email: em, telefone: tel, assunto: c.assunto, mensagem: c.mensagem, contatoId: c.id }); });
@@ -1017,6 +1047,7 @@ async function aConfig(w) {
   if ($("#kR")) $("#kR").onclick = () => S.reset();
 }
 
+/*__AGENDA__*/
 /* ---------------- início ---------------- */
 (async () => {
   try { await S.init(); }
