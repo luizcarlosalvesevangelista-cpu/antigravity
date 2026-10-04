@@ -231,6 +231,19 @@ dialog .mf { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wra
 @media (max-width: 860px) { .prox, .cname { display: none; } }
 .miss { min-height: 90px; width: 100%; height: 100%; display: grid; place-items: center; text-align: center; padding: 10px; font-size: .75rem; color: var(--fg-2); background: repeating-linear-gradient(135deg, var(--bg-2) 0 10px, var(--bg) 10px 20px); border-radius: 8px; overflow-wrap: anywhere; }
 .thumb .miss { font-size: 0; min-height: 0; } .thumb .miss::after { content: "kit"; font-size: .7rem; font-weight: 700; }
+.feedgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 6px; }
+.feedgrid.yt { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+.gcell { position: relative; aspect-ratio: 4 / 5; border: 0; padding: 0; border-radius: 8px; overflow: hidden; background: var(--bg-2); cursor: pointer; color: var(--fg); }
+.feedgrid.yt .gcell { aspect-ratio: 16 / 9; }
+.gcell img, .gcell video { width: 100%; height: 100%; object-fit: cover; display: block; }
+.gcell .miss { font-size: .7rem; }
+.gph { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; padding: 10px; font-weight: 900; font-size: .8rem; color: var(--fg-2); }
+.gph small { font-weight: 400; display: block; margin-top: 4px; }
+.gtop, .gfmt, .gok { position: absolute; font-size: .7rem; font-weight: 900; padding: 3px 7px; border-radius: 999px; background: rgba(14,27,39,.78); color: #F2F0E1; }
+.gtop { left: 6px; top: 6px; } .gfmt { right: 6px; bottom: 6px; } .gok { right: 6px; top: 6px; background: var(--ok); color: #fff; }
+.gcell:focus-visible { outline: 3px solid var(--ardosia); outline-offset: 2px; }
+.vnote { font-size: .75rem; color: var(--fg-2); padding: 6px 8px; background: var(--bg-2); border-radius: 6px; }
+.gcell .vnote { position: absolute; left: 4px; right: 4px; bottom: 30px; }
 .ev.more { background: transparent; border-left-color: transparent; color: var(--fg-2); }
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
 </style>

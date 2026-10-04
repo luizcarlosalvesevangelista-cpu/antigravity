@@ -36,6 +36,17 @@ let toastT; function toast(m) { const t = $("#toast"); t.textContent = m; t.clas
 async function copy(text, okMsg = "Copiado") { try { await navigator.clipboard.writeText(text); toast(okMsg); } catch (e) { toast("Selecione o texto e copie manualmente"); } }
 const waLink = (num, txt) => `https://wa.me/${String(num || "").replace(/\D/g, "")}${txt ? `?text=${encodeURIComponent(txt)}` : ""}`;
 const portalUrl = () => location.href.split("#")[0];
+/* mídias: "{assets}" = pasta assets do site; "idb:" = arquivo enviado no modo demonstração (guardado no IndexedDB) */
+const MEDIA = new Map();
+const resolveMedia = u => { if (!u) return ""; u = String(u); if (u.startsWith("{assets}")) return (CFG.assetsDemo || "../assets/") + u.slice(8); if (u.startsWith("idb:")) return MEDIA.get(u.slice(4)) || ""; return u; };
+const idb = {
+  db: null,
+  open() { return new Promise((ok, no) => { try { const r = indexedDB.open("upe-portal-arquivos", 1); r.onupgradeneeded = () => r.result.createObjectStore("f"); r.onsuccess = () => { this.db = r.result; ok(this.db); }; r.onerror = () => no(r.error); } catch (e) { no(e); } }); },
+  tx(mode) { return this.db.transaction("f", mode).objectStore("f"); },
+  put(k, v) { return new Promise((ok, no) => { try { const r = this.tx("readwrite").put(v, k); r.onsuccess = ok; r.onerror = () => no(r.error); } catch (e) { no(e); } }); },
+  all() { return new Promise((ok, no) => { const out = []; try { const r = this.tx("readonly").openCursor(); r.onsuccess = () => { const c = r.result; if (c) { out.push([c.key, c.value]); c.continue(); } else ok(out); }; r.onerror = () => no(r.error); } catch (e) { no(e); } }); },
+  clear() { return new Promise(ok => { try { const r = this.tx("readwrite").clear(); r.onsuccess = ok; r.onerror = ok; } catch (e) { ok(); } }); }
+};
 function kind(url, tipo) {
   if (tipo === "video" || /\.(mp4|webm|mov)(\?|$)/i.test(url || "")) return "video";
   if (tipo === "audio" || /\.(mp3|wav|m4a|ogg)(\?|$)/i.test(url || "")) return "audio";
@@ -43,7 +54,7 @@ function kind(url, tipo) {
   return url ? "img" : "none";
 }
 function mediaHTML(url, tipo, cls = "") {
-  const k = kind(url, tipo), u = esc(url);
+  const k = kind(url, tipo), u = esc(resolveMedia(url));
   if (k === "video") return `<video class="${cls}" src="${u}" controls playsinline preload="metadata"></video>`;
   if (k === "audio") return `<audio src="${u}" controls preload="metadata"></audio>`;
   if (k === "pdf") return `<a class="btn sec sm" href="${u}" target="_blank" rel="noopener">Abrir PDF</a>`;
@@ -99,10 +110,13 @@ function pixPayload({ chave, nome, cidade, valor, txid, descricao }) {
 }
 
 /* ---------------- armazenamento ---------------- */
-const DEMO_KEY = "upe-portal-demo-v2";
+const DEMO_KEY = "upe-portal-demo-v3";
 class LocalStore {
   constructor() { this.mode = "demo"; let d = null; try { d = JSON.parse(ls.get(DEMO_KEY)); } catch (e) {} this.d = d && d.cols ? d : { cols: {} }; }
-  async init() { if (!this.d.seeded) { await seedDemo(this); this.d.seeded = true; this.save(); } }
+  async init() {
+    try { await idb.open(); for (const [k, v] of await idb.all()) MEDIA.set(k, URL.createObjectURL(v)); this.idb = true; } catch (e) { this.idb = false; }
+    if (!this.d.seeded) { await seedDemo(this); this.d.seeded = true; this.save(); }
+  }
   save() { ls.set(DEMO_KEY, JSON.stringify(this.d)); }
   sp(path) { const i = path.lastIndexOf("/"); return [path.slice(0, i), path.slice(i + 1)]; }
   async get(path) { const [c, id] = this.sp(path); return clone(this.d.cols[c]?.[id]) || null; }
@@ -113,8 +127,8 @@ class LocalStore {
   async login(email, pass) { if (email.trim().toLowerCase() === "admin@upe.demo" && pass === "upe-demo") { ss.set("upe-adm", "1"); return true; } throw new Error("E-mail ou senha incorretos."); }
   async currentAdmin() { return ss.get("upe-adm") === "1"; }
   async logout() { ss.set("upe-adm", null); }
-  async upload(file) { return URL.createObjectURL(file); }
-  reset() { ls.set(DEMO_KEY, null); location.reload(); }
+  async upload(file) { const k = uid(12) + "/" + file.name.replace(/[^\w.\-]/g, "_"); MEDIA.set(k, URL.createObjectURL(file)); if (this.idb) { try { await idb.put(k, file); } catch (e) { this.idb = false; } } return "idb:" + k; }
+  async reset() { ls.set(DEMO_KEY, null); if (this.idb) await idb.clear(); location.reload(); }
 }
 class FireStore {
   constructor(cfg) { this.mode = "firebase"; this.cfg = cfg; }
@@ -379,7 +393,7 @@ function cInicio(m, { doc }, { pend, tabs }) {
         ${inc.length ? `<div class="bar"><i style="width:${inc.length ? done / inc.length * 100 : 0}%"></i></div><ul style="list-style:none;padding:0;margin:0;display:grid;gap:8px">${inc.map(i => `<li class="row" style="flex-wrap:nowrap"><span class="pill ${i.feito ? "ok" : ""}">${i.feito ? "Feito" : "A fazer"}</span><span>${esc(i.item)}</span></li>`).join("")}</ul>` : `<p class="muted">A Upe vai listar aqui as etapas do seu projeto.</p>`}
       </section>
       <div class="grid">
-        ${doc.acesso?.manual && doc.manual?.url ? `<section class="card grid"><span class="eb">Manual da marca</span><h3>${esc(doc.manual.nome || "Manual da marca")}</h3><p class="muted small">Logotipos, cores, tipografia e regras de uso.</p><div><a class="btn" href="${esc(doc.manual.url)}" target="_blank" rel="noopener" download>Baixar o manual</a></div></section>` : ""}
+        ${doc.acesso?.manual && doc.manual?.url ? `<section class="card grid"><span class="eb">Manual da marca</span><h3>${esc(doc.manual.nome || "Manual da marca")}</h3><p class="muted small">Logotipos, cores, tipografia e regras de uso.</p><div><a class="btn" href="${esc(resolveMedia(doc.manual.url))}" target="_blank" rel="noopener" download>Baixar o manual</a></div></section>` : ""}
         ${has("apresentacao") ? `<section class="card grid"><span class="eb">Apresentação</span><h3>${esc(doc.apresentacao.marca || doc.marca || "A sua marca")}</h3><p class="muted small">${esc(doc.apresentacao.lede || "A proposta completa do projeto.")}</p><div><a class="btn sec" href="#/c/apresentacao">Ver a apresentação</a></div></section>` : ""}
         ${doc.recorrente?.ativo ? `<section class="card grid"><span class="eb">Plano recorrente</span><h3>${esc(doc.recorrente.descricao || "Mensalidade")}</h3><p class="muted">${brl(doc.recorrente.valor)} por mês · vence todo dia ${esc(doc.recorrente.dia)}</p></section>` : ""}
         <section class="card grid"><span class="eb">Precisa de algo?</span><p class="muted small">Escreva para a Upe por aqui ou pelo WhatsApp.</p><div class="row"><a class="btn sec" href="#/c/mensagens">Enviar mensagem</a>${state.cfg.whatsapp || CFG.whatsappUpe ? `<a class="btn sec" href="${esc(waLink(state.cfg.whatsapp || CFG.whatsappUpe, `Olá! Sou ${doc.nome} (${doc.marca || doc.empresa}).`))}" target="_blank" rel="noopener">WhatsApp</a>` : ""}</div></section>
@@ -388,7 +402,7 @@ function cInicio(m, { doc }, { pend, tabs }) {
 }
 
 /* ---------- apresentação (aba 05 do dossiê) ---------- */
-function resolveUrl(p, base) { if (!p) return ""; if (/^(https?:|blob:|data:)/.test(p) || !base) return p; try { return new URL(p, base).href; } catch (e) { return p; } }
+function resolveUrl(p, base) { if (!p) return ""; if (/^(\{assets\}|idb:)/.test(p)) return resolveMedia(p); if (/^(https?:|blob:|data:)/.test(p) || !base) return p; try { return new URL(p, base).href; } catch (e) { return p; } }
 function cApres(m, { doc }) {
   const A = doc.apresentacao || {}, R = p => resolveUrl(p, A.baseUrl), slides = (A.slides || []).filter(s => s.img || s.tipo);
   let i = 0;
@@ -423,6 +437,7 @@ function cConteudo(m, c) {
   const posts = (doc.posts || []).filter(p => p.status !== "rascunho").map(p => ({ ...p, ef: statusOf(p, acoes) })).sort((a, b) => a.data.localeCompare(b.data));
   if (!calMonth) { const nx = posts.find(p => p.ef.status === "pendente"); const d = nx ? new Date(nx.data + "T12:00") : new Date(); calMonth = [d.getFullYear(), d.getMonth()]; }
   const filt = ss.get("upe-cf") || "todos";
+  const cvw = ls.get("upe-ccvw") || "cal";
   const draw = () => {
     const [Y, M] = calMonth, first = new Date(Y, M, 1), start = new Date(Y, M, 1 - first.getDay()), today = isoDay(new Date());
     const inMonth = posts.filter(p => p.data.startsWith(`${Y}-${pad(M + 1)}`)).filter(p => filt === "todos" || p.ef.status === filt);
@@ -432,13 +447,14 @@ function cConteudo(m, c) {
     const kits = (doc.kits || []).filter(k => (doc.posts || []).some(p => p.kitId === k.id && p.status !== "rascunho"));
     m.innerHTML = (kits.length ? `<section class="card grid"><span class="eb">Kits de conteúdo para baixar</span><div class="row">${kits.map(k => `<a class="btn sec sm" href="#/c/kit/${esc(k.id)}">${esc(k.nome)} · ${k.total} peças</a>`).join("")}</div></section>` : "") + `<div class="spread"><div class="grid" style="gap:6px"><span class="eb">Calendário de conteúdo</span><h1>Aprove os seus posts</h1><p class="muted small">Imagens, vídeos, legendas e áudios. Toque em um post para ver e aprovar.</p></div>
       <div class="row"><button class="btn sec sm" id="mPrev" aria-label="Mês anterior">←</button><b style="min-width:150px;text-align:center;text-transform:capitalize">${MESES[M]} ${Y}</b><button class="btn sec sm" id="mNext" aria-label="Próximo mês">→</button></div></div>
-      <div class="row" role="group" aria-label="Filtrar">${[["todos", "Todos"], ["pendente", "Aguardando aprovação"], ["aprovado", "Aprovados"], ["ajustes", "Ajustes pedidos"], ["publicado", "Publicados"]].map(([k, l]) => `<button class="chip" data-f="${k}" aria-pressed="${filt === k}">${l}</button>`).join("")}</div>
-      <div class="card pad0"><div class="cal">${["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map(d => `<div class="dow">${d}</div>`).join("")}${cells}</div></div>
-      <div class="agenda" aria-label="Lista do mês">${inMonth.length ? inMonth.map(p => { const d = new Date(p.data + "T12:00"); return `<button class="agi" data-p="${p.id}"><span class="dt">${pad(d.getDate())}/${pad(d.getMonth() + 1)}<small>${["dom", "seg", "ter", "qua", "qui", "sex", "sáb"][d.getDay()]}</small></span><span><b>${esc(p.titulo)}</b><br><span class="muted small">${esc(TIPOS_POST[p.tipo] || p.tipo)}</span></span>${pill(p.ef.status)}</button>`; }).join("") : `<div class="empty">Nenhum post neste mês.</div>`}</div>`;
-    $("#mPrev").onclick = () => { calMonth = M ? [Y, M - 1] : [Y - 1, 11]; draw(); };
-    $("#mNext").onclick = () => { calMonth = M < 11 ? [Y, M + 1] : [Y + 1, 0]; draw(); };
+      <div class="row" role="group" aria-label="Filtrar">${[["todos", "Todos"], ["pendente", "Aguardando aprovação"], ["aprovado", "Aprovados"], ["ajustes", "Ajustes pedidos"], ["publicado", "Publicados"]].map(([k, l]) => `<button class="chip" data-f="${k}" aria-pressed="${filt === k}">${l}</button>`).join("")}<span style="flex:1"></span><button class="chip" data-cv="cal" aria-pressed="${cvw !== "grade"}">Calendário</button><button class="chip" data-cv="grade" aria-pressed="${cvw === "grade"}">Grade</button></div>
+      ${cvw === "grade" ? gradePosts(posts.filter(p => filt === "todos" || p.ef.status === filt)) : `<div class="card pad0"><div class="cal">${["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map(d => `<div class="dow">${d}</div>`).join("")}${cells}</div></div>
+      <div class="agenda" aria-label="Lista do mês">${inMonth.length ? inMonth.map(p => { const d = new Date(p.data + "T12:00"); return `<button class="agi" data-p="${p.id}"><span class="dt">${pad(d.getDate())}/${pad(d.getMonth() + 1)}<small>${["dom", "seg", "ter", "qua", "qui", "sex", "sáb"][d.getDay()]}</small></span><span><b>${esc(p.titulo)}</b><br><span class="muted small">${esc(TIPOS_POST[p.tipo] || p.tipo)}</span></span>${pill(p.ef.status)}</button>`; }).join("") : `<div class="empty">Nenhum post neste mês.</div>`}</div>`}`;
+    if ($("#mPrev")) $("#mPrev").onclick = () => { calMonth = M ? [Y, M - 1] : [Y - 1, 11]; draw(); };
+    if ($("#mNext")) $("#mNext").onclick = () => { calMonth = M < 11 ? [Y, M + 1] : [Y + 1, 0]; draw(); };
     $$("[data-f]", m).forEach(b => b.onclick = () => { ss.set("upe-cf", b.dataset.f); cConteudo(m, c); });
     $$("[data-p]", m).forEach(b => b.onclick = () => postModal(posts.find(p => p.id === b.dataset.p), c));
+    $$("[data-cv]", m).forEach(b => b.onclick = () => { ls.set("upe-ccvw", b.dataset.cv); cConteudo(m, c); });
   };
   draw();
 }
@@ -672,7 +688,7 @@ function aProjeto(ct, { id, doc, priv, save }) {
   ct.querySelectorAll("[data-endel]").forEach(b => b.onclick = () => { collect(); doc.entregas.splice(+b.dataset.endel, 1); aProjeto(ct, { id, doc, priv, save }); });
   $("#incAdd").onclick = () => { collect(); doc.incluso.push({ item: "", feito: false }); aProjeto(ct, { id, doc, priv, save }); $$("[data-inct]", ct).pop().focus(); };
   $$("[data-incd]", ct).forEach(b => b.onclick = () => { collect(); doc.incluso.splice(+b.dataset.incd, 1); aProjeto(ct, { id, doc, priv, save }); });
-  $("#mFile").onchange = async e => { const f = e.target.files[0]; if (!f) return; toast("Enviando…"); const u = await S.upload(f, `clientes/${id}/manual`); if (u) { $("#mUrl").value = u; if (!$("#mNome").value) $("#mNome").value = f.name; toast(S.mode === "demo" ? "Arquivo anexado só nesta sessão (modo demonstração)" : "Arquivo enviado"); } else toast("Ative o Firebase Storage para enviar arquivos"); };
+  $("#mFile").onchange = async e => { const f = e.target.files[0]; if (!f) return; toast("Enviando…"); const u = await S.upload(f, `clientes/${id}/manual`); if (u) { $("#mUrl").value = u; if (!$("#mNome").value) $("#mNome").value = f.name; toast(S.mode === "demo" && !S.idb ? "Arquivo anexado só até fechar a página (modo demonstração)" : "Arquivo enviado"); } else toast("Ative o Firebase Storage para enviar arquivos"); };
   function collect() {
     Object.assign(doc, { nome: $("#dNome").value.trim(), empresa: $("#dEmp").value.trim(), marca: $("#dMarca").value.trim(), ativo: $("#dAtivo").checked });
     $$("[data-acesso]", ct).forEach(i => doc.acesso[i.dataset.acesso] = i.checked);
@@ -773,7 +789,7 @@ function aConteudo(ct, { id, doc, acoes, save }) {
       <label class="f" for="eL">Legenda<textarea id="eL" rows="5">${esc(p.legenda)}</textarea></label>
       ${!n ? `<label class="tg"><input type="checkbox" id="eV"><span>Enviar como nova versão<small>Volta para “Aguardando aprovação” e o cliente aprova de novo</small></span></label>` : ""}`,
       `${!n ? `<button class="btn bad" id="eX">Excluir</button>` : ""}<button class="btn sec" data-close>Cancelar</button><button class="btn" id="eOk">Salvar</button>`);
-    $("#eF").onchange = async e => { toast("Enviando…"); const urls = []; for (const f of e.target.files) { const u = await S.upload(f, `clientes/${id}/posts`); if (u) urls.push(u); } if (urls.length) { $("#eM").value = [$("#eM").value.trim(), ...urls].filter(Boolean).join("\n"); toast(S.mode === "demo" ? "Arquivos anexados só nesta sessão (demonstração)" : "Arquivos enviados"); } else toast("Ative o Firebase Storage para enviar arquivos"); };
+    $("#eF").onchange = async e => { toast("Enviando…"); const urls = []; for (const f of e.target.files) { const u = await S.upload(f, `clientes/${id}/posts`); if (u) urls.push(u); } if (urls.length) { $("#eM").value = [$("#eM").value.trim(), ...urls].filter(Boolean).join("\n"); toast(S.mode === "demo" && !S.idb ? "Arquivos anexados só até fechar a página (modo demonstração)" : "Arquivos enviados"); } else toast("Ative o Firebase Storage para enviar arquivos"); };
     $("#eOk").onclick = async () => {
       const t = $("#eTi").value.trim(); if (!t) return $("#eTi").focus();
       const base = (doc.posts || []).find(x => x.id === p.id) || {};

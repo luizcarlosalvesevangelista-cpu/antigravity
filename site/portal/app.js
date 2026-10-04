@@ -110,6 +110,17 @@ let toastT; function toast(m) { const t = $("#toast"); t.textContent = m; t.clas
 async function copy(text, okMsg = "Copiado") { try { await navigator.clipboard.writeText(text); toast(okMsg); } catch (e) { toast("Selecione o texto e copie manualmente"); } }
 const waLink = (num, txt) => `https://wa.me/${String(num || "").replace(/\D/g, "")}${txt ? `?text=${encodeURIComponent(txt)}` : ""}`;
 const portalUrl = () => location.href.split("#")[0];
+/* mídias: "{assets}" = pasta assets do site; "idb:" = arquivo enviado no modo demonstração (guardado no IndexedDB) */
+const MEDIA = new Map();
+const resolveMedia = u => { if (!u) return ""; u = String(u); if (u.startsWith("{assets}")) return (CFG.assetsDemo || "../assets/") + u.slice(8); if (u.startsWith("idb:")) return MEDIA.get(u.slice(4)) || ""; return u; };
+const idb = {
+  db: null,
+  open() { return new Promise((ok, no) => { try { const r = indexedDB.open("upe-portal-arquivos", 1); r.onupgradeneeded = () => r.result.createObjectStore("f"); r.onsuccess = () => { this.db = r.result; ok(this.db); }; r.onerror = () => no(r.error); } catch (e) { no(e); } }); },
+  tx(mode) { return this.db.transaction("f", mode).objectStore("f"); },
+  put(k, v) { return new Promise((ok, no) => { try { const r = this.tx("readwrite").put(v, k); r.onsuccess = ok; r.onerror = () => no(r.error); } catch (e) { no(e); } }); },
+  all() { return new Promise((ok, no) => { const out = []; try { const r = this.tx("readonly").openCursor(); r.onsuccess = () => { const c = r.result; if (c) { out.push([c.key, c.value]); c.continue(); } else ok(out); }; r.onerror = () => no(r.error); } catch (e) { no(e); } }); },
+  clear() { return new Promise(ok => { try { const r = this.tx("readwrite").clear(); r.onsuccess = ok; r.onerror = ok; } catch (e) { ok(); } }); }
+};
 function kind(url, tipo) {
   if (tipo === "video" || /\.(mp4|webm|mov)(\?|$)/i.test(url || "")) return "video";
   if (tipo === "audio" || /\.(mp3|wav|m4a|ogg)(\?|$)/i.test(url || "")) return "audio";
@@ -117,7 +128,7 @@ function kind(url, tipo) {
   return url ? "img" : "none";
 }
 function mediaHTML(url, tipo, cls = "") {
-  const k = kind(url, tipo), u = esc(url);
+  const k = kind(url, tipo), u = esc(resolveMedia(url));
   if (k === "video") return `<video class="${cls}" src="${u}" controls playsinline preload="metadata"></video>`;
   if (k === "audio") return `<audio src="${u}" controls preload="metadata"></audio>`;
   if (k === "pdf") return `<a class="btn sec sm" href="${u}" target="_blank" rel="noopener">Abrir PDF</a>`;
@@ -173,10 +184,13 @@ function pixPayload({ chave, nome, cidade, valor, txid, descricao }) {
 }
 
 /* ---------------- armazenamento ---------------- */
-const DEMO_KEY = "upe-portal-demo-v2";
+const DEMO_KEY = "upe-portal-demo-v3";
 class LocalStore {
   constructor() { this.mode = "demo"; let d = null; try { d = JSON.parse(ls.get(DEMO_KEY)); } catch (e) {} this.d = d && d.cols ? d : { cols: {} }; }
-  async init() { if (!this.d.seeded) { await seedDemo(this); this.d.seeded = true; this.save(); } }
+  async init() {
+    try { await idb.open(); for (const [k, v] of await idb.all()) MEDIA.set(k, URL.createObjectURL(v)); this.idb = true; } catch (e) { this.idb = false; }
+    if (!this.d.seeded) { await seedDemo(this); this.d.seeded = true; this.save(); }
+  }
   save() { ls.set(DEMO_KEY, JSON.stringify(this.d)); }
   sp(path) { const i = path.lastIndexOf("/"); return [path.slice(0, i), path.slice(i + 1)]; }
   async get(path) { const [c, id] = this.sp(path); return clone(this.d.cols[c]?.[id]) || null; }
@@ -187,8 +201,8 @@ class LocalStore {
   async login(email, pass) { if (email.trim().toLowerCase() === "admin@upe.demo" && pass === "upe-demo") { ss.set("upe-adm", "1"); return true; } throw new Error("E-mail ou senha incorretos."); }
   async currentAdmin() { return ss.get("upe-adm") === "1"; }
   async logout() { ss.set("upe-adm", null); }
-  async upload(file) { return URL.createObjectURL(file); }
-  reset() { ls.set(DEMO_KEY, null); location.reload(); }
+  async upload(file) { const k = uid(12) + "/" + file.name.replace(/[^\w.\-]/g, "_"); MEDIA.set(k, URL.createObjectURL(file)); if (this.idb) { try { await idb.put(k, file); } catch (e) { this.idb = false; } } return "idb:" + k; }
+  async reset() { ls.set(DEMO_KEY, null); if (this.idb) await idb.clear(); location.reload(); }
 }
 class FireStore {
   constructor(cfg) { this.mode = "firebase"; this.cfg = cfg; }
@@ -453,7 +467,7 @@ function cInicio(m, { doc }, { pend, tabs }) {
         ${inc.length ? `<div class="bar"><i style="width:${inc.length ? done / inc.length * 100 : 0}%"></i></div><ul style="list-style:none;padding:0;margin:0;display:grid;gap:8px">${inc.map(i => `<li class="row" style="flex-wrap:nowrap"><span class="pill ${i.feito ? "ok" : ""}">${i.feito ? "Feito" : "A fazer"}</span><span>${esc(i.item)}</span></li>`).join("")}</ul>` : `<p class="muted">A Upe vai listar aqui as etapas do seu projeto.</p>`}
       </section>
       <div class="grid">
-        ${doc.acesso?.manual && doc.manual?.url ? `<section class="card grid"><span class="eb">Manual da marca</span><h3>${esc(doc.manual.nome || "Manual da marca")}</h3><p class="muted small">Logotipos, cores, tipografia e regras de uso.</p><div><a class="btn" href="${esc(doc.manual.url)}" target="_blank" rel="noopener" download>Baixar o manual</a></div></section>` : ""}
+        ${doc.acesso?.manual && doc.manual?.url ? `<section class="card grid"><span class="eb">Manual da marca</span><h3>${esc(doc.manual.nome || "Manual da marca")}</h3><p class="muted small">Logotipos, cores, tipografia e regras de uso.</p><div><a class="btn" href="${esc(resolveMedia(doc.manual.url))}" target="_blank" rel="noopener" download>Baixar o manual</a></div></section>` : ""}
         ${has("apresentacao") ? `<section class="card grid"><span class="eb">Apresentação</span><h3>${esc(doc.apresentacao.marca || doc.marca || "A sua marca")}</h3><p class="muted small">${esc(doc.apresentacao.lede || "A proposta completa do projeto.")}</p><div><a class="btn sec" href="#/c/apresentacao">Ver a apresentação</a></div></section>` : ""}
         ${doc.recorrente?.ativo ? `<section class="card grid"><span class="eb">Plano recorrente</span><h3>${esc(doc.recorrente.descricao || "Mensalidade")}</h3><p class="muted">${brl(doc.recorrente.valor)} por mês · vence todo dia ${esc(doc.recorrente.dia)}</p></section>` : ""}
         <section class="card grid"><span class="eb">Precisa de algo?</span><p class="muted small">Escreva para a Upe por aqui ou pelo WhatsApp.</p><div class="row"><a class="btn sec" href="#/c/mensagens">Enviar mensagem</a>${state.cfg.whatsapp || CFG.whatsappUpe ? `<a class="btn sec" href="${esc(waLink(state.cfg.whatsapp || CFG.whatsappUpe, `Olá! Sou ${doc.nome} (${doc.marca || doc.empresa}).`))}" target="_blank" rel="noopener">WhatsApp</a>` : ""}</div></section>
@@ -462,7 +476,7 @@ function cInicio(m, { doc }, { pend, tabs }) {
 }
 
 /* ---------- apresentação (aba 05 do dossiê) ---------- */
-function resolveUrl(p, base) { if (!p) return ""; if (/^(https?:|blob:|data:)/.test(p) || !base) return p; try { return new URL(p, base).href; } catch (e) { return p; } }
+function resolveUrl(p, base) { if (!p) return ""; if (/^(\{assets\}|idb:)/.test(p)) return resolveMedia(p); if (/^(https?:|blob:|data:)/.test(p) || !base) return p; try { return new URL(p, base).href; } catch (e) { return p; } }
 function cApres(m, { doc }) {
   const A = doc.apresentacao || {}, R = p => resolveUrl(p, A.baseUrl), slides = (A.slides || []).filter(s => s.img || s.tipo);
   let i = 0;
@@ -497,6 +511,7 @@ function cConteudo(m, c) {
   const posts = (doc.posts || []).filter(p => p.status !== "rascunho").map(p => ({ ...p, ef: statusOf(p, acoes) })).sort((a, b) => a.data.localeCompare(b.data));
   if (!calMonth) { const nx = posts.find(p => p.ef.status === "pendente"); const d = nx ? new Date(nx.data + "T12:00") : new Date(); calMonth = [d.getFullYear(), d.getMonth()]; }
   const filt = ss.get("upe-cf") || "todos";
+  const cvw = ls.get("upe-ccvw") || "cal";
   const draw = () => {
     const [Y, M] = calMonth, first = new Date(Y, M, 1), start = new Date(Y, M, 1 - first.getDay()), today = isoDay(new Date());
     const inMonth = posts.filter(p => p.data.startsWith(`${Y}-${pad(M + 1)}`)).filter(p => filt === "todos" || p.ef.status === filt);
@@ -506,13 +521,14 @@ function cConteudo(m, c) {
     const kits = (doc.kits || []).filter(k => (doc.posts || []).some(p => p.kitId === k.id && p.status !== "rascunho"));
     m.innerHTML = (kits.length ? `<section class="card grid"><span class="eb">Kits de conteúdo para baixar</span><div class="row">${kits.map(k => `<a class="btn sec sm" href="#/c/kit/${esc(k.id)}">${esc(k.nome)} · ${k.total} peças</a>`).join("")}</div></section>` : "") + `<div class="spread"><div class="grid" style="gap:6px"><span class="eb">Calendário de conteúdo</span><h1>Aprove os seus posts</h1><p class="muted small">Imagens, vídeos, legendas e áudios. Toque em um post para ver e aprovar.</p></div>
       <div class="row"><button class="btn sec sm" id="mPrev" aria-label="Mês anterior">←</button><b style="min-width:150px;text-align:center;text-transform:capitalize">${MESES[M]} ${Y}</b><button class="btn sec sm" id="mNext" aria-label="Próximo mês">→</button></div></div>
-      <div class="row" role="group" aria-label="Filtrar">${[["todos", "Todos"], ["pendente", "Aguardando aprovação"], ["aprovado", "Aprovados"], ["ajustes", "Ajustes pedidos"], ["publicado", "Publicados"]].map(([k, l]) => `<button class="chip" data-f="${k}" aria-pressed="${filt === k}">${l}</button>`).join("")}</div>
-      <div class="card pad0"><div class="cal">${["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map(d => `<div class="dow">${d}</div>`).join("")}${cells}</div></div>
-      <div class="agenda" aria-label="Lista do mês">${inMonth.length ? inMonth.map(p => { const d = new Date(p.data + "T12:00"); return `<button class="agi" data-p="${p.id}"><span class="dt">${pad(d.getDate())}/${pad(d.getMonth() + 1)}<small>${["dom", "seg", "ter", "qua", "qui", "sex", "sáb"][d.getDay()]}</small></span><span><b>${esc(p.titulo)}</b><br><span class="muted small">${esc(TIPOS_POST[p.tipo] || p.tipo)}</span></span>${pill(p.ef.status)}</button>`; }).join("") : `<div class="empty">Nenhum post neste mês.</div>`}</div>`;
-    $("#mPrev").onclick = () => { calMonth = M ? [Y, M - 1] : [Y - 1, 11]; draw(); };
-    $("#mNext").onclick = () => { calMonth = M < 11 ? [Y, M + 1] : [Y + 1, 0]; draw(); };
+      <div class="row" role="group" aria-label="Filtrar">${[["todos", "Todos"], ["pendente", "Aguardando aprovação"], ["aprovado", "Aprovados"], ["ajustes", "Ajustes pedidos"], ["publicado", "Publicados"]].map(([k, l]) => `<button class="chip" data-f="${k}" aria-pressed="${filt === k}">${l}</button>`).join("")}<span style="flex:1"></span><button class="chip" data-cv="cal" aria-pressed="${cvw !== "grade"}">Calendário</button><button class="chip" data-cv="grade" aria-pressed="${cvw === "grade"}">Grade</button></div>
+      ${cvw === "grade" ? gradePosts(posts.filter(p => filt === "todos" || p.ef.status === filt)) : `<div class="card pad0"><div class="cal">${["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map(d => `<div class="dow">${d}</div>`).join("")}${cells}</div></div>
+      <div class="agenda" aria-label="Lista do mês">${inMonth.length ? inMonth.map(p => { const d = new Date(p.data + "T12:00"); return `<button class="agi" data-p="${p.id}"><span class="dt">${pad(d.getDate())}/${pad(d.getMonth() + 1)}<small>${["dom", "seg", "ter", "qua", "qui", "sex", "sáb"][d.getDay()]}</small></span><span><b>${esc(p.titulo)}</b><br><span class="muted small">${esc(TIPOS_POST[p.tipo] || p.tipo)}</span></span>${pill(p.ef.status)}</button>`; }).join("") : `<div class="empty">Nenhum post neste mês.</div>`}</div>`}`;
+    if ($("#mPrev")) $("#mPrev").onclick = () => { calMonth = M ? [Y, M - 1] : [Y - 1, 11]; draw(); };
+    if ($("#mNext")) $("#mNext").onclick = () => { calMonth = M < 11 ? [Y, M + 1] : [Y + 1, 0]; draw(); };
     $$("[data-f]", m).forEach(b => b.onclick = () => { ss.set("upe-cf", b.dataset.f); cConteudo(m, c); });
     $$("[data-p]", m).forEach(b => b.onclick = () => postModal(posts.find(p => p.id === b.dataset.p), c));
+    $$("[data-cv]", m).forEach(b => b.onclick = () => { ls.set("upe-ccvw", b.dataset.cv); cConteudo(m, c); });
   };
   draw();
 }
@@ -746,7 +762,7 @@ function aProjeto(ct, { id, doc, priv, save }) {
   ct.querySelectorAll("[data-endel]").forEach(b => b.onclick = () => { collect(); doc.entregas.splice(+b.dataset.endel, 1); aProjeto(ct, { id, doc, priv, save }); });
   $("#incAdd").onclick = () => { collect(); doc.incluso.push({ item: "", feito: false }); aProjeto(ct, { id, doc, priv, save }); $$("[data-inct]", ct).pop().focus(); };
   $$("[data-incd]", ct).forEach(b => b.onclick = () => { collect(); doc.incluso.splice(+b.dataset.incd, 1); aProjeto(ct, { id, doc, priv, save }); });
-  $("#mFile").onchange = async e => { const f = e.target.files[0]; if (!f) return; toast("Enviando…"); const u = await S.upload(f, `clientes/${id}/manual`); if (u) { $("#mUrl").value = u; if (!$("#mNome").value) $("#mNome").value = f.name; toast(S.mode === "demo" ? "Arquivo anexado só nesta sessão (modo demonstração)" : "Arquivo enviado"); } else toast("Ative o Firebase Storage para enviar arquivos"); };
+  $("#mFile").onchange = async e => { const f = e.target.files[0]; if (!f) return; toast("Enviando…"); const u = await S.upload(f, `clientes/${id}/manual`); if (u) { $("#mUrl").value = u; if (!$("#mNome").value) $("#mNome").value = f.name; toast(S.mode === "demo" && !S.idb ? "Arquivo anexado só até fechar a página (modo demonstração)" : "Arquivo enviado"); } else toast("Ative o Firebase Storage para enviar arquivos"); };
   function collect() {
     Object.assign(doc, { nome: $("#dNome").value.trim(), empresa: $("#dEmp").value.trim(), marca: $("#dMarca").value.trim(), ativo: $("#dAtivo").checked });
     $$("[data-acesso]", ct).forEach(i => doc.acesso[i.dataset.acesso] = i.checked);
@@ -847,7 +863,7 @@ function aConteudo(ct, { id, doc, acoes, save }) {
       <label class="f" for="eL">Legenda<textarea id="eL" rows="5">${esc(p.legenda)}</textarea></label>
       ${!n ? `<label class="tg"><input type="checkbox" id="eV"><span>Enviar como nova versão<small>Volta para “Aguardando aprovação” e o cliente aprova de novo</small></span></label>` : ""}`,
       `${!n ? `<button class="btn bad" id="eX">Excluir</button>` : ""}<button class="btn sec" data-close>Cancelar</button><button class="btn" id="eOk">Salvar</button>`);
-    $("#eF").onchange = async e => { toast("Enviando…"); const urls = []; for (const f of e.target.files) { const u = await S.upload(f, `clientes/${id}/posts`); if (u) urls.push(u); } if (urls.length) { $("#eM").value = [$("#eM").value.trim(), ...urls].filter(Boolean).join("\n"); toast(S.mode === "demo" ? "Arquivos anexados só nesta sessão (demonstração)" : "Arquivos enviados"); } else toast("Ative o Firebase Storage para enviar arquivos"); };
+    $("#eF").onchange = async e => { toast("Enviando…"); const urls = []; for (const f of e.target.files) { const u = await S.upload(f, `clientes/${id}/posts`); if (u) urls.push(u); } if (urls.length) { $("#eM").value = [$("#eM").value.trim(), ...urls].filter(Boolean).join("\n"); toast(S.mode === "demo" && !S.idb ? "Arquivos anexados só até fechar a página (modo demonstração)" : "Arquivos enviados"); } else toast("Ative o Firebase Storage para enviar arquivos"); };
     $("#eOk").onclick = async () => {
       const t = $("#eTi").value.trim(); if (!t) return $("#eTi").focus();
       const base = (doc.posts || []).find(x => x.id === p.id) || {};
@@ -1147,10 +1163,15 @@ const conviteTxt = ev => `Olá${ev.nome ? ", " + ev.nome.split(" ")[0] : ""}! Re
 document.addEventListener("error", e => {
   const t = e.target; if (!(t instanceof HTMLImageElement || t instanceof HTMLVideoElement) || t.dataset.miss) return;
   if (!t.closest("#app, dialog")) return; t.dataset.miss = "1";
-  const d = document.createElement("div"); d.className = "miss"; d.textContent = "Arquivo não encontrado · " + decodeURIComponent((t.getAttribute("src") || "").split("/").slice(-2).join("/"));
+  const nome = decodeURIComponent((t.getAttribute("src") || "").split("#")[0].split("/").slice(-2).join("/"));
+  if (t instanceof HTMLVideoElement) { // pode ser só o navegador sem o formato do vídeo: mantém o player e oferece o arquivo
+    const n = document.createElement("div"); n.className = "vnote"; n.innerHTML = `Se o vídeo não tocar aqui, <a href="${esc(t.getAttribute("src") || "")}" target="_blank" rel="noopener" download>abra ou baixe o arquivo</a>.`; t.after(n); return; }
+  const d = document.createElement("div"); d.className = "miss"; d.textContent = "Arquivo não encontrado · " + nome;
   t.replaceWith(d);
 }, true);
-const dlBtn = (url, label = "Baixar") => url ? `<a class="btn sec sm" href="${esc(url)}" download target="_blank" rel="noopener">${label}</a>` : "";
+const dlBtn = (url, label = "Baixar") => resolveMedia(url) ? `<a class="btn sec sm" href="${esc(resolveMedia(url))}" download="${esc(fileName(url))}" target="_blank" rel="noopener">${label}</a>` : "";
+const imgTag = u => `<img src="${esc(resolveMedia(u))}" alt="" loading="lazy">`;
+const capaDe = x => x.capa || ((x.midias || []).find(u => kind(u) === "img") || "");
 const fileName = u => decodeURIComponent(String(u || "").split("?")[0].split("/").pop() || "arquivo");
 
 /* ---------- calendário genérico ---------- */
@@ -1337,30 +1358,61 @@ function aCronograma(w, aba = "instagram") {
   const crono = state.cache.crono;
   const pf = ss.get("upe-pf") || "", rows = crono.filter(x => aba === "semdata" ? !x.data : x.data && (aba === "youtube" ? x.canal === "youtube" : x.canal !== "youtube")).filter(x => !pf || x.pilar === pf).sort((a, b) => (a.data + a.hora).localeCompare(b.data + b.hora));
   const cnt = k => crono.filter(x => k === "semdata" ? !x.data : x.data && (k === "youtube" ? x.canal === "youtube" : x.canal !== "youtube")).length;
+  const vw = ls.get("upe-cvw") || "lista";
   const semanas = {}; rows.forEach(x => { const d = new Date((x.data || todayIso()) + "T12:00"); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); const k = x.data ? isoDay(d) : "sem"; (semanas[k] = semanas[k] || []).push(x); });
   w.innerHTML = `<div class="spread"><div class="grid" style="gap:4px"><span class="eb">@upecriativo · YouTube</span><h1>Cronograma Upe</h1><p class="muted small">Branding, rebranding, marca, publicidade e marketing, e-commerce, Upe TV e Upe ERP.</p></div>
-      <div class="row"><button class="btn sec" id="cKit">Importar kit</button><button class="btn sec" id="cPad">${crono.length ? "Recarregar cronograma padrão" : "Carregar cronograma padrão"}</button><button class="btn" id="cNew">Novo item</button></div></div>
+      <div class="row"><button class="btn sec" id="cKit">Importar kit</button><button class="btn sec" id="cDup">Limpar duplicados</button><button class="btn sec" id="cPad">${crono.length ? "Refazer cronograma" : "Carregar cronograma padrão"}</button><button class="btn" id="cNew">Novo item</button></div></div>
     <nav class="subtabs">${[["instagram", "Instagram"], ["youtube", "YouTube"], ["semdata", "Sem data"]].map(([k, l]) => `<a class="tab" href="#/admin/cronograma/${k}" ${k === aba ? 'aria-current="page"' : ""}>${l}<span class="cnt" style="background:var(--mute-bg);color:var(--fg-2)">${cnt(k)}</span></a>`).join("")}</nav>
-    <div class="row"><label class="f" for="pf" style="max-width:240px">Pilar<select id="pf"><option value="">Todos</option>${PILARES.map(p => `<option ${pf === p ? "selected" : ""}>${p}</option>`).join("")}</select></label>
+    <div class="row" style="align-items:flex-end"><div class="row" role="group" aria-label="Visualização" style="margin-right:8px"><button class="chip" data-vw="lista" aria-pressed="${vw === "lista"}">Lista</button><button class="chip" data-vw="grade" aria-pressed="${vw === "grade"}">Grade</button></div><label class="f" for="pf" style="max-width:240px">Pilar<select id="pf"><option value="">Todos</option>${PILARES.map(p => `<option ${pf === p ? "selected" : ""}>${p}</option>`).join("")}</select></label>
       <span class="muted small">${rows.filter(x => x.status === "publicado").length} de ${rows.length} publicados</span></div>
-    ${rows.length ? Object.entries(semanas).map(([k, its]) => `<section class="grid" style="gap:8px"><h3>${k === "sem" ? "Sem data" : `Semana de ${fdate(k)}`}</h3>
+    ${rows.length && vw === "grade" ? gradeHTML(rows, aba === "youtube") : rows.length ? Object.entries(semanas).map(([k, its]) => `<section class="grid" style="gap:8px"><h3>${k === "sem" ? "Sem data" : `Semana de ${fdate(k)}`}</h3>
       <div class="card pad0 tbl"><table><tbody>${its.map(x => `<tr class="click" data-u="${esc(x.id)}" tabindex="0"><td style="width:92px" class="num small">${x.data ? `<b>${fdate(x.data).slice(0, 5)}</b> ${DOW[new Date(x.data + "T12:00").getDay()].toLowerCase()}<br>${esc(x.hora || "")}` : "—"}</td>
-        <td style="width:64px"><div class="thumb" style="width:56px;aspect-ratio:${x.canal === "youtube" && x.formato === "youtube" ? "16/9" : "4/5"};border-radius:8px">${x.capa ? `<img src="${esc(x.capa)}" alt="">` : kind((x.midias || [])[0]) === "img" ? `<img src="${esc(x.midias[0])}" alt="">` : `<span class="small">${esc(FMT_LBL[x.formato] || "")}</span>`}</div></td>
+        <td style="width:64px"><div class="thumb" style="width:56px;aspect-ratio:${x.canal === "youtube" && x.formato === "youtube" ? "16/9" : "4/5"};border-radius:8px">${capaDe(x) ? imgTag(capaDe(x)) : `<span class="small">${esc(FMT_LBL[x.formato] || "")}</span>`}</div></td>
         <td><b>${esc(x.titulo)}</b><br><span class="muted small">${esc(FMT_LBL[x.formato] || x.formato)} · ${esc(x.pilar || "")} · ${esc(x.origem || "")}</span></td>
         <td style="width:150px"><select data-st="${esc(x.id)}" aria-label="Status">${Object.entries(CST).map(([s, l]) => `<option value="${s}" ${x.status === s ? "selected" : ""}>${l}</option>`).join("")}</select></td></tr>`).join("")}</tbody></table></div></section>`).join("") : `<div class="empty">${crono.length ? "Nada aqui com este filtro." : "Carregue o cronograma padrão da Upe (kits do Upe TV, do Upe ERP e o kit de branding) ou importe um kit."}</div>`}`;
   $("#pf").onchange = e => { ss.set("upe-pf", e.target.value); aCronograma(w, aba); };
+  w.querySelectorAll("[data-vw]").forEach(b => b.onclick = () => { ls.set("upe-cvw", b.dataset.vw); aCronograma(w, aba); });
+  w.querySelectorAll("[data-g]").forEach(b => b.onclick = () => cronoModal(crono.find(x => x.id === b.dataset.g)));
+  $("#cDup").onclick = async () => { const r = await limparDuplicados(); toast(r.rem || r.fix ? `${r.rem} duplicados removidos · ${r.fix} pilares corrigidos` : "Nenhum duplicado encontrado"); reAdmin(); };
   $("#cNew").onclick = () => cronoModal(null);
   $("#cKit").onclick = () => kitImport({ alvo: "cronograma" });
-  $("#cPad").onclick = async () => { try { const n = await carregarCronogramaPadrao(); toast(`${n} itens carregados`); reAdmin(); } catch (e) { toast(e.message); } };
+  $("#cPad").onclick = () => { if (!crono.length) return refazer();
+    modal("Refazer o cronograma?", `<p>Apaga os ${crono.length} itens atuais (inclusive os importados) e carrega de novo o cronograma padrão da Upe: kit de branding, Upe TV, Upe ERP e YouTube, com as datas organizadas.</p><p class="muted small">Depois, importe as pastas dos kits do Upe TV e do Upe ERP: os arquivos entram nos itens que já estão no cronograma, sem duplicar.</p>`, `<button class="btn sec" data-close>Cancelar</button><button class="btn bad" id="rfOk">Refazer</button>`);
+    $("#rfOk").onclick = () => { dlg.close(); refazer(); }; };
+  const refazer = async () => { try { for (const x of crono) await S.del(`cronograma/${x.id}`); const n = await carregarCronogramaPadrao(); toast(`Cronograma refeito: ${n} itens`); reAdmin(); } catch (e) { toast(e.message); } };
   w.querySelectorAll("tr[data-u]").forEach(r => { r.onclick = e => { if (e.target.closest("select")) return; cronoModal(crono.find(x => x.id === r.dataset.u)); }; r.onkeydown = e => { if (e.key === "Enter") r.click(); }; });
   w.querySelectorAll("[data-st]").forEach(s => s.onchange = async () => { const x = crono.find(y => y.id === s.dataset.st); x.status = s.value; await S.set(`cronograma/${x.id}`, x); toast("Status atualizado"); });
+}
+function gradeHTML(rows, yt) {
+  return `<div class="feedgrid ${yt ? "yt" : ""}">${rows.map(x => { const c = capaDe(x), vid = (x.midias || []).find(u => kind(u, "") === "video");
+    return `<button class="gcell" data-g="${esc(x.id)}" title="${esc(x.titulo)}">${c ? imgTag(c) : vid ? `<video src="${esc(resolveMedia(vid))}#t=1" muted preload="metadata"></video>` : `<span class="gph">${esc(FMT_LBL[x.formato] || "")}<br><small>${esc(x.titulo)}</small></span>`}
+      <span class="gtop">${x.data ? fdate(x.data).slice(0, 5) : "s/ data"}</span><span class="gfmt">${esc(FMT_LBL[x.formato] || x.formato)}${(x.midias || []).length > 1 ? " · " + x.midias.length : ""}</span>${x.status === "publicado" ? '<span class="gok">✓</span>' : ""}</button>`; }).join("")}</div>`;
+}
+function gradePosts(posts) {
+  if (!posts.length) return `<div class="empty">Nenhum post aqui.</div>`;
+  return `<p class="muted small">Prévia do feed, na ordem de publicação.</p><div class="feedgrid">${[...posts].sort((a, b) => (b.data || "").localeCompare(a.data || "")).map(p => { const c = p.capa || (p.midias || []).find(u => kind(u) === "img"), vid = (p.midias || []).find(u => kind(u, p.tipo) === "video");
+    return `<button class="gcell" data-p="${esc(p.id)}" title="${esc(p.titulo)}">${c ? imgTag(c) : vid ? `<video src="${esc(resolveMedia(vid))}#t=1" muted preload="metadata"></video>` : `<span class="gph">${esc(FMT_LBL[p.tipo] || "")}<br><small>${esc(p.titulo)}</small></span>`}<span class="gtop">${p.data ? fdate(p.data).slice(0, 5) : "s/ data"}</span><span class="gfmt">${esc(FMT_LBL[p.tipo] || p.tipo)}</span>${p.ef.status === "aprovado" || p.ef.status === "publicado" ? '<span class="gok">✓</span>' : p.ef.status === "pendente" ? '<span class="gok" style="background:var(--warn)">!</span>' : p.ef.status === "ajustes" ? '<span class="gok" style="background:var(--bad)">↺</span>' : ""}</button>`; }).join("")}</div>`;
+}
+async function limparDuplicados() {
+  const crono = state.cache.crono, keep = [], rem = []; let fix = 0;
+  const score = x => (x.midias || []).filter(solid).length * 2 + (x.data ? 1 : 0) + (String(x.origem || "").startsWith("Kit ") ? 1 : 0);
+  for (const x of [...crono].sort((a, b) => score(b) - score(a))) {
+    const same = (k) => k.formato === x.formato && k.canal === x.canal && ((k.pilar === x.pilar && tkey(k.formato, k.titulo) === tkey(x.formato, x.titulo)) || ((k.midias || []).length && (k.midias || []).map(fkey).join() === (x.midias || []).map(fkey).join()));
+    const ex = keep.find(same);
+    if (ex) { (x.midias || []).forEach((u, i) => { if (solid(u) && !solid((ex.midias || [])[i])) { ex.midias = ex.midias || []; ex.midias[i] = u; } }); if (!ex.data && x.data) ex.data = x.data; rem.push(x); }
+    else keep.push(x);
+  }
+  for (const x of keep) { const p = x.canal === "youtube" ? x.pilar : pilarDoKit(x.origem); if (p && p !== "Branding" && x.pilar !== p && !String(x.origem || "").includes("Branding")) { x.pilar = p; fix++; } }
+  for (const x of rem) await S.del(`cronograma/${x.id}`);
+  for (const x of keep) await S.set(`cronograma/${x.id}`, x);
+  return { rem: rem.length, fix };
 }
 function cronoModal(x) {
   const n = !x; x = x || { id: "upe-" + uid(8), data: todayIso(), hora: "12:00", canal: "instagram", formato: "feed", pilar: "Branding", titulo: "", legenda: "", roteiro: "", midias: [], capa: "", status: "planejado", origem: "Manual" };
   const view = !n;
   modal(n ? "Novo item do cronograma" : esc(x.titulo), `
     ${view ? `<div class="row"><span class="pill info">${esc(FMT_LBL[x.formato] || x.formato)}</span><span class="pill">${esc(x.pilar)}</span><span class="muted small">${x.data ? `${DOW[new Date(x.data + "T12:00").getDay()]}, ${fdate(x.data)} · ${esc(x.hora)}` : "Sem data"} · ${esc(x.origem || "")}</span></div>
-      ${(x.midias || []).length ? `<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px">${x.midias.map(u => `<div class="media-box" style="min-height:120px">${mediaHTML(u, x.formato === "reels" || x.formato === "shorts" || x.formato === "youtube" ? "video" : "")}</div>`).join("")}</div>` : x.capa ? `<div class="media-box"><img src="${esc(x.capa)}" alt=""></div>` : ""}
+      ${(x.midias || []).length ? `<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px">${x.midias.map(u => `<div class="media-box" style="min-height:120px">${mediaHTML(u, x.formato === "reels" || x.formato === "shorts" || x.formato === "youtube" ? "video" : "")}</div>`).join("")}</div>` : x.capa ? `<div class="media-box">${imgTag(x.capa)}</div>` : ""}
       <div class="row">${(x.midias || []).map((u, i) => dlBtn(u, x.midias.length > 1 ? `Baixar ${i + 1}` : "Baixar arquivo")).join("")}${x.capa ? dlBtn(x.capa, x.canal === "youtube" ? "Baixar thumbnail" : "Baixar capa") : ""}${x.legenda ? `<button class="btn sm" id="xCp">Copiar ${x.canal === "youtube" ? "descrição" : "legenda"}</button>` : ""}</div>` : ""}
     <div class="g3"><label class="f" for="xD">Data<input id="xD" type="date" value="${esc(x.data)}"></label><label class="f" for="xH">Hora<input id="xH" type="time" value="${esc(x.hora)}"></label><label class="f" for="xSt">Status<select id="xSt">${Object.entries(CST).map(([s, l]) => `<option value="${s}" ${x.status === s ? "selected" : ""}>${l}</option>`).join("")}</select></label></div>
     <div class="g3"><label class="f" for="xC">Canal<select id="xC"><option value="instagram" ${x.canal !== "youtube" ? "selected" : ""}>Instagram</option><option value="youtube" ${x.canal === "youtube" ? "selected" : ""}>YouTube</option></select></label><label class="f" for="xF">Formato<select id="xF">${["feed", "carrossel", "reels", "story", "youtube", "shorts"].map(f => `<option value="${f}" ${x.formato === f ? "selected" : ""}>${FMT_LBL[f]}</option>`).join("")}</select></label><label class="f" for="xP">Pilar<select id="xP">${PILARES.map(p => `<option ${x.pilar === p ? "selected" : ""}>${p}</option>`).join("")}</select></label></div>
@@ -1379,6 +1431,18 @@ function cronoModal(x) {
 }
 
 /* ---------- importar kit (HTML + pasta de arquivos) ---------- */
+// chave de um arquivo: as 2 últimas partes do caminho ("feed/01-x.jpg", "1-apresentacao/01.jpg")
+const fkey = u => String(u || "").split("?")[0].split("/").slice(-2).join("/").toLowerCase();
+const tkey = (f, t) => f + "|" + String(t || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
+const solid = u => /^(idb:|https?:|data:)/.test(u || "") || String(u || "").startsWith("{assets}") || String(u || "").startsWith("kits/");
+function pilarDoKit(nome) { const n = String(nome || "").toLowerCase(); if (/upe tv|\btv\b/.test(n)) return "Upe TV"; if (/erp|plataforma de vendas|loja/.test(n)) return "Upe ERP"; if (/branding|marca/.test(n)) return "Branding"; return ""; }
+function acharTodos(lista, it, mesmoKit) { return lista.filter(x => acharIgual([x], it, mesmoKit)); }
+function acharIgual(lista, it, mesmoKit = () => true) {
+  // mesmo título, ou exatamente o mesmo conjunto de arquivos
+  const set = x => [...new Set((x.midias || []).map(fkey).filter(Boolean))].sort().join("|"), ks = set(it), fm = f => ({ imagem: "feed", video: "youtube" }[f] || f);
+  // o título só vale dentro do mesmo kit (kits diferentes podem ter peças com o mesmo nome)
+  return lista.find(x => (mesmoKit(x) && tkey(fm(x.formato || x.tipo), x.titulo) === tkey(fm(it.formato), it.titulo)) || (ks && set(x) === ks));
+}
 const FMT_TIPO = { feed: "imagem", carrossel: "carrossel", reels: "reels", story: "story", youtube: "video", shorts: "reels" };
 function kitImport(target) {
   let files = new Map(), html = "", parsed = null, baseHref = "";
@@ -1388,14 +1452,17 @@ function kitImport(target) {
       <label class="tg" style="flex-direction:column;align-items:flex-start;gap:8px"><b>Só o arquivo HTML</b><small>Os arquivos ficam num endereço publicado</small><input type="file" id="kHtml" accept=".html,text/html"></label></div>
     <label class="f" for="kBase">Endereço da pasta publicada (se enviar só o HTML)<input id="kBase" placeholder="https://seusite.web.app/portal/kits/nome-do-kit/"></label>
     <div class="g3"><label class="f" for="kNome">Nome do kit<input id="kNome" placeholder="Kit Instagram · outubro"></label><label class="f" for="kShift">Mover datas (dias)<input id="kShift" type="number" value="0"></label>
-      ${target.alvo === "cliente" ? `<label class="f" for="kSt">Os posts entram como<select id="kSt"><option value="pendente">Aguardando aprovação</option><option value="rascunho">Rascunho (cliente não vê)</option><option value="aprovado">Já aprovados</option></select></label>` : `<label class="f" for="kPil">Pilar<select id="kPil">${PILARES.map(p => `<option>${p}</option>`).join("")}</select></label>`}</div>
+      ${target.alvo === "cliente" ? `<label class="f" for="kSt">Os posts entram como<select id="kSt"><option value="pendente">Aguardando aprovação</option><option value="rascunho">Rascunho (cliente não vê)</option><option value="aprovado">Já aprovados</option></select></label>` : `<label class="f" for="kPil">Pilar<select id="kPil"><option value="">Automático (pelo nome do kit)</option>${PILARES.map(p => `<option>${p}</option>`).join("")}</select></label>`}</div>
+    <p class="muted small">Peças que já existem ${target.alvo === "cliente" ? "neste cliente" : "no cronograma"} (mesmo arquivo ou mesmo título) são <b>atualizadas</b> com os arquivos novos, sem duplicar e sem mudar a data.</p>
     <div id="kPrev"></div>`, `<button class="btn sec" data-close>Cancelar</button><button class="btn" id="kGo" disabled>Importar</button>`, true);
   const prev = () => {
     if (!html) return; const doc = new DOMParser().parseFromString(html, "text/html"); parsed = parseKit(doc);
     if (!$("#kNome").value) $("#kNome").value = parsed.titulo || "Kit de conteúdo";
     const sh = +$("#kShift").value || 0, has = p => files.size ? files.has(normP(p)) : true;
-    const its = parsed.itens; const miss = its.reduce((s, i) => s + i.midias.filter(m => !has(m)).length, 0);
-    $("#kPrev").innerHTML = its.length ? `<div class="row small"><b>${its.length} peças</b>${["feed", "carrossel", "reels", "story", "youtube"].map(f => { const n = its.filter(i => i.formato === f).length; return n ? `<span class="pill">${n} ${FMT_LBL[f]}</span>` : ""; }).join("")}${miss ? `<span class="pill bad">${miss} arquivo(s) não encontrados na pasta</span>` : files.size ? '<span class="pill ok">Todos os arquivos encontrados</span>' : ""}</div>
+    const its = parsed.itens.filter(i => target.alvo !== "cliente" || i.formato !== "youtube"); const miss = its.reduce((s, i) => s + i.midias.filter(m => !has(m)).length, 0);
+    const pilP = target.alvo === "cliente" ? "" : ($("#kPil").value || pilarDoKit($("#kNome").value) || pilarDoKit(parsed.titulo) || "Marca");
+    const lista = target.alvo === "cliente" ? (target.doc.posts || []) : state.cache.crono, upd = its.filter(i => acharIgual(lista, i, x => target.alvo === "cliente" || x.pilar === pilP || x.canal === "youtube")).length;
+    $("#kPrev").innerHTML = its.length ? `<div class="row small"><b>${its.length} peças</b><span class="pill ok">${its.length - upd} novas</span><span class="pill info">${upd} já existem (serão atualizadas)</span>${["feed", "carrossel", "reels", "story", "youtube"].map(f => { const n = its.filter(i => i.formato === f).length; return n ? `<span class="pill">${n} ${FMT_LBL[f]}</span>` : ""; }).join("")}${miss ? `<span class="pill bad">${miss} arquivo(s) não encontrados na pasta</span>` : files.size ? '<span class="pill ok">Todos os arquivos encontrados</span>' : ""}</div>
       <div class="card pad0 tbl" style="max-height:300px;overflow:auto"><table><thead><tr><th>Data</th><th>Formato</th><th>Peça</th><th>Arquivos</th></tr></thead><tbody>${its.map(i => `<tr><td class="num small">${i.data ? fdate(addDays(i.data, sh)) : "sem data"}</td><td>${esc(FMT_LBL[i.formato] || i.formato)}</td><td class="small">${esc(i.titulo)}</td><td class="num small">${i.midias.length}</td></tr>`).join("")}</tbody></table></div>` : `<div class="empty">Não encontrei peças neste HTML.</div>`;
     $("#kGo").disabled = !its.length;
   };
@@ -1415,16 +1482,29 @@ function kitImport(target) {
       return base ? resolveUrl(p, base.endsWith("/") ? base : base + "/") : p; };
     if (S.mode === "firebase" && files.size && !S.st) { toast("Ative o Firebase Storage para enviar os arquivos"); btn.disabled = false; return; }
     const out = [];
-    for (const i of parsed.itens.filter(i => target.alvo !== "cliente" || i.formato !== "youtube")) out.push({ ...i, data: i.data ? addDays(i.data, sh) : "", midias: await Promise.all(i.midias.map(up)), capa: await up(i.capa) });
+    for (const i of parsed.itens.filter(i => target.alvo !== "cliente" || i.formato !== "youtube")) out.push({ ...i, orig: i, data: i.data ? addDays(i.data, sh) : "", midias: await Promise.all(i.midias.map(up)), capa: await up(i.capa) });
+    const merge = (old, novo) => novo.map((u, k) => solid(u) ? u : (old || [])[k] || u);
+    let novos = 0, atual = 0;
     if (target.alvo === "cliente") {
-      const d = target.doc, st = $("#kSt").value, now = Date.now();
+      const d = target.doc, st = $("#kSt").value, now = Date.now(); d.posts = d.posts || [];
+      for (const i of out) {
+        const ex = acharIgual(d.posts, i.orig);
+        if (ex) { ex.midias = merge(ex.midias, i.midias); if (solid(i.capa)) ex.capa = i.capa; if (!ex.legenda) ex.legenda = i.legenda; ex.kitId = ex.kitId || kitId; atual++; }
+        else { d.posts.push({ id: uid(8), kitId, data: i.data, hora: { reels: "19:00", story: "10:00" }[i.formato] || "12:00", tipo: FMT_TIPO[i.formato] || "imagem", titulo: i.titulo, midias: i.midias, capa: i.capa, legenda: i.legenda, versao: 1, status: st, statusEm: now }); novos++; }
+      }
       d.kits = [...(d.kits || []), { id: kitId, nome, importadoEm: now, total: out.length }];
-      d.posts = [...(d.posts || []), ...out.map(i => ({ id: uid(8), kitId, data: i.data, hora: { reels: "19:00", story: "10:00" }[i.formato] || "12:00", tipo: FMT_TIPO[i.formato] || "imagem", titulo: i.titulo, midias: i.midias, capa: i.capa, legenda: i.legenda, versao: 1, status: st, statusEm: now }))];
-      dlg.close(); await target.save(`${out.length} posts importados do kit`);
+      dlg.close(); await target.save(`${novos} posts novos · ${atual} atualizados`);
     } else {
-      const pil = $("#kPil").value;
-      for (const i of out) { const id = "kit-" + kitId + "-" + uid(5); await S.set(`cronograma/${id}`, { id, data: i.data, hora: { reels: "19:00", story: "10:00", youtube: "18:00" }[i.formato] || "12:00", canal: i.formato === "youtube" || i.formato === "shorts" ? "youtube" : "instagram", formato: i.formato, pilar: i.formato === "youtube" ? "YouTube" : pil, titulo: i.titulo, legenda: i.legenda, roteiro: i.roteiro || "", midias: i.midias, capa: i.capa, status: "planejado", origem: nome }); }
-      dlg.close(); toast(`${out.length} itens no cronograma`); reAdmin();
+      const pil = $("#kPil").value || pilarDoKit(nome) || pilarDoKit(parsed.titulo) || "Marca", crono = state.cache.crono;
+      for (const i of out) {
+        const exs = acharTodos(crono, i.orig, x => x.pilar === pil || x.origem === nome || x.canal === "youtube");
+        if (exs.length) { for (const ex of exs) { ex.midias = merge(ex.midias, i.midias); if (solid(i.capa)) ex.capa = i.capa; if (!ex.legenda) ex.legenda = i.legenda;
+          if (ex.canal !== "youtube" && ex.pilar === "Branding" && pil !== "Branding") ex.pilar = pil; await S.set(`cronograma/${ex.id}`, ex); } atual++; continue; }
+        const id = "kit-" + kitId + "-" + uid(5);
+        const it = { id, data: i.data, hora: { reels: "19:00", story: "10:00", youtube: "18:00" }[i.formato] || "12:00", canal: i.formato === "youtube" || i.formato === "shorts" ? "youtube" : "instagram", formato: i.formato, pilar: i.formato === "youtube" ? "YouTube" : pil, titulo: i.titulo, legenda: i.legenda, roteiro: i.roteiro || "", midias: i.midias, capa: i.capa, status: "planejado", origem: nome };
+        await S.set(`cronograma/${id}`, it); crono.push(it); novos++;
+      }
+      dlg.close(); toast(`${novos} itens novos · ${atual} atualizados`); reAdmin();
     }
   };
 }

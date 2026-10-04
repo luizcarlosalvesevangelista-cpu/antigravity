@@ -119,7 +119,7 @@
    "legenda": "O filme da Upe Criativo: Branding e Redesign, Upe ERP (loja online, PDV e pedidos) e Upe TV (mídia em telas parceiras).\n\nFale com a Upe: WhatsApp (11) 93439-3249\nInstagram: @upecriativo\n\nCapítulos:\n0:00 Abertura\n0:08 Branding e Redesign\n0:24 Lançamentos\n0:28 Upe ERP\n0:56 Upe TV\n1:26 Três frentes",
    "roteiro": "• Vídeo pronto (filme institucional).",
    "midias": [
-    "../assets/video/filme-h.mp4"
+    "{assets}video/filme-h.mp4"
    ],
    "capa": "kits/upe-branding/youtube/yt-01-filme-upe.jpg",
    "origem": "YouTube Upe",
@@ -217,7 +217,7 @@
   },
   {
    "formato": "feed",
-   "titulo": "02 · pedido no caderno",
+   "titulo": "Se a sua loja funciona entre conversas de WhatsApp, cadernos e prints de PIX,…",
    "legenda": "Se a sua loja funciona entre conversas de WhatsApp, cadernos e prints de PIX, você não está sozinho. 📒\n\nMas cada pedido perdido, cada estoque errado e cada “cadê meu pedido?” custa caro.\n\nCom a plataforma da Upe Criativo, o pedido chega organizado, o PIX vem com valor certo e o cliente acompanha sozinho. Teste 14 dias grátis.\n\n👉 Teste 14 dias grátis: upe-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
    "midias": [
     "kits/upe-erp/feed/02-pedido-no-caderno.png"
@@ -308,7 +308,7 @@
    "legenda": "Conheça o Upe ERP: loja virtual com a sua marca, PDV no balcão, PIX com QR Code, gestão de pedidos, cupons e relatórios.\nTeste 14 dias grátis: upe-erp.web.app\n\nCapítulos:\n0:00 Abertura\n0:04 Painel\n0:14 Pedidos e rastreio\n0:24 PDV e PIX\n0:32 Como testar",
    "roteiro": "• Vídeo pronto (lançamento Upe ERP).",
    "midias": [
-    "../assets/video/erp-h.mp4"
+    "{assets}video/erp-h.mp4"
    ],
    "capa": "kits/upe-branding/youtube/yt-02-upe-erp.jpg",
    "origem": "YouTube Upe",
@@ -498,7 +498,7 @@
    "legenda": "Como funciona o Upe TV: campanhas em TVs e totens de cafés, academias, clínicas e lojas, com QR code para o seu WhatsApp e relatório do tempo de tela.\nupe-tv.web.app\n\nCapítulos:\n0:00 Abertura\n0:04 Na tela\n0:14 QR code e pedido\n0:26 Resultados\n0:34 Como anunciar",
    "roteiro": "• Vídeo pronto (lançamento Upe TV).",
    "midias": [
-    "../assets/video/tv-h.mp4"
+    "{assets}video/tv-h.mp4"
    ],
    "capa": "kits/upe-branding/youtube/yt-03-upe-tv.jpg",
    "origem": "YouTube Upe",
@@ -818,7 +818,7 @@
   },
   {
    "formato": "feed",
-   "titulo": "Anuncie onde as pessoas esperam. ⏳",
+   "titulo": "Anuncie onde as pessoas esperam.",
    "legenda": "Anuncie onde as pessoas esperam. ⏳\n\nO Upe TV está em TVs e totens de cafés, academias, clínicas, salões e lojas parceiras. Público do bairro, todos os dias.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
    "midias": [
     "kits/upe-tv/feed/02-onde-aparece.jpg"
@@ -1116,7 +1116,7 @@
   },
   {
    "formato": "shorts",
-   "titulo": "Tudo sobre o Upe TV em 85 segundos. ⏱",
+   "titulo": "Tudo sobre o Upe TV em 85 segundos.",
    "legenda": "Tudo sobre o Upe TV em 85 segundos. ⏱️\n\nComo as campanhas giram na tela, como a lateral e o rodapé se abrem, o QR, o bloqueio por PIN, o tempo de tela e o portal do anunciante. Salve e mande para quem tem um negócio no bairro.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
    "midias": [
     "kits/upe-tv/reels/reel-6-tv-ao-vivo.mp4"
@@ -1242,7 +1242,7 @@
   },
   {
    "formato": "reels",
-   "titulo": "Tudo sobre o Upe TV em 85 segundos. ⏱",
+   "titulo": "Tudo sobre o Upe TV em 85 segundos.",
    "legenda": "Tudo sobre o Upe TV em 85 segundos. ⏱️\n\nComo as campanhas giram na tela, como a lateral e o rodapé se abrem, o QR, o bloqueio por PIN, o tempo de tela e o portal do anunciante. Salve e mande para quem tem um negócio no bairro.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
    "midias": [
     "kits/upe-tv/reels/reel-6-tv-ao-vivo.mp4"
@@ -1390,7 +1390,7 @@
   },
   {
    "formato": "reels",
-   "titulo": "Reel 3 · produtos pdv e mais",
+   "titulo": "Edição em lote, PDV no balcão, gestão de pedidos, temas da loja, frete por…",
    "legenda": "Edição em lote, PDV no balcão, gestão de pedidos, temas da loja, frete por estado, relatórios e suporte. Tudo num só painel. ⚡\n\n👉 Teste 14 dias grátis: upe-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
    "midias": [
     "kits/upe-erp/reels/reel-3-produtos-pdv-e-mais.mp4"
@@ -1534,7 +1534,7 @@
   },
   {
    "formato": "shorts",
-   "titulo": "Reel 3 · produtos pdv e mais",
+   "titulo": "Edição em lote, PDV no balcão, gestão de pedidos, temas da loja, frete por…",
    "legenda": "Edição em lote, PDV no balcão, gestão de pedidos, temas da loja, frete por estado, relatórios e suporte. Tudo num só painel. ⚡\n\n👉 Teste 14 dias grátis: upe-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
    "midias": [
     "kits/upe-erp/reels/reel-3-produtos-pdv-e-mais.mp4"
