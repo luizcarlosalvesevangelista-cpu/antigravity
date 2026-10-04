@@ -122,6 +122,8 @@ tr.click { cursor: pointer; } tr.click:hover td { background: var(--bg-2); }
 .nav a { display: flex; justify-content: space-between; align-items: center; gap: 8px; color: var(--side-fg); text-decoration: none; padding: 10px 12px; border-radius: 10px; font-weight: 700; font-size: .92rem; opacity: .82; }
 .nav a:hover { background: rgba(242,240,225,.06); opacity: 1; }
 .nav a[aria-current="page"] { background: var(--azul); opacity: 1; }
+.nav a.sub { padding: 6px 12px 6px 26px; font-size: .84rem; font-weight: 600; opacity: .7; }
+.nav a.sub[aria-current="true"] { opacity: 1; background: rgba(242,240,225,.08); }
 .nav a .cnt { background: var(--creme); color: var(--azul); font-size: .7rem; font-weight: 900; padding: 1px 7px; border-radius: 999px; }
 .side .foot { margin-top: auto; font-size: .8rem; opacity: .7; padding: 10px; display: grid; gap: 8px; }
 .side .foot button { color: var(--side-fg); }

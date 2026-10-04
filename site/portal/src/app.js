@@ -86,7 +86,7 @@ const thread = (doc, acoes) => [
   ...(doc.mensagens || []).map(m => ({ ...m, autor: "upe" })),
   ...acoes.filter(a => a.tipo === "mensagem").map(a => ({ id: a.id, autor: "cliente", texto: a.texto, em: a.em }))
 ].sort((a, b) => a.em - b.em);
-const pedidosOf = (doc, acoes) => acoes.filter(a => a.tipo === "pedido").map(a => ({ ...a, status: doc.pedidosAdm?.[a.id]?.status || "novo" })).sort((a, b) => b.em - a.em);
+const pedidosOf = (doc, acoes) => acoes.filter(a => a.tipo === "pedido" && !String(a.alvo || "").startsWith("app:")).map(a => ({ ...a, status: doc.pedidosAdm?.[a.id]?.status || "novo" })).sort((a, b) => b.em - a.em);
 function cobStatus(c, acoes) { if (c.status === "paga" || c.status === "cancelado") return c.status; return acoes.some(a => a.tipo === "pagamento" && a.alvo === c.id) ? "informado" : "aberta"; }
 function pendencias(doc, acoes, lastSeen = 0) {
   const vis = it => it.status !== "rascunho" && it.status !== "orcamento";
@@ -110,7 +110,7 @@ function pixPayload({ chave, nome, cidade, valor, txid, descricao }) {
 }
 
 /* ---------------- armazenamento ---------------- */
-const DEMO_KEY = "upe-portal-demo-v4";
+const DEMO_KEY = "upe-portal-demo-v5";
 class LocalStore {
   constructor() { this.mode = "demo"; let d = null; try { d = JSON.parse(ls.get(DEMO_KEY)); } catch (e) {} this.d = d && d.cols ? d : { cols: {} }; }
   async init() {
@@ -210,6 +210,7 @@ async function seedDemo(st) {
       motions: [], semanas: ["Semana 1 · lançamento"],
       instagram: [{ img: A + "img/brand.jpg", titulo: "Nova identidade", data: "", semana: 1, legenda: "" }, { img: A + "img/redesign.jpg", titulo: "Antes e depois", data: "", semana: 1, legenda: "" }, { img: A + "img/filme-h.jpg", titulo: "Assinatura", data: "", semana: 1, legenda: "" }]
     },
+    apps: { erp: { status: "teste", plano: "upe", extras: ["E"], dia: 10, ajuste: 0, inicio: day(-12), fimTeste: day(2), obs: "Loja em cafeaurora.upe (exemplo)" }, tv: { status: "ativo", plano: "vitrine", extras: ["cta"], dia: 15, ajuste: 189.9, inicio: day(-40), fimTeste: "", obs: "2 telas parceiras no bairro" } },
     perfil: { nome: "Café Aurora", canais: ["instagram", "whatsapp", "google", "loja"], negocio: "Cafeteria de bairro com delivery", regiao: "São Paulo · zona oeste", publicos: ["Vizinhos que tomam café todo dia", "Quem trabalha perto e pede delivery"], atributos: ["Café coado", "Pão na chapa", "Bolos caseiros"],
       jornada: [{ etapa: "Descobrir", texto: "Reels do café sendo coado e do balcão" }, { etapa: "Confiar", texto: "Avaliações do Google e fotos de clientes" }, { etapa: "Escolher", texto: "Cardápio da semana nos stories" }, { etapa: "Comprar", texto: "Pedido pelo WhatsApp e iFood" }], em: now - 72 * H },
     posts: [
@@ -235,6 +236,7 @@ async function seedDemo(st) {
   const p = await st.get(`privado/${id}`); await st.del(`codigos/${p.codigoHash}`); const code = "AURO-RA26-DEMO", h = await sha256(normCode(code));
   await st.set(`codigos/${h}`, { clienteId: id }); await st.set(`privado/${id}`, { ...p, codigo: code, codigoHash: h });
   await st.add(`clientes/${id}/acoes`, { tipo: "mensagem", texto: "Perfeito! Vou olhar hoje à tarde.", em: now - 5 * H });
+  await st.add(`clientes/${id}/acoes`, { tipo: "pedido", alvo: "app:erp:K", modo: "app", quantidade: 1, texto: "", em: now - 4 * H });
   await st.add(`clientes/${id}/acoes`, { tipo: "ajuste", alvo: "p-lanc", versao: 1, texto: "Pode usar a foto com o letreiro novo?", em: now - 3 * H });
   await st.add(`clientes/${id}/acoes`, { tipo: "ajuste", alvo: "p-antes", versao: 1, texto: "Na 2ª imagem, escrever “desde 1998” no rodapé.", em: now - 90 * 6e4 });
   await st.add(`clientes/${id}/acoes`, { tipo: "pedido", alvo: cs.graficos[0].id, quantidade: 1000, modo: "alterado", texto: "Trocar o telefone para (11) 90000-0000.", em: now - 30 * H });
@@ -360,6 +362,7 @@ async function clientRoute(tab, arg) {
     ["conteudo", "Conteúdo", pend.posts.length, pl.midias && ac.calendario],
     ["graficos", "Materiais gráficos", pend.artes.length, pl.grafica && ac.graficos],
     ["produtos", "Comprar de novo", 0, pl.grafica && ac.recompra && recItems.length],
+    ["apps", "Apps Upe", 0, APP_IDS.some(k => !appsCat(state.cfg)[k].breve) || adesoes(doc).length],
     ["pagamentos", "Pagamentos", pend.cobs.length, ac.pagamentos],
     ["mensagens", "Mensagens", tab === "mensagens" ? 0 : pend.msgs.length, true]
   ].filter(t => t[3]);
@@ -380,7 +383,7 @@ async function clientRoute(tab, arg) {
   if (voltar) $("#voltarAdm").onclick = () => { ss.set("upe-cliente", null); ss.set("upe-voltar", null); };
   const m = $("#cmain");
   if (kitView) return cKit(m, c, arg);
-  ({ inicio: cInicio, agenda: cAgenda, apresentacao: cApres, conteudo: cConteudo, graficos: cGraficos, produtos: cProdutos, pagamentos: cPagamentos, mensagens: cMensagens })[tab](m, c, { pend, recItems, tabs, arg });
+  ({ inicio: cInicio, agenda: cAgenda, apresentacao: cApres, conteudo: cConteudo, graficos: cGraficos, produtos: cProdutos, pagamentos: cPagamentos, mensagens: cMensagens, apps: cApps })[tab](m, c, { pend, recItems, tabs, arg });
 }
 const refreshClient = () => clientRoute((location.hash.split("/")[2]) || "inicio");
 
@@ -578,16 +581,16 @@ async function adminRoute(rest) {
   if (!(await S.currentAdmin())) return gate("admin");
   state.admin = true;
   const [sec = "clientes", a1, a2, a3] = rest;
-  const [clients, contatos, reunioes, cron0] = await Promise.all([Api.listClients(), S.list("contatos"), S.list("reunioes"), S.list("cronograma")]);
+  const [clients, contatos, reunioes, cron0, pub] = await Promise.all([Api.listClients(), S.list("contatos"), S.list("reunioes"), S.list("cronograma"), Api.config()]);
   const crono = cron0.filter(x => x.id !== EXTRAS_ID), exDoc = cron0.find(x => x.id === EXTRAS_ID);
   let extras = exDoc ? exDoc.lista || [] : null; if (!extras) { try { extras = (await cronogramaArquivo()).extras || []; } catch (e) { extras = []; } }
-  Object.assign(state.cache, { clients, contatos, reunioes, crono, extras });
+  Object.assign(state.cache, { clients, contatos, reunioes, crono, extras, pub });
   const unread = clients.reduce((s, c) => s + c.acoes.filter(a => a.tipo === "mensagem" && a.em > (c.doc.lidoAdmEm || 0)).length, 0);
   const novos = contatos.filter(c => (c.status || "novo") === "novo").length;
   const hoje = todayIso(), agendaHoje = reunioes.filter(r => r.data === hoje && r.status !== "cancelada").length + crono.filter(x => x.data === hoje && x.status !== "publicado").length;
-  const nav = [["clientes", "Clientes", 0], ["calendario", "Calendário", agendaHoje], ["cronograma", "Cronograma Upe", 0], ["contatos", "Contatos do site", novos], ["mensagens", "Inbox", unread], ["newsletter", "Newsletter", 0], ["config", "Configurações", 0]];
+  const nav = [["clientes", "Clientes", 0], ["calendario", "Calendário", agendaHoje], ["cronograma", "Cronograma Upe", 0], ["apps", "Apps Extra", clients.reduce((s, c) => s + appPedidos(c.doc, c.acoes).filter(p => p.status === "novo").length, 0)], ["contatos", "Contatos do site", novos], ["mensagens", "Inbox", unread], ["newsletter", "Newsletter", 0], ["config", "Configurações", 0]];
   const cur = sec === "cliente" ? "clientes" : sec;
-  app.innerHTML = demoBar() + `<div class="adm"><aside class="side"><div class="logo">${WM}</div><nav class="nav">${nav.map(([k, l, n]) => `<a href="#/admin/${k}" ${k === cur ? 'aria-current="page"' : ""}><span>${l}</span>${n ? `<span class="cnt">${n}</span>` : ""}</a>`).join("")}</nav>
+  app.innerHTML = demoBar() + `<div class="adm"><aside class="side"><div class="logo">${WM}</div><nav class="nav">${nav.map(([k, l, n]) => `<a href="#/admin/${k}" ${k === cur ? 'aria-current="page"' : ""}><span>${l}</span>${n ? `<span class="cnt">${n}</span>` : ""}</a>` + (k === "apps" ? APP_IDS.map(ap => `<a class="sub" href="#/admin/apps/${ap}" ${cur === "apps" && (a1 || "erp") === ap ? 'aria-current="true"' : ""}><span>${esc(APPS_PADRAO[ap].nome.replace("Upe ", ""))}</span></a>`).join("") : "")).join("")}</nav>
     <div class="foot"><span>${S.mode === "demo" ? "Modo demonstração" : "Firebase conectado"}</span><button class="lnk" id="logout">Sair</button></div></aside><main class="work"><div class="wtop"><button class="btn sec sm" id="topReu">Agendar reunião</button><div id="bellH"></div></div><div id="w" class="grid" style="gap:18px"></div></main></div>`;
   bell($("#bellH"), "adm", notifsAdmin(state.cache)); $("#topReu").onclick = () => reuniaoModal();
   $("#logout").onclick = async () => { await S.logout(); state.admin = false; go("#/"); };
@@ -595,6 +598,7 @@ async function adminRoute(rest) {
   if (sec === "clientes") return aClientes(w, clients);
   if (sec === "calendario") return aCalendario(w);
   if (sec === "cronograma") return aCronograma(w, a1 || "instagram");
+  if (sec === "apps") return aApps(w, APP_IDS.includes(a1) ? a1 : "erp");
   if (sec === "cliente") return aCliente(w, a1, a2 || "projeto", a3);
   if (sec === "contatos") return aContatos(w, contatos);
   if (sec === "mensagens") return aInbox(w, clients, a1);
@@ -663,7 +667,7 @@ async function aCliente(w, id, tab, alvo) {
   const doc = clone(c.doc), priv = clone(c.priv), acoes = c.acoes;
   const p = pendencias(doc, acoes), unread = acoes.filter(a => a.tipo === "mensagem" && a.em > (doc.lidoAdmEm || 0)).length, pedNovos = pedidosOf(doc, acoes).filter(x => x.status === "novo").length;
   const ajustes = [...(doc.posts || []), ...(doc.graficos || [])].filter(x => statusOf(x, acoes).status === "ajustes");
-  const tabs = [["projeto", "Projeto e acessos", 0], ["apresentacao", "Apresentação e dossiê", 0], ["conteudo", "Conteúdo", p.posts.length + (doc.posts || []).filter(x => ajustes.includes(x)).length], ["graficos", "Gráficos e recompra", pedNovos], ["pagamentos", "Pagamentos", (doc.cobrancas || []).filter(x => cobStatus(x, acoes) === "informado").length], ["mensagens", "Inbox", unread]];
+  const tabs = [["projeto", "Projeto e acessos", 0], ["apresentacao", "Apresentação e dossiê", 0], ["conteudo", "Conteúdo", p.posts.length + (doc.posts || []).filter(x => ajustes.includes(x)).length], ["graficos", "Gráficos e recompra", pedNovos], ["pagamentos", "Pagamentos", (doc.cobrancas || []).filter(x => cobStatus(x, acoes) === "informado").length], ["apps", "Apps Extra", appPedidos(doc, acoes).filter(x => x.status === "novo").length], ["mensagens", "Inbox", unread]];
   w.innerHTML = `<div class="spread"><div class="grid" style="gap:4px"><a href="#/admin/clientes" class="small">← Clientes</a><h1>${esc(doc.marca || doc.empresa || doc.nome)}</h1><span class="muted">${esc(doc.nome)}${priv.email ? ` · ${esc(priv.email)}` : ""}</span></div>
     <div class="row"><button class="btn sec sm" id="vCli">Ver como cliente</button></div></div>
     <nav class="subtabs">${tabs.map(([k, l, n]) => `<a class="tab" href="#/admin/cliente/${id}/${k}" ${k === tab ? 'aria-current="page"' : ""}>${l}${n ? `<span class="cnt">${n}</span>` : ""}</a>`).join("")}</nav>
@@ -671,7 +675,7 @@ async function aCliente(w, id, tab, alvo) {
   $("#vCli").onclick = () => { ss.set("upe-cliente", id); ss.set("upe-voltar", `#/admin/cliente/${id}/projeto`); go("#/c/inicio"); };
   const save = async (msg = "Salvo") => { doc.atualizadoEm = Date.now(); await S.set(`clientes/${id}`, doc); toast(msg); reAdmin(); };
   const ct = $("#ct");
-  ({ projeto: aProjeto, apresentacao: aApres, conteudo: aConteudo, graficos: aGraficosA, pagamentos: aPagamentosA, mensagens: aMsgA })[tab](ct, { id, doc, priv, acoes, save, alvo });
+  ({ projeto: aProjeto, apresentacao: aApres, conteudo: aConteudo, graficos: aGraficosA, pagamentos: aPagamentosA, mensagens: aMsgA, apps: aClienteApps })[tab](ct, { id, doc, priv, acoes, save, alvo });
 }
 
 function aProjeto(ct, { id, doc, priv, save }) {

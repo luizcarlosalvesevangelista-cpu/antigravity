@@ -162,7 +162,7 @@ const thread = (doc, acoes) => [
   ...(doc.mensagens || []).map(m => ({ ...m, autor: "upe" })),
   ...acoes.filter(a => a.tipo === "mensagem").map(a => ({ id: a.id, autor: "cliente", texto: a.texto, em: a.em }))
 ].sort((a, b) => a.em - b.em);
-const pedidosOf = (doc, acoes) => acoes.filter(a => a.tipo === "pedido").map(a => ({ ...a, status: doc.pedidosAdm?.[a.id]?.status || "novo" })).sort((a, b) => b.em - a.em);
+const pedidosOf = (doc, acoes) => acoes.filter(a => a.tipo === "pedido" && !String(a.alvo || "").startsWith("app:")).map(a => ({ ...a, status: doc.pedidosAdm?.[a.id]?.status || "novo" })).sort((a, b) => b.em - a.em);
 function cobStatus(c, acoes) { if (c.status === "paga" || c.status === "cancelado") return c.status; return acoes.some(a => a.tipo === "pagamento" && a.alvo === c.id) ? "informado" : "aberta"; }
 function pendencias(doc, acoes, lastSeen = 0) {
   const vis = it => it.status !== "rascunho" && it.status !== "orcamento";
@@ -186,7 +186,7 @@ function pixPayload({ chave, nome, cidade, valor, txid, descricao }) {
 }
 
 /* ---------------- armazenamento ---------------- */
-const DEMO_KEY = "upe-portal-demo-v4";
+const DEMO_KEY = "upe-portal-demo-v5";
 class LocalStore {
   constructor() { this.mode = "demo"; let d = null; try { d = JSON.parse(ls.get(DEMO_KEY)); } catch (e) {} this.d = d && d.cols ? d : { cols: {} }; }
   async init() {
@@ -286,6 +286,7 @@ async function seedDemo(st) {
       motions: [], semanas: ["Semana 1 · lançamento"],
       instagram: [{ img: A + "img/brand.jpg", titulo: "Nova identidade", data: "", semana: 1, legenda: "" }, { img: A + "img/redesign.jpg", titulo: "Antes e depois", data: "", semana: 1, legenda: "" }, { img: A + "img/filme-h.jpg", titulo: "Assinatura", data: "", semana: 1, legenda: "" }]
     },
+    apps: { erp: { status: "teste", plano: "upe", extras: ["E"], dia: 10, ajuste: 0, inicio: day(-12), fimTeste: day(2), obs: "Loja em cafeaurora.upe (exemplo)" }, tv: { status: "ativo", plano: "vitrine", extras: ["cta"], dia: 15, ajuste: 189.9, inicio: day(-40), fimTeste: "", obs: "2 telas parceiras no bairro" } },
     perfil: { nome: "Café Aurora", canais: ["instagram", "whatsapp", "google", "loja"], negocio: "Cafeteria de bairro com delivery", regiao: "São Paulo · zona oeste", publicos: ["Vizinhos que tomam café todo dia", "Quem trabalha perto e pede delivery"], atributos: ["Café coado", "Pão na chapa", "Bolos caseiros"],
       jornada: [{ etapa: "Descobrir", texto: "Reels do café sendo coado e do balcão" }, { etapa: "Confiar", texto: "Avaliações do Google e fotos de clientes" }, { etapa: "Escolher", texto: "Cardápio da semana nos stories" }, { etapa: "Comprar", texto: "Pedido pelo WhatsApp e iFood" }], em: now - 72 * H },
     posts: [
@@ -311,6 +312,7 @@ async function seedDemo(st) {
   const p = await st.get(`privado/${id}`); await st.del(`codigos/${p.codigoHash}`); const code = "AURO-RA26-DEMO", h = await sha256(normCode(code));
   await st.set(`codigos/${h}`, { clienteId: id }); await st.set(`privado/${id}`, { ...p, codigo: code, codigoHash: h });
   await st.add(`clientes/${id}/acoes`, { tipo: "mensagem", texto: "Perfeito! Vou olhar hoje à tarde.", em: now - 5 * H });
+  await st.add(`clientes/${id}/acoes`, { tipo: "pedido", alvo: "app:erp:K", modo: "app", quantidade: 1, texto: "", em: now - 4 * H });
   await st.add(`clientes/${id}/acoes`, { tipo: "ajuste", alvo: "p-lanc", versao: 1, texto: "Pode usar a foto com o letreiro novo?", em: now - 3 * H });
   await st.add(`clientes/${id}/acoes`, { tipo: "ajuste", alvo: "p-antes", versao: 1, texto: "Na 2ª imagem, escrever “desde 1998” no rodapé.", em: now - 90 * 6e4 });
   await st.add(`clientes/${id}/acoes`, { tipo: "pedido", alvo: cs.graficos[0].id, quantidade: 1000, modo: "alterado", texto: "Trocar o telefone para (11) 90000-0000.", em: now - 30 * H });
@@ -436,6 +438,7 @@ async function clientRoute(tab, arg) {
     ["conteudo", "Conteúdo", pend.posts.length, pl.midias && ac.calendario],
     ["graficos", "Materiais gráficos", pend.artes.length, pl.grafica && ac.graficos],
     ["produtos", "Comprar de novo", 0, pl.grafica && ac.recompra && recItems.length],
+    ["apps", "Apps Upe", 0, APP_IDS.some(k => !appsCat(state.cfg)[k].breve) || adesoes(doc).length],
     ["pagamentos", "Pagamentos", pend.cobs.length, ac.pagamentos],
     ["mensagens", "Mensagens", tab === "mensagens" ? 0 : pend.msgs.length, true]
   ].filter(t => t[3]);
@@ -456,7 +459,7 @@ async function clientRoute(tab, arg) {
   if (voltar) $("#voltarAdm").onclick = () => { ss.set("upe-cliente", null); ss.set("upe-voltar", null); };
   const m = $("#cmain");
   if (kitView) return cKit(m, c, arg);
-  ({ inicio: cInicio, agenda: cAgenda, apresentacao: cApres, conteudo: cConteudo, graficos: cGraficos, produtos: cProdutos, pagamentos: cPagamentos, mensagens: cMensagens })[tab](m, c, { pend, recItems, tabs, arg });
+  ({ inicio: cInicio, agenda: cAgenda, apresentacao: cApres, conteudo: cConteudo, graficos: cGraficos, produtos: cProdutos, pagamentos: cPagamentos, mensagens: cMensagens, apps: cApps })[tab](m, c, { pend, recItems, tabs, arg });
 }
 const refreshClient = () => clientRoute((location.hash.split("/")[2]) || "inicio");
 
@@ -654,16 +657,16 @@ async function adminRoute(rest) {
   if (!(await S.currentAdmin())) return gate("admin");
   state.admin = true;
   const [sec = "clientes", a1, a2, a3] = rest;
-  const [clients, contatos, reunioes, cron0] = await Promise.all([Api.listClients(), S.list("contatos"), S.list("reunioes"), S.list("cronograma")]);
+  const [clients, contatos, reunioes, cron0, pub] = await Promise.all([Api.listClients(), S.list("contatos"), S.list("reunioes"), S.list("cronograma"), Api.config()]);
   const crono = cron0.filter(x => x.id !== EXTRAS_ID), exDoc = cron0.find(x => x.id === EXTRAS_ID);
   let extras = exDoc ? exDoc.lista || [] : null; if (!extras) { try { extras = (await cronogramaArquivo()).extras || []; } catch (e) { extras = []; } }
-  Object.assign(state.cache, { clients, contatos, reunioes, crono, extras });
+  Object.assign(state.cache, { clients, contatos, reunioes, crono, extras, pub });
   const unread = clients.reduce((s, c) => s + c.acoes.filter(a => a.tipo === "mensagem" && a.em > (c.doc.lidoAdmEm || 0)).length, 0);
   const novos = contatos.filter(c => (c.status || "novo") === "novo").length;
   const hoje = todayIso(), agendaHoje = reunioes.filter(r => r.data === hoje && r.status !== "cancelada").length + crono.filter(x => x.data === hoje && x.status !== "publicado").length;
-  const nav = [["clientes", "Clientes", 0], ["calendario", "Calendário", agendaHoje], ["cronograma", "Cronograma Upe", 0], ["contatos", "Contatos do site", novos], ["mensagens", "Inbox", unread], ["newsletter", "Newsletter", 0], ["config", "Configurações", 0]];
+  const nav = [["clientes", "Clientes", 0], ["calendario", "Calendário", agendaHoje], ["cronograma", "Cronograma Upe", 0], ["apps", "Apps Extra", clients.reduce((s, c) => s + appPedidos(c.doc, c.acoes).filter(p => p.status === "novo").length, 0)], ["contatos", "Contatos do site", novos], ["mensagens", "Inbox", unread], ["newsletter", "Newsletter", 0], ["config", "Configurações", 0]];
   const cur = sec === "cliente" ? "clientes" : sec;
-  app.innerHTML = demoBar() + `<div class="adm"><aside class="side"><div class="logo">${WM}</div><nav class="nav">${nav.map(([k, l, n]) => `<a href="#/admin/${k}" ${k === cur ? 'aria-current="page"' : ""}><span>${l}</span>${n ? `<span class="cnt">${n}</span>` : ""}</a>`).join("")}</nav>
+  app.innerHTML = demoBar() + `<div class="adm"><aside class="side"><div class="logo">${WM}</div><nav class="nav">${nav.map(([k, l, n]) => `<a href="#/admin/${k}" ${k === cur ? 'aria-current="page"' : ""}><span>${l}</span>${n ? `<span class="cnt">${n}</span>` : ""}</a>` + (k === "apps" ? APP_IDS.map(ap => `<a class="sub" href="#/admin/apps/${ap}" ${cur === "apps" && (a1 || "erp") === ap ? 'aria-current="true"' : ""}><span>${esc(APPS_PADRAO[ap].nome.replace("Upe ", ""))}</span></a>`).join("") : "")).join("")}</nav>
     <div class="foot"><span>${S.mode === "demo" ? "Modo demonstração" : "Firebase conectado"}</span><button class="lnk" id="logout">Sair</button></div></aside><main class="work"><div class="wtop"><button class="btn sec sm" id="topReu">Agendar reunião</button><div id="bellH"></div></div><div id="w" class="grid" style="gap:18px"></div></main></div>`;
   bell($("#bellH"), "adm", notifsAdmin(state.cache)); $("#topReu").onclick = () => reuniaoModal();
   $("#logout").onclick = async () => { await S.logout(); state.admin = false; go("#/"); };
@@ -671,6 +674,7 @@ async function adminRoute(rest) {
   if (sec === "clientes") return aClientes(w, clients);
   if (sec === "calendario") return aCalendario(w);
   if (sec === "cronograma") return aCronograma(w, a1 || "instagram");
+  if (sec === "apps") return aApps(w, APP_IDS.includes(a1) ? a1 : "erp");
   if (sec === "cliente") return aCliente(w, a1, a2 || "projeto", a3);
   if (sec === "contatos") return aContatos(w, contatos);
   if (sec === "mensagens") return aInbox(w, clients, a1);
@@ -739,7 +743,7 @@ async function aCliente(w, id, tab, alvo) {
   const doc = clone(c.doc), priv = clone(c.priv), acoes = c.acoes;
   const p = pendencias(doc, acoes), unread = acoes.filter(a => a.tipo === "mensagem" && a.em > (doc.lidoAdmEm || 0)).length, pedNovos = pedidosOf(doc, acoes).filter(x => x.status === "novo").length;
   const ajustes = [...(doc.posts || []), ...(doc.graficos || [])].filter(x => statusOf(x, acoes).status === "ajustes");
-  const tabs = [["projeto", "Projeto e acessos", 0], ["apresentacao", "Apresentação e dossiê", 0], ["conteudo", "Conteúdo", p.posts.length + (doc.posts || []).filter(x => ajustes.includes(x)).length], ["graficos", "Gráficos e recompra", pedNovos], ["pagamentos", "Pagamentos", (doc.cobrancas || []).filter(x => cobStatus(x, acoes) === "informado").length], ["mensagens", "Inbox", unread]];
+  const tabs = [["projeto", "Projeto e acessos", 0], ["apresentacao", "Apresentação e dossiê", 0], ["conteudo", "Conteúdo", p.posts.length + (doc.posts || []).filter(x => ajustes.includes(x)).length], ["graficos", "Gráficos e recompra", pedNovos], ["pagamentos", "Pagamentos", (doc.cobrancas || []).filter(x => cobStatus(x, acoes) === "informado").length], ["apps", "Apps Extra", appPedidos(doc, acoes).filter(x => x.status === "novo").length], ["mensagens", "Inbox", unread]];
   w.innerHTML = `<div class="spread"><div class="grid" style="gap:4px"><a href="#/admin/clientes" class="small">← Clientes</a><h1>${esc(doc.marca || doc.empresa || doc.nome)}</h1><span class="muted">${esc(doc.nome)}${priv.email ? ` · ${esc(priv.email)}` : ""}</span></div>
     <div class="row"><button class="btn sec sm" id="vCli">Ver como cliente</button></div></div>
     <nav class="subtabs">${tabs.map(([k, l, n]) => `<a class="tab" href="#/admin/cliente/${id}/${k}" ${k === tab ? 'aria-current="page"' : ""}>${l}${n ? `<span class="cnt">${n}</span>` : ""}</a>`).join("")}</nav>
@@ -747,7 +751,7 @@ async function aCliente(w, id, tab, alvo) {
   $("#vCli").onclick = () => { ss.set("upe-cliente", id); ss.set("upe-voltar", `#/admin/cliente/${id}/projeto`); go("#/c/inicio"); };
   const save = async (msg = "Salvo") => { doc.atualizadoEm = Date.now(); await S.set(`clientes/${id}`, doc); toast(msg); reAdmin(); };
   const ct = $("#ct");
-  ({ projeto: aProjeto, apresentacao: aApres, conteudo: aConteudo, graficos: aGraficosA, pagamentos: aPagamentosA, mensagens: aMsgA })[tab](ct, { id, doc, priv, acoes, save, alvo });
+  ({ projeto: aProjeto, apresentacao: aApres, conteudo: aConteudo, graficos: aGraficosA, pagamentos: aPagamentosA, mensagens: aMsgA, apps: aClienteApps })[tab](ct, { id, doc, priv, acoes, save, alvo });
 }
 
 function aProjeto(ct, { id, doc, priv, save }) {
@@ -1297,6 +1301,7 @@ function notifsCliente(doc, acoes) {
     out.push({ em: c.liberadaEm || 0, titulo: `Cobrança: ${c.descricao}`, sub: `${brl(c.valor)} · vence ${fdate(c.vencimento)}`, href: "#/c/pagamentos", cls: n < 0 ? "bad" : "info" });
     if (n <= 3) out.push({ lembrete: true, em: 0, titulo: n < 0 ? `Cobrança vencida: ${c.descricao}` : `Vencimento ${quando(c.vencimento)}: ${c.descricao}`, href: "#/c/pagamentos", cls: n < 0 ? "bad" : "warn" }); });
   thread(doc, acoes).filter(m => m.autor === "upe").slice(-5).forEach(m => out.push({ em: m.em, titulo: "Mensagem da Upe", sub: m.texto.slice(0, 80), href: "#/c/mensagens", cls: "info" }));
+  adesoes(doc).filter(([, a]) => a.status === "teste" && a.fimTeste && daysTo(a.fimTeste) <= 3).forEach(([k, a]) => out.push({ lembrete: true, em: 0, titulo: `Seu teste do ${APPS_PADRAO[k]?.nome || k} termina ${quando(a.fimTeste)}`, href: "#/c/apps", cls: "info" }));
   (doc.reunioes || []).filter(r => r.data >= t && daysTo(r.data) <= 2).forEach(r => out.push({ lembrete: true, em: 0, titulo: `Reunião ${quando(r.data)} às ${r.hora}`, sub: r.titulo, href: "#/c/agenda", cls: "info" }));
   (doc.entregas || []).filter(e => e.status !== "entregue" && daysTo(e.data) <= 3).forEach(e => out.push({ lembrete: true, em: 0, titulo: `Entrega ${quando(e.data)}: ${e.titulo}`, href: "#/c/agenda", cls: daysTo(e.data) < 0 ? "bad" : "warn" }));
   return out.sort((a, b) => (!!b.lembrete - !!a.lembrete) || b.em - a.em);
@@ -1316,6 +1321,8 @@ function notifsAdmin({ clients, contatos, reunioes, crono }) {
     const map = { aprovar: ["aprovou", "ok", alvo?.produto ? "graficos" : "conteudo"], ajuste: ["pediu ajuste em", "bad", alvo?.produto ? "graficos" : "conteudo"], mensagem: ["enviou uma mensagem", "info", "mensagens"], pedido: ["pediu recompra", "warn", "graficos"], pagamento: ["informou um pagamento", "info", "pagamentos"] }[a.tipo];
     if (map) out.push({ em: a.em, titulo: `${nm(c)} ${map[0]}${alvo ? " " + (alvo.titulo || alvo.produto) : ""}`, sub: a.texto ? a.texto.slice(0, 80) : "", href: `#/admin/cliente/${c.id}/${map[2]}`, cls: map[1] });
   }));
+  clients.forEach(c => { appPedidos(c.doc, c.acoes).filter(p => p.status === "novo").forEach(p => { const ap = appsCat(state.cache.pub)[p.app]; out.push({ em: p.em, titulo: `${nm(c)} pediu ${p.extra ? "um extra do" : ""} ${ap ? ap.nome : p.app}`.replace(/\s+/g, " "), sub: p.extra ? (ap?.extras.find(e => e.k === p.extra) || {}).nome || p.extra : "Contratar o app", href: `#/admin/cliente/${c.id}/apps`, cls: "warn" }); });
+    adesoes(c.doc).filter(([, a]) => a.status === "teste" && a.fimTeste && daysTo(a.fimTeste) <= 3).forEach(([k, a]) => out.push({ lembrete: true, em: 0, titulo: `Teste do ${APPS_PADRAO[k]?.nome || k} termina ${quando(a.fimTeste)}: ${nm(c)}`, href: `#/admin/cliente/${c.id}/apps`, cls: "info" })); });
   reunioes.filter(r => r.data >= t && daysTo(r.data) <= 1 && r.status !== "cancelada").forEach(r => out.push({ lembrete: true, em: 0, titulo: `Reunião ${quando(r.data)} às ${r.hora}: ${r.titulo}`, sub: r.nome || "", href: "#/admin/calendario", cls: "info" }));
   const hoje = crono.filter(x => x.data === t && x.status !== "publicado");
   if (hoje.length) out.push({ lembrete: true, em: 0, titulo: `Publicar hoje: ${hoje.length} item(ns) do cronograma Upe`, sub: hoje.map(x => `${x.hora} ${FMT_LBL[x.formato] || x.formato}`).join(" · "), href: "#/admin/cronograma", cls: "warn" });
@@ -1334,6 +1341,7 @@ function eventosCliente(doc, acoes) {
   (doc.entregas || []).forEach(e => ev.push({ id: "e:" + e.id, data: e.data, titulo: e.titulo, tag: "Entrega", sub: e.descricao || "Prazo de entrega", cls: e.status === "entregue" ? "ok" : daysTo(e.data) < 0 ? "bad" : "info", pill: pill(e.status === "entregue" ? "entregue" : "pendente").replace("Aguardando aprovação", "Em andamento"), k: "entrega", ref: e }));
   (doc.cobrancas || []).filter(c => c.liberada).forEach(c => { const s = cobStatus(c, acoes); ev.push({ id: "c:" + c.id, data: c.vencimento, titulo: `${c.descricao} · ${brl(c.valor)}`, tag: "Vencimento", sub: "Pagamento", cls: s === "paga" ? "ok" : daysTo(c.vencimento) < 0 ? "bad" : "warn", pill: pill(s), k: "cob", ref: c }); });
   (doc.reunioes || []).filter(r => r.status !== "cancelada").forEach(r => ev.push({ id: "r:" + r.id, data: r.data, hora: r.hora, titulo: r.titulo, tag: "Reunião", sub: r.link ? "Online" : r.local || "Reunião", cls: "info", pill: '<span class="pill info">Reunião</span>', k: "reuniao", ref: r }));
+  eventosApps(doc, appsCat(state.cfg)).forEach(e => ev.push({ ...e, k: "app" }));
   return ev;
 }
 function reuniaoView(r, adminCtx) {
@@ -1351,6 +1359,7 @@ function cAgenda(m, c) {
     if (e.k === "post") { const p = { ...comRepost(e.ref, c.doc.posts), ef: statusOf(e.ref, c.acoes) }; postModal(p, c); }
     else if (e.k === "cob") go("#/c/pagamentos");
     else if (e.k === "reuniao") reuniaoView(e.ref, false);
+    else if (e.k === "app") go("#/c/apps");
     else modal(esc(e.ref.titulo), `<div class="row">${e.pill}<span class="muted">Prazo: ${fdate(e.ref.data)} (${quando(e.ref.data)})</span></div>${e.ref.descricao ? `<p>${esc(e.ref.descricao)}</p>` : ""}`);
   }, { legend: `<div class="row small"><span class="pill warn">Aguardando</span><span class="pill ok">Aprovado / pago</span><span class="pill info">Reunião / entrega</span><span class="pill bad">Atrasado</span></div>` });
 }
@@ -1413,14 +1422,15 @@ function convite(r) {
 }
 
 /* ---------- calendário do admin ---------- */
-const CAT = { posts: "Posts de clientes", entregas: "Entregas", venc: "Vencimentos", reunioes: "Reuniões", insta: "Cronograma Upe · Instagram", yt: "Cronograma Upe · YouTube" };
+const CAT = { posts: "Posts de clientes", entregas: "Entregas", venc: "Vencimentos", apps: "Apps Extra", reunioes: "Reuniões", insta: "Cronograma Upe · Instagram", yt: "Cronograma Upe · YouTube" };
 function aCalendario(w) {
   const { clients, reunioes, crono } = state.cache;
-  let on; try { on = JSON.parse(ls.get("upe-calf") || "null"); } catch (e) {} on = on || Object.fromEntries(Object.keys(CAT).map(k => [k, true]));
+  let on; try { on = JSON.parse(ls.get("upe-calf") || "null"); } catch (e) {} on = on || Object.fromEntries(Object.keys(CAT).map(k => [k, true])); Object.keys(CAT).forEach(k => { if (!(k in on)) on[k] = true; });
   const ev = [];
   clients.forEach(c => { const nm = c.doc.marca || c.doc.nome;
     if (on.posts) (c.doc.posts || []).filter(p => p.data).forEach(p => { const s = statusOf(p, c.acoes).status; ev.push({ id: `p:${c.id}:${p.id}`, data: p.data, hora: p.hora || "", titulo: p.titulo, tag: nm, sub: `${nm} · ${FMT_LBL[p.tipo] || p.tipo}`, cls: evCls(s), pill: pill(s), go: `#/admin/cliente/${c.id}/conteudo` }); });
     if (on.entregas) (c.doc.entregas || []).forEach(e => ev.push({ id: `e:${c.id}:${e.id}`, data: e.data, titulo: e.titulo, tag: "Entrega", sub: nm, cls: e.status === "entregue" ? "ok" : daysTo(e.data) < 0 ? "bad" : "info", pill: e.status === "entregue" ? pill("entregue") : '<span class="pill warn">Prazo</span>', go: `#/admin/cliente/${c.id}/projeto` }));
+    if (on.apps !== false) eventosApps(c.doc, appsCat(state.cache.pub), nm).forEach(e => ev.push({ ...e, id: e.id + ":" + c.id, titulo: `${nm} · ${e.titulo}`, go: `#/admin/cliente/${c.id}/apps` }));
     if (on.venc) (c.doc.cobrancas || []).filter(x => x.status !== "cancelado").forEach(x => { const s = cobStatus(x, c.acoes); ev.push({ id: `c:${c.id}:${x.id}`, data: x.vencimento, titulo: `${nm} · ${brl(x.valor)}`, tag: "Vence", sub: x.descricao + (x.liberada ? "" : " (oculta)"), cls: s === "paga" ? "ok" : daysTo(x.vencimento) < 0 ? "bad" : "warn", pill: pill(s), go: `#/admin/cliente/${c.id}/pagamentos` }); });
   });
   if (on.reunioes) reunioes.filter(r => r.status !== "cancelada").forEach(r => ev.push({ id: "r:" + r.id, data: r.data, hora: r.hora, titulo: r.titulo, tag: "Reunião", sub: `${r.com === "lead" ? "Lead" : r.com === "cliente" ? "Cliente" : ""}${r.nome ? " · " + r.nome : ""}`, cls: "info", pill: '<span class="pill info">Reunião</span>', r }));
@@ -1705,6 +1715,132 @@ function postsDoDossie(D, base, doc) {
     out.push({ id: uid(8), kitId: "dossie", data: p.data || addDays(todayIso(), 2 + ((+p.semana || 1) - 1) * 7 + out.length * 2), hora: p.hora || (p.tipo === "reels" ? "19:00" : "12:00"), tipo: p.tipo, titulo: p.titulo, midias: p.midias, capa: p.capa, legenda: p.legenda, versao: 1, status: "pendente", statusEm: Date.now(), origem: "Dossiê" });
   });
   return out;
+}
+
+/* ===== Apps Extra: Upe ERP, Upe TV e Upe Landing pages (incluído dentro do app.js) =====
+   Catálogo em config/publico.apps (preços públicos, editáveis no painel).
+   Adesão de cada cliente em clientes/{id}.apps[app] = { status, plano, extras[], dia, inicio, fimTeste, ajuste, obs }.
+   Pedidos do cliente: ação "pedido" com alvo "app:<app>[:<extra>]". */
+const APPS_PADRAO = {
+  erp: { nome: "Upe ERP", desc: "Loja online, PDV e pedidos num só painel.", painel: "https://upe-erp-painel.web.app", teste: 14,
+    planos: [{ k: "mensal", nome: "Plano mensal", preco: 49.99 }, { k: "upe", nome: "Cliente Upe (com branding ou mídias)", preco: 34.99 }],
+    extras: [
+      { k: "B", nome: "Banco de dados ampliado", desc: "Até 5.000 produtos e 2 GB de fotos.", preco: 9.9 },
+      { k: "S", nome: "Servidor de integração", desc: "Até 3 integrações reais (pagamento, marketplace, ERP).", preco: 19.9 },
+      { k: "F", nome: "API de frete e etiquetas", desc: "Cotação real na loja; etiquetas pagas à parte.", preco: 9.9 },
+      { k: "E", nome: "Envio de e-mails", desc: "Newsletter real, até 5.000 e-mails por mês.", preco: 14.9 },
+      { k: "K", nome: "Backup diário", desc: "Cópia diária guardada por 30 dias.", preco: 4.9 },
+      { k: "D", nome: "Domínio próprio da loja", desc: "1 domínio com SSL; o registro é do cliente.", preco: 7.9 }] },
+  tv: { nome: "Upe TV", desc: "A marca do cliente nas telas de estabelecimentos parceiros, com QR code.", painel: "https://upe-tv.web.app", teste: 0,
+    planos: [{ k: "rodape", nome: "Rodapé", preco: 0 }, { k: "lateral", nome: "Lateral", preco: 0 }, { k: "cheia", nome: "Tela cheia", preco: 0 }, { k: "vitrine", nome: "Combo Vitrine", preco: 0 }, { k: "destaque", nome: "Combo Destaque", preco: 0 }, { k: "total", nome: "Presença Total", preco: 0 }, { k: "rede", nome: "Rede Upe", preco: 0 }],
+    extras: [{ k: "cta", nome: "Página CTA + QR", desc: "Página da marca feita pela Upe, com QR e contagem de visitas.", preco: 0 }, { k: "motion", nome: "Motion do anúncio", desc: "Vídeo animado com a marca para as telas.", preco: 0 }, { k: "telas", nome: "Tela parceira adicional", desc: "Mais um estabelecimento na campanha.", preco: 0 }] },
+  landing: { nome: "Upe Landing pages", desc: "Páginas de venda com a identidade do cliente.", painel: "", teste: 0, breve: true, planos: [], extras: [] }
+};
+const APP_IDS = ["erp", "tv", "landing"];
+const AST = { teste: ["Em teste", "info"], ativo: ["Ativo", "ok"], pendente: ["Aguardando pagamento", "warn"], pausado: ["Pausado", ""], cancelado: ["Cancelado", ""] };
+const astPill = s => { const [l, c] = AST[s] || [s, ""]; return `<span class="pill ${c}">${esc(l)}</span>`; };
+function appsCat(pub) { const c = clone(APPS_PADRAO), o = (pub || {}).apps || {}; APP_IDS.forEach(k => { if (o[k]) c[k] = { ...c[k], ...o[k] }; }); return c; }
+const adesoes = doc => Object.entries(doc.apps || {}).filter(([, a]) => a && a.status && a.status !== "cancelado");
+function valorAdesao(cat, app, a) {
+  const c = cat[app] || { planos: [], extras: [] }, pl = c.planos.find(p => p.k === a.plano);
+  return Math.round(((pl ? +pl.preco : 0) + (a.extras || []).reduce((s, k) => s + (+(c.extras.find(e => e.k === k) || {}).preco || 0), 0) + (+a.ajuste || 0)) * 100) / 100;
+}
+function proxVenc(a) { const d = new Date(todayIso() + "T12:00"), dia = Math.min(28, +a.dia || 10); let v = new Date(d.getFullYear(), d.getMonth(), dia, 12); if (v < d) v = new Date(d.getFullYear(), d.getMonth() + 1, dia, 12); return isoDay(v); }
+const refMes = (app, venc) => `app-${app}-${venc.slice(0, 7)}`;
+const appPedidos = (doc, acoes) => acoes.filter(a => a.tipo === "pedido" && String(a.alvo || "").startsWith("app:")).map(a => { const [, app, ex] = a.alvo.split(":"); return { ...a, app, extra: ex || "", status: doc.pedidosAdm?.[a.id]?.status || "novo" }; }).sort((x, y) => y.em - x.em);
+function cobrancaApp(cat, doc, app, a) {
+  const venc = proxVenc(a), ref = refMes(app, venc);
+  if ((doc.cobrancas || []).some(c => c.ref === ref)) return null;
+  const c = cat[app], pl = c.planos.find(p => p.k === a.plano), ex = (a.extras || []).map(k => (c.extras.find(e => e.k === k) || {}).nome).filter(Boolean);
+  const cob = { id: uid(8), ref, app, descricao: `${c.nome} · ${pl ? pl.nome : "plano"}${ex.length ? " + " + ex.join(", ") : ""} · ${MESES[+venc.slice(5, 7) - 1]}`, valor: valorAdesao(cat, app, a), vencimento: venc, liberada: true, status: "aberta", pix: true, cartao: true, linkCartao: "", liberadaEm: Date.now() };
+  doc.cobrancas = [...(doc.cobrancas || []), cob]; return cob;
+}
+// eventos dos apps para os calendários (vencimentos e fim do teste)
+function eventosApps(doc, cat, nm = "") {
+  const ev = [];
+  adesoes(doc).forEach(([app, a]) => { const c = cat[app]; if (!c) return;
+    if (a.status === "teste" && a.fimTeste) ev.push({ id: `at:${app}`, data: a.fimTeste, titulo: `Fim do teste · ${c.nome}`, tag: c.nome, sub: nm || "Teste grátis", cls: daysTo(a.fimTeste) < 0 ? "bad" : "info", pill: astPill("teste"), app });
+    if (a.status === "ativo" || a.status === "pendente") ev.push({ id: `av:${app}`, data: proxVenc(a), titulo: `Renovação · ${c.nome} · ${brl(valorAdesao(cat, app, a))}`, tag: c.nome, sub: nm || "Mensalidade do app", cls: "warn", pill: astPill(a.status), app });
+  });
+  return ev;
+}
+
+/* ---------- admin: menu Apps Extra ---------- */
+function aApps(w, app = "erp") {
+  const cat = appsCat(state.cache.pub), c = cat[app] || cat.erp, clients = state.cache.clients;
+  const ade = clients.map(cl => ({ cl, a: (cl.doc.apps || {})[app] })).filter(x => x.a && x.a.status && x.a.status !== "cancelado");
+  const mrr = ade.filter(x => x.a.status === "ativo").reduce((s, x) => s + valorAdesao(cat, app, x.a), 0);
+  const peds = clients.flatMap(cl => appPedidos(cl.doc, cl.acoes).filter(p => p.app === app).map(p => ({ ...p, cl })));
+  w.innerHTML = `<div class="spread"><div class="grid" style="gap:4px"><span class="eb">Apps Extra</span><h1>${esc(c.nome)}</h1><p class="muted small">${esc(c.desc)}</p></div>
+      <div class="row">${c.painel ? `<a class="btn sec" href="${esc(c.painel)}" target="_blank" rel="noopener">Abrir o painel do app</a>` : ""}${!c.breve ? `<button class="btn" id="apCob">Gerar cobranças do mês</button>` : ""}</div></div>
+    <nav class="subtabs">${APP_IDS.map(k => `<a class="tab" href="#/admin/apps/${k}" ${k === app ? 'aria-current="page"' : ""}>${esc(cat[k].nome)}${cat[k].breve ? ' <span class="pill" style="margin-left:6px">em breve</span>' : ""}</a>`).join("")}</nav>
+    ${c.breve ? `<section class="card grid"><h3>Em breve</h3><p class="muted">O Upe Landing pages entra aqui com o mesmo esquema dos outros apps: catálogo, adesão do cliente, cobrança única no portal e agenda unificada. Já dá para montar o catálogo abaixo e registrar o interesse dos clientes.</p></section>` : `
+    <div class="g4"><div class="card stat"><b>${ade.filter(x => x.a.status === "ativo").length}</b><span>clientes ativos</span></div><div class="card stat"><b>${ade.filter(x => x.a.status === "teste").length}</b><span>em teste</span></div><div class="card stat"><b>${brl(mrr)}</b><span>por mês (ativos)</span></div><div class="card stat"><b>${peds.filter(p => p.status === "novo").length}</b><span>pedidos novos</span></div></div>`}
+    ${peds.length ? `<section class="card grid"><h3>Pedidos dos clientes</h3><div class="tbl"><table><thead><tr><th>Data</th><th>Cliente</th><th>Pedido</th><th>Status</th><th></th></tr></thead><tbody>${peds.map(p => `<tr><td class="num">${fdt(p.em)}</td><td>${esc(p.cl.doc.marca || p.cl.doc.nome)}</td><td>${p.extra ? `Extra: <b>${esc((c.extras.find(e => e.k === p.extra) || {}).nome || p.extra)}</b>` : `<b>Contratar ${esc(c.nome)}</b>`}${p.texto ? `<br><span class="muted small">${esc(p.texto)}</span>` : ""}</td><td>${pill(p.status)}</td><td><a class="btn sec sm" href="#/admin/cliente/${p.cl.id}/apps">Abrir adesão</a></td></tr>`).join("")}</tbody></table></div></section>` : ""}
+    ${!c.breve ? `<section class="card grid"><h3>Clientes com o app</h3>${ade.length ? `<div class="tbl"><table><thead><tr><th>Cliente</th><th>Plano e extras</th><th>Status</th><th>Mensal</th><th>Próximo vencimento</th><th></th></tr></thead><tbody>${ade.map(({ cl, a }) => `<tr><td><b>${esc(cl.doc.marca || cl.doc.nome)}</b></td><td class="small">${esc((c.planos.find(p => p.k === a.plano) || {}).nome || "—")}${(a.extras || []).length ? `<br><span class="muted">+ ${esc(a.extras.map(k => (c.extras.find(e => e.k === k) || {}).nome || k).join(", "))}</span>` : ""}</td><td>${astPill(a.status)}${a.status === "teste" && a.fimTeste ? `<br><span class="muted small">até ${fdate(a.fimTeste)}</span>` : ""}</td><td class="num">${brl(valorAdesao(cat, app, a))}</td><td class="num">${a.status === "ativo" || a.status === "pendente" ? fdate(proxVenc(a)) : "—"}</td><td><a class="btn sec sm" href="#/admin/cliente/${cl.id}/apps">Editar</a></td></tr>`).join("")}</tbody></table></div>` : `<p class="muted">Nenhum cliente com ${esc(c.nome)} ainda. Ative pela ficha do cliente → Apps Extra.</p>`}</section>` : ""}
+    <section class="card grid"><div class="spread"><h3>Catálogo e preços</h3><span class="muted small">Aparece para os clientes no portal, em “Apps Upe”.</span></div>
+      <div class="g2"><label class="f" for="apNome">Nome<input id="apNome" value="${esc(c.nome)}"></label><label class="f" for="apPainel">Endereço do painel do app<input id="apPainel" value="${esc(c.painel || "")}" placeholder="https://…"></label></div>
+      <label class="f" for="apDesc">Descrição<input id="apDesc" value="${esc(c.desc)}"></label>
+      <div class="g2"><label class="f" for="apTeste">Dias de teste grátis<input id="apTeste" type="number" min="0" value="${esc(c.teste || 0)}"></label><label class="tg" style="align-self:end"><input type="checkbox" id="apBreve" ${c.breve ? "checked" : ""}><span>Em breve<small>Mostra no portal sem permitir a contratação</small></span></label></div>
+      <span class="eb">Planos</span><div class="grid" style="gap:6px" id="apPl">${c.planos.map((p, i) => rowCat("pl", i, p, false)).join("")}</div><div><button class="btn sec sm" id="apPlAdd">Adicionar plano</button></div>
+      <span class="eb">Extras</span><div class="grid" style="gap:6px" id="apEx">${c.extras.map((e, i) => rowCat("ex", i, e, true)).join("")}</div><div><button class="btn sec sm" id="apExAdd">Adicionar extra</button></div>
+      <p class="muted small">Preço 0 aparece como “sob consulta”.</p>
+      <div class="row" style="justify-content:flex-end"><button class="btn" id="apSv">Salvar catálogo</button></div></section>`;
+  const read = () => ({ ...c, nome: $("#apNome").value.trim() || c.nome, painel: $("#apPainel").value.trim(), desc: $("#apDesc").value.trim(), teste: +$("#apTeste").value || 0, breve: $("#apBreve").checked,
+    planos: $$("[data-pl-n]", w).map((i, k) => ({ k: $(`[data-pl-k="${k}"]`, w).value.trim() || uid(4), nome: i.value.trim(), preco: +$(`[data-pl-p="${k}"]`, w).value || 0 })).filter(p => p.nome),
+    extras: $$("[data-ex-n]", w).map((i, k) => ({ k: $(`[data-ex-k="${k}"]`, w).value.trim() || uid(4), nome: i.value.trim(), desc: $(`[data-ex-d="${k}"]`, w).value.trim(), preco: +$(`[data-ex-p="${k}"]`, w).value || 0 })).filter(p => p.nome) });
+  const salvar = async nc => { const pub = { ...(state.cache.pub || {}) }; pub.apps = { ...(pub.apps || {}), [app]: nc }; await S.set("config/publico", pub); state.cache.pub = pub; toast("Catálogo salvo"); reAdmin(); };
+  $("#apSv").onclick = () => salvar(read());
+  $("#apPlAdd").onclick = () => { const nc = read(); nc.planos.push({ k: uid(4), nome: "Novo plano", preco: 0 }); state.cache.pub = { ...(state.cache.pub || {}), apps: { ...((state.cache.pub || {}).apps || {}), [app]: nc } }; aApps(w, app); };
+  $("#apExAdd").onclick = () => { const nc = read(); nc.extras.push({ k: uid(4), nome: "Novo extra", desc: "", preco: 0 }); state.cache.pub = { ...(state.cache.pub || {}), apps: { ...((state.cache.pub || {}).apps || {}), [app]: nc } }; aApps(w, app); };
+  $$("[data-del]", w).forEach(b => b.onclick = () => { const [t, i] = b.dataset.del.split(":"), nc = read(); nc[t === "pl" ? "planos" : "extras"].splice(+i, 1); state.cache.pub = { ...(state.cache.pub || {}), apps: { ...((state.cache.pub || {}).apps || {}), [app]: nc } }; aApps(w, app); });
+  if ($("#apCob")) $("#apCob").onclick = async () => {
+    let n = 0; for (const cl of clients) { const a = (cl.doc.apps || {})[app]; if (!a || !(a.status === "ativo" || a.status === "pendente")) continue; const d = clone(cl.doc); if (cobrancaApp(cat, d, app, a)) { d.acesso = { ...(d.acesso || {}), pagamentos: true }; await S.set(`clientes/${cl.id}`, d); n++; } }
+    toast(n ? `${n} cobrança(s) gerada(s) e liberada(s) no portal` : "As cobranças deste mês já existem"); reAdmin(); };
+}
+const rowCat = (t, i, x, ex) => `<div class="row" style="flex-wrap:nowrap"><input data-${t}-k="${i}" value="${esc(x.k)}" aria-label="Código" style="max-width:80px"><input data-${t}-n="${i}" value="${esc(x.nome)}" aria-label="Nome">${ex ? `<input data-${t}-d="${i}" value="${esc(x.desc || "")}" aria-label="Descrição" placeholder="Descrição">` : ""}<input data-${t}-p="${i}" type="number" step="0.01" min="0" value="${esc(x.preco)}" aria-label="Preço (R$)" style="max-width:120px"><button class="btn sec sm" data-del="${t}:${i}" aria-label="Remover">×</button></div>`;
+
+/* ---------- admin: ficha do cliente → Apps Extra ---------- */
+function aClienteApps(ct, { id, doc, acoes, save }) {
+  const cat = appsCat(state.cache.pub), peds = appPedidos(doc, acoes);
+  doc.apps = doc.apps || {};
+  ct.innerHTML = `${peds.filter(p => p.status === "novo").length ? `<section class="card grid prio"><b>Pedidos do cliente</b>${peds.filter(p => p.status === "novo").map(p => `<div class="row" style="flex-wrap:nowrap"><span style="flex:1">${esc(cat[p.app]?.nome || p.app)}${p.extra ? ` · extra <b>${esc((cat[p.app]?.extras.find(e => e.k === p.extra) || {}).nome || p.extra)}</b>` : " · contratar"} <span class="muted small">${fdt(p.em)}</span>${p.texto ? `<br><span class="small">${esc(p.texto)}</span>` : ""}</span><button class="btn sm" data-pok="${p.id}">Atendido</button></div>`).join("")}</section>` : ""}
+    <p class="muted small">Os apps contratados ficam numa conta só: a cobrança sai em Pagamentos (PIX ou cartão), a renovação entra na agenda do cliente e no seu calendário, e o cliente vê tudo em “Apps Upe” no portal.</p>
+    <div class="g3">${APP_IDS.map(k => { const c = cat[k], a = doc.apps[k] || {};
+      return `<section class="card grid" data-app="${k}"><div class="spread"><h3>${esc(c.nome)}</h3>${a.status && a.status !== "cancelado" ? astPill(a.status) : c.breve ? '<span class="pill">em breve</span>' : '<span class="pill">Sem adesão</span>'}</div>
+        <p class="muted small">${esc(c.desc)}</p>
+        ${c.breve ? "" : `<label class="f">Status<select data-k="status"><option value="">Sem adesão</option>${Object.entries(AST).map(([s, [l]]) => `<option value="${s}" ${a.status === s ? "selected" : ""}>${l}</option>`).join("")}</select></label>
+        <label class="f">Plano<select data-k="plano">${c.planos.map(p => `<option value="${esc(p.k)}" ${a.plano === p.k ? "selected" : ""}>${esc(p.nome)} · ${+p.preco ? brl(p.preco) : "sob consulta"}</option>`).join("")}</select></label>
+        <div class="grid" style="gap:4px"><span class="eb">Extras</span>${c.extras.map(e => `<label class="row small" style="gap:6px;flex-wrap:nowrap"><input type="checkbox" data-ex="${esc(e.k)}" ${(a.extras || []).includes(e.k) ? "checked" : ""}>${esc(e.nome)} <span class="muted">· ${+e.preco ? brl(e.preco) : "sob consulta"}</span></label>`).join("")}</div>
+        <div class="g2"><label class="f">Dia do vencimento<input type="number" min="1" max="28" data-k="dia" value="${esc(a.dia || doc.recorrente?.dia || 10)}"></label><label class="f">Ajuste no valor (R$)<input type="number" step="0.01" data-k="ajuste" value="${esc(a.ajuste || 0)}"></label></div>
+        <div class="g2"><label class="f">Início<input type="date" data-k="inicio" value="${esc(a.inicio || todayIso())}"></label><label class="f">Fim do teste<input type="date" data-k="fimTeste" value="${esc(a.fimTeste || (c.teste ? addDays(todayIso(), c.teste) : ""))}"></label></div>
+        <label class="f">Observações (o cliente vê)<input data-k="obs" value="${esc(a.obs || "")}" placeholder="Ex.: loja em lojadacliente.com.br"></label>
+        <div class="spread"><b class="num" data-tot>${brl(valorAdesao(cat, k, a))}/mês</b>${a.status === "ativo" || a.status === "pendente" ? `<button class="btn sec sm" data-cob="${k}">Gerar cobrança</button>` : ""}</div>`}
+      </section>`; }).join("")}</div>
+    <div class="row" style="justify-content:flex-end"><button class="btn" id="caSv">Salvar apps do cliente</button></div>`;
+  const collect = () => { APP_IDS.forEach(k => { const box = $(`[data-app="${k}"]`, ct); if (!box || !$("[data-k=status]", box)) return; const v = n => ($(`[data-k="${n}"]`, box) || {}).value || "";
+    const st = v("status"); if (!st) { if (doc.apps[k]) doc.apps[k] = { ...doc.apps[k], status: "cancelado" }; return; }
+    doc.apps[k] = { ...(doc.apps[k] || {}), status: st, plano: v("plano"), extras: $$("[data-ex]", box).filter(i => i.checked).map(i => i.dataset.ex), dia: +v("dia") || 10, ajuste: +v("ajuste") || 0, inicio: v("inicio"), fimTeste: v("fimTeste"), obs: v("obs").trim() }; }); };
+  ct.querySelectorAll("[data-app] input, [data-app] select").forEach(i => i.oninput = () => { collect(); APP_IDS.forEach(k => { const t = $(`[data-app="${k}"] [data-tot]`, ct); if (t && doc.apps[k]) t.textContent = brl(valorAdesao(cat, k, doc.apps[k])) + "/mês"; }); });
+  $("#caSv").onclick = async () => { collect(); if (adesoes(doc).length) doc.acesso = { ...(doc.acesso || {}), pagamentos: true }; await save("Apps do cliente salvos"); };
+  $$("[data-cob]", ct).forEach(b => b.onclick = async () => { collect(); const cob = cobrancaApp(cat, doc, b.dataset.cob, doc.apps[b.dataset.cob]); if (!cob) return toast("A cobrança deste mês já existe"); doc.acesso = { ...(doc.acesso || {}), pagamentos: true }; await save(`Cobrança de ${brl(cob.valor)} liberada no portal (vence ${fdate(cob.vencimento)})`); });
+  $$("[data-pok]", ct).forEach(b => b.onclick = async () => { doc.pedidosAdm = doc.pedidosAdm || {}; doc.pedidosAdm[b.dataset.pok] = { ...(doc.pedidosAdm[b.dataset.pok] || {}), status: "entregue" }; collect(); await save("Pedido marcado como atendido"); });
+}
+
+/* ---------- portal do cliente: Apps Upe ---------- */
+function cApps(m, c) {
+  const { doc, acoes } = c, cat = appsCat(state.cfg), meus = doc.apps || {}, peds = appPedidos(doc, acoes);
+  const pediu = (app, ex = "") => peds.some(p => p.app === app && p.extra === ex && p.status === "novo");
+  m.innerHTML = `<div class="grid" style="gap:6px"><span class="eb">Apps Upe</span><h1>Ferramentas para o seu negócio</h1><p class="muted small">Os apps contratados ficam na mesma conta do seu projeto: um pagamento só e as renovações na sua agenda.</p></div>
+    <div class="g3">${APP_IDS.map(k => { const ap = cat[k], a = meus[k], tem = a && a.status && a.status !== "cancelado";
+      return `<article class="card grid"><div class="spread"><h3>${esc(ap.nome)}</h3>${tem ? astPill(a.status) : ap.breve ? '<span class="pill">em breve</span>' : ""}</div><p class="muted small">${esc(ap.desc)}</p>
+        ${tem ? `<div class="grid" style="gap:2px"><span class="small"><b>Plano:</b> ${esc((ap.planos.find(p => p.k === a.plano) || {}).nome || "—")}</span>${(a.extras || []).length ? `<span class="small"><b>Extras:</b> ${esc(a.extras.map(x => (ap.extras.find(e => e.k === x) || {}).nome || x).join(", "))}</span>` : ""}<span class="small"><b>Mensal:</b> ${brl(valorAdesao(cat, k, a))}${a.status === "teste" && a.fimTeste ? ` · teste grátis até ${fdate(a.fimTeste)}` : a.status === "ativo" ? ` · renova em ${fdate(proxVenc(a))}` : ""}</span>${a.obs ? `<span class="small muted">${esc(a.obs)}</span>` : ""}</div>${ap.painel ? `<a class="btn sec sm" href="${esc(ap.painel)}" target="_blank" rel="noopener" style="justify-self:start">Abrir o ${esc(ap.nome)}</a>` : ""}`
+        : ap.breve ? `<button class="btn sec sm" data-quero="${k}" ${pediu(k) ? "disabled" : ""}>${pediu(k) ? "Interesse enviado" : "Quero saber quando lançar"}</button>`
+        : `<div class="grid" style="gap:2px">${ap.planos.slice(0, 3).map(p => `<span class="small">${esc(p.nome)} · <b>${+p.preco ? brl(p.preco) + "/mês" : "sob consulta"}</b></span>`).join("")}${ap.teste ? `<span class="small muted">${ap.teste} dias de teste grátis</span>` : ""}</div><button class="btn sm" data-quero="${k}" ${pediu(k) ? "disabled" : ""} style="justify-self:start">${pediu(k) ? "Pedido enviado" : "Quero contratar"}</button>`}
+        ${tem && ap.extras.length ? `<details><summary class="small"><b>Pacotes extras</b></summary><div class="grid" style="gap:8px;margin-top:8px">${ap.extras.map(e => { const ja = (a.extras || []).includes(e.k); return `<div class="row" style="flex-wrap:nowrap;align-items:flex-start"><span style="flex:1" class="small"><b>${esc(e.nome)}</b> · ${+e.preco ? brl(e.preco) + "/mês" : "sob consulta"}<br><span class="muted">${esc(e.desc || "")}</span></span>${ja ? '<span class="pill ok">Contratado</span>' : `<button class="btn sec sm" data-quero="${k}:${esc(e.k)}" ${pediu(k, e.k) ? "disabled" : ""}>${pediu(k, e.k) ? "Pedido enviado" : "Adicionar"}</button>`}</div>`; }).join("")}</div></details>` : ""}
+      </article>`; }).join("")}</div>`;
+  $$("[data-quero]", m).forEach(b => b.onclick = async () => { const [app, ex] = b.dataset.quero.split(":"); b.disabled = true;
+    await Api.act(c.id, { tipo: "pedido", alvo: `app:${app}${ex ? ":" + ex : ""}`, modo: "app", quantidade: 1, texto: "" }); toast("Pedido enviado. A Upe entra em contato para ativar."); refreshClient(); });
 }
 
 /* ---------------- início ---------------- */

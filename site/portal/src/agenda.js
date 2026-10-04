@@ -101,6 +101,7 @@ function notifsCliente(doc, acoes) {
     out.push({ em: c.liberadaEm || 0, titulo: `Cobrança: ${c.descricao}`, sub: `${brl(c.valor)} · vence ${fdate(c.vencimento)}`, href: "#/c/pagamentos", cls: n < 0 ? "bad" : "info" });
     if (n <= 3) out.push({ lembrete: true, em: 0, titulo: n < 0 ? `Cobrança vencida: ${c.descricao}` : `Vencimento ${quando(c.vencimento)}: ${c.descricao}`, href: "#/c/pagamentos", cls: n < 0 ? "bad" : "warn" }); });
   thread(doc, acoes).filter(m => m.autor === "upe").slice(-5).forEach(m => out.push({ em: m.em, titulo: "Mensagem da Upe", sub: m.texto.slice(0, 80), href: "#/c/mensagens", cls: "info" }));
+  adesoes(doc).filter(([, a]) => a.status === "teste" && a.fimTeste && daysTo(a.fimTeste) <= 3).forEach(([k, a]) => out.push({ lembrete: true, em: 0, titulo: `Seu teste do ${APPS_PADRAO[k]?.nome || k} termina ${quando(a.fimTeste)}`, href: "#/c/apps", cls: "info" }));
   (doc.reunioes || []).filter(r => r.data >= t && daysTo(r.data) <= 2).forEach(r => out.push({ lembrete: true, em: 0, titulo: `Reunião ${quando(r.data)} às ${r.hora}`, sub: r.titulo, href: "#/c/agenda", cls: "info" }));
   (doc.entregas || []).filter(e => e.status !== "entregue" && daysTo(e.data) <= 3).forEach(e => out.push({ lembrete: true, em: 0, titulo: `Entrega ${quando(e.data)}: ${e.titulo}`, href: "#/c/agenda", cls: daysTo(e.data) < 0 ? "bad" : "warn" }));
   return out.sort((a, b) => (!!b.lembrete - !!a.lembrete) || b.em - a.em);
@@ -120,6 +121,8 @@ function notifsAdmin({ clients, contatos, reunioes, crono }) {
     const map = { aprovar: ["aprovou", "ok", alvo?.produto ? "graficos" : "conteudo"], ajuste: ["pediu ajuste em", "bad", alvo?.produto ? "graficos" : "conteudo"], mensagem: ["enviou uma mensagem", "info", "mensagens"], pedido: ["pediu recompra", "warn", "graficos"], pagamento: ["informou um pagamento", "info", "pagamentos"] }[a.tipo];
     if (map) out.push({ em: a.em, titulo: `${nm(c)} ${map[0]}${alvo ? " " + (alvo.titulo || alvo.produto) : ""}`, sub: a.texto ? a.texto.slice(0, 80) : "", href: `#/admin/cliente/${c.id}/${map[2]}`, cls: map[1] });
   }));
+  clients.forEach(c => { appPedidos(c.doc, c.acoes).filter(p => p.status === "novo").forEach(p => { const ap = appsCat(state.cache.pub)[p.app]; out.push({ em: p.em, titulo: `${nm(c)} pediu ${p.extra ? "um extra do" : ""} ${ap ? ap.nome : p.app}`.replace(/\s+/g, " "), sub: p.extra ? (ap?.extras.find(e => e.k === p.extra) || {}).nome || p.extra : "Contratar o app", href: `#/admin/cliente/${c.id}/apps`, cls: "warn" }); });
+    adesoes(c.doc).filter(([, a]) => a.status === "teste" && a.fimTeste && daysTo(a.fimTeste) <= 3).forEach(([k, a]) => out.push({ lembrete: true, em: 0, titulo: `Teste do ${APPS_PADRAO[k]?.nome || k} termina ${quando(a.fimTeste)}: ${nm(c)}`, href: `#/admin/cliente/${c.id}/apps`, cls: "info" })); });
   reunioes.filter(r => r.data >= t && daysTo(r.data) <= 1 && r.status !== "cancelada").forEach(r => out.push({ lembrete: true, em: 0, titulo: `Reunião ${quando(r.data)} às ${r.hora}: ${r.titulo}`, sub: r.nome || "", href: "#/admin/calendario", cls: "info" }));
   const hoje = crono.filter(x => x.data === t && x.status !== "publicado");
   if (hoje.length) out.push({ lembrete: true, em: 0, titulo: `Publicar hoje: ${hoje.length} item(ns) do cronograma Upe`, sub: hoje.map(x => `${x.hora} ${FMT_LBL[x.formato] || x.formato}`).join(" · "), href: "#/admin/cronograma", cls: "warn" });
@@ -138,6 +141,7 @@ function eventosCliente(doc, acoes) {
   (doc.entregas || []).forEach(e => ev.push({ id: "e:" + e.id, data: e.data, titulo: e.titulo, tag: "Entrega", sub: e.descricao || "Prazo de entrega", cls: e.status === "entregue" ? "ok" : daysTo(e.data) < 0 ? "bad" : "info", pill: pill(e.status === "entregue" ? "entregue" : "pendente").replace("Aguardando aprovação", "Em andamento"), k: "entrega", ref: e }));
   (doc.cobrancas || []).filter(c => c.liberada).forEach(c => { const s = cobStatus(c, acoes); ev.push({ id: "c:" + c.id, data: c.vencimento, titulo: `${c.descricao} · ${brl(c.valor)}`, tag: "Vencimento", sub: "Pagamento", cls: s === "paga" ? "ok" : daysTo(c.vencimento) < 0 ? "bad" : "warn", pill: pill(s), k: "cob", ref: c }); });
   (doc.reunioes || []).filter(r => r.status !== "cancelada").forEach(r => ev.push({ id: "r:" + r.id, data: r.data, hora: r.hora, titulo: r.titulo, tag: "Reunião", sub: r.link ? "Online" : r.local || "Reunião", cls: "info", pill: '<span class="pill info">Reunião</span>', k: "reuniao", ref: r }));
+  eventosApps(doc, appsCat(state.cfg)).forEach(e => ev.push({ ...e, k: "app" }));
   return ev;
 }
 function reuniaoView(r, adminCtx) {
@@ -155,6 +159,7 @@ function cAgenda(m, c) {
     if (e.k === "post") { const p = { ...comRepost(e.ref, c.doc.posts), ef: statusOf(e.ref, c.acoes) }; postModal(p, c); }
     else if (e.k === "cob") go("#/c/pagamentos");
     else if (e.k === "reuniao") reuniaoView(e.ref, false);
+    else if (e.k === "app") go("#/c/apps");
     else modal(esc(e.ref.titulo), `<div class="row">${e.pill}<span class="muted">Prazo: ${fdate(e.ref.data)} (${quando(e.ref.data)})</span></div>${e.ref.descricao ? `<p>${esc(e.ref.descricao)}</p>` : ""}`);
   }, { legend: `<div class="row small"><span class="pill warn">Aguardando</span><span class="pill ok">Aprovado / pago</span><span class="pill info">Reunião / entrega</span><span class="pill bad">Atrasado</span></div>` });
 }
@@ -217,14 +222,15 @@ function convite(r) {
 }
 
 /* ---------- calendário do admin ---------- */
-const CAT = { posts: "Posts de clientes", entregas: "Entregas", venc: "Vencimentos", reunioes: "Reuniões", insta: "Cronograma Upe · Instagram", yt: "Cronograma Upe · YouTube" };
+const CAT = { posts: "Posts de clientes", entregas: "Entregas", venc: "Vencimentos", apps: "Apps Extra", reunioes: "Reuniões", insta: "Cronograma Upe · Instagram", yt: "Cronograma Upe · YouTube" };
 function aCalendario(w) {
   const { clients, reunioes, crono } = state.cache;
-  let on; try { on = JSON.parse(ls.get("upe-calf") || "null"); } catch (e) {} on = on || Object.fromEntries(Object.keys(CAT).map(k => [k, true]));
+  let on; try { on = JSON.parse(ls.get("upe-calf") || "null"); } catch (e) {} on = on || Object.fromEntries(Object.keys(CAT).map(k => [k, true])); Object.keys(CAT).forEach(k => { if (!(k in on)) on[k] = true; });
   const ev = [];
   clients.forEach(c => { const nm = c.doc.marca || c.doc.nome;
     if (on.posts) (c.doc.posts || []).filter(p => p.data).forEach(p => { const s = statusOf(p, c.acoes).status; ev.push({ id: `p:${c.id}:${p.id}`, data: p.data, hora: p.hora || "", titulo: p.titulo, tag: nm, sub: `${nm} · ${FMT_LBL[p.tipo] || p.tipo}`, cls: evCls(s), pill: pill(s), go: `#/admin/cliente/${c.id}/conteudo` }); });
     if (on.entregas) (c.doc.entregas || []).forEach(e => ev.push({ id: `e:${c.id}:${e.id}`, data: e.data, titulo: e.titulo, tag: "Entrega", sub: nm, cls: e.status === "entregue" ? "ok" : daysTo(e.data) < 0 ? "bad" : "info", pill: e.status === "entregue" ? pill("entregue") : '<span class="pill warn">Prazo</span>', go: `#/admin/cliente/${c.id}/projeto` }));
+    if (on.apps !== false) eventosApps(c.doc, appsCat(state.cache.pub), nm).forEach(e => ev.push({ ...e, id: e.id + ":" + c.id, titulo: `${nm} · ${e.titulo}`, go: `#/admin/cliente/${c.id}/apps` }));
     if (on.venc) (c.doc.cobrancas || []).filter(x => x.status !== "cancelado").forEach(x => { const s = cobStatus(x, c.acoes); ev.push({ id: `c:${c.id}:${x.id}`, data: x.vencimento, titulo: `${nm} · ${brl(x.valor)}`, tag: "Vence", sub: x.descricao + (x.liberada ? "" : " (oculta)"), cls: s === "paga" ? "ok" : daysTo(x.vencimento) < 0 ? "bad" : "warn", pill: pill(s), go: `#/admin/cliente/${c.id}/pagamentos` }); });
   });
   if (on.reunioes) reunioes.filter(r => r.status !== "cancelada").forEach(r => ev.push({ id: "r:" + r.id, data: r.data, hora: r.hora, titulo: r.titulo, tag: "Reunião", sub: `${r.com === "lead" ? "Lead" : r.com === "cliente" ? "Cliente" : ""}${r.nome ? " · " + r.nome : ""}`, cls: "info", pill: '<span class="pill info">Reunião</span>', r }));
