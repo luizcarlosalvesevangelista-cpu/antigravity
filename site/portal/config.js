@@ -18,6 +18,7 @@ window.PORTAL_CONFIG = {
     appId: "1:000000000000:web:0000000000000000"
   },
   */
+  // emulador: true,   // só para testes locais com "firebase emulators:start"
   whatsappUpe: "5511934393249",
   siteUrl: "../",
   assetsDemo: "../assets/"

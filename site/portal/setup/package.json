@@ -1,0 +1,8 @@
+{
+  "name": "upe-portal-setup",
+  "private": true,
+  "type": "module",
+  "description": "Configura o projeto Firebase do Portal Upe (admin, configurações e cronograma).",
+  "scripts": { "configurar": "node configurar-firebase.mjs" },
+  "dependencies": { "firebase-admin": "^12.7.0" }
+}

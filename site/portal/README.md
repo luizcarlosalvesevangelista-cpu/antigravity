@@ -39,18 +39,37 @@ Sem Firebase configurado, o portal funciona com dados de exemplo guardados só n
 
 ## Colocar no ar com o Firebase
 
-O portal usa o mesmo tipo de projeto Firebase do Upe ERP e do Upe TV.
+O portal usa o mesmo tipo de projeto Firebase do Upe ERP e do Upe TV. São 10 a 15 minutos:
 
-1. No [console do Firebase](https://console.firebase.google.com), crie um projeto (ou use o do site) e um **app da Web**. Copie o objeto de configuração para `portal/config.js`, em `firebase:`.
-2. **Authentication** → ative o provedor **E-mail/senha** → em *Users*, adicione o seu usuário de administrador com o seu e-mail pessoal e uma senha forte. Copie o **UID** desse usuário.
-3. **Firestore Database** → crie o banco → crie a coleção `admins` com um documento cujo ID é o seu UID (pode ter um campo qualquer, por exemplo `ativo: true`). Só quem tem documento em `admins` entra no painel. O seu e-mail não fica em nenhum arquivo deste repositório.
-4. **Storage** → ative, para enviar manuais, imagens, vídeos e artes direto pelo painel. Sem ele, use links.
-5. Publique o site, o portal e as regras de segurança:
-   ```
-   cd site
-   firebase deploy --only hosting,firestore:rules,storage
-   ```
-6. No painel, em **Configurações**, preencha a chave PIX, o nome do recebedor, a cidade e o link padrão de pagamento com cartão.
+**No console do Firebase** ([console.firebase.google.com](https://console.firebase.google.com)):
+
+1. **Criar projeto** (ex.: `upe-criativo`). O Google Analytics é opcional.
+2. **Adicionar app → Web** (ícone `</>`). Copie o objeto `firebaseConfig` e cole em `portal/config.js`, no lugar de `firebase: null` (o modelo está comentado no arquivo). Esses dados são públicos por natureza: a proteção vem das regras de segurança.
+3. **Authentication → Começar → E-mail/senha → Ativar.**
+4. **Firestore Database → Criar banco de dados** → modo produção → região `southamerica-east1` (São Paulo).
+5. **Storage → Começar** (mesma região). Para enviar arquivos pelo painel. O Storage pede o plano Blaze (pago por uso, com cota grátis); sem ele, use links para os arquivos.
+6. **Configurações do projeto → Contas de serviço → Gerar nova chave privada.** Guarde o arquivo .json fora do repositório: ele dá acesso total ao projeto.
+
+**No seu computador** (precisa do Node.js 18 ou mais novo):
+
+```
+npm install -g firebase-tools
+firebase login
+cd site
+firebase use --add                     # escolha o projeto criado
+firebase deploy --only firestore:rules,storage,hosting
+
+cd portal/setup
+npm install
+export GOOGLE_APPLICATION_CREDENTIALS=/caminho/da/chave.json     # Windows: set GOOGLE_APPLICATION_CREDENTIALS=C:\caminho\chave.json
+node configurar-firebase.mjs --projeto SEU-PROJETO --email seu-email-de-admin
+```
+
+O script cria o seu usuário de administrador, libera o acesso ao painel (`admins/{uid}`), grava as configurações de pagamento e carrega o cronograma da Upe. Ele mostra um link para você definir a senha. O e-mail do administrador não fica salvo em nenhum arquivo do site.
+
+Depois, no painel, em **Configurações**, confira a chave PIX, o nome do recebedor, a cidade e o link de pagamento com cartão. Para usar o seu domínio: **Hosting → Adicionar domínio personalizado**.
+
+**Testar sem projeto (emuladores):** em `portal/config.js`, use qualquer `projectId` começado por `demo-` e `emulador: true`; rode `firebase emulators:start --project demo-upe` na pasta `site/` (com `emulators` no firebase.json) e o script acima com `FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:9099`.
 
 ### Formulário do site → "Contatos do site"
 

@@ -212,6 +212,7 @@ class FireStore {
     const v = "10.12.2", base = `https://cdn.jsdelivr.net/npm/firebase@${v}/`;
     for (const f of ["firebase-app-compat.js", "firebase-auth-compat.js", "firebase-firestore-compat.js", "firebase-storage-compat.js"]) await new Promise((ok, no) => { const s = document.createElement("script"); s.src = base + f; s.onload = ok; s.onerror = () => no(new Error("Não foi possível carregar o Firebase.")); document.head.appendChild(s); });
     firebase.initializeApp(this.cfg); this.db = firebase.firestore(); this.auth = firebase.auth(); try { this.st = firebase.storage(); } catch (e) { this.st = null; }
+    if (CFG.emulador) { const h = location.hostname; this.auth.useEmulator(`http://${h}:9099`); this.db.useEmulator(h, 8080); if (this.st) this.st.useEmulator(h, 9199); } // testes locais (firebase emulators:start)
     this.ready = new Promise(r => { const off = this.auth.onAuthStateChanged(u => { off(); r(u); }); });
   }
   async get(p) { const s = await this.db.doc(p).get(); return s.exists ? s.data() : null; }
@@ -224,9 +225,9 @@ class FireStore {
     if (!(await this.get(`admins/${r.user.uid}`))) { await this.auth.signOut(); throw new Error("Este usuário não está liberado como administrador."); }
     return true;
   }
-  async currentAdmin() { const u = await this.ready && this.auth.currentUser; if (!u) return false; try { return !!(await this.get(`admins/${u.uid}`)); } catch (e) { return false; } }
+  async currentAdmin() { await this.ready; const u = this.auth.currentUser; if (!u) return false; try { return !!(await this.get(`admins/${u.uid}`)); } catch (e) { return false; } }
   async logout() { await this.auth.signOut(); }
-  async upload(file, path) { if (!this.st) return null; const ref = this.st.ref(`${path}/${Date.now()}-${file.name.replace(/[^\w.\-]/g, "_")}`); await ref.put(file); return await ref.getDownloadURL(); }
+  async upload(file, path) { if (!this.st) return null; const ref = this.st.ref(`${path}/${Date.now()}-${uid(5)}-${file.name.replace(/[^\w.\-]/g, "_")}`); // sufixo: envios em paralelo com o mesmo nome não se sobrescrevem await ref.put(file); return await ref.getDownloadURL(); }
 }
 const S = CFG.firebase ? new FireStore(CFG.firebase) : new LocalStore();
 
