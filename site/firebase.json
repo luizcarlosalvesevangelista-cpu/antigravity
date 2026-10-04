@@ -1,9 +1,31 @@
 {
   "hosting": {
     "public": ".",
-    "ignore": ["firebase.json", "src/**", "README.md", "**/.*"],
+    "ignore": [
+      "firebase.json",
+      "src/**",
+      "portal/src/**",
+      "**/*.rules",
+      "README.md",
+      "portal/README.md",
+      "**/.*"
+    ],
     "headers": [
-      { "source": "assets/**", "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800" }] }
+      {
+        "source": "assets/**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=604800"
+          }
+        ]
+      }
     ]
+  },
+  "firestore": {
+    "rules": "portal/firestore.rules"
+  },
+  "storage": {
+    "rules": "portal/storage.rules"
   }
 }

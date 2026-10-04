@@ -1,0 +1,52 @@
+rules_version = '2';
+// Regras do Portal Upe. Admin = usuário com documento em /admins/{uid} (crie no console do Firebase).
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+    function txt(d, k, max) { return !(k in d) || (d[k] is string && d[k].size() <= max); }
+
+    match /admins/{uid} {
+      allow get: if request.auth != null && request.auth.uid == uid;
+      allow list, write: if false;
+    }
+    // hash SHA-256 do código XXXX-XXXX-XXXX -> id do cliente
+    match /codigos/{hash} {
+      allow get: if true;
+      allow list: if false;
+      allow write: if isAdmin();
+    }
+    // o que o cliente vê; o id é aleatório e só é obtido pelo código
+    match /clientes/{id} {
+      allow get: if true;
+      allow list, write: if isAdmin();
+      // ações do cliente: aprovar, pedir ajuste, mensagem, pedido de recompra, pagamento informado
+      match /acoes/{acao} {
+        allow read: if true;
+        allow create: if exists(/databases/$(database)/documents/clientes/$(id))
+          && request.resource.data.keys().hasOnly(['tipo', 'alvo', 'versao', 'texto', 'quantidade', 'modo', 'metodo', 'em'])
+          && request.resource.data.tipo in ['aprovar', 'ajuste', 'mensagem', 'pedido', 'pagamento']
+          && request.resource.data.em is number
+          && txt(request.resource.data, 'texto', 4000) && txt(request.resource.data, 'alvo', 64);
+        allow update, delete: if isAdmin();
+      }
+    }
+    // dados internos: código, e-mail, telefone, notas e o dossiê completo
+    match /privado/{id} { allow read, write: if isAdmin(); }
+    // formulário do site
+    match /contatos/{c} {
+      allow create: if request.resource.data.keys().hasOnly(['nome', 'contato', 'assunto', 'mensagem', 'em', 'status', 'origem'])
+        && request.resource.data.nome is string && request.resource.data.nome.size() > 0 && request.resource.data.nome.size() <= 120
+        && request.resource.data.contato is string && request.resource.data.contato.size() <= 160
+        && txt(request.resource.data, 'assunto', 60) && txt(request.resource.data, 'mensagem', 4000)
+        && request.resource.data.status == 'novo';
+      allow read, update, delete: if isAdmin();
+    }
+    match /config/publico { allow get: if true; allow write: if isAdmin(); }
+    match /templates/{t} { allow read, write: if isAdmin(); }
+    match /envios/{e} { allow read, write: if isAdmin(); }
+    // fila da extensão "Trigger Email from Firestore"
+    match /mail/{m} { allow read, create: if isAdmin(); }
+  }
+}

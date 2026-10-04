@@ -217,6 +217,7 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
       <a href="#portfolio" data-nav="portfolio">Portfólio</a>
       <a href="#sobre" data-nav="sobre">Sobre mim</a>
       <a href="#contato" data-nav="contato">Contato</a>
+      <a href="portal/">Área do cliente</a>
     </nav>
     <button class="theme" id="theme" type="button" aria-label="Alternar tema claro e escuro"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
   </div>
@@ -437,7 +438,7 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
 <footer>
   <div class="wrap">
     <a href="#inicio" class="brand" aria-label="Upe Criativo"><svg class="wm" viewBox="786 2599 350 48" aria-hidden="true">__WM__</svg></a>
-    <nav aria-label="Rodapé"><a href="#branding">Branding e Redesign</a><a href="https://upe-erp.web.app/" target="_blank" rel="noopener">Upe ERP</a><a href="https://upe-tv.web.app/" target="_blank" rel="noopener">Upe TV</a><a href="#portfolio">Portfólio</a><a href="#sobre">Sobre mim</a></nav>
+    <nav aria-label="Rodapé"><a href="#branding">Branding e Redesign</a><a href="https://upe-erp.web.app/" target="_blank" rel="noopener">Upe ERP</a><a href="https://upe-tv.web.app/" target="_blank" rel="noopener">Upe TV</a><a href="#portfolio">Portfólio</a><a href="#sobre">Sobre mim</a><a href="portal/">Área do cliente</a></nav>
     <span>© <span id="ano">2026</span> Upe Criativo</span>
   </div>
 </footer>
@@ -452,7 +453,10 @@ const CONTATO = {
   linkedin: "https://www.linkedin.com/in/luizopublicitario",
   // Formulário: endereço do Formspree (https://formspree.io/f/xxxxxxx). O e-mail que recebe
   // as mensagens fica só na conta do Formspree e nunca aparece no site nem no código.
-  formulario: ""
+  formulario: "",
+  // Portal do cliente: com o Firebase configurado, cada mensagem também cai em "Contatos do site"
+  // no painel (portal/). Use o mesmo projectId e apiKey de portal/config.js.
+  firebase: { projectId: "", apiKey: "" }
 };
 /* Portfólio: acrescente um objeto por projeto. Imagens em assets/img. */
 const PROJETOS = [
@@ -616,11 +620,21 @@ function renderCase(id) {
     if (d._gotcha) return;
     const texto = `Olá, Upe! Sou ${d.nome} (${d.contato}). Assunto: ${d.assunto}. ${d.mensagem}`;
     const wa = c.whatsapp ? `https://wa.me/${c.whatsapp}?text=${encodeURIComponent(texto)}` : null;
-    if (!c.formulario) { st.innerHTML = wa ? `Para enviar agora, <a href="${wa}" target="_blank" rel="noopener">abra a conversa no WhatsApp</a> com a sua mensagem pronta.` : "Use um dos canais ao lado."; return; }
+    const fb = c.firebase && c.firebase.projectId && c.firebase.apiKey;
+    if (!c.formulario && !fb) { st.innerHTML = wa ? `Para enviar agora, <a href="${wa}" target="_blank" rel="noopener">abra a conversa no WhatsApp</a> com a sua mensagem pronta.` : "Use um dos canais ao lado."; return; }
     btn.disabled = true; st.textContent = "Enviando…";
+    const envios = [];
+    if (c.formulario) envios.push(fetch(c.formulario, { method: "POST", headers: { Accept: "application/json" }, body: new FormData(form) }).then(r => { if (!r.ok) throw new Error(r.status); }));
+    if (fb) {
+      const S = v => ({ stringValue: String(v || "").slice(0, 4000) });
+      envios.push(fetch(`https://firestore.googleapis.com/v1/projects/${c.firebase.projectId}/databases/(default)/documents/contatos?key=${c.firebase.apiKey}`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fields: { nome: { stringValue: String(d.nome).slice(0, 120) }, contato: { stringValue: String(d.contato).slice(0, 160) }, assunto: S(d.assunto), mensagem: S(d.mensagem), status: S("novo"), origem: S("site"), em: { integerValue: String(Date.now()) } } })
+      }).then(r => { if (!r.ok) throw new Error(r.status); }));
+    }
     try {
-      const r = await fetch(c.formulario, { method: "POST", headers: { Accept: "application/json" }, body: new FormData(form) });
-      if (!r.ok) throw new Error(r.status);
+      const res = await Promise.allSettled(envios);
+      if (!res.some(x => x.status === "fulfilled")) throw new Error("falhou");
       form.reset(); st.textContent = "Mensagem enviada. Respondo em breve.";
     } catch (err) {
       st.innerHTML = `Não foi possível enviar agora. ${wa ? `<a href="${wa}" target="_blank" rel="noopener">Envie pelo WhatsApp</a> com a mensagem pronta.` : "Use um dos canais ao lado."}`;
