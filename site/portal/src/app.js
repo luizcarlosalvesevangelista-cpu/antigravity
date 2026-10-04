@@ -151,7 +151,8 @@ class FireStore {
   }
   async currentAdmin() { await this.ready; const u = this.auth.currentUser; if (!u) return false; try { return !!(await this.get(`admins/${u.uid}`)); } catch (e) { return false; } }
   async logout() { await this.auth.signOut(); }
-  async upload(file, path) { if (!this.st) return null; const ref = this.st.ref(`${path}/${Date.now()}-${uid(5)}-${file.name.replace(/[^\w.\-]/g, "_")}`); // sufixo: envios em paralelo com o mesmo nome não se sobrescrevem await ref.put(file); return await ref.getDownloadURL(); }
+  // sufixo aleatório: envios em paralelo com o mesmo nome não se sobrescrevem
+  async upload(file, path) { if (!this.st) return null; const ref = this.st.ref(`${path}/${Date.now()}-${uid(5)}-${file.name.replace(/[^\w.\-]/g, "_")}`); await ref.put(file); return await ref.getDownloadURL(); }
 }
 const S = CFG.firebase ? new FireStore(CFG.firebase) : new LocalStore();
 
