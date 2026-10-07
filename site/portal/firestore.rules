@@ -1,4 +1,5 @@
 rules_version = '2';
+// Regras do projeto único da Upe Criativo: portal, Upe ERP e Upe TV.
 // Regras do Portal Upe. Admin = usuário com documento em /admins/{uid} (crie no console do Firebase).
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -51,5 +52,106 @@ service cloud.firestore {
     match /cronograma/{c} { allow read, write: if isAdmin(); }
     // fila da extensão "Trigger Email from Firestore"
     match /mail/{m} { allow read, create: if isAdmin(); }
+  
+    /* ================= Upe ERP (painel, lojas, gestão e página de vendas) ================= */
+    function logado() { return request.auth != null; }
+    function verificado() { return logado() && request.auth.token.email_verified == true; }
+    function ehUpe() { return verificado() && (request.auth.token.email == 'upecriativo@gmail.com' || exists(/databases/$(database)/documents/admins/$(request.auth.uid))); }
+    function caminhoAcesso() { return /databases/$(database)/documents/acessos/$(request.auth.uid); }
+    function temAcesso() { return verificado() && exists(caminhoAcesso()); }
+    function membro(emp) { return ehUpe() || (temAcesso() && get(caminhoAcesso()).data.empresa == emp); }
+    function convite() { return get(/databases/$(database)/documents/convites/$(request.auth.token.email)); }
+
+    match /upe/gestao/{doc=**} {
+      allow read, write: if ehUpe();
+    }
+    // textos e cores das páginas editadas no gerenciador (site-lojas, site-painel, site-gestao)
+    match /publico/{d} {
+      allow read: if d in ['site-lojas', 'site-painel', 'site-gestao'];
+      allow write: if ehUpe() && d in ['site-lojas', 'site-painel', 'site-gestao'];
+    }
+    match /publico/plano {
+      allow read: if true;
+      allow write: if ehUpe();
+    }
+    match /publico/vendas/paginas/{slug} {
+      allow read: if true;
+      allow create: if ehUpe() && request.resource.data.html is string && request.resource.data.html.size() < 1048000;
+      allow update, delete: if ehUpe();
+    }
+    match /empresas/{emp} {
+      allow read: if membro(emp);
+      allow write: if ehUpe();
+      // config/limites (limites do plano) e config/uso (gravado pelo servidor): a empresa só lê; quem grava é a Upe (o servidor ignora as regras)
+      match /config/{d} {
+        allow read: if membro(emp);
+        allow write: if ehUpe() || (membro(emp) && !(d in ['limites', 'uso']));
+      }
+      match /{col}/{doc=**} {
+        allow read, write: if membro(emp) && col != 'config';
+      }
+    }
+    // inbox: a Upe lê os chamados de todas as empresas de uma vez (consulta de grupo)
+    match /{caminho=**}/suporte/{id} {
+      allow read: if ehUpe();
+    }
+    match /convites/{email} {
+      allow read: if ehUpe() || (verificado() && request.auth.token.email == email);
+      allow write: if ehUpe();
+    }
+    match /acessos/{uid} {
+      allow read: if ehUpe() || (logado() && request.auth.uid == uid);
+      allow create: if verificado() && request.auth.uid == uid
+        && exists(/databases/$(database)/documents/convites/$(request.auth.token.email))
+        && request.resource.data.empresa == convite().data.empresa
+        && request.resource.data.papel == convite().data.papel
+        && request.resource.data.email == request.auth.token.email;
+      allow update, delete: if ehUpe();
+    }
+    // lojas/{endereço}: vitrine pública de cada empresa (publicada pelo painel) e pedidos dos compradores
+    match /lojas/{slug} {
+      function dona() { return membro(get(/databases/$(database)/documents/lojas/$(slug)).data.empresa); }
+      allow read: if true;
+      allow create: if membro(request.resource.data.empresa);
+      allow update: if membro(resource.data.empresa) && request.resource.data.empresa == resource.data.empresa;
+      allow delete: if membro(resource.data.empresa);
+      match /publico/{d} { allow read: if true; allow write: if dona(); }
+      match /produtos/{id} { allow read: if true; allow write: if dona(); }
+      match /cupons/{cod} { allow get: if true; allow list, write: if dona(); }
+      match /pedidos/{id} {
+        allow get: if true;
+        allow list, update, delete: if dona();
+        allow create: if id.size() >= 12 && exists(/databases/$(database)/documents/lojas/$(slug))
+          && request.resource.data.keys().hasOnly(['nome', 'email', 'telefone', 'doc', 'cep', 'endereco', 'numero', 'complemento', 'bairro', 'cidade', 'uf', 'itens', 'sub', 'frete', 'desconto', 'cupom', 'total', 'pagamento', 'parcelas', 'obs', 'status', 'importado', 'criadoEm', 'entrega'])
+          && request.resource.data.status == 'novo' && request.resource.data.importado == false
+          && request.resource.data.itens is list && request.resource.data.itens.size() > 0 && request.resource.data.itens.size() <= 60
+          && request.resource.data.total is number && request.resource.data.total >= 0 && request.resource.data.total < 1000000
+          && request.resource.data.nome is string && request.resource.data.nome.size() <= 120
+          && request.resource.data.email is string && request.resource.data.email.size() <= 120
+          && request.resource.data.obs is string && request.resource.data.obs.size() <= 500;
+      }
+    }
+  
+    /* ================= Upe TV (campanhas, telas e player) ================= */
+    function tvLogado() { return request.auth != null; }
+    function tvAdmin() {
+      return tvLogado() && request.auth.token.firebase.sign_in_provider == 'password'
+        && (request.auth.token.email in ['upecriativo@gmail.com'] || exists(/databases/$(database)/documents/admins/$(request.auth.uid)));
+    }
+    // Configuração (campanhas, telas, anunciantes, páginas CTA) e imagens de produto: todos leem, só admin publica.
+    match /app/{doc} { allow read: if true; allow write: if tvAdmin(); }
+    match /img/{doc} { allow read: if true; allow write: if tvAdmin(); }
+    // Tempo de tela enviado pelas TVs.
+    match /plays/{doc} {
+      allow read: if tvLogado();
+      allow create, update: if tvLogado() && request.resource.data.screen is string && request.resource.data.date is string;
+      allow delete: if tvAdmin();
+    }
+    // Leituras de QR, visitas e pedidos enviados pelos celulares.
+    match /events/{doc} {
+      allow read: if tvLogado();
+      allow create: if tvLogado() && request.resource.data.type in ['scan', 'continue', 'cta_view', 'cta_click', 'order'];
+      allow update, delete: if tvAdmin();
+    }
   }
 }

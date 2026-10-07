@@ -1722,7 +1722,7 @@ function postsDoDossie(D, base, doc) {
    Adesão de cada cliente em clientes/{id}.apps[app] = { status, plano, extras[], dia, inicio, fimTeste, ajuste, obs }.
    Pedidos do cliente: ação "pedido" com alvo "app:<app>[:<extra>]". */
 const APPS_PADRAO = {
-  erp: { nome: "Upe ERP", desc: "Loja online, PDV e pedidos num só painel.", painel: "https://upe-erp-painel.web.app", teste: 14,
+  erp: { nome: "Upe ERP", desc: "Loja online, PDV e pedidos num só painel.", painel: "https://upe-criativo-painel.web.app", gestor: "https://upe-criativo-gestao.web.app", site: "https://upe-criativo-erp.web.app", lojas: "https://upe-criativo-lojas.web.app", teste: 14,
     planos: [{ k: "mensal", nome: "Plano mensal", preco: 49.99 }, { k: "upe", nome: "Cliente Upe (com branding ou mídias)", preco: 34.99 }],
     extras: [
       { k: "B", nome: "Banco de dados ampliado", desc: "Até 5.000 produtos e 2 GB de fotos.", preco: 9.9 },
@@ -1731,7 +1731,7 @@ const APPS_PADRAO = {
       { k: "E", nome: "Envio de e-mails", desc: "Newsletter real, até 5.000 e-mails por mês.", preco: 14.9 },
       { k: "K", nome: "Backup diário", desc: "Cópia diária guardada por 30 dias.", preco: 4.9 },
       { k: "D", nome: "Domínio próprio da loja", desc: "1 domínio com SSL; o registro é do cliente.", preco: 7.9 }] },
-  tv: { nome: "Upe TV", desc: "A marca do cliente nas telas de estabelecimentos parceiros, com QR code.", painel: "https://upe-tv.web.app", teste: 0,
+  tv: { nome: "Upe TV", desc: "A marca do cliente nas telas de estabelecimentos parceiros, com QR code.", painel: "https://upe-criativo-tv.web.app", teste: 0,
     planos: [{ k: "rodape", nome: "Rodapé", preco: 0 }, { k: "lateral", nome: "Lateral", preco: 0 }, { k: "cheia", nome: "Tela cheia", preco: 0 }, { k: "vitrine", nome: "Combo Vitrine", preco: 0 }, { k: "destaque", nome: "Combo Destaque", preco: 0 }, { k: "total", nome: "Presença Total", preco: 0 }, { k: "rede", nome: "Rede Upe", preco: 0 }],
     extras: [{ k: "cta", nome: "Página CTA + QR", desc: "Página da marca feita pela Upe, com QR e contagem de visitas.", preco: 0 }, { k: "motion", nome: "Motion do anúncio", desc: "Vídeo animado com a marca para as telas.", preco: 0 }, { k: "telas", nome: "Tela parceira adicional", desc: "Mais um estabelecimento na campanha.", preco: 0 }] },
   landing: { nome: "Upe Landing pages", desc: "Páginas de venda com a identidade do cliente.", painel: "", teste: 0, breve: true, planos: [], extras: [] }
@@ -1739,7 +1739,7 @@ const APPS_PADRAO = {
 const APP_IDS = ["erp", "tv", "landing"];
 const AST = { teste: ["Em teste", "info"], ativo: ["Ativo", "ok"], pendente: ["Aguardando pagamento", "warn"], pausado: ["Pausado", ""], cancelado: ["Cancelado", ""] };
 const astPill = s => { const [l, c] = AST[s] || [s, ""]; return `<span class="pill ${c}">${esc(l)}</span>`; };
-function appsCat(pub) { const c = clone(APPS_PADRAO), o = (pub || {}).apps || {}; APP_IDS.forEach(k => { if (o[k]) c[k] = { ...c[k], ...o[k] }; }); return c; }
+function appsCat(pub) { const c = clone(APPS_PADRAO), o = (pub || {}).apps || {}; APP_IDS.forEach(k => { if (o[k]) c[k] = { ...c[k], ...o[k] }; if (/upe-(erp|tv)[.-]/.test(c[k].painel || "")) c[k].painel = APPS_PADRAO[k].painel; }); return c; }
 const adesoes = doc => Object.entries(doc.apps || {}).filter(([, a]) => a && a.status && a.status !== "cancelado");
 function valorAdesao(cat, app, a) {
   const c = cat[app] || { planos: [], extras: [] }, pl = c.planos.find(p => p.k === a.plano);
@@ -1772,7 +1772,7 @@ function aApps(w, app = "erp") {
   const mrr = ade.filter(x => x.a.status === "ativo").reduce((s, x) => s + valorAdesao(cat, app, x.a), 0);
   const peds = clients.flatMap(cl => appPedidos(cl.doc, cl.acoes).filter(p => p.app === app).map(p => ({ ...p, cl })));
   w.innerHTML = `<div class="spread"><div class="grid" style="gap:4px"><span class="eb">Apps Extra</span><h1>${esc(c.nome)}</h1><p class="muted small">${esc(c.desc)}</p></div>
-      <div class="row">${c.painel ? `<a class="btn sec" href="${esc(c.painel)}" target="_blank" rel="noopener">Abrir o painel do app</a>` : ""}${!c.breve ? `<button class="btn" id="apCob">Gerar cobranças do mês</button>` : ""}</div></div>
+      <div class="row">${c.gestor ? `<a class="btn sec" href="${esc(c.gestor)}" target="_blank" rel="noopener">Gerenciador do ERP</a>` : ""}${c.site ? `<a class="btn sec" href="${esc(c.site)}" target="_blank" rel="noopener">Página de vendas</a>` : ""}${c.painel ? `<a class="btn sec" href="${esc(c.painel)}" target="_blank" rel="noopener">Abrir o painel do app</a>` : ""}${!c.breve ? `<button class="btn" id="apCob">Gerar cobranças do mês</button>` : ""}</div></div>
     <nav class="subtabs">${APP_IDS.map(k => `<a class="tab" href="#/admin/apps/${k}" ${k === app ? 'aria-current="page"' : ""}>${esc(cat[k].nome)}${cat[k].breve ? ' <span class="pill" style="margin-left:6px">em breve</span>' : ""}</a>`).join("")}</nav>
     ${c.breve ? `<section class="card grid"><h3>Em breve</h3><p class="muted">O Upe Landing pages entra aqui com o mesmo esquema dos outros apps: catálogo, adesão do cliente, cobrança única no portal e agenda unificada. Já dá para montar o catálogo abaixo e registrar o interesse dos clientes.</p></section>` : `
     <div class="g4"><div class="card stat"><b>${ade.filter(x => x.a.status === "ativo").length}</b><span>clientes ativos</span></div><div class="card stat"><b>${ade.filter(x => x.a.status === "teste").length}</b><span>em teste</span></div><div class="card stat"><b>${brl(mrr)}</b><span>por mês (ativos)</span></div><div class="card stat"><b>${peds.filter(p => p.status === "novo").length}</b><span>pedidos novos</span></div></div>`}

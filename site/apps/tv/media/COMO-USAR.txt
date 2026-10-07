@@ -1,0 +1,2 @@
+Coloque aqui os vídeos das campanhas (ex.: nome-do-video.mp4) e use o endereço
+https://upe-criativo-tv.web.app/media/nome-do-video.mp4 no painel do Upe TV.

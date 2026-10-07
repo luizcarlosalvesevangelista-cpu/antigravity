@@ -1,28 +1,230 @@
 {
-  "hosting": {
-    "site": "upe-criativo",
-    "public": ".",
-    "ignore": [
-      "firebase.json",
-      "src/**",
-      "portal/src/**",
-      "**/*.rules",
-      "README.md",
-      "portal/README.md",
-      "**/.*"
-    ],
-    "headers": [
-      {
-        "source": "assets/**",
-        "headers": [
-          {
-            "key": "Cache-Control",
-            "value": "public, max-age=604800"
-          }
-        ]
-      }
-    ]
-  },
+  "hosting": [
+    {
+      "site": "upe-criativo",
+      "public": ".",
+      "ignore": [
+        "firebase.json",
+        "src/**",
+        "portal/src/**",
+        "**/*.rules",
+        "README.md",
+        "portal/README.md",
+        "**/.*",
+        "apps/**"
+      ],
+      "headers": [
+        {
+          "source": "assets/**",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "public, max-age=604800"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "site": "upe-criativo-erp",
+      "public": "apps/erp",
+      "ignore": [
+        "**/.*"
+      ],
+      "cleanUrls": true,
+      "headers": [
+        {
+          "source": "**",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "no-cache"
+            }
+          ]
+        },
+        {
+          "source": "**/*.@(jpg|jpeg|png|webp|svg)",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "public, max-age=86400"
+            }
+          ]
+        },
+        {
+          "source": "**/*.mp4",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "public, max-age=604800"
+            }
+          ]
+        }
+      ],
+      "rewrites": [
+        {
+          "source": "/p/**",
+          "destination": "/index.html"
+        }
+      ]
+    },
+    {
+      "site": "upe-criativo-gestao",
+      "public": "apps/gestao",
+      "ignore": [
+        "**/.*"
+      ],
+      "cleanUrls": true,
+      "headers": [
+        {
+          "source": "**",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "no-cache"
+            },
+            {
+              "key": "X-Robots-Tag",
+              "value": "noindex"
+            }
+          ]
+        },
+        {
+          "source": "**/*.@(jpg|jpeg|png|webp|svg)",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "public, max-age=86400"
+            }
+          ]
+        },
+        {
+          "source": "**/*.mp4",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "public, max-age=604800"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "site": "upe-criativo-lojas",
+      "public": "apps/lojas",
+      "ignore": [
+        "**/.*"
+      ],
+      "cleanUrls": true,
+      "headers": [
+        {
+          "source": "**",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "no-cache"
+            }
+          ]
+        },
+        {
+          "source": "**/*.@(jpg|jpeg|png|webp|svg)",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "public, max-age=86400"
+            }
+          ]
+        }
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/loja.html"
+        }
+      ]
+    },
+    {
+      "site": "upe-criativo-painel",
+      "public": "apps/painel",
+      "ignore": [
+        "**/.*"
+      ],
+      "cleanUrls": true,
+      "headers": [
+        {
+          "source": "**",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "no-cache"
+            },
+            {
+              "key": "X-Robots-Tag",
+              "value": "noindex"
+            }
+          ]
+        },
+        {
+          "source": "**/*.@(jpg|jpeg|png|webp|svg)",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "public, max-age=86400"
+            }
+          ]
+        },
+        {
+          "source": "/sw.js",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "no-cache"
+            },
+            {
+              "key": "Service-Worker-Allowed",
+              "value": "/"
+            }
+          ]
+        },
+        {
+          "source": "**/*.webmanifest",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/manifest+json"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "site": "upe-criativo-tv",
+      "public": "apps/tv",
+      "ignore": [
+        "**/.*"
+      ],
+      "headers": [
+        {
+          "source": "sw.js",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "no-cache"
+            }
+          ]
+        },
+        {
+          "source": "config.js",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "no-cache"
+            }
+          ]
+        }
+      ]
+    }
+  ],
   "firestore": {
     "rules": "portal/firestore.rules"
   },

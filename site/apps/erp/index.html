@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Plataforma de Vendas Upe</title>
+<meta name="description" content="Loja virtual, PDV e gestão de pedidos com a sua marca. Teste grátis. R$ 29,99/mês por plataforma.">
+<style>body { margin: 0; background: #234e7b; } .c { position: fixed; inset: 0; display: grid; place-items: center; color: #f2f0e2; font: 15px system-ui, sans-serif; }</style>
+<script type="module">
+/* Mostra a página publicada pelo gerenciador (Firestore publico/vendas/paginas/<slug>); sem ela, o modelo estático (/modelo). */
+import { fs, doc, getDoc } from "/upe-firebase.js";
+const caminho = location.pathname.replace(/\/+$/, ""), slug = caminho.startsWith("/p/") ? decodeURIComponent(caminho.slice(3)) : "principal";
+const mostrar = html => { document.open(); document.write(html); document.close(); };
+try {
+  const s = await getDoc(doc(fs, "publico/vendas/paginas/" + slug));
+  if (s.exists() && s.data().ativa !== false && s.data().html) mostrar(s.data().html);
+  else if (slug === "principal") location.replace("/modelo");
+  else document.querySelector(".c").innerHTML = 'Página não encontrada. <a href="/" style="color:inherit;margin-left:6px">Ver a página principal</a>';
+} catch { if (slug === "principal") location.replace("/modelo"); else document.querySelector(".c").textContent = "Não foi possível carregar a página agora."; }
+</script>
+</head>
+<body><div class="c">Carregando…</div></body>
+</html>

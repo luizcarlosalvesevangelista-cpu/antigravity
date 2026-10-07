@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Loja</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Figtree:wght@400;500;600;700&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+/* Loja pública de cada cliente (upe-criativo-lojas.web.app/<endereço>). Lê lojas/<endereço> no Firestore; pedidos entram em lojas/<endereço>/pedidos e o painel da empresa importa. */
+:root { --base: #0b1d3a; --dest: #1a73d9; --claro: #5fb3ff; --bg: #f2f5fa; --surface: #fff; --fg: #0d1b33; --muted: #5a6a82; --line: #d8e1ee; --ok: #2f8f5b; --crit: #c2412d; --warn: #a8701a;
+  --fd: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif; --fb: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #0a1426; --surface: #111f38; --fg: #e8eefa; --muted: #9aabc6; --line: #22375c; } }
+:root[data-theme="dark"] { --bg: #0a1426; --surface: #111f38; --fg: #e8eefa; --muted: #9aabc6; --line: #22375c; }
+* { box-sizing: border-box; margin: 0; }
+[hidden] { display: none !important; }
+body { background: var(--bg); color: var(--fg); font: 15px/1.5 var(--fb); -webkit-font-smoothing: antialiased; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+a { color: var(--dest); }
+img { max-width: 100%; display: block; }
+.num { font-variant-numeric: tabular-nums; }
+.in { width: min(1180px, 100% - 32px); margin: 0 auto; }
+.aviso { background: var(--claro); color: #0b1d3a; text-align: center; font-size: 13px; font-weight: 600; padding: 7px 16px; }
+header.top { background: var(--base); color: #fff; position: sticky; top: 0; z-index: 20; }
+.top-in { display: flex; align-items: center; gap: 16px; padding: 12px 0; }
+.marca { display: flex; align-items: center; gap: 10px; background: none; border: 0; color: #fff; padding: 0; text-align: left; }
+.marca img { max-height: 42px; width: auto; }
+.marca img.fundo { background: #fff; padding: 4px 8px; border-radius: 8px; }
+.marca b { font-family: var(--fd); font-size: 24px; text-transform: uppercase; letter-spacing: .03em; line-height: 1; }
+.busca { flex: 1; display: flex; background: #fff; border-radius: 999px; padding: 4px; min-width: 0; }
+.busca input { flex: 1; border: 0; background: none; padding: 6px 12px; color: #0d1b33; min-width: 0; outline: none; }
+.busca button { border: 0; background: var(--dest); color: #fff; border-radius: 999px; padding: 6px 14px; font-weight: 700; font-size: 13px; }
+.top-btn { border: 1px solid rgba(255,255,255,.3); background: none; color: #fff; border-radius: 10px; padding: 8px 12px; font-weight: 700; font-size: 13px; white-space: nowrap; }
+.top-btn.cart { background: var(--dest); border-color: var(--dest); }
+.top-btn .q { background: #fff; color: var(--dest); border-radius: 999px; padding: 0 7px; margin-left: 6px; font-size: 12px; }
+main { padding: 20px 0 60px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 16px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); font-weight: 700; font-size: 14px; text-decoration: none; color: var(--fg); }
+.btn.dest { background: var(--dest); border-color: var(--dest); color: #fff; }
+.btn.sm { padding: 6px 11px; font-size: 13px; }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.bn { position: relative; border-radius: 16px; overflow: hidden; margin-bottom: 18px; aspect-ratio: 3 / 1; background: var(--base); }
+.bn-track { display: flex; height: 100%; transition: transform .45s ease; }
+.bn-slide { flex: 0 0 100%; position: relative; display: grid; align-items: center; padding: 0 6%; color: #fff; background-size: cover; background-position: center; }
+.bn-slide.sem-img { background: linear-gradient(120deg, var(--base), var(--dest)); }
+.bn-slide::before { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(0,0,0,.45), rgba(0,0,0,0) 70%); }
+.bn-slide.sem-img::before { display: none; }
+.bn-slide.pos-centro { text-align: center; justify-items: center; } .bn-slide.pos-centro::before { background: rgba(0,0,0,.3); }
+.bn-txt { position: relative; max-width: 560px; display: grid; gap: 8px; justify-items: start; } .pos-centro .bn-txt { justify-items: center; }
+.bn-txt h2 { font-family: var(--fd); font-size: clamp(24px, 4vw, 46px); text-transform: uppercase; line-height: 1; }
+.bn-dots { position: absolute; bottom: 10px; left: 0; right: 0; display: flex; justify-content: center; gap: 6px; }
+.bn-dots button { width: 9px; height: 9px; border-radius: 50%; border: 0; background: rgba(255,255,255,.5); padding: 0; }
+.bn-dots button[aria-current="true"] { background: #fff; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+.chips button { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 7px 14px; font-weight: 700; font-size: 13px; }
+.chips button[aria-pressed="true"] { background: var(--dest); border-color: var(--dest); color: #fff; }
+.barra { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; color: var(--muted); font-size: 14px; }
+.barra select { border: 1px solid var(--line); background: var(--surface); border-radius: 8px; padding: 6px 8px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; display: grid; grid-template-rows: auto 1fr; }
+.card .foto { aspect-ratio: 1; background: var(--bg); position: relative; border: 0; padding: 0; width: 100%; }
+.card .foto img, .ph { width: 100%; height: 100%; object-fit: cover; }
+.ph { display: grid; place-items: center; font-family: var(--fd); font-size: 42px; color: hsl(var(--h) 45% 30%); background: linear-gradient(135deg, hsl(var(--h) 70% 88%), hsl(calc(var(--h) + 40) 70% 82%)); }
+.tag { position: absolute; top: 8px; left: 8px; background: var(--crit); color: #fff; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 6px; }
+.tag.esg { background: #5a6a82; }
+.card .i { padding: 12px; display: grid; gap: 6px; align-content: space-between; }
+.cls { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--dest); }
+.nome { font-weight: 700; line-height: 1.3; }
+.preco b { font-size: 19px; } .preco s { color: var(--muted); font-size: 13px; margin-right: 4px; } .preco small { color: var(--muted); }
+.vazio { text-align: center; padding: 50px 16px; color: var(--muted); }
+.box { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 20px; display: grid; gap: 14px; }
+.box h2 { font-family: var(--fd); font-size: 26px; text-transform: uppercase; }
+.cols { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(280px, 1fr); gap: 18px; align-items: start; }
+.linha { display: flex; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.linha:last-child { border-bottom: 0; }
+.linha .mini { width: 56px; height: 56px; border-radius: 10px; overflow: hidden; flex: none; }
+.linha .mini .ph { font-size: 20px; }
+.linha .t { flex: 1; min-width: 0; }
+.qtd { display: flex; align-items: center; border: 1px solid var(--line); border-radius: 8px; }
+.qtd button { border: 0; background: none; width: 30px; height: 30px; font-weight: 700; }
+.qtd span { min-width: 26px; text-align: center; font-weight: 700; }
+.resumo div { display: flex; justify-content: space-between; gap: 10px; font-size: 14px; padding: 3px 0; }
+.resumo .tot { border-top: 1px solid var(--line); margin-top: 6px; padding-top: 8px; font-size: 18px; font-weight: 700; }
+.form { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
+.form label { display: grid; gap: 4px; font-size: 12.5px; font-weight: 600; color: var(--muted); grid-column: span 3; }
+.form .c2 { grid-column: span 2; } .form .c4 { grid-column: span 4; } .form .c6 { grid-column: 1 / -1; }
+input, select, textarea { padding: 10px 11px; border-radius: 9px; border: 1px solid var(--line); background: var(--bg); width: 100%; }
+.pags { display: grid; gap: 8px; }
+.pag { display: flex; gap: 10px; align-items: center; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; cursor: pointer; }
+.pag:has(input:checked) { border-color: var(--dest); box-shadow: 0 0 0 1px var(--dest); }
+.pag input { width: auto; }
+.err { color: var(--crit); font-weight: 700; font-size: 14px; }
+.aviso-hor { background: color-mix(in srgb, var(--warn) 14%, var(--surface)); color: var(--fg); border-radius: 10px; padding: 10px 12px; font-size: 14px; font-weight: 600; }
+.aviso-hor.bloq { background: color-mix(in srgb, var(--crit) 12%, var(--surface)); }
+.armadilha { position: absolute !important; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.okm { color: var(--ok); font-weight: 700; font-size: 14px; }
+.cup { display: flex; gap: 6px; }
+.pix { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 14px; background: var(--bg); border-radius: 12px; padding: 12px; }
+.pix .qr { background: #fff; padding: 6px; border-radius: 8px; width: 180px; height: 180px; display: grid; place-items: center; }
+.pix textarea { font-size: 12px; }
+.st { display: flex; gap: 8px; flex-wrap: wrap; }
+.st span { padding: 6px 12px; border-radius: 999px; background: var(--bg); color: var(--muted); font-size: 13px; font-weight: 700; }
+.st span.on { background: var(--dest); color: #fff; }
+.pill { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; background: var(--bg); color: var(--muted); }
+.pill.ok { background: color-mix(in srgb, var(--ok) 15%, transparent); color: var(--ok); } .pill.warn { background: color-mix(in srgb, var(--warn) 15%, transparent); color: var(--warn); }
+.scrim { position: fixed; inset: 0; background: rgba(0,0,0,.5); display: grid; place-items: center; padding: 16px; z-index: 50; }
+.dlg { background: var(--surface); border-radius: 16px; width: min(760px, 100%); max-height: calc(100vh - 32px); overflow: auto; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.dlg .foto { aspect-ratio: 1; } .dlg .foto img, .dlg .foto .ph { width: 100%; height: 100%; object-fit: cover; }
+.dlg .i { padding: 22px; display: grid; gap: 10px; align-content: start; }
+.dlg h3 { font-size: 22px; }
+footer { border-top: 1px solid var(--line); padding: 22px 0; color: var(--muted); font-size: 13px; }
+footer .in { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+#toast { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); background: var(--fg); color: var(--bg); padding: 10px 16px; border-radius: 10px; font-weight: 700; font-size: 14px; z-index: 60; }
+.centro { min-height: 60vh; display: grid; place-items: center; text-align: center; gap: 10px; color: var(--muted); }
+.centro h1 { font-family: var(--fd); font-size: 34px; text-transform: uppercase; color: var(--fg); }
+@media (max-width: 760px) {
+  .top-in { flex-wrap: wrap; } .busca { order: 3; flex-basis: 100%; }
+  .cols, .dlg, .pix { grid-template-columns: minmax(0, 1fr); }
+  .form label, .form .c2, .form .c4 { grid-column: 1 / -1; }
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .bn { aspect-ratio: 16 / 9; }
+}
+@media (prefers-reduced-motion: reduce) { .bn-track { transition: none; } }
+</style>
+</head>
+<body>
+<div id="app"><div class="centro"><p>Carregando a loja…</p></div></div>
+<div id="modal"></div>
+<div id="toast" hidden></div>
+<script type="module">
+import { fs, doc, getDoc, getDocs, setDoc, collection, onSnapshot } from "/upe-firebase.js";
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const digits = s => String(s ?? "").replace(/\D+/g, "");
+const norm = s => String(s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+const brl = v => (v || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+const hoje = () => { const d = new Date(); return new Date(d.getTime() - d.getTimezoneOffset() * 6e4).toISOString().slice(0, 10); };
+const fmtD = iso => iso ? iso.slice(8, 10) + "/" + iso.slice(5, 7) + "/" + iso.slice(0, 4) : "";
+const hue = s => { let h = 0; for (const ch of String(s || "")) h = (h * 31 + ch.charCodeAt(0)) % 360; return h; };
+const toast = m => { const t = $("#toast"); t.textContent = m; t.hidden = false; clearTimeout(t._t); t._t = setTimeout(() => t.hidden = true, 2800); };
+const ls = { get: (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } }, set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} } };
+const partes = location.pathname.split("/").filter(Boolean).map(decodeURIComponent);
+const SLUG = (partes[0] || "").toLowerCase(), BASE = "lojas/" + SLUG;
+const K = { cart: `loja:${SLUG}:carrinho`, peds: `loja:${SLUG}:pedidos`, comp: `loja:${SLUG}:comprador` };
+let CFG = null, PRODS = [], ST = { tela: "vitrine", classe: "", q: "", ordem: "nome", cupom: "", cupOk: null, pag: "", parc: 1, pedido: null, bn: 0 };
+let CART = ls.get(K.cart, []);
+const salvarCart = () => ls.set(K.cart, CART);
+
+const precoDe = p => +p.promo > 0 && +p.promo < +p.preco ? +p.promo : +p.preco || 0;
+const disp = p => p.estoque == null ? Infinity : Math.max(0, +p.estoque);
+const PB = id => PRODS.find(p => p.id === id);
+/* variação no carrinho: "<id>~<nome>" vira um produto com nome e estoque próprios */
+const prod = chave => { const [id, vn] = String(chave).split("~"), p = PB(id); if (!p || vn == null) return p || null; const v = (p.variacoes || []).find(x => x.nome === vn); return v ? { ...p, id: chave, nome: `${p.nome} · ${vn}`, estoque: v.estoque } : null; };
+const temVar = p => (p?.variacoes || []).length > 0;
+/* frete por estado, grátis acima de um valor e retirada no local (mesma regra do painel) */
+function freteCalc(uf, sub) {
+  if (ST.retirada && CFG.retirada?.ativo) return 0;
+  if (+CFG.freteGratisAcima > 0 && sub >= +CFG.freteGratisAcima) return 0;
+  const u = String(uf || "").trim().toUpperCase(), r = u && (CFG.freteRegras || []).find(x => String(x.ufs || "").toUpperCase().split(/[^A-Z]+/).includes(u));
+  return r ? +r.valor || 0 : +CFG.frete || 0;
+}
+const ufAtual = () => ($("#c-uf")?.value || ls.get(K.comp, {}).uf || "").trim();
+/* horário de funcionamento (Brasília) */
+function horario() {
+  const DS = ["domingo", "segunda", "terça", "quarta", "quinta", "sexta", "sábado"];
+  if (CFG.fechada) return { aberta: false, bloqueia: true, msg: CFG.horarios?.msg || "Loja fechada no momento." };
+  const h = CFG.horarios; if (!h?.ativo) return { aberta: true };
+  const p = Object.fromEntries(new Intl.DateTimeFormat("en-US", { timeZone: "America/Sao_Paulo", weekday: "short", hour: "2-digit", minute: "2-digit", hour12: false }).formatToParts(new Date()).map(x => [x.type, x.value]));
+  const dia = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(p.weekday), min = (+p.hour % 24) * 60 + +p.minute, m = x => { const [a, b] = String(x || "").split(":"); return +a * 60 + +(b || 0); };
+  const [ab, fe] = h.dias?.[dia] || []; if (ab && fe && min >= m(ab) && min < m(fe)) return { aberta: true };
+  let prox = ""; for (let i = 0; i < 8; i++) { const d = (dia + i) % 7, [a] = h.dias?.[d] || []; if (a && (i > 0 || m(a) > min)) { prox = `${i === 0 ? "hoje" : i === 1 ? "amanhã" : DS[d]} às ${a}`; break; } }
+  return { aberta: false, bloqueia: h.fora === "bloquear", msg: h.msg || "Estamos fora do horário de atendimento.", proxima: prox };
+}
+const horarioHtml = () => { const h = horario(); return h.aberta ? "" : `<div class="aviso-hor ${h.bloqueia ? "bloq" : ""}">${esc(h.msg)}${h.proxima ? ` Abrimos ${esc(h.proxima)}.` : ""}${h.bloqueia ? "" : " Você pode pedir agora: atendemos na abertura."}</div>`; };
+const foto = (p, cls = "") => p.imagem ? `<img class="${cls}" src="${esc(p.imagem)}" alt="" loading="lazy">` : `<span class="ph ${cls}" style="--h:${hue(p.classe || p.nome)}" aria-hidden="true">${esc((p.nome || "?").trim().slice(0, 2).toUpperCase())}</span>`;
+function pags() { const p = CFG.pag || {}, l = []; if (p.pix) l.push("PIX"); if (p.cartao) l.push("Cartão de crédito"); if (p.boleto) l.push("Boleto"); return l.length ? l : ["A combinar"]; }
+function parcelas(total) { const c = CFG.pag?.cartao; if (!c) return []; const out = []; for (let n = 1; n <= Math.max(1, c.parcelas || 1); n++) { const i = (c.juros || 0) / 100, j = n > (c.semJuros || 1) && i > 0, parc = j ? total * i / (1 - Math.pow(1 + i, -n)) : total / n; out.push({ n, parcela: +parc.toFixed(2), total: +(parc * n).toFixed(2), juros: j }); } return out; }
+function totais() {
+  const it = CART.map(x => ({ ...x, p: prod(x.pid) })).filter(x => x.p);
+  const sub = +it.reduce((a, x) => a + precoDe(x.p) * x.qtd, 0).toFixed(2);
+  let frete = it.length ? freteCalc(ufAtual(), sub) : 0;
+  const c = ST.cupOk, descCup = c ? (c.tipo === "pct" ? +(sub * Math.min(100, c.valor) / 100).toFixed(2) : c.tipo === "valor" ? Math.min(sub, c.valor) : 0) : 0;
+  if (c?.tipo === "frete") frete = 0;
+  const lp = pags(); if (!lp.includes(ST.pag)) ST.pag = lp[0];
+  const descPix = ST.pag === "PIX" && CFG.pag?.pix?.desconto > 0 ? +((sub - descCup) * CFG.pag.pix.desconto / 100).toFixed(2) : 0;
+  const base = +(sub - descCup - descPix + frete).toFixed(2), ps = ST.pag === "Cartão de crédito" ? parcelas(base) : [], pc = ps.find(x => x.n === +ST.parc) || ps[0];
+  return { it, sub, frete, descCup, descPix, base, ps, pc, total: pc ? pc.total : base, n: it.reduce((a, x) => a + x.qtd, 0) };
+}
+/* PIX copia e cola (BR Code estático) */
+function crc16(s) { let c = 0xFFFF; for (let i = 0; i < s.length; i++) { c ^= s.charCodeAt(i) << 8; for (let j = 0; j < 8; j++) c = c & 0x8000 ? ((c << 1) ^ 0x1021) & 0xFFFF : (c << 1) & 0xFFFF; } return c.toString(16).toUpperCase().padStart(4, "0"); }
+function pixCode(valor, txid) {
+  const p = CFG.pag.pix, a = t => String(t || "").normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^A-Za-z0-9 .\-]/g, "").trim(), f = (id, v) => id + String(v.length).padStart(2, "0") + v;
+  const body = f("00", "01") + f("26", f("00", "br.gov.bcb.pix") + f("01", p.chave)) + f("52", "0000") + f("53", "986") + (valor > 0 ? f("54", (+valor).toFixed(2)) : "") + f("58", "BR") + f("59", a(p.nome).slice(0, 25).toUpperCase()) + f("60", a(p.cidade).slice(0, 15).toUpperCase()) + f("62", f("05", String(txid).replace(/[^A-Za-z0-9]/g, "").slice(0, 25))) + "6304";
+  return body + crc16(body);
+}
+const pixHtml = (valor, txid) => { const c = pixCode(valor, txid); return `<div class="pix"><div class="qr" data-qr="${esc(c)}"></div><div style="display:grid;gap:8px;align-content:start"><b>Pague com PIX · ${brl(valor)}</b><span style="color:var(--muted);font-size:13px">Para ${esc(CFG.pag.pix.nome)}. Abra o app do banco, escolha PIX › Ler QR Code ou Copia e cola.</span><textarea readonly rows="4">${esc(c)}</textarea><button type="button" class="btn sm" data-copiar="${esc(c)}">Copiar código PIX</button></div></div>`; };
+new MutationObserver(() => document.querySelectorAll("[data-qr]:not([data-ok])").forEach(el => { el.dataset.ok = 1; try { new QRCode(el, { text: el.dataset.qr, width: 168, height: 168, correctLevel: QRCode.CorrectLevel.M }); } catch { el.textContent = "Use o copia e cola"; } })).observe(document.body, { childList: true, subtree: true });
+
+/* ---------- telas ---------- */
+function topo() {
+  const t = totais(), marca = CFG.logo ? `<img src="${esc(CFG.logo)}" alt="${esc(CFG.nome)}" class="${CFG.logoFundo === "branco" ? "fundo" : ""}">${CFG.comNome ? `<b>${esc(CFG.nome)}</b>` : ""}` : `<b>${esc(CFG.nome)}</b>`;
+  return `${CFG.aviso ? `<div class="aviso">${esc(CFG.aviso)}</div>` : ""}<header class="top"><div class="in top-in"><button type="button" class="marca" data-ir="vitrine" aria-label="Início">${marca}</button>
+    <form class="busca" id="f-busca" role="search"><input id="q" type="search" placeholder="O que você procura?" value="${esc(ST.q)}" aria-label="Buscar produtos"><button type="submit">Buscar</button></form>
+    <button type="button" class="top-btn" data-ir="pedidos">Meus pedidos</button><button type="button" class="top-btn cart" data-ir="carrinho">Carrinho<span class="q num">${t.n}</span></button></div></header>`;
+}
+function banners() {
+  const bs = CFG.banners || []; if (!bs.length) return "";
+  return `<section class="bn" aria-roledescription="carrossel" aria-label="Destaques"><div class="bn-track" style="transform:translateX(-${ST.bn * 100}%)">${bs.map((b, i) => `<div class="bn-slide ${b.img ? "" : "sem-img"} pos-${b.pos || "esq"}" ${b.img ? `style="background-image:url('${b.img}')"` : ""} ${i === ST.bn ? "" : 'aria-hidden="true"'}><div class="bn-txt">${b.titulo ? `<h2>${esc(b.titulo)}</h2>` : ""}${b.texto ? `<p>${esc(b.texto)}</p>` : ""}${b.botao ? `<button type="button" class="btn dest" data-bn-acao="${i}">${esc(b.botao)}</button>` : ""}</div></div>`).join("")}</div>
+    ${bs.length > 1 ? `<div class="bn-dots">${bs.map((_, i) => `<button type="button" aria-label="Destaque ${i + 1}" aria-current="${i === ST.bn}" data-bn="${i}"></button>`).join("")}</div>` : ""}</section>`;
+}
+function vitrine() {
+  const classes = [...new Set(PRODS.map(p => p.classe).filter(Boolean))].sort((a, b) => a.localeCompare(b, "pt-BR"));
+  let l = PRODS.filter(p => (!ST.classe || p.classe === ST.classe) && (!ST.q || norm(p.nome + " " + p.classe + " " + p.codigo + " " + p.descricao).includes(norm(ST.q))));
+  l = l.sort(ST.ordem === "menor" ? (a, b) => precoDe(a) - precoDe(b) : ST.ordem === "maior" ? (a, b) => precoDe(b) - precoDe(a) : (a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
+  return `${horarioHtml() ? `<div style="margin-bottom:14px">${horarioHtml()}</div>` : ""}${!ST.q && !ST.classe ? banners() : ""}<div class="chips">${["", ...classes].map(c => `<button type="button" data-cls="${esc(c)}" aria-pressed="${ST.classe === c}">${c ? esc(c) : "Todas"}</button>`).join("")}</div>
+    <div class="barra"><span><b style="color:var(--fg)">${ST.q ? `Busca: “${esc(ST.q)}”` : esc(ST.classe || "Todos os produtos")}</b> · ${l.length} produto${l.length === 1 ? "" : "s"}</span><label>Ordenar <select id="ordem"><option value="nome">Nome</option><option value="menor" ${ST.ordem === "menor" ? "selected" : ""}>Menor preço</option><option value="maior" ${ST.ordem === "maior" ? "selected" : ""}>Maior preço</option></select></label></div>
+    ${l.length ? `<div class="grid">${l.map(p => { const pr = precoDe(p), esg = disp(p) <= 0; return `<article class="card"><button type="button" class="foto" data-ver="${esc(p.id)}" aria-label="Ver ${esc(p.nome)}">${foto(p)}${esg ? `<span class="tag esg">Esgotado</span>` : pr < p.preco ? `<span class="tag">Oferta</span>` : ""}</button>
+      <div class="i"><div><span class="cls">${esc(p.classe)}</span><div class="nome">${esc(p.nome)}</div></div><div class="preco">${pr < p.preco ? `<s class="num">${brl(p.preco)}</s>` : ""}<b class="num">${brl(pr)}</b> <small>/ ${esc(p.unidade)}</small></div>
+      <button type="button" class="btn dest" data-add="${esc(p.id)}" ${esg ? "disabled" : ""}>${esg ? "Esgotado" : "Adicionar ao carrinho"}</button></div></article>`; }).join("")}</div>` : `<div class="vazio">${PRODS.length ? "Nenhum produto encontrado." : "Em breve, produtos por aqui."}</div>`}`;
+}
+function resumo(t, comCupom = true) {
+  return `<div class="resumo"><div><span>Produtos (${t.n})</span><b class="num">${brl(t.sub)}</b></div>${t.descCup ? `<div><span>Cupom ${esc(ST.cupom)}</span><b class="num">− ${brl(t.descCup)}</b></div>` : ""}${t.descPix ? `<div><span>Desconto PIX</span><b class="num">− ${brl(t.descPix)}</b></div>` : ""}
+    <div><span>${ST.retirada && CFG.retirada?.ativo ? "Retirada no local" : "Frete"}${!ST.retirada && (CFG.freteRegras || []).length && !ufAtual() ? " (pelo estado)" : ""}</span><b class="num">${t.frete ? brl(t.frete) : ST.retirada && CFG.retirada?.ativo ? "Sem frete" : ST.cupOk?.tipo === "frete" ? "Grátis (cupom)" : +CFG.freteGratisAcima > 0 && t.sub >= +CFG.freteGratisAcima ? "Grátis" : +CFG.frete || (CFG.freteRegras || []).length ? "Grátis" : "A combinar"}</b></div>${+CFG.freteGratisAcima > 0 && t.sub < +CFG.freteGratisAcima && !ST.retirada ? `<div><small style="color:var(--ok)">Frete grátis a partir de ${brl(CFG.freteGratisAcima)} em produtos</small><b></b></div>` : ""}${t.pc && t.pc.n > 1 ? `<div><span>${t.pc.n}x de ${brl(t.pc.parcela)}${t.pc.juros ? " com juros" : " sem juros"}</span><b></b></div>` : ""}<div class="tot"><span>Total</span><b class="num">${brl(t.total)}</b></div></div>
+    ${comCupom ? `<form class="cup" id="f-cup"><input id="cup" placeholder="Cupom de desconto" value="${esc(ST.cupom)}" style="text-transform:uppercase">${ST.cupOk ? `<button type="button" class="btn" data-cupx="1">Remover</button>` : `<button type="submit" class="btn">Aplicar</button>`}</form><div id="cup-msg"></div>` : ""}`;
+}
+function carrinho() {
+  const t = totais();
+  if (!t.it.length) return `<div class="box vazio"><h2>Carrinho vazio</h2><p>Escolha seus produtos na vitrine.</p><button type="button" class="btn dest" data-ir="vitrine" style="justify-self:center">Ver produtos</button></div>`;
+  return `<div class="cols"><section class="box"><h2>Carrinho</h2><div>${t.it.map(x => `<div class="linha"><div class="mini">${foto(x.p)}</div><div class="t"><b>${esc(x.p.nome)}</b><div style="color:var(--muted);font-size:13px" class="num">${brl(precoDe(x.p))} / ${esc(x.p.unidade)}</div></div>
+      <div class="qtd"><button type="button" data-qtd="${esc(x.pid)}:-1" aria-label="Menos">−</button><span class="num">${x.qtd}</span><button type="button" data-qtd="${esc(x.pid)}:1" aria-label="Mais">+</button></div><b class="num" style="min-width:86px;text-align:right">${brl(precoDe(x.p) * x.qtd)}</b><button type="button" class="btn sm" data-del="${esc(x.pid)}" aria-label="Remover">✕</button></div>`).join("")}</div></section>
+    <section class="box"><h2>Resumo</h2>${resumo(t)}<button type="button" class="btn dest" data-ir="checkout">Finalizar compra</button><button type="button" class="btn" data-ir="vitrine">Continuar comprando</button></section></div>`;
+}
+function checkout() {
+  const t = totais(), c = ls.get(K.comp, {});
+  if (!t.it.length) { ST.tela = "carrinho"; return carrinho(); }
+  const f = (k, l, cls = "", extra = "") => `<label class="${cls}">${l}<input id="c-${k}" value="${esc(c[k] || "")}" ${extra}></label>`;
+  const min = +CFG.minimo || 0, ret = ST.retirada && CFG.retirada?.ativo;
+  if (!ST.abertoEm) ST.abertoEm = Date.now();
+  return `<form id="f-fim" class="cols" autocomplete="on" novalidate><section class="box">${horarioHtml()}${min && t.sub < min ? `<div class="aviso-hor bloq">Pedido mínimo de ${brl(min)} em produtos. Faltam ${brl(min - t.sub)}.</div>` : ""}<h2>Seus dados</h2>
+      <label class="armadilha" aria-hidden="true">Não preencha<input id="c-site" tabindex="-1" autocomplete="off"></label>
+      <div class="form">${f("nome", "Nome completo", "c6", 'autocomplete="name" required')}${f("email", "E-mail", "", 'type="email" autocomplete="email" required')}${f("telefone", "WhatsApp", "", 'type="tel" autocomplete="tel" required')}${f("doc", "CPF ou CNPJ", "", 'inputmode="numeric"')}</div>
+      <h2>Entrega</h2>${CFG.retirada?.ativo ? `<div class="pags" style="margin-bottom:6px"><label class="pag"><input type="radio" name="ent" value="entrega" ${ret ? "" : "checked"}><span><b>Entregar no endereço</b></span></label><label class="pag"><input type="radio" name="ent" value="retirada" ${ret ? "checked" : ""}><span><b>Retirar no local</b> <small style="color:var(--ok)">sem frete</small>${CFG.retirada.endereco ? `<br><small style="color:var(--muted)">${esc(CFG.retirada.endereco)}</small>` : ""}</span></label></div>` : ""}<div class="form" ${ret ? 'hidden' : ""}>${f("cep", "CEP", "c2", 'inputmode="numeric" autocomplete="postal-code" required')}${f("endereco", "Endereço", "c4", 'autocomplete="address-line1" required')}${f("numero", "Número", "c2", "required")}${f("complemento", "Complemento", "c4")}${f("bairro", "Bairro", "")}${f("cidade", "Cidade", "", 'autocomplete="address-level2" required')}${f("uf", "UF", "c2", 'maxlength="2" required style="text-transform:uppercase"')}</div>
+      <label style="display:grid;gap:4px;font-size:12.5px;font-weight:600;color:var(--muted)">Observações<textarea id="c-obs" rows="2"></textarea></label></section>
+    <section class="box"><h2>Pagamento</h2><div class="pags">${pags().map(p => `<label class="pag"><input type="radio" name="pag" value="${esc(p)}" ${ST.pag === p ? "checked" : ""}><span><b>${esc(p)}</b>${p === "PIX" && CFG.pag?.pix?.desconto ? ` <small style="color:var(--ok)">${CFG.pag.pix.desconto}% de desconto</small>` : ""}${p === "Cartão de crédito" ? `<br><small style="color:var(--muted)">Você recebe o link de pagamento depois do pedido</small>` : p === "Boleto" ? `<br><small style="color:var(--muted)">A loja envia o boleto</small>` : ""}</span></label>`).join("")}</div>
+      ${t.ps.length > 1 ? `<label style="display:grid;gap:4px;font-size:12.5px;font-weight:600;color:var(--muted)">Parcelas<select id="parc">${t.ps.map(x => `<option value="${x.n}" ${x.n === (t.pc?.n || 1) ? "selected" : ""}>${x.n}x de ${brl(x.parcela)}${x.juros ? " (com juros)" : " sem juros"}</option>`).join("")}</select></label>` : ""}
+      ${resumo(t, false)}<div class="err" id="fim-err" hidden></div><button type="submit" class="btn dest" id="fim-btn">Confirmar pedido · ${brl(t.total)}</button><button type="button" class="btn" data-ir="carrinho">Voltar ao carrinho</button></section></form>`;
+}
+const STATUS = [["novo", "Recebido"], ["aprovado", "Confirmado"], ["enviado", "Enviado"], ["finalizado", "Entregue / rastreio"]];
+function pedidoHtml(id, d) {
+  if (!d) return `<div class="box vazio"><h2>Pedido não encontrado</h2><button type="button" class="btn" data-ir="vitrine" style="justify-self:center">Voltar à loja</button></div>`;
+  const i = d.status === "cancelado" ? -1 : Math.max(0, STATUS.findIndex(s => s[0] === d.status)), pago = d.pagStatus === "pago";
+  return `<div class="cols"><section class="box"><span class="cls">Pedido ${esc(d.pedidoNumero || "em processamento")}</span><h2>Obrigado, ${esc((d.nome || "").split(" ")[0])}!</h2>
+      ${d.status === "cancelado" ? `<p class="err">Este pedido foi cancelado. Fale com a loja.</p>` : `<div class="st">${STATUS.map((s, k) => `<span class="${k <= i ? "on" : ""}">${s[1]}</span>`).join("")}</div>`}
+      ${d.rastreio ? `<p>Rastreio: <b class="num">${esc(d.rastreio)}</b>${d.transportadora ? ` · ${esc(d.transportadora)}` : ""} ${d.rastreioUrl ? `<a href="${esc(d.rastreioUrl)}" target="_blank" rel="noopener">Rastrear ↗</a>` : ""}</p>` : ""}
+      <div>${(d.itens || []).map(x => `<div class="linha"><div class="t"><b>${esc(x.nome)}</b></div><span class="num">${x.qtd} × ${brl(x.unit)}</span></div>`).join("")}</div>
+      <p style="color:var(--muted);font-size:14px">Entrega: ${esc([d.endereco && d.endereco + (d.numero ? ", " + d.numero : ""), d.bairro, d.cidade && d.cidade + "/" + d.uf].filter(Boolean).join(" · "))}</p>
+      <p style="font-size:13px;color:var(--muted)">Guarde este link para acompanhar: <a href="/${esc(SLUG)}/pedido/${esc(id)}">${esc(location.host)}/${esc(SLUG)}/pedido/${esc(id.slice(0, 8))}…</a></p></section>
+    <section class="box"><h2>Pagamento</h2><p><b>${esc(d.pagamento)}</b> · <span class="pill ${pago ? "ok" : "warn"}">${pago ? "Pago" : "Aguardando pagamento"}</span></p><p class="num" style="font-size:20px;font-weight:700">${brl(d.total)}</p>
+      ${!pago && d.pagamento === "PIX" && CFG.pag?.pix ? pixHtml(d.total, "LJ" + id) : ""}
+      ${!pago && d.pagamento === "Cartão de crédito" && CFG.pag?.cartao?.link ? `<a class="btn dest" href="${esc(CFG.pag.cartao.link)}" target="_blank" rel="noopener">Pagar com cartão ↗</a>` : ""}
+      ${!pago && d.pagamento !== "PIX" && !(d.pagamento === "Cartão de crédito" && CFG.pag?.cartao?.link) ? `<p style="color:var(--muted);font-size:14px">A ${esc(CFG.nome)} entra em contato com as instruções de pagamento.</p>` : ""}
+      <button type="button" class="btn" data-ir="vitrine">Voltar à loja</button></section></div>`;
+}
+async function meusPedidos() {
+  const ids = ls.get(K.peds, []);
+  if (!ids.length) return `<div class="box vazio"><h2>Meus pedidos</h2><p>Os pedidos feitos neste aparelho aparecem aqui.</p></div>`;
+  const ds = await Promise.all(ids.slice(-20).reverse().map(async id => { try { const s = await getDoc(doc(fs, `${BASE}/pedidos/${id}`)); return s.exists() ? [id, s.data()] : null; } catch { return null; } }));
+  return `<section class="box"><h2>Meus pedidos</h2>${ds.filter(Boolean).map(([id, d]) => `<div class="linha"><div class="t"><b>${esc(d.pedidoNumero || "Pedido recebido")}</b><div style="color:var(--muted);font-size:13px">${fmtD((d.criadoEm || "").slice(0, 10))} · ${brl(d.total)} · ${esc((STATUS.find(s => s[0] === d.status) || [, d.status === "cancelado" ? "Cancelado" : "Recebido"])[1])}</div></div><a class="btn sm" href="/${esc(SLUG)}/pedido/${esc(id)}">Acompanhar</a></div>`).join("")}</section>`;
+}
+let DESL = null;
+async function render() {
+  if (DESL && ST.tela !== "pedido") { DESL(); DESL = null; }
+  document.documentElement.style.setProperty("--base", CFG.tema?.base || "#0b1d3a"); document.documentElement.style.setProperty("--dest", CFG.tema?.destaque || "#1a73d9"); document.documentElement.style.setProperty("--claro", CFG.tema?.claro || "#5fb3ff");
+  document.title = CFG.nome + (ST.tela === "vitrine" ? " · Loja" : "");
+  let corpo = "";
+  if (ST.tela === "vitrine") corpo = vitrine(); else if (ST.tela === "carrinho") corpo = carrinho(); else if (ST.tela === "checkout") corpo = checkout(); else if (ST.tela === "pedidos") corpo = await meusPedidos(); else if (ST.tela === "pedido") corpo = pedidoHtml(ST.pedido?.id, ST.pedido?.d);
+  $("#app").innerHTML = topo() + `<main><div class="in">${corpo}</div></main><footer><div class="in"><span>© ${new Date().getFullYear()} ${esc(CFG.nome)}${CFG.site && !/suaempresa/i.test(CFG.site) ? ` · ${esc(CFG.site)}` : ""}</span><span>Loja criada com a plataforma Upe Criativo</span></div></footer>`;
+  bnAuto();
+}
+let BN_T = null;
+function bnAuto() { clearInterval(BN_T); const n = (CFG.banners || []).length; if (n < 2 || ST.tela !== "vitrine" || matchMedia("(prefers-reduced-motion: reduce)").matches) return; BN_T = setInterval(() => { if (document.querySelector(".bn:hover")) return; ST.bn = (ST.bn + 1) % n; const tr = $(".bn-track"); if (tr) { tr.style.transform = `translateX(-${ST.bn * 100}%)`; document.querySelectorAll(".bn-dots button").forEach((b, i) => b.setAttribute("aria-current", i === ST.bn)); } }, 5500); }
+function ir(tela) { ST.tela = tela; if (tela !== "pedido") history.replaceState(null, "", "/" + SLUG); render(); window.scrollTo(0, 0); }
+function verProduto(id) {
+  const p = prod(id); if (!p) return; const pr = precoDe(p), esg = disp(p) <= 0;
+  $("#modal").innerHTML = `<div class="scrim" data-fechar="1"><div class="dlg" role="dialog" aria-label="${esc(p.nome)}"><div class="foto">${foto(p)}</div><div class="i"><span class="cls">${esc(p.classe)}</span><h3>${esc(p.nome)}</h3><div class="preco">${pr < p.preco ? `<s class="num">${brl(p.preco)}</s>` : ""}<b class="num">${brl(pr)}</b> <small>/ ${esc(p.unidade)}</small></div>
+    ${p.descricao ? `<p style="color:var(--muted)">${esc(p.descricao)}</p>` : ""}${p.estoque != null && !esg ? `<small style="color:var(--muted)">${p.estoque} em estoque</small>` : ""}
+    ${temVar(p) ? `<label style="display:grid;gap:4px;font-size:12.5px;font-weight:600;color:var(--muted)">${esc(p.opcao || "Opção")}<select id="v-var">${p.variacoes.map(v => `<option value="${esc(v.nome)}" ${v.estoque != null && v.estoque <= 0 ? "disabled" : ""}>${esc(v.nome)}${v.estoque != null && v.estoque <= 0 ? " · esgotado" : ""}</option>`).join("")}</select></label>` : ""}
+    <div style="display:flex;gap:8px"><input id="v-q" type="number" min="1" value="1" style="width:80px" ${esg ? "disabled" : ""}><button type="button" class="btn dest" data-addq="${esc(p.id)}" ${esg ? "disabled" : ""} style="flex:1">${esg ? "Esgotado" : "Adicionar ao carrinho"}</button></div><div style="display:flex;gap:8px"><button type="button" class="btn" data-compartilhar="${esc(p.id)}" style="flex:1">Compartilhar</button><button type="button" class="btn" data-fechar="1" style="flex:1">Fechar</button></div></div></div></div>`;
+}
+function add(pid, n = 1) {
+  const base = PB(pid); if (base && temVar(base) && !String(pid).includes("~")) return verProduto(pid);
+  const p = prod(pid); if (!p) return;
+  const x = CART.find(i => i.pid === pid), q = (x?.qtd || 0) + n;
+  if (q > disp(p)) return toast(`Só temos ${disp(p)} de ${p.nome} em estoque.`);
+  if (x) x.qtd = q; else CART.push({ pid, qtd: n });
+  CART = CART.filter(i => i.qtd > 0); salvarCart(); if (n > 0) toast(`${p.nome} no carrinho`); render();
+}
+async function aplicarCupom(cod) {
+  cod = String(cod || "").trim().toUpperCase(); if (!cod) return;
+  const msg = m => { const el = $("#cup-msg"); if (el) el.innerHTML = m; };
+  try {
+    const s = await getDoc(doc(fs, `${BASE}/cupons/${cod}`)); const c = s.exists() ? s.data() : null, sub = totais().sub;
+    const erro = !c ? "Cupom inválido." : c.validade && c.validade < hoje() ? `Cupom vencido em ${fmtD(c.validade)}.` : c.inicio && c.inicio > hoje() ? `Cupom vale a partir de ${fmtD(c.inicio)}.` : c.minimo > 0 && sub < c.minimo ? `Vale para compras a partir de ${brl(c.minimo)}.` : c.limite > 0 && c.usos >= c.limite ? "Esse cupom já atingiu o limite de usos." : "";
+    if (erro) { ST.cupom = ""; ST.cupOk = null; render().then(() => msg(`<span class="err">${esc(erro)}</span>`)); return; }
+    ST.cupom = cod; ST.cupOk = c; await render(); msg(`<span class="okm">Cupom ${esc(cod)} aplicado.</span>`);
+  } catch { msg(`<span class="err">Não foi possível conferir o cupom agora.</span>`); }
+}
+async function finalizar() {
+  const er = $("#fim-err"), fail = m => { er.hidden = false; er.textContent = m; };
+  const v = id => ($("#c-" + id)?.value || "").trim(), t = totais();
+  const c = { nome: v("nome"), email: v("email").toLowerCase(), telefone: v("telefone"), doc: digits(v("doc")), cep: digits(v("cep")), endereco: v("endereco"), numero: v("numero"), complemento: v("complemento"), bairro: v("bairro"), cidade: v("cidade"), uf: v("uf").toUpperCase() };
+  if (c.nome.length < 3) return fail("Informe o seu nome.");
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(c.email)) return fail("Informe um e-mail válido.");
+  if (digits(c.telefone).length < 10) return fail("Informe o WhatsApp com DDD.");
+  const ret = !!(ST.retirada && CFG.retirada?.ativo), h = horario();
+  if ($("#c-site")?.value || Date.now() - (ST.abertoEm || 0) < 3000) return fail("Confira os dados e clique de novo em Confirmar pedido.");
+  const recentes = ls.get("loja:envios", []).filter(x => Date.now() - x < 600000); if (recentes.length >= 3) return fail("Muitos pedidos em sequência. Aguarde alguns minutos ou fale com a loja.");
+  if (!h.aberta && h.bloqueia) return fail(h.msg + (h.proxima ? ` Abrimos ${h.proxima}.` : ""));
+  if (+CFG.minimo > 0 && t.sub < +CFG.minimo) return fail(`O pedido mínimo é de ${brl(CFG.minimo)} em produtos.`);
+  if (!ret && (c.cep.length !== 8 || !c.endereco || !c.numero || !c.cidade || c.uf.length !== 2)) return fail("Complete o endereço de entrega.");
+  const falta = t.it.find(x => x.qtd > disp(x.p)); if (falta) return fail(`${falta.p.nome}: só ${disp(falta.p)} em estoque. Ajuste o carrinho.`);
+  ls.set(K.comp, c);
+  const id = [...crypto.getRandomValues(new Uint8Array(15))].map(b => "abcdefghijkmnpqrstuvwxyz23456789"[b % 32]).join("");
+  const pedido = { ...c, itens: t.it.map(x => ({ pid: x.pid, nome: x.p.nome, qtd: x.qtd, unit: precoDe(x.p) })), sub: t.sub, frete: t.frete, desconto: +(t.descCup + t.descPix).toFixed(2), cupom: ST.cupOk ? ST.cupom : "", total: t.total, entrega: ret ? "retirada" : "entrega", pagamento: ST.pag, parcelas: t.pc ? t.pc.n : 1, obs: ($("#c-obs")?.value || "").trim().slice(0, 500), status: "novo", importado: false, criadoEm: new Date().toISOString() };
+  $("#fim-btn").disabled = true; $("#fim-btn").textContent = "Enviando…";
+  try {
+    await setDoc(doc(fs, `${BASE}/pedidos/${id}`), pedido);
+    ls.set("loja:envios", [...recentes, Date.now()]); ls.set(K.peds, [...ls.get(K.peds, []), id].slice(-30)); CART = []; salvarCart(); ST.cupom = ""; ST.cupOk = null;
+    location.href = `/${SLUG}/pedido/${id}`;
+  } catch (e) { console.error(e); fail("Não foi possível enviar o pedido agora. Tente de novo."); $("#fim-btn").disabled = false; $("#fim-btn").textContent = "Confirmar pedido"; }
+}
+document.addEventListener("click", async e => {
+  const b = e.target.closest("button, .scrim"); if (!b) return; const d = b.dataset;
+  if (d.fechar && (e.target === b || b.tagName === "BUTTON")) { $("#modal").innerHTML = ""; return; }
+  if (d.ir) { $("#modal").innerHTML = ""; return ir(d.ir); }
+  if (d.cls != null) { ST.classe = d.cls; ST.q = ""; return render(); }
+  if (d.ver) return verProduto(d.ver);
+  if (d.add) return add(d.add);
+  if (d.addq) { const q = Math.max(1, parseInt($("#v-q").value, 10) || 1), vv = $("#v-var")?.value; $("#modal").innerHTML = ""; return add(vv ? d.addq + "~" + vv : d.addq, q); }
+  if (d.compartilhar) { const p = PB(d.compartilhar), url = `${location.origin}/${SLUG}/p/${encodeURIComponent(d.compartilhar)}`, txt = `${p?.nome || ""} · ${brl(precoDe(p || {}))} na ${CFG.nome}`;
+    if (navigator.share) { try { await navigator.share({ title: p?.nome, text: txt, url }); } catch {} } else { window.open(`https://wa.me/?text=${encodeURIComponent(txt + "\n" + url)}`, "_blank", "noopener"); } return; }
+  if (d.qtd) { const [pid, n] = d.qtd.split(":"); return add(pid, +n); }
+  if (d.del) { CART = CART.filter(i => i.pid !== d.del); salvarCart(); return render(); }
+  if (d.cupx) { ST.cupom = ""; ST.cupOk = null; return render(); }
+  if (d.bn) { ST.bn = +d.bn; return render(); }
+  if (d.bnAcao) { const bb = CFG.banners[+d.bnAcao]; if (bb.acao === "link" && /^https?:\/\//.test(bb.alvo)) { window.open(bb.alvo, "_blank", "noopener"); return; } if (bb.acao === "classe") { ST.classe = bb.alvo; return render(); } return; }
+  if (d.copiar) { try { await navigator.clipboard.writeText(d.copiar); toast("Código PIX copiado"); } catch { toast("Selecione o código e copie"); } }
+});
+document.addEventListener("submit", e => {
+  if (e.target.id === "f-ir") return;
+  e.preventDefault();
+  if (e.target.id === "f-busca") { ST.q = $("#q").value.trim(); ST.classe = ""; ST.tela = "vitrine"; render(); }
+  if (e.target.id === "f-cup") aplicarCupom($("#cup").value);
+  if (e.target.id === "f-fim") finalizar();
+});
+document.addEventListener("change", e => {
+  if (e.target.id === "ordem") { ST.ordem = e.target.value; render(); }
+  if (e.target.name === "pag") { ST.pag = e.target.value; ST.parc = 1; guardarForm(); render().then(restaurarForm); }
+  if (e.target.id === "parc") { ST.parc = +e.target.value; guardarForm(); render().then(restaurarForm); }
+  if (e.target.id === "c-cep") buscarCep(e.target.value);
+  if (e.target.name === "ent") { ST.retirada = e.target.value === "retirada"; guardarForm(); render().then(restaurarForm); }
+  if (e.target.id === "c-uf" && (CFG.freteRegras || []).length) { guardarForm(); render().then(restaurarForm); }
+});
+let FORM = {};
+const guardarForm = () => document.querySelectorAll("#f-fim input:not([type=radio]), #f-fim textarea").forEach(i => FORM[i.id] = i.value);
+const restaurarForm = () => Object.entries(FORM).forEach(([k, v]) => { const i = document.getElementById(k); if (i) i.value = v; });
+async function buscarCep(v) {
+  const c = digits(v); if (c.length !== 8) return;
+  try { const r = await (await fetch(`https://viacep.com.br/ws/${c}/json/`)).json(); if (r.erro) return; const s = (k, val) => { const i = $("#c-" + k); if (i && !i.value && val) i.value = val; }; s("endereco", r.logradouro); s("bairro", r.bairro); s("cidade", r.localidade); s("uf", r.uf); $("#c-numero")?.focus(); } catch {}
+}
+function indisponivel(titulo, texto) { document.title = titulo; $("#app").innerHTML = `<div class="centro"><div><h1>${esc(titulo)}</h1><p>${esc(texto)}</p></div></div>`; }
+(async () => {
+  if (!SLUG) {   /* endereço principal: não é uma loja, só explica e encaminha */
+    document.title = "Lojas Upe Criativo";
+    $("#app").innerHTML = `<div class="centro"><div style="display:grid;gap:14px;max-width:520px;justify-items:center"><h1>Lojas Upe Criativo</h1>
+      <p>Cada loja tem o próprio endereço, no formato <b style="color:var(--fg)">${esc(location.host)}/nome-da-loja</b>. Se você recebeu o link de uma loja, abra o link completo.</p>
+      <form id="f-ir" style="display:flex;gap:8px;width:100%"><input id="ir-loja" placeholder="nome-da-loja" aria-label="Endereço da loja" autocapitalize="none"><button type="submit" class="btn dest">Abrir loja</button></form>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><a class="btn" href="https://upe-criativo-painel.web.app">Sou lojista: abrir o painel</a><a class="btn" href="https://upe-criativo-erp.web.app">Quero uma loja assim</a></div></div></div>`;
+    $("#f-ir").addEventListener("submit", e => { e.preventDefault(); const n = norm($("#ir-loja").value).trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); if (n) location.href = "/" + n; }, true);
+    return;
+  }
+  try {
+    const raiz = await getDoc(doc(fs, BASE));
+    if (!raiz.exists()) return indisponivel("Loja não encontrada", "Confira o endereço digitado.");
+    const r = raiz.data();
+    if (r.mudouPara) { location.replace("/" + r.mudouPara + location.pathname.slice(SLUG.length + 1)); return; }
+    const c = await getDoc(doc(fs, BASE + "/publico/config"));
+    CFG = c.exists() ? c.data() : { nome: r.nome || "Loja" };
+    if (r.ativa === false || CFG.ativa === false) return indisponivel(CFG.nome || "Loja", "Loja temporariamente indisponível. Volte em breve.");
+    PRODS = (await getDocs(collection(fs, BASE + "/produtos"))).docs.map(d => ({ id: d.id, ...d.data() }));
+    CART = CART.filter(x => prod(x.pid));
+    if (partes[1] === "p" && partes[2]) { history.replaceState(null, "", "/" + SLUG); render(); setTimeout(() => verProduto(partes[2]), 50); return; }
+    if (partes[1] === "pedido" && partes[2]) {
+      const id = partes[2]; ST.tela = "pedido";
+      DESL = onSnapshot(doc(fs, `${BASE}/pedidos/${id}`), s => { ST.pedido = { id, d: s.exists() ? s.data() : null }; render(); }, () => { ST.pedido = { id, d: null }; render(); });
+      return;
+    }
+    render();
+  } catch (e) { console.error(e); indisponivel("Loja indisponível", "Não foi possível carregar a loja agora. Tente de novo em instantes."); }
+})();
+</script>
+</body>
+</html>
