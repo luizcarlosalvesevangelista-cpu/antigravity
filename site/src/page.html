@@ -44,6 +44,8 @@ h3 { font-size: 1.2rem; font-weight: 900; }
 .btn { display: inline-flex; align-items: center; gap: 10px; font: 900 .95rem var(--font); text-decoration: none; padding: 14px 22px; border-radius: 999px; border: 2px solid transparent; cursor: pointer; }
 .btn-creme { background: var(--creme); color: var(--azul); }
 .btn-linha { border-color: currentColor; color: inherit; background: transparent; }
+.mat { display: inline-flex; width: fit-content; justify-self: start; align-self: start; align-items: center; gap: 8px; margin-top: 14px; font-weight: 900; font-size: .9rem; color: inherit; text-decoration: none; border-bottom: 2px solid currentColor; padding-bottom: 2px; }
+.mat::before { content: "↓"; }
 .btn-azul { background: var(--azul); color: var(--creme); }
 :root[data-theme="dark"] .btn-azul { background: var(--creme); color: var(--azul); }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn-azul { background: var(--creme); color: var(--azul); } }
@@ -302,7 +304,7 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
           <div class="feat"><b>Cupons</b><span>Promoções e frete grátis.</span></div>
           <div class="feat"><b>Relatórios</b><span>Vendas, clientes e newsletter.</span></div>
         </div>
-        <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center"><a class="btn btn-creme" href="https://upe-criativo-erp.web.app/" target="_blank" rel="noopener">Conhecer o Upe ERP</a><a class="btn btn-linha" href="https://upe-criativo-painel.web.app/" target="_blank" rel="noopener">Portal do assinante</a><span class="url">upe-criativo-erp.web.app</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center"><a class="btn btn-creme" href="https://upe-criativo-erp.web.app/" target="_blank" rel="noopener">Conhecer o Upe ERP</a><a class="btn btn-linha" href="https://upe-criativo-painel.web.app/" target="_blank" rel="noopener">Portal do assinante</a></div>
       </div>
       <div class="reveal">
         <div class="reel" data-reel><video controls playsinline preload="none" data-h="assets/video/erp-h.mp4" data-v="assets/video/erp-v.mp4" data-ph="assets/img/erp-h.jpg" data-pv="assets/img/erp-v.jpg" poster="assets/img/erp-h.jpg"></video></div>
@@ -318,10 +320,10 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
         <h2>Sua marca na tela certa.</h2>
         <p class="lead">Enquanto as pessoas esperam, olham para a tela. Quem se interessa aponta a câmera para o QR code e fala com a marca na hora. A Upe cria, publica e cuida de tudo pela internet.</p>
         <div class="aud">
-          <div><h3>Para anunciantes</h3><p>Tela cheia, lateral que expande, letreiro e cardápio com pedido pelo celular. No portal, você vê onde passou, por quanto tempo e quantos leram o QR.</p></div>
-          <div><h3>Para estabelecimentos</h3><p>A sua TV com programação profissional, o seu nome no letreiro e espaço para as suas promoções. A Upe instala e cuida da tela.</p></div>
+          <div><h3>Para anunciantes</h3><p>Tela cheia, lateral que expande, letreiro e cardápio com pedido pelo celular. No portal, você vê onde passou, por quanto tempo e quantos leram o QR.</p><a class="mat" href="assets/docs/upe-tv-guia-do-anunciante.pdf" target="_blank" rel="noopener" download>Material do anunciante</a></div>
+          <div><h3>Para estabelecimentos</h3><p>A sua TV com programação profissional, o seu nome no letreiro e espaço para as suas promoções. A Upe instala e cuida da tela.</p><a class="mat" href="assets/docs/upe-tv-guia-do-estabelecimento.pdf" target="_blank" rel="noopener" download>Material do estabelecimento</a></div>
         </div>
-        <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center"><a class="btn btn-azul" href="https://upe-criativo-tv.web.app/" target="_blank" rel="noopener">Conhecer o Upe TV</a><a class="btn btn-linha" href="https://upe-criativo-tv.web.app/#cliente" target="_blank" rel="noopener">Portal do assinante</a><span class="url" style="color:var(--acento)">upe-criativo-tv.web.app</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center"><a class="btn btn-azul" href="https://upe-criativo-tv.web.app/" target="_blank" rel="noopener">Conhecer o Upe TV</a><a class="btn btn-linha" href="https://upe-criativo-tv.web.app/#cliente" target="_blank" rel="noopener">Portal do assinante</a></div>
       </div>
       <div class="reveal">
         <div class="reel" data-reel><video controls playsinline preload="none" data-h="assets/video/tv-h.mp4" data-v="assets/video/tv-v.mp4" data-ph="assets/img/tv-h.jpg" data-pv="assets/img/tv-v.jpg" poster="assets/img/tv-h.jpg"></video></div>
