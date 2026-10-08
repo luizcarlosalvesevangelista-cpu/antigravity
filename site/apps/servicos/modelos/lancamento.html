@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Workshop Vendas no Instagram · Inscrições abertas</title>
+<meta name="description" content="Workshop online e ao vivo: aprenda a transformar seguidores em clientes. Vagas limitadas.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root { --cor: #ff7a59; --fundo: #0b1d3a; --fundo-2: #12294d; --texto: #f4f1ea; --suave: #b9c4d6; }
+* { box-sizing: border-box; margin: 0; }
+body { font: 17px/1.6 Lato, system-ui, sans-serif; background: var(--fundo); color: var(--texto); }
+.in { width: min(1040px, 100% - 32px); margin: 0 auto; }
+.btn { display: inline-flex; padding: 16px 28px; border-radius: 99px; background: var(--cor); color: #1b0f0a; font: inherit; font-weight: 900; text-decoration: none; border: 0; cursor: pointer; }
+.topo { padding: 80px 0 64px; text-align: center; background: radial-gradient(60% 70% at 50% 0%, rgba(255,122,89,.35), transparent 70%); }
+.data { display: inline-block; border: 1px solid rgba(255,255,255,.3); padding: 8px 16px; border-radius: 99px; font-weight: 700; font-size: 14px; letter-spacing: .06em; }
+h1 { font-size: clamp(36px, 6vw, 64px); line-height: 1.04; font-weight: 900; margin: 20px auto 16px; max-width: 16ch; }
+.topo p { color: var(--suave); font-size: 20px; max-width: 54ch; margin: 0 auto 28px; }
+.contagem { display: flex; gap: 12px; justify-content: center; margin-top: 28px; }
+.contagem div { background: var(--fundo-2); border-radius: 14px; padding: 12px 16px; min-width: 76px; } .contagem b { display: block; font-size: 28px; } .contagem span { font-size: 12px; color: var(--suave); text-transform: uppercase; letter-spacing: .1em; }
+section { padding: 64px 0; } h2 { font-size: clamp(28px, 4vw, 40px); font-weight: 900; line-height: 1.1; margin-bottom: 24px; }
+.lista { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.lista div { background: var(--fundo-2); border-radius: 16px; padding: 20px 22px; border-left: 4px solid var(--cor); }
+.preco { background: var(--texto); color: var(--fundo); border-radius: 26px; padding: 36px; display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center; }
+.preco s { color: #7a8599; } .preco strong { font-size: 48px; display: block; line-height: 1; }
+form { display: grid; gap: 12px; margin-top: 16px; max-width: 520px; }
+input { font: inherit; padding: 14px 16px; border-radius: 12px; border: 1px solid #c9d2e0; }
+footer { padding: 28px 0 40px; color: var(--suave); font-size: 14px; text-align: center; }
+@media (max-width: 760px) { .lista, .preco { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<section class="topo"><div class="in">
+  <span class="data">AO VIVO · 28 DE NOVEMBRO · 19H</span>
+  <h1>Transforme seguidores em clientes</h1>
+  <p>Um workshop prático de 2 horas para quem vende pelo Instagram e quer parar de depender da sorte.</p>
+  <a class="btn" href="#inscricao">Garantir a minha vaga</a>
+  <div class="contagem" aria-label="Vagas restantes"><div><b>120</b><span>vagas</span></div><div><b>2h</b><span>ao vivo</span></div><div><b>7 dias</b><span>de replay</span></div></div>
+</div></section>
+<section><div class="in">
+  <h2>O que você vai aprender</h2>
+  <div class="lista">
+    <div><b>Perfil que vende</b><br>Bio, destaques e link que levam direto para a compra.</div>
+    <div><b>Conteúdo com intenção</b><br>Posts e reels que geram conversa, não só curtida.</div>
+    <div><b>Roteiro de atendimento</b><br>Da primeira mensagem ao pagamento no PIX.</div>
+    <div><b>Métricas que importam</b><br>O que acompanhar toda semana para crescer.</div>
+  </div>
+</div></section>
+<section id="inscricao"><div class="in">
+  <div class="preco">
+    <div><h2 style="margin-bottom:8px">Inscrição</h2><p><s>R$ 197</s></p><strong>R$ 97</strong><p>ou 3x de R$ 34,90</p>
+      <form><input name="nome" placeholder="Seu nome" required><input name="email" type="email" placeholder="Seu e-mail" required><input name="whatsapp" placeholder="Seu WhatsApp" inputmode="tel"><button class="btn" type="submit">Quero me inscrever</button></form>
+    </div>
+  </div>
+</div></section>
+<footer>Workshop Vendas no Instagram · Dúvidas? Fale com a gente pelo WhatsApp.</footer>
+</body>
+</html>

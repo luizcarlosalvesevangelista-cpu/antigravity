@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agendar horário</title>
+<meta name="description" content="Agende o seu horário online.">
+<link rel="icon" type="image/png" href="/icone.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
+<style>
+/* Página pública de agendamento da Agenda online (Upe Sistemas). A cor vem da configuração de cada agenda. */
+:root { --cor: #1f6f5c; --bg: #f6f5ee; --surface: #fff; --fg: #14171c; --muted: #5d6573; --line: #e1dfd2; --ok: #2f7d52; --crit: #b3402b; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #0f151d; --surface: #17202b; --fg: #eeebdd; --muted: #9ba6b6; --line: #2a3747; --ok: #5cc48a; --crit: #ee7a66; } }
+:root[data-theme="dark"] { --bg: #0f151d; --surface: #17202b; --fg: #eeebdd; --muted: #9ba6b6; --line: #2a3747; --ok: #5cc48a; --crit: #ee7a66; }
+* { box-sizing: border-box; margin: 0; }
+[hidden] { display: none !important; }
+body { background: var(--bg); color: var(--fg); font: 16px/1.55 Lato, system-ui, sans-serif; min-height: 100vh; }
+.topo { background: var(--cor); color: #fff; padding: 34px 16px 70px; }
+.in { width: min(760px, 100%); margin: 0 auto; }
+.topo h1 { font-size: clamp(28px, 6vw, 40px); font-weight: 900; line-height: 1.1; }
+.topo p { opacity: .9; margin-top: 8px; max-width: 56ch; }
+.topo small { display: block; margin-top: 10px; opacity: .8; }
+main { margin-top: -46px; padding: 0 16px 60px; }
+.caixa { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 22px; box-shadow: 0 16px 40px rgba(20,23,28,.08); display: grid; gap: 22px; }
+.caixa > *, .passo { min-width: 0; }
+.passo h2 { font-size: 15px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.passo h2 b { color: var(--cor); }
+.opcoes { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+.op { text-align: left; border: 1.5px solid var(--line); background: var(--surface); color: var(--fg); border-radius: 14px; padding: 14px; font: inherit; cursor: pointer; display: grid; gap: 2px; }
+.op b { font-size: 17px; } .op span { color: var(--muted); font-size: 14px; }
+.op[aria-pressed="true"] { border-color: var(--cor); box-shadow: 0 0 0 3px color-mix(in srgb, var(--cor) 25%, transparent); }
+.dias { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; scroll-snap-type: x mandatory; }
+.dia { flex: none; width: 72px; border: 1.5px solid var(--line); background: var(--surface); color: var(--fg); border-radius: 14px; padding: 10px 6px; font: inherit; cursor: pointer; text-align: center; scroll-snap-align: start; }
+.dia small { display: block; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; } .dia b { font-size: 22px; display: block; line-height: 1.1; }
+.dia[aria-pressed="true"] { background: var(--cor); border-color: var(--cor); color: #fff; } .dia[aria-pressed="true"] small { color: rgba(255,255,255,.85); }
+.dia:disabled { opacity: .35; cursor: default; }
+.horas { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 8px; }
+.hora { border: 1.5px solid var(--line); background: var(--surface); color: var(--fg); border-radius: 10px; padding: 10px 0; font: inherit; font-weight: 700; cursor: pointer; }
+.hora[aria-pressed="true"] { background: var(--cor); border-color: var(--cor); color: #fff; }
+form { display: grid; gap: 12px; }
+label { display: grid; gap: 5px; font-weight: 700; font-size: 14px; }
+input, textarea { font: inherit; padding: 12px 13px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); }
+.btn { display: inline-flex; justify-content: center; align-items: center; gap: 8px; padding: 14px 22px; border-radius: 12px; border: 0; background: var(--cor); color: #fff; font: inherit; font-weight: 900; cursor: pointer; text-decoration: none; }
+.btn.linha { background: none; border: 1.5px solid var(--line); color: var(--fg); }
+.btn:disabled { opacity: .5; cursor: default; }
+.resumo { background: var(--bg); border-radius: 12px; padding: 12px 14px; font-size: 15px; }
+.erro { color: var(--crit); font-weight: 700; } .erro:empty { display: none; }
+.vazio { color: var(--muted); }
+.ok { text-align: center; display: grid; gap: 14px; justify-items: center; padding: 10px 0; }
+.ok .sel { width: 64px; height: 64px; border-radius: 50%; background: var(--ok); color: #fff; display: grid; place-items: center; font-size: 32px; font-weight: 900; }
+footer { text-align: center; color: var(--muted); font-size: 13px; margin-top: 26px; } footer a { color: inherit; }
+</style>
+</head>
+<body>
+<header class="topo"><div class="in"><h1 id="nome">Agendar horário</h1><p id="bv"></p><small id="end"></small></div></header>
+<main><div class="in"><div class="caixa" id="app"><p class="vazio">Carregando horários…</p></div>
+<footer>Agenda online criada pela <a href="https://upe-criativo-sistemas.web.app" target="_blank" rel="noopener">Upe Criativo</a></footer></div></main>
+<script type="module">
+import { ler, consultar, gravarJuntos, esc, brl } from "./pub.js";
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const DIAS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"], DIAS_L = ["domingo", "segunda", "terça", "quarta", "quinta", "sexta", "sábado"];
+const min = h => { const [a, b] = String(h).split(":").map(Number); return a * 60 + (b || 0); }, hhmm = m => String(Math.floor(m / 60)).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0");
+const iso = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+const slug = (location.pathname.split("/").filter(Boolean)[0] || "").toLowerCase(), demo = new URLSearchParams(location.search).has("demo");
+const DEMO_AG = { nome: "Studio Bem Estar", ativo: true, cor: "#1f6f5c", boasVindas: "Escolha o serviço, o dia e o horário. Você recebe a confirmação pelo WhatsApp.", endereco: "Rua Exemplo, 123 · São Paulo/SP", whatsapp: "5511999990001", intervalo: 30, antecedenciaH: 2, diasFrente: 21,
+  servicos: [{ id: "s1", nome: "Avaliação gratuita", dur: 30, preco: 0 }, { id: "s2", nome: "Treino funcional", dur: 60, preco: 90 }, { id: "s3", nome: "Pilates", dur: 60, preco: 120 }, { id: "s4", nome: "Fisioterapia", dur: 60, preco: 150 }],
+  horarios: { 0: [], 1: [["07:00", "20:00"]], 2: [["07:00", "20:00"]], 3: [["07:00", "20:00"]], 4: [["07:00", "20:00"]], 5: [["07:00", "18:00"]], 6: [["08:00", "12:00"]] }, folgas: [] };
+const S = { sv: null, dia: null, hora: null };
+let ag, ocupados = new Set();
+(async () => {
+  ag = demo ? DEMO_AG : slug ? await ler("agenda_paginas/" + encodeURIComponent(slug)) : null;
+  if (!ag) { $("#nome").textContent = "Agenda não encontrada"; $("#app").innerHTML = `<p class="vazio">Confira o endereço que você recebeu.</p>`; return; }
+  document.title = "Agendar · " + ag.nome; document.documentElement.style.setProperty("--cor", /^#[0-9a-f]{6}$/i.test(ag.cor || "") ? ag.cor : "#1f6f5c");
+  $("#nome").textContent = ag.nome; $("#bv").textContent = ag.boasVindas || ""; $("#end").textContent = ag.endereco || "";
+  if (!ag.ativo) { $("#app").innerHTML = `<p class="vazio">Os agendamentos online estão pausados no momento.${ag.whatsapp ? ` <a href="https://wa.me/${esc(ag.whatsapp)}">Fale pelo WhatsApp</a>.` : ""}</p>`; return; }
+  if (demo) { const h = new Date(); for (let i = 0; i < 40; i++) { const d = new Date(h.getTime() + (i % 7) * 864e5); ocupados.add(iso(d) + "_" + ["0900", "0930", "1000", "1400", "1430", "1700", "1800"][i % 7]); } }
+  else (await consultar("agenda_paginas/" + slug, "slots", [["data", "GREATER_THAN_OR_EQUAL", iso(new Date())]])).forEach(s => ocupados.add(s.id));
+  pinta();
+})();
+function livres(dataISO) {
+  const d = new Date(dataISO + "T12:00"), faixas = (ag.horarios || {})[d.getDay()] || [], sv = S.sv, step = ag.intervalo || 30, limite = Date.now() + (ag.antecedenciaH || 0) * 36e5, out = [];
+  if ((ag.folgas || []).includes(dataISO) || !sv) return out;
+  for (const [a, b] of faixas) for (let m = min(a); m + sv.dur <= min(b); m += step) {
+    if (new Date(`${dataISO}T${hhmm(m)}`).getTime() < limite) continue;
+    let ok = true; for (let x = m; x < m + Math.max(sv.dur, step); x += step) if (ocupados.has(dataISO + "_" + hhmm(x).replace(":", ""))) { ok = false; break; }
+    if (ok) out.push(hhmm(m));
+  }
+  return out;
+}
+function pinta() {
+  const dias = []; for (let i = 0; i < (ag.diasFrente || 30); i++) { const d = new Date(); d.setDate(d.getDate() + i); dias.push(iso(d)); }
+  const hs = S.dia ? livres(S.dia) : [];
+  $("#app").innerHTML = `
+    <section class="passo"><h2><b>1</b> · Serviço</h2><div class="opcoes">${ag.servicos.map(s => `<button type="button" class="op" data-sv="${esc(s.id)}" aria-pressed="${S.sv?.id === s.id}"><b>${esc(s.nome)}</b><span>${s.dur} min · ${+s.preco ? brl(s.preco) : "a combinar"}</span></button>`).join("")}</div></section>
+    ${S.sv ? `<section class="passo"><h2><b>2</b> · Dia</h2><div class="dias">${dias.map(d => { const x = new Date(d + "T12:00"), n = livres(d).length; return `<button type="button" class="dia" data-dia="${d}" aria-pressed="${S.dia === d}" ${n ? "" : "disabled"} aria-label="${DIAS_L[x.getDay()]}, ${x.getDate()}${n ? "" : ", sem horários"}"><small>${DIAS[x.getDay()]}</small><b>${x.getDate()}</b><small>${x.toLocaleDateString("pt-BR", { month: "short" }).replace(".", "")}</small></button>`; }).join("")}</div></section>` : ""}
+    ${S.dia ? `<section class="passo"><h2><b>3</b> · Horário</h2>${hs.length ? `<div class="horas">${hs.map(h => `<button type="button" class="hora" data-hora="${h}" aria-pressed="${S.hora === h}">${h}</button>`).join("")}</div>` : `<p class="vazio">Sem horários livres neste dia.</p>`}</section>` : ""}
+    ${S.hora ? `<section class="passo"><h2><b>4</b> · Seus dados</h2><form id="f"><div class="resumo"><b>${esc(S.sv.nome)}</b> · ${new Date(S.dia + "T12:00").toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })} às <b>${S.hora}</b></div>
+      <label>Nome<input name="nome" required maxlength="120" autocomplete="name"></label><label>WhatsApp<input name="telefone" required inputmode="tel" maxlength="40" autocomplete="tel"></label>
+      <label>Observação (opcional)<textarea name="obs" rows="2" maxlength="300"></textarea></label><p class="erro" id="err"></p><button class="btn" id="bOk">Confirmar agendamento</button></form></section>` : ""}`;
+  $$("[data-sv]").forEach(b => b.onclick = () => { S.sv = ag.servicos.find(s => s.id === b.dataset.sv); S.dia = S.hora = null; pinta(); });
+  $$("[data-dia]").forEach(b => b.onclick = () => { S.dia = b.dataset.dia; S.hora = null; pinta(); document.querySelector(".horas")?.scrollIntoView({ behavior: "smooth", block: "nearest" }); });
+  $$("[data-hora]").forEach(b => b.onclick = () => { S.hora = b.dataset.hora; pinta(); $("#f").scrollIntoView({ behavior: "smooth", block: "center" }); });
+  $("#f")?.addEventListener("submit", reservar);
+}
+async function reservar(e) {
+  e.preventDefault(); const f = new FormData(e.target), b = $("#bOk"); b.disabled = true; $("#err").textContent = "";
+  const step = ag.intervalo || 30, ids = []; for (let x = min(S.hora); x < min(S.hora) + Math.max(S.sv.dur, step); x += step) ids.push(S.dia + "_" + hhmm(x).replace(":", ""));
+  const r = { servico: S.sv.nome, data: S.dia, hora: S.hora, dur: S.sv.dur, nome: String(f.get("nome")).trim(), telefone: String(f.get("telefone")).trim(), email: "", obs: String(f.get("obs") || "").trim(), status: "nova", t: Date.now(), slots: ids };
+  try {
+    if (!demo) await gravarJuntos([...ids.map(id => ({ caminho: `agenda_paginas/${slug}/slots/${id}`, dados: { data: S.dia, hora: id.slice(11), r: ids[0] }, novo: true })), { caminho: `agenda_paginas/${slug}/reservas/${ids[0]}`, dados: r, novo: true }]);
+  } catch (er) { $("#err").textContent = "Esse horário acabou de ser ocupado. Escolha outro, por favor."; ids.forEach(i => ocupados.add(i)); S.hora = null; setTimeout(pinta, 1500); b.disabled = false; return; }
+  const quando = new Date(S.dia + "T12:00").toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
+  const msg = encodeURIComponent(`Olá! Acabei de agendar ${S.sv.nome} para ${quando} às ${S.hora}. Meu nome é ${r.nome}.`);
+  const ics = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nDTSTART:${S.dia.replace(/-/g, "")}T${S.hora.replace(":", "")}00\nDURATION:PT${S.sv.dur}M\nSUMMARY:${S.sv.nome} · ${ag.nome}\nLOCATION:${(ag.endereco || "").replace(/[,;]/g, " ")}\nEND:VEVENT\nEND:VCALENDAR`;
+  $("#app").innerHTML = `<div class="ok"><div class="sel" aria-hidden="true">✓</div><h2 style="font-size:24px">Horário reservado!</h2><p><b>${esc(S.sv.nome)}</b><br>${quando} às <b>${S.hora}</b></p>
+    <p class="vazio">${esc(ag.nome)} vai confirmar pelo WhatsApp. Se quiser, avise agora:</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">${ag.whatsapp ? `<a class="btn" href="https://wa.me/${esc(ag.whatsapp)}?text=${msg}" target="_blank" rel="noopener">Avisar no WhatsApp</a>` : ""}<a class="btn linha" download="agendamento.ics" href="data:text/calendar;charset=utf-8,${encodeURIComponent(ics)}">Salvar na minha agenda</a></div></div>`;
+}
+</script>
+</body>
+</html>

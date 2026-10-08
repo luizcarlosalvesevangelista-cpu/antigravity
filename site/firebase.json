@@ -232,6 +232,112 @@
           ]
         }
       ]
+    },
+    {
+      "site": "upe-criativo-lp",
+      "public": "apps/lp",
+      "ignore": [
+        "**/.*"
+      ],
+      "headers": [
+        {
+          "source": "**/*.@(html|js|css|json)",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "no-cache"
+            }
+          ]
+        },
+        {
+          "source": "**/*.@(jpg|jpeg|png|webp|svg)",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "public, max-age=86400"
+            }
+          ]
+        }
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/pagina.html"
+        }
+      ]
+    },
+    {
+      "site": "upe-criativo-sistemas",
+      "public": "apps/sistemas",
+      "ignore": [
+        "**/.*"
+      ],
+      "headers": [
+        {
+          "source": "**/*.@(html|js|css|json)",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "no-cache"
+            }
+          ]
+        },
+        {
+          "source": "**/*.@(jpg|jpeg|png|webp|svg)",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "public, max-age=86400"
+            }
+          ]
+        }
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/agenda.html"
+        }
+      ]
+    },
+    {
+      "site": "upe-criativo-servicos",
+      "public": "apps/servicos",
+      "ignore": [
+        "**/.*"
+      ],
+      "headers": [
+        {
+          "source": "**/*.@(html|js|css|json)",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "no-cache"
+            }
+          ]
+        },
+        {
+          "source": "**/*.@(jpg|jpeg|png|webp|svg)",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "public, max-age=86400"
+            }
+          ]
+        },
+        {
+          "source": "**",
+          "headers": [
+            {
+              "key": "X-Frame-Options",
+              "value": "DENY"
+            },
+            {
+              "key": "X-Robots-Tag",
+              "value": "noindex"
+            }
+          ]
+        }
+      ]
     }
   ],
   "firestore": {

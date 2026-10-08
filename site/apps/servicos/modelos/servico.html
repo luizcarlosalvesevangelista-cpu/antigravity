@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Studio Bem Estar · Avaliação gratuita</title>
+<meta name="description" content="Agende a sua avaliação gratuita no Studio Bem Estar. Atendimento individual, horários flexíveis e resultado acompanhado.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root { --cor: #1f6f5c; --cor-2: #e8f3ef; --tinta: #10231e; --suave: #5b6f69; --fundo: #fbfaf6; --linha: #dfe7e3; }
+* { box-sizing: border-box; margin: 0; }
+body { font: 17px/1.6 Lato, system-ui, sans-serif; color: var(--tinta); background: var(--fundo); }
+.in { width: min(1100px, 100% - 32px); margin: 0 auto; }
+.btn { display: inline-flex; align-items: center; justify-content: center; padding: 15px 26px; border-radius: 12px; background: var(--cor); color: #fff; font-weight: 900; text-decoration: none; border: 0; font: inherit; font-weight: 900; cursor: pointer; }
+.btn.claro { background: #fff; color: var(--cor); }
+header { padding: 20px 0; } header .in { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.marca { font-weight: 900; font-size: 20px; letter-spacing: .02em; } .marca b { color: var(--cor); }
+.hero { padding: 48px 0 72px; } .hero .in { display: grid; grid-template-columns: 1.1fr .9fr; gap: 48px; align-items: center; }
+.selo { display: inline-block; background: var(--cor-2); color: var(--cor); font-weight: 900; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; padding: 6px 12px; border-radius: 99px; }
+h1 { font-size: clamp(34px, 5vw, 54px); line-height: 1.08; margin: 16px 0; font-weight: 900; letter-spacing: -.01em; }
+.hero p { color: var(--suave); font-size: 19px; max-width: 52ch; }
+.acoes { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 26px; }
+.foto { aspect-ratio: 4/5; border-radius: 28px; background: radial-gradient(circle at 30% 30%, #7fc4ad, transparent 55%), linear-gradient(160deg, var(--cor), #0d3a30); position: relative; overflow: hidden; }
+.foto::after { content: "Avaliação gratuita"; position: absolute; left: 20px; bottom: 20px; background: #fff; color: var(--tinta); font-weight: 900; padding: 12px 16px; border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,.18); }
+section { padding: 72px 0; } h2 { font-size: clamp(28px, 4vw, 40px); line-height: 1.12; font-weight: 900; margin-bottom: 12px; }
+.sub { color: var(--suave); max-width: 60ch; margin-bottom: 36px; }
+.grade { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.card { background: #fff; border: 1px solid var(--linha); border-radius: 18px; padding: 24px; }
+.card b { display: block; font-size: 19px; margin: 10px 0 6px; } .card p { color: var(--suave); font-size: 16px; }
+.ico { width: 44px; height: 44px; border-radius: 12px; background: var(--cor-2); color: var(--cor); display: grid; place-items: center; font-weight: 900; }
+.faixa { background: var(--cor); color: #fff; } .faixa .sub { color: rgba(255,255,255,.82); }
+.dep { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.2); color: #fff; } .dep p { color: rgba(255,255,255,.9); }
+.form { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start; }
+form { background: #fff; border: 1px solid var(--linha); border-radius: 20px; padding: 26px; display: grid; gap: 14px; }
+label { display: grid; gap: 6px; font-weight: 700; font-size: 15px; }
+input, select, textarea { font: inherit; padding: 13px 14px; border: 1px solid var(--linha); border-radius: 10px; background: var(--fundo); }
+details { background: #fff; border: 1px solid var(--linha); border-radius: 14px; padding: 16px 20px; margin-bottom: 10px; } summary { font-weight: 900; cursor: pointer; }
+details p { color: var(--suave); margin-top: 8px; }
+footer { padding: 32px 0; color: var(--suave); font-size: 14px; border-top: 1px solid var(--linha); }
+@media (max-width: 820px) { .hero .in, .form { grid-template-columns: 1fr; } .grade { grid-template-columns: 1fr; } .foto { aspect-ratio: 16/10; } }
+</style>
+</head>
+<body>
+<header><div class="in"><div class="marca">Studio <b>Bem Estar</b></div><a class="btn" href="#agendar">Agendar avaliação</a></div></header>
+<section class="hero"><div class="in">
+  <div>
+    <span class="selo">Vagas abertas este mês</span>
+    <h1>Cuide do seu corpo com acompanhamento de verdade.</h1>
+    <p>Atendimento individual, plano feito para você e horários que cabem na sua rotina. A primeira avaliação é por nossa conta.</p>
+    <div class="acoes"><a class="btn" href="#agendar">Quero a minha avaliação</a><a class="btn claro" href="#como">Como funciona</a></div>
+  </div>
+  <div class="foto" role="img" aria-label="Foto do estúdio"></div>
+</div></section>
+<section id="como"><div class="in">
+  <h2>Como funciona</h2><p class="sub">Três passos simples, do primeiro contato ao seu plano de treino.</p>
+  <div class="grade">
+    <div class="card"><div class="ico">1</div><b>Avaliação gratuita</b><p>Conversamos sobre os seus objetivos e fazemos uma avaliação completa.</p></div>
+    <div class="card"><div class="ico">2</div><b>Plano sob medida</b><p>Você recebe um plano com frequência, exercícios e metas para cada mês.</p></div>
+    <div class="card"><div class="ico">3</div><b>Acompanhamento</b><p>Reavaliações periódicas para ajustar o plano e mostrar a sua evolução.</p></div>
+  </div>
+</div></section>
+<section class="faixa"><div class="in">
+  <h2>Quem treina aqui, recomenda</h2><p class="sub">Depoimentos de alunos (substitua pelos seus).</p>
+  <div class="grade">
+    <div class="card dep"><p>“Em três meses voltei a correr sem dor. O acompanhamento faz toda a diferença.”</p><b>Mariana, 34</b></div>
+    <div class="card dep"><p>“Horários flexíveis e uma equipe que lembra do seu nome. Me sinto em casa.”</p><b>Rafael, 41</b></div>
+    <div class="card dep"><p>“A avaliação gratuita me mostrou exatamente onde eu precisava melhorar.”</p><b>Lúcia, 52</b></div>
+  </div>
+</div></section>
+<section id="agendar"><div class="in form">
+  <div><h2>Agende a sua avaliação gratuita</h2><p class="sub">Deixe o seu contato. Respondemos no mesmo dia pelo WhatsApp para combinar o melhor horário.</p></div>
+  <form>
+    <label>Nome<input name="nome" required autocomplete="name"></label>
+    <label>WhatsApp<input name="whatsapp" required inputmode="tel" autocomplete="tel"></label>
+    <label>Melhor período<select name="periodo"><option>Manhã</option><option>Tarde</option><option>Noite</option></select></label>
+    <button class="btn" type="submit">Quero agendar</button>
+  </form>
+</div></section>
+<section><div class="in">
+  <h2>Perguntas frequentes</h2>
+  <details><summary>A avaliação é mesmo gratuita?</summary><p>Sim. Você não paga nada pela primeira avaliação e não tem compromisso de contratar.</p></details>
+  <details><summary>Preciso já ter experiência?</summary><p>Não. O plano é montado a partir do seu momento, do iniciante ao avançado.</p></details>
+  <details><summary>Quais são os horários?</summary><p>De segunda a sexta, das 6h às 21h, e aos sábados pela manhã.</p></details>
+</div></section>
+<footer><div class="in">Studio Bem Estar · Rua Exemplo, 123 · São Paulo/SP</div></footer>
+</body>
+</html>

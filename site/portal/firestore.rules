@@ -132,6 +132,113 @@ service cloud.firestore {
       }
     }
   
+    /* ================= Upe Serviços: Landing pages, Agenda online e Dashboards (painel, páginas públicas, planos e cobranças) ================= */
+    function srvAcesso() { return /databases/$(database)/documents/srv_acessos/$(request.auth.uid); }
+    function srvMembro(cid) { return ehUpe() || (verificado() && exists(srvAcesso()) && get(srvAcesso()).data.cid == cid); }
+    function curto(d, k, max) { return !(k in d) || (d[k] is string && d[k].size() <= max); }
+    // catálogo de planos (criação e mensalidade) e dados públicos da Upe (PIX, WhatsApp): todos leem, só a Upe edita
+    match /srv_planos/{id} { allow read: if true; allow write: if ehUpe(); }
+    match /srv_config/{d} { allow read: if true; allow write: if ehUpe(); }
+    // interessados vindos das páginas de vendas
+    match /srv_interessados/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['nome', 'whatsapp', 'email', 'frente', 'plano', 'mensagem', 'origem', 'status', 'criadoEm'])
+        && request.resource.data.nome is string && request.resource.data.nome.size() > 0 && request.resource.data.nome.size() <= 120
+        && curto(request.resource.data, 'whatsapp', 40) && curto(request.resource.data, 'email', 120) && curto(request.resource.data, 'frente', 20)
+        && curto(request.resource.data, 'plano', 80) && curto(request.resource.data, 'mensagem', 1000) && curto(request.resource.data, 'origem', 200)
+        && request.resource.data.status == 'novo';
+      allow read, update, delete: if ehUpe();
+    }
+    match /srv_convites/{email} {
+      allow read: if ehUpe() || (verificado() && request.auth.token.email == email);
+      allow write: if ehUpe();
+    }
+    match /srv_acessos/{uid} {
+      allow read: if ehUpe() || (logado() && request.auth.uid == uid);
+      allow create: if verificado() && request.auth.uid == uid
+        && exists(/databases/$(database)/documents/srv_convites/$(request.auth.token.email))
+        && request.resource.data.cid == get(/databases/$(database)/documents/srv_convites/$(request.auth.token.email)).data.cid
+        && request.resource.data.email == request.auth.token.email;
+      allow update, delete: if ehUpe();
+    }
+    match /srv_clientes/{cid} {
+      allow read: if srvMembro(cid);
+      allow write: if ehUpe();
+      match /cobrancas/{id} {
+        allow read: if srvMembro(cid);
+        allow create, delete: if ehUpe();
+        // o cliente só informa que pagou
+        allow update: if ehUpe() || (srvMembro(cid) && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'informadoEm', 'obsCliente'])
+          && request.resource.data.status == 'informada' && curto(request.resource.data, 'obsCliente', 500));
+      }
+      match /chamados/{id} {
+        allow read, create, update: if srvMembro(cid);
+        allow delete: if ehUpe();
+      }
+    }
+    match /{caminho=**}/cobrancas/{id} { allow read: if ehUpe(); }
+    match /{caminho=**}/chamados/{id} { allow read: if ehUpe(); }
+    // páginas: o documento guarda a versão publicada; o rascunho fica em privado/rascunho
+    match /lp_paginas/{slug} {
+      function lpDono() { return srvMembro(get(/databases/$(database)/documents/lp_paginas/$(slug)).data.cid); }
+      allow get: if resource == null || (resource.data.publicada == true && resource.data.get('suspensa', false) == false) || srvMembro(resource.data.cid);
+      allow list: if srvMembro(resource.data.cid);
+      allow create: if srvMembro(request.resource.data.cid) && (ehUpe() || request.resource.data.get('suspensa', false) == false)
+        && slug.matches('^[a-z0-9][a-z0-9-]{1,47}$') && request.resource.data.html is string && request.resource.data.html.size() < 900000;
+      allow update: if ehUpe() || (srvMembro(resource.data.cid) && request.resource.data.cid == resource.data.cid
+        && request.resource.data.get('suspensa', false) == resource.data.get('suspensa', false)
+        && request.resource.data.html is string && request.resource.data.html.size() < 900000);
+      allow delete: if srvMembro(resource.data.cid);
+      match /privado/{d} { allow read, write: if lpDono(); }
+      match /versoes/{id} { allow read, create, delete: if lpDono(); }
+      match /eventos/{id} {
+        allow create: if request.resource.data.keys().hasOnly(['tipo', 't', 'vid', 'ref', 'utm', 'disp', 'alvo', 'prof'])
+          && request.resource.data.tipo in ['visita', 'clique', 'lead', 'rolagem', 'whatsapp']
+          && request.resource.data.t is int && curto(request.resource.data, 'vid', 40) && curto(request.resource.data, 'ref', 200)
+          && curto(request.resource.data, 'utm', 200) && curto(request.resource.data, 'disp', 20) && curto(request.resource.data, 'alvo', 200);
+        allow read, delete: if lpDono();
+      }
+      match /leads/{id} {
+        allow create: if request.resource.data.keys().hasOnly(['campos', 't', 'vid', 'utm', 'status'])
+          && request.resource.data.campos is map && request.resource.data.campos.size() <= 20 && request.resource.data.t is int && request.resource.data.status == 'novo';
+        allow read, update, delete: if lpDono();
+      }
+    }
+    // domínios próprios: o cliente pede, a Upe conecta no Hosting e marca como ativo
+    match /lp_dominios/{host} {
+      allow get: if resource == null || resource.data.status == 'ativo' || srvMembro(resource.data.cid);
+      allow list: if srvMembro(resource.data.cid);
+      allow create: if srvMembro(request.resource.data.cid) && (ehUpe() || request.resource.data.status == 'pendente') && host.matches('^[a-z0-9.-]{4,120}$');
+      allow update: if ehUpe();
+      allow delete: if srvMembro(resource.data.cid);
+    }
+    // agenda online: configuração pública, horários ocupados públicos (sem dados pessoais) e reservas privadas
+    match /agenda_paginas/{slug} {
+      function agDono() { return srvMembro(get(/databases/$(database)/documents/agenda_paginas/$(slug)).data.cid); }
+      allow read: if true;
+      allow create: if srvMembro(request.resource.data.cid) && slug.matches('^[a-z0-9][a-z0-9-]{1,47}$');
+      allow update: if srvMembro(resource.data.cid) && request.resource.data.cid == resource.data.cid;
+      allow delete: if srvMembro(resource.data.cid);
+      match /slots/{id} {
+        allow read: if true;
+        allow create: if request.resource.data.keys().hasOnly(['data', 'hora', 'r'])
+          && id == request.resource.data.data + '_' + request.resource.data.hora
+          && get(/databases/$(database)/documents/agenda_paginas/$(slug)).data.ativo == true;
+        allow delete: if agDono();
+      }
+      match /reservas/{id} {
+        allow create: if existsAfter(/databases/$(database)/documents/agenda_paginas/$(slug)/slots/$(id))
+          && request.resource.data.keys().hasOnly(['servico', 'data', 'hora', 'dur', 'nome', 'telefone', 'email', 'obs', 'status', 't', 'slots'])
+          && request.resource.data.status == 'nova' && request.resource.data.nome is string && request.resource.data.nome.size() <= 120
+          && curto(request.resource.data, 'telefone', 40) && curto(request.resource.data, 'email', 120) && curto(request.resource.data, 'obs', 500);
+        allow read, update, delete: if agDono();
+      }
+    }
+    // dashboards montados pela Upe para o cliente
+    match /dash_paineis/{id} {
+      allow read: if srvMembro(resource.data.cid);
+      allow write: if ehUpe();
+    }
+
     /* ================= Upe TV (campanhas, telas e player) ================= */
     function tvLogado() { return request.auth != null; }
     function tvAdmin() {
