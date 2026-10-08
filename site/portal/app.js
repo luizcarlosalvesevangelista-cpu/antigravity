@@ -9,10 +9,10 @@
     tv: { nome: "Upe TV", chip: "UPE TV", base: "#0C4F7F", escuro: "#061A2B", destaque: "#F2B33D", creme: "#F2F0E1", tinta: "#0b1a26", cta: "Anuncie no Upe TV", rodape: "Sua marca na tela certa",
       imagens: ["assets/img/ui/tv-tela.jpg", "assets/img/ui/tv-portal.jpg", "assets/img/ui/tv-qr.jpg"] },
     loja: { nome: "Loja Upe", chip: "LOJA UPE", base: "#0b1d3a", escuro: "#060f20", destaque: "#ff7a59", creme: "#f4f1ea", tinta: "#0d1b33", cta: "Monte a sua loja", rodape: "A loja online da sua marca",
-      imagens: ["assets/img/ui/erp-pedidos.jpg", "assets/img/ui/erp-painel.jpg", "assets/img/ui/erp-pdv.jpg"] },
+      imagens: ["assets/img/ui/loja-vitrine.jpg", "assets/img/ui/loja-produtos.jpg", "assets/img/ui/loja-pix.jpg", "assets/img/ui/loja-pedido.jpg", "assets/img/ui/loja-produto.jpg"] },
     landing: { nome: "Upe Landing pages", chip: "LANDING PAGES", breve: true, base: "#3a2f6b", escuro: "#1d1738", destaque: "#c9b8ff", creme: "#f3f0fa", tinta: "#1d1738", cta: "Em breve", rodape: "Páginas de venda com a sua marca", imagens: [] }
   };
-  const FORMATOS = { feed: { nome: "Feed 4:5", w: 1080, h: 1350 }, story: { nome: "Story / Reels 9:16", w: 1080, h: 1920 }, quadrado: { nome: "Quadrado 1:1", w: 1080, h: 1080 } };
+  const FORMATOS = { feed: { nome: "Feed 4:5", w: 1080, h: 1350 }, story: { nome: "Story / Reels 9:16", w: 1080, h: 1920 }, quadrado: { nome: "Quadrado 1:1", w: 1080, h: 1080 }, video: { nome: "Vídeo / capa YouTube 16:9", w: 1920, h: 1080 } };
   const LAYOUTS = { capa: "Título forte", foto: "Imagem + texto", tela: "Tela do app", lista: "Lista numerada", cta: "Chamada final" };
   const padrao = (frente = "erp", layout = "capa", formato = "feed") => { const F = FRENTES[frente] || FRENTES.erp;
     return { frente, layout, formato, tema: layout === "lista" ? "claro" : "escuro", eyebrow: F.nome, titulo: "Escreva o título do post", texto: "Um texto curto que explica a ideia em uma ou duas frases.", cta: F.cta, itens: ["Primeiro ponto", "Segundo ponto", "Terceiro ponto"], imagem: F.imagens[0] || "", handle: "@upecriativo", slide: "" }; };
@@ -69,6 +69,22 @@
     ctx.fillStyle = escuro ? F.base : F.creme; ctx.fillText(txt, x + 48, y + 62); ctx.restore(); return w;
   }
 
+  // tela do app dentro da área (x, y, w, h): imagem larga → janela de navegador; imagem alta → celular centralizado
+  function tela(ctx, img, x, y, w, h, a, t) {
+    const z = 1 + (t == null ? 0 : (1 - t) * .05);
+    if (img && img.height > img.width * 1.1) {
+      const ph = h, pw = Math.min(w, ph * img.width / img.height + 36), px = x + (w - pw) / 2;
+      ctx.save(); ctx.globalAlpha = a; ctx.shadowColor = "rgba(0,0,0,.35)"; ctx.shadowBlur = 50; ctx.shadowOffsetY = 20; rr(ctx, px, y, pw, ph, 56); ctx.fillStyle = "#11151c"; ctx.fill(); ctx.restore();
+      ctx.save(); ctx.globalAlpha = a; rr(ctx, px + 16, y + 16, pw - 32, ph - 32, 42); ctx.clip(); ctx.fillStyle = "#fff"; ctx.fillRect(px, y, pw, ph);
+      const r = (pw - 32) / img.width; ctx.drawImage(img, px + 16, y + 16, pw - 32, img.height * r); ctx.restore();
+      ctx.save(); ctx.globalAlpha = a; rr(ctx, px + pw / 2 - 60, y + 26, 120, 26, 13); ctx.fillStyle = "#11151c"; ctx.fill(); ctx.restore(); return;
+    }
+    const fh = Math.min(h, img ? w * img.height / img.width + 46 : w * .62);
+    ctx.save(); ctx.globalAlpha = a; ctx.shadowColor = "rgba(0,0,0,.35)"; ctx.shadowBlur = 50; ctx.shadowOffsetY = 20; rr(ctx, x, y, w, fh, 26); ctx.fillStyle = "#e9edf3"; ctx.fill(); ctx.restore();
+    ctx.save(); ctx.globalAlpha = a; rr(ctx, x, y, w, fh, 26); ctx.clip(); ctx.fillStyle = "#dfe4ec"; ctx.fillRect(x, y, w, 46); ["#ff6159", "#ffbd2e", "#28c941"].forEach((c, i) => { ctx.beginPath(); ctx.arc(x + 30 + i * 26, y + 23, 8, 0, 7); ctx.fillStyle = c; ctx.fill(); });
+    capaImg(ctx, img, x, y + 46, w, fh - 46, z); ctx.restore();
+  }
+
   /* ---------- desenho ---------- */
   async function render(canvas, m0, opts = {}) {
     const m = { ...padrao(m0.frente, m0.layout, m0.formato), ...m0 }, F = FRENTES[m.frente] || FRENTES.erp, FM = FORMATOS[m.formato] || FORMATOS.feed;
@@ -79,7 +95,7 @@
     LOGO = LOGO || await loadImg(url("assets/img/upe-logo-creme.png", base));
     const img = m.layout === "foto" || m.layout === "tela" ? await loadImg(url(m.imagem, base)) : null;
     const escuro = m.tema !== "claro", bg = escuro ? (m.layout === "cta" ? F.escuro : F.base) : F.creme, fg = escuro ? F.creme : F.tinta, sub = escuro ? "rgba(242,240,226,.82)" : "rgba(13,27,51,.75)";
-    const M = 88, story = H > 1500;
+    const largo = W > H * 1.3, M = largo ? 110 : 88, story = H > 1500;
     ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
     padrao45(ctx, W, H, escuro ? "#ffffff" : F.base, escuro ? .05 : .05);
     // brilho no canto
@@ -91,6 +107,15 @@
     const rodape = () => { ctx.save(); ctx.globalAlpha = a5; ctx.fillStyle = sub; ctx.font = "700 30px Lato, Arial"; ctx.fillText(m.handle, M, H - (story ? 120 : 72)); const r = F.rodape, rw = ctx.measureText(r).width; ctx.fillText(r, W - M - rw, H - (story ? 120 : 72)); ctx.restore(); };
     const ey = (y) => { if (!m.eyebrow) return 0; ctx.save(); ctx.globalAlpha = a2; ctx.font = "900 30px Lato, Arial"; ctx.fillStyle = escuro ? F.destaque : F.base; ctx.fillText(String(m.eyebrow).toUpperCase().split("").join(String.fromCharCode(8202)), M, y + 30); ctx.restore(); return 64; };
     const slideUp = a => (1 - a) * 40;
+    if (largo && (m.layout === "foto" || m.layout === "tela")) {   // 16:9: texto à esquerda, tela à direita
+      const cw = W * .44; let y = topoY + 150; y += ey(y);
+      y += texto(ctx, m.titulo, M, y, cw, { size: 96, min: 48, cor: fg, maxL: 4, alpha: a2, dy: slideUp(a2) }).h + 26;
+      if (m.texto) texto(ctx, m.texto, M, y, cw, { size: 38, min: 28, peso: 400, cor: sub, maxL: 3, lh: 1.3, alpha: a3 });
+      if (m.cta) botao(ctx, m.cta, M, H - 230, F, escuro, a5);
+      const ax = M + cw + 70, aw = W - ax - M + 30, ay = topoY + 20, ah = H - ay - 150;
+      tela(ctx, img, ax, ay + slideUp(a3), aw, ah, a3, t);
+      rodape(); return canvas;
+    }
     if (m.layout === "foto") {
       const iy = topoY + 100, ih = Math.round(H * (story ? .40 : .36)), z = 1 + (t == null ? 0 : (1 - t) * .08);
       ctx.save(); ctx.globalAlpha = a2; ctx.shadowColor = "rgba(0,0,0,.3)"; ctx.shadowBlur = 40; ctx.shadowOffsetY = 16; rr(ctx, M, iy, W - M * 2, ih, 28); ctx.fillStyle = bg; ctx.fill(); ctx.restore();
@@ -106,10 +131,8 @@
       y += texto(ctx, m.titulo, M, y, W - M * 2, { size: story ? 96 : 82, min: 44, cor: fg, maxL: 3, alpha: a2, dy: slideUp(a2) }).h + 22;
       if (m.texto) y += texto(ctx, m.texto, M, y, W - M * 2, { size: 38, min: 28, peso: 400, cor: sub, maxL: 2, lh: 1.3, alpha: a3 }).h + 30;
       // moldura de navegador/aparelho com a tela do app
-      const fy = y + slideUp(a3) * 2, fw = W - M * 2 + 40, fx = M - 20, fh = Math.min(H - fy - (story ? 300 : 190), img ? fw * img.height / img.width + 46 : fw * .62);
-      ctx.save(); ctx.globalAlpha = a3; ctx.shadowColor = "rgba(0,0,0,.35)"; ctx.shadowBlur = 50; ctx.shadowOffsetY = 20; rr(ctx, fx, fy, fw, fh, 26); ctx.fillStyle = "#e9edf3"; ctx.fill(); ctx.restore();
-      ctx.save(); ctx.globalAlpha = a3; rr(ctx, fx, fy, fw, fh, 26); ctx.clip(); ctx.fillStyle = "#dfe4ec"; ctx.fillRect(fx, fy, fw, 46); ["#ff6159", "#ffbd2e", "#28c941"].forEach((c, i) => { ctx.beginPath(); ctx.arc(fx + 30 + i * 26, fy + 23, 8, 0, 7); ctx.fillStyle = c; ctx.fill(); });
-      capaImg(ctx, img, fx, fy + 46, fw, fh - 46, 1 + (t == null ? 0 : (1 - t) * .05)); ctx.restore();
+      const fy = y + slideUp(a3) * 2, fw = W - M * 2 + 40, fx = M - 20, fh = H - fy - (story ? 300 : 190);
+      tela(ctx, img, fx, fy, fw, fh, a3, t);
       if (m.cta) botao(ctx, m.cta, M, H - (story ? 250 : 165), F, escuro, a5);
       if (!m.cta) rodape(); else { ctx.save(); ctx.globalAlpha = a5; ctx.fillStyle = sub; ctx.font = "700 30px Lato, Arial"; const hw = ctx.measureText(m.handle).width; ctx.fillText(m.handle, W - M - hw, H - (story ? 192 : 107)); ctx.restore(); }
       return canvas;
@@ -126,17 +149,17 @@
       rodape(); return canvas;
     }
     if (m.layout === "cta") {
-      let y = H * (story ? .3 : .24); y += ey(y);
-      y += texto(ctx, m.titulo, M, y, W - M * 2, { size: story ? 120 : 104, min: 50, cor: fg, maxL: 4, alpha: a2, dy: slideUp(a2) }).h + 30;
+      let y = H * (story ? .3 : largo ? .2 : .24); y += ey(y);
+      y += texto(ctx, m.titulo, M, y, W - M * 2, { size: story ? 120 : 104, min: 50, cor: fg, maxL: largo ? 2 : 4, alpha: a2, dy: slideUp(a2) }).h + 30;
       if (m.texto) y += texto(ctx, m.texto, M, y, W - M * 2, { size: 42, min: 30, peso: 400, cor: sub, maxL: 3, lh: 1.3, alpha: a3 }).h + 50;
       if (m.cta) botao(ctx, m.cta, M, y, F, escuro, a4);
       rodape(); return canvas;
     }
     // capa (padrão)
     let y = topoY + (story ? 260 : 170); y += ey(y);
-    const tt = texto(ctx, m.titulo, M, y, W - M * 2, { size: story ? 132 : 112, min: 54, cor: fg, maxL: story ? 5 : 4, alpha: a2, dy: slideUp(a2) }); y += tt.h + 34;
+    const tt = texto(ctx, m.titulo, M, y, largo ? W * .7 : W - M * 2, { size: story ? 132 : largo ? 120 : 112, min: 54, cor: fg, maxL: story ? 5 : largo ? 3 : 4, alpha: a2, dy: slideUp(a2) }); y += tt.h + 34;
     ctx.save(); ctx.globalAlpha = a3; rr(ctx, M, y, 150 * a3, 12, 6); ctx.fillStyle = escuro ? F.destaque : F.base; ctx.fill(); ctx.restore(); y += 58;
-    if (m.texto) texto(ctx, m.texto, M, y, W - M * 2, { size: 44, min: 30, peso: 400, cor: sub, maxL: story ? 6 : 4, lh: 1.32, alpha: a4 });
+    if (m.texto) texto(ctx, m.texto, M, y, largo ? W * .6 : W - M * 2, { size: 44, min: 30, peso: 400, cor: sub, maxL: story ? 6 : largo ? 2 : 4, lh: 1.32, alpha: a4 });
     if (m.cta) botao(ctx, m.cta, M, H - (story ? 340 : 240), F, escuro, a5);
     rodape(); return canvas;
   }
