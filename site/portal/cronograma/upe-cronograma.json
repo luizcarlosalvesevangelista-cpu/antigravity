@@ -1,5 +1,5 @@
 {
- "versao": 2,
+ "versao": 3,
  "gerado": "2026-10-04",
  "extras": [
   {
@@ -15,7 +15,7 @@
   {
    "kit": "Upe TV",
    "rotulo": "sugestão de bio",
-   "texto": "Sua marca na TV dos estabelecimentos parceiros 📺\nVídeo · QR code · cardápio com pedido · relatório\nAnuncie ou seja um ponto parceiro 👇\nupe-tv.web.app"
+   "texto": "Sua marca na TV dos estabelecimentos parceiros 📺\nVídeo · QR code · cardápio com pedido · relatório\nAnuncie ou seja um ponto parceiro 👇\nupe-criativo-tv.web.app"
   },
   {
    "kit": "Upe TV",
@@ -30,7 +30,7 @@
   {
    "kit": "Upe ERP",
    "rotulo": "sugestão de bio",
-   "texto": "Loja online, PDV e pedidos num só painel 🛍️\nPIX com QR Code · estoque · frete · suporte\n14 dias grátis 👇\nupe-erp.web.app/video"
+   "texto": "Loja online, PDV e pedidos num só painel 🛍️\nPIX com QR Code · estoque · frete · suporte\n14 dias grátis 👇\nupe-criativo-erp.web.app/video"
   },
   {
    "kit": "Branding Upe",
@@ -68,96 +68,6 @@
    "hora": "12:00",
    "status": "planejado",
    "id": "upe-001"
-  },
-  {
-   "formato": "carrossel",
-   "titulo": "5 datas até o fim do ano",
-   "legenda": "Salve o calendário! 📅 Estas são as 5 datas que mais vendem até o fim do ano:\n\n12/10 · Dia das Crianças\n11/11 · 11.11\n27/11 · Black Friday\n30/11 · Cyber Monday\n25/12 · Natal\n\nQual delas é a mais forte para a sua loja?\n\n👉 Teste 14 dias grátis: upe-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
-   "midias": [
-    "kits/upe-erp/carrossel/5-datas-ate-o-fim-do-ano/01.png",
-    "kits/upe-erp/carrossel/5-datas-ate-o-fim-do-ano/02.png",
-    "kits/upe-erp/carrossel/5-datas-ate-o-fim-do-ano/03.png",
-    "kits/upe-erp/carrossel/5-datas-ate-o-fim-do-ano/04.png",
-    "kits/upe-erp/carrossel/5-datas-ate-o-fim-do-ano/05.png",
-    "kits/upe-erp/carrossel/5-datas-ate-o-fim-do-ano/06.png",
-    "kits/upe-erp/carrossel/5-datas-ate-o-fim-do-ano/07.png"
-   ],
-   "capa": "",
-   "origem": "Kit Upe ERP",
-   "pilar": "Upe ERP",
-   "canal": "instagram",
-   "data": "2026-10-06",
-   "hora": "12:00",
-   "status": "planejado",
-   "id": "upe-002"
-  },
-  {
-   "formato": "story",
-   "titulo": "Sequência 01 a 05 (enquete)",
-   "legenda": "Como usar: abra a sequência com este story. Adesivo sugerido: \"Novidade\" ou contagem regressiva.\n\nComo usar: marque o perfil @upecriativo.\n\nComo usar: Enquete \"Você anunciaria na TV do café do seu bairro?\" · Com certeza / Quero saber mais. Responda quem votou \"Quero saber mais\" com o Guia do Anunciante.\n\nComo usar: adesivo de link para o WhatsApp: https://wa.me/5511934393249",
-   "midias": [
-    "kits/upe-tv/stories/01-novidade.jpg",
-    "kits/upe-tv/stories/02-o-que-e.jpg",
-    "kits/upe-tv/stories/03-como-funciona.jpg",
-    "kits/upe-tv/stories/04-enquete.jpg",
-    "kits/upe-tv/stories/05-primeiros-anunciantes.jpg"
-   ],
-   "capa": "",
-   "origem": "Kit Upe TV",
-   "pilar": "Upe TV",
-   "canal": "instagram",
-   "data": "2026-10-07",
-   "hora": "10:00",
-   "status": "planejado",
-   "id": "upe-003"
-  },
-  {
-   "formato": "feed",
-   "titulo": "Seu cliente está olhando para a tela. A sua marca está nela?",
-   "legenda": "Seu cliente está olhando para a tela. A sua marca está nela? 👀\n\nNa fila do café, na recepção, no intervalo do treino: as pessoas olham para a TV. O Upe TV coloca o seu negócio nessa tela, com QR code para o cliente chamar você ali mesmo.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
-   "midias": [
-    "kits/upe-tv/feed/01-seu-cliente-olha.jpg"
-   ],
-   "capa": "",
-   "origem": "Kit Upe TV",
-   "pilar": "Upe TV",
-   "canal": "instagram",
-   "data": "2026-10-07",
-   "hora": "12:00",
-   "status": "planejado",
-   "id": "upe-004"
-  },
-  {
-   "formato": "story",
-   "titulo": "Enquete: caderno?",
-   "legenda": "Como usar: Enquete: “Você ainda anota pedido no caderno?” · Sim / Não. Responda quem votou “sim” com o vídeo da plataforma.",
-   "midias": [
-    "kits/upe-erp/stories/01-caderno-enquete.png"
-   ],
-   "capa": "",
-   "origem": "Kit Upe ERP",
-   "pilar": "Upe ERP",
-   "canal": "instagram",
-   "data": "2026-10-08",
-   "hora": "10:00",
-   "status": "planejado",
-   "id": "upe-005"
-  },
-  {
-   "formato": "feed",
-   "titulo": "Loja online com a sua marca, PDV no balcão e todos os pedidos num só lugar.",
-   "legenda": "Loja online com a sua marca, PDV no balcão e todos os pedidos num só lugar. 🛍️\n\nSeu cliente compra pelo celular, paga no PIX e acompanha a entrega pelo link. Você vê tudo no painel: pedido, pagamento, estoque e rastreio.\n\nTeste 14 dias grátis. Link na bio.\n\n👉 Teste 14 dias grátis: upe-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
-   "midias": [
-    "kits/upe-erp/feed/01-sua-loja-num-so-painel.png"
-   ],
-   "capa": "",
-   "origem": "Kit Upe ERP",
-   "pilar": "Upe ERP",
-   "canal": "instagram",
-   "data": "2026-10-08",
-   "hora": "12:00",
-   "status": "planejado",
-   "id": "upe-006"
   },
   {
    "formato": "youtube",
@@ -217,22 +127,6 @@
    "id": "upe-007"
   },
   {
-   "formato": "reels",
-   "titulo": "Seu cliente está olhando para a tela. A sua marca está nela?",
-   "legenda": "Seu cliente está olhando para a tela. A sua marca está nela? 👀\n\nCom o Upe TV, o seu negócio entra na programação das TVs parceiras, com QR code para o cliente falar com você na hora.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
-   "midias": [
-    "kits/upe-tv/reels/reel-1-lancamento.mp4"
-   ],
-   "capa": "kits/upe-tv/stories/reel-capa-lancamento.jpg",
-   "origem": "Kit Upe TV",
-   "pilar": "Upe TV",
-   "canal": "instagram",
-   "data": "2026-10-09",
-   "hora": "19:00",
-   "status": "planejado",
-   "id": "upe-008"
-  },
-  {
    "formato": "story",
    "titulo": "Novidade no perfil",
    "legenda": "Como usar: abra a semana com este story e o adesivo de contagem regressiva para o próximo post.",
@@ -272,7 +166,7 @@
   {
    "formato": "shorts",
    "titulo": "Seu cliente está olhando para a tela. A sua marca está nela?",
-   "legenda": "Seu cliente está olhando para a tela. A sua marca está nela? 👀\n\nCom o Upe TV, o seu negócio entra na programação das TVs parceiras, com QR code para o cliente falar com você na hora.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
+   "legenda": "Seu cliente está olhando para a tela. A sua marca está nela? 👀\n\nCom o Upe TV, o seu negócio entra na programação das TVs parceiras, com QR code para o cliente falar com você na hora.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-criativo-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
    "midias": [
     "kits/upe-tv/reels/reel-1-lancamento.mp4"
    ],
@@ -302,97 +196,11 @@
    "id": "upe-012"
   },
   {
-   "formato": "feed",
-   "titulo": "Se a sua loja funciona entre conversas de WhatsApp, cadernos e prints de PIX,…",
-   "legenda": "Se a sua loja funciona entre conversas de WhatsApp, cadernos e prints de PIX, você não está sozinho. 📒\n\nMas cada pedido perdido, cada estoque errado e cada “cadê meu pedido?” custa caro.\n\nCom a plataforma da Upe Criativo, o pedido chega organizado, o PIX vem com valor certo e o cliente acompanha sozinho. Teste 14 dias grátis.\n\n👉 Teste 14 dias grátis: upe-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
-   "midias": [
-    "kits/upe-erp/feed/02-pedido-no-caderno.png"
-   ],
-   "capa": "",
-   "origem": "Kit Upe ERP",
-   "pilar": "Upe ERP",
-   "canal": "instagram",
-   "data": "2026-10-13",
-   "hora": "12:00",
-   "status": "planejado",
-   "id": "upe-013"
-  },
-  {
-   "formato": "story",
-   "titulo": "06 · Caixa de perguntas",
-   "legenda": "Como usar: caixa de perguntas. Use as respostas como pauta dos próximos posts.",
-   "midias": [
-    "kits/upe-tv/stories/06-pergunta.jpg"
-   ],
-   "capa": "",
-   "origem": "Kit Upe TV",
-   "pilar": "Upe TV",
-   "canal": "instagram",
-   "data": "2026-10-14",
-   "hora": "10:00",
-   "status": "planejado",
-   "id": "upe-014"
-  },
-  {
-   "formato": "carrossel",
-   "titulo": "Apresentação do Upe TV",
-   "legenda": "Chegou o Upe TV. 📺 Arraste e conheça.\n\nA sua marca nas TVs e totens de cafés, academias, clínicas, salões e lojas parceiras, com QR code para o seu WhatsApp, cardápio com pedido e relatório do tempo de tela.\n\nEstamos selecionando os primeiros anunciantes.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
-   "midias": [
-    "kits/upe-tv/carrossel/1-apresentacao/01.jpg",
-    "kits/upe-tv/carrossel/1-apresentacao/02.jpg",
-    "kits/upe-tv/carrossel/1-apresentacao/03.jpg",
-    "kits/upe-tv/carrossel/1-apresentacao/04.jpg",
-    "kits/upe-tv/carrossel/1-apresentacao/05.jpg",
-    "kits/upe-tv/carrossel/1-apresentacao/06.jpg",
-    "kits/upe-tv/carrossel/1-apresentacao/07.jpg"
-   ],
-   "capa": "",
-   "origem": "Kit Upe TV",
-   "pilar": "Upe TV",
-   "canal": "instagram",
-   "data": "2026-10-14",
-   "hora": "12:00",
-   "status": "planejado",
-   "id": "upe-015"
-  },
-  {
-   "formato": "story",
-   "titulo": "Vídeo em 2 minutos (link)",
-   "legenda": "Como usar: Adesivo de link: https://upe-erp.web.app/video",
-   "midias": [
-    "kits/upe-erp/stories/03-video.png"
-   ],
-   "capa": "",
-   "origem": "Kit Upe ERP",
-   "pilar": "Upe ERP",
-   "canal": "instagram",
-   "data": "2026-10-15",
-   "hora": "10:00",
-   "status": "planejado",
-   "id": "upe-016"
-  },
-  {
-   "formato": "feed",
-   "titulo": "Quatro jeitos de aparecer na mesma TV.",
-   "legenda": "Quatro jeitos de aparecer na mesma TV. 📺\n\n1. Tela cheia com vídeo, motion ou imagem\n2. Lateral que se abre com a sua chamada\n3. Letreiro e rodapé de parceiros\n4. QR code no canto, sem cobrir a mensagem\n\nDá para combinar formatos em um plano só.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
-   "midias": [
-    "kits/upe-tv/feed/03-formatos.jpg"
-   ],
-   "capa": "",
-   "origem": "Kit Upe TV",
-   "pilar": "Upe TV",
-   "canal": "instagram",
-   "data": "2026-10-15",
-   "hora": "12:00",
-   "status": "planejado",
-   "id": "upe-017"
-  },
-  {
    "formato": "youtube",
    "canal": "youtube",
    "titulo": "Upe ERP em 40 segundos: loja online, PDV e pedidos num só painel",
-   "legenda": "Conheça o Upe ERP: loja virtual com a sua marca, PDV no balcão, PIX com QR Code, gestão de pedidos, cupons e relatórios.\nTeste 14 dias grátis: upe-erp.web.app\n\nCapítulos:\n0:00 Abertura\n0:04 Painel\n0:14 Pedidos e rastreio\n0:24 PDV e PIX\n0:32 Como testar",
-   "roteiro": "Versão história: Três lugares de venda, nenhum com todos os pedidos\nA história: Uma doceria vendia pelo Instagram, pelo WhatsApp e no balcão.\nContexto: Três lugares de venda e nenhum com todos os pedidos.\nNarrativa: PIX conferido por print, estoque no papel e o cliente perguntando: cadê meu pedido?\nClímax: Na semana mais movimentada, dois pedidos iguais saíram para o mesmo endereço.\nA pergunta: E se tudo chegasse organizado, com pagamento e rastreio?\nA solução: Upe ERP: loja virtual, PDV, PIX com QR Code e gestão de pedidos.\nPor que funciona: Cada venda baixa o estoque. Cada pedido tem status e link de acompanhamento.\nPróximo passo: Teste 14 dias grátis em upe-erp.web.app.\n\nGravação:\n• Vídeo pronto (lançamento Upe ERP).",
+   "legenda": "Conheça o Upe ERP: loja virtual com a sua marca, PDV no balcão, PIX com QR Code, gestão de pedidos, cupons e relatórios.\nTeste 14 dias grátis: upe-criativo-erp.web.app\n\nCapítulos:\n0:00 Abertura\n0:04 Painel\n0:14 Pedidos e rastreio\n0:24 PDV e PIX\n0:32 Como testar",
+   "roteiro": "Versão história: Três lugares de venda, nenhum com todos os pedidos\nA história: Uma doceria vendia pelo Instagram, pelo WhatsApp e no balcão.\nContexto: Três lugares de venda e nenhum com todos os pedidos.\nNarrativa: PIX conferido por print, estoque no papel e o cliente perguntando: cadê meu pedido?\nClímax: Na semana mais movimentada, dois pedidos iguais saíram para o mesmo endereço.\nA pergunta: E se tudo chegasse organizado, com pagamento e rastreio?\nA solução: Upe ERP: loja virtual, PDV, PIX com QR Code e gestão de pedidos.\nPor que funciona: Cada venda baixa o estoque. Cada pedido tem status e link de acompanhamento.\nPróximo passo: Teste 14 dias grátis em upe-criativo-erp.web.app.\n\nGravação:\n• Vídeo pronto (lançamento Upe ERP).",
    "historia": {
     "titulo": "Três lugares de venda, nenhum com todos os pedidos",
     "video": "kits/upe-branding/youtube/historia-yt-02-upe-erp.mp4",
@@ -427,7 +235,7 @@
      },
      {
       "rotulo": "Próximo passo",
-      "texto": "Teste 14 dias grátis em upe-erp.web.app."
+      "texto": "Teste 14 dias grátis em upe-criativo-erp.web.app."
      }
     ]
    },
@@ -443,22 +251,6 @@
    "tags": "loja virtual, pdv, pix, ecommerce, upe erp",
    "status": "pronto",
    "id": "upe-018"
-  },
-  {
-   "formato": "reels",
-   "titulo": "Como o seu cliente compra e paga no PIX, do celular, sem criar conta.",
-   "legenda": "Como o seu cliente compra e paga no PIX, do celular, sem criar conta. 📱💸\n\nVitrine com a sua marca, escolha de tamanho, frete calculado e QR Code na hora. Depois, ele acompanha o pedido pelo link.\n\n👉 Teste 14 dias grátis: upe-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
-   "midias": [
-    "kits/upe-erp/reels/reel-1-compra-com-pix.mp4"
-   ],
-   "capa": "kits/upe-erp/stories/reel-capa-1-compra-com-pix.png",
-   "origem": "Kit Upe ERP",
-   "pilar": "Upe ERP",
-   "canal": "instagram",
-   "data": "2026-10-16",
-   "hora": "19:00",
-   "status": "planejado",
-   "id": "upe-019"
   },
   {
    "formato": "story",
@@ -495,7 +287,7 @@
   {
    "formato": "shorts",
    "titulo": "Tela cheia, lateral, rodapé e QR code. Tudo na mesma tela, sem um cobrir o outro.",
-   "legenda": "Tela cheia, lateral, rodapé e QR code. Tudo na mesma tela, sem um cobrir o outro. 📺\n\nA Upe cria, publica e você acompanha o resultado pelo celular.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
+   "legenda": "Tela cheia, lateral, rodapé e QR code. Tudo na mesma tela, sem um cobrir o outro. 📺\n\nA Upe cria, publica e você acompanha o resultado pelo celular.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-criativo-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
    "midias": [
     "kits/upe-tv/reels/reel-2-como-fica.mp4"
    ],
@@ -531,97 +323,326 @@
    "id": "upe-023"
   },
   {
-   "formato": "feed",
-   "titulo": "Pagou, caiu.",
-   "legenda": "Pagou, caiu. 💸\n\nCada pedido da sua loja gera o QR Code e o PIX copia e cola com o valor exato. Nada de conferir print ou digitar chave errada.\n\nE você ainda pode dar um desconto especial para quem paga no PIX.\n\n👉 Teste 14 dias grátis: upe-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
+   "id": "app-erp-03",
+   "data": "2026-10-20",
+   "hora": "10:00",
+   "canal": "instagram",
+   "formato": "story",
+   "pilar": "Upe ERP",
+   "titulo": "Enquete: caderno?",
+   "legenda": "Como usar: Enquete: “Você ainda anota pedido no caderno?” · Sim / Não. Responda quem votou “sim” com o vídeo da plataforma.",
+   "roteiro": "",
    "midias": [
-    "kits/upe-erp/feed/03-pix-com-qr-code.png"
+    "kits/upe-erp/gerado/erp-03-01.jpg"
    ],
    "capa": "",
+   "status": "planejado",
    "origem": "Kit Upe ERP",
-   "pilar": "Upe ERP",
-   "canal": "instagram",
+   "modelo": [
+    {
+     "frente": "erp",
+     "layout": "capa",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe ERP",
+     "titulo": "Você ainda anota pedido no caderno?",
+     "texto": "Vote na enquete.",
+     "cta": "Teste 14 dias grátis",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
+  },
+  {
+   "id": "app-erp-01",
    "data": "2026-10-20",
    "hora": "12:00",
-   "status": "planejado",
-   "id": "upe-024"
-  },
-  {
-   "formato": "story",
-   "titulo": "07 · Vídeo (link)",
-   "legenda": "Como usar: adesivo de link para o reel \"A TV ao vivo\" ou para upe-tv.web.app.",
-   "midias": [
-    "kits/upe-tv/stories/07-video.jpg"
-   ],
-   "capa": "",
-   "origem": "Kit Upe TV",
-   "pilar": "Upe TV",
    "canal": "instagram",
-   "data": "2026-10-21",
-   "hora": "10:00",
-   "status": "planejado",
-   "id": "upe-025"
-  },
-  {
    "formato": "feed",
-   "titulo": "Viu na TV, chamou no seu WhatsApp.",
-   "legenda": "Viu na TV, chamou no seu WhatsApp. 📲\n\nO cliente aponta a câmera para o QR, vê para onde vai e cai direto na sua conversa. E cada leitura aparece no seu relatório.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
+   "pilar": "Upe ERP",
+   "titulo": "Loja online com a sua marca, PDV no balcão e todos os pedidos num só lugar.",
+   "legenda": "Loja online com a sua marca, PDV no balcão e todos os pedidos num só lugar. 🛍️\n\nSeu cliente compra pelo celular, paga no PIX e acompanha a entrega pelo link. Você vê tudo no painel: pedido, pagamento, estoque e rastreio.\n\nTeste 14 dias grátis. Link na bio.\n\n👉 Teste 14 dias grátis: upe-criativo-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
+   "roteiro": "",
    "midias": [
-    "kits/upe-tv/feed/04-qr-whatsapp.jpg"
+    "kits/upe-erp/gerado/erp-01-01.jpg"
    ],
    "capa": "",
-   "origem": "Kit Upe TV",
-   "pilar": "Upe TV",
+   "status": "planejado",
+   "origem": "Kit Upe ERP",
+   "modelo": [
+    {
+     "frente": "erp",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe ERP",
+     "titulo": "Loja online com a sua marca, PDV no balcão e todos os pedidos num só lugar.",
+     "texto": "Seu cliente compra pelo celular, paga no PIX e acompanha a entrega pelo link.",
+     "cta": "Teste 14 dias grátis",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-pdv.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
+  },
+  {
+   "id": "app-tv-03",
+   "data": "2026-10-21",
+   "hora": "10:00",
    "canal": "instagram",
+   "formato": "story",
+   "pilar": "Upe TV",
+   "titulo": "Sequência 01 a 05 (enquete)",
+   "legenda": "Como usar: abra a sequência com este story. Adesivo sugerido: \"Novidade\" ou contagem regressiva.\n\nComo usar: marque o perfil @upecriativo.\n\nComo usar: Enquete \"Você anunciaria na TV do café do seu bairro?\" · Com certeza / Quero saber mais. Responda quem votou \"Quero saber mais\" com o Guia do Anunciante.\n\nComo usar: adesivo de link para o WhatsApp: https://wa.me/5511934393249",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-tv/gerado/tv-03-01.jpg",
+    "kits/upe-tv/gerado/tv-03-02.jpg",
+    "kits/upe-tv/gerado/tv-03-03.jpg",
+    "kits/upe-tv/gerado/tv-03-04.jpg",
+    "kits/upe-tv/gerado/tv-03-05.jpg"
+   ],
+   "capa": "",
+   "status": "planejado",
+   "origem": "Kit Upe TV",
+   "modelo": [
+    {
+     "frente": "tv",
+     "layout": "capa",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "Tem novidade na tela.",
+     "texto": "Vote na enquete.",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    },
+    {
+     "frente": "tv",
+     "layout": "tela",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "Quem espera, olha para a tela.",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-portal.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    },
+    {
+     "frente": "tv",
+     "layout": "capa",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "Do QR code ao WhatsApp em segundos.",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    },
+    {
+     "frente": "tv",
+     "layout": "foto",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "Relatório de cada exibição.",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    },
+    {
+     "frente": "tv",
+     "layout": "cta",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "Fale com a Upe.",
+     "texto": "",
+     "cta": "Anuncie no Upe TV",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-portal.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
+  },
+  {
+   "id": "app-tv-01",
    "data": "2026-10-21",
    "hora": "12:00",
-   "status": "planejado",
-   "id": "upe-026"
-  },
-  {
-   "formato": "story",
-   "titulo": "Caixa de perguntas",
-   "legenda": "Como usar: Caixa de perguntas. Use as respostas como pauta dos próximos posts.",
+   "canal": "instagram",
+   "formato": "feed",
+   "pilar": "Upe TV",
+   "titulo": "Seu cliente está olhando para a tela.",
+   "legenda": "Seu cliente está olhando para a tela. A sua marca está nela? 👀\n\nNa fila do café, na recepção, no intervalo do treino: as pessoas olham para a TV. O Upe TV coloca o seu negócio nessa tela, com QR code para o cliente chamar você ali mesmo.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-criativo-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
+   "roteiro": "",
    "midias": [
-    "kits/upe-erp/stories/07-pergunta.png"
+    "kits/upe-tv/gerado/tv-01-01.jpg"
    ],
    "capa": "",
-   "origem": "Kit Upe ERP",
-   "pilar": "Upe ERP",
-   "canal": "instagram",
-   "data": "2026-10-22",
-   "hora": "10:00",
    "status": "planejado",
-   "id": "upe-027"
+   "origem": "Kit Upe TV",
+   "modelo": [
+    {
+     "frente": "tv",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "Seu cliente está olhando para a tela.",
+     "texto": "Na fila do café, na recepção, no intervalo do treino: as pessoas olham para a TV.",
+     "cta": "Anuncie no Upe TV",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-portal.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
   },
   {
-   "formato": "carrossel",
-   "titulo": "Sua loja no ar em 5 passos",
-   "legenda": "Colocar a loja online parece complicado? Em 5 passos ela está vendendo. 👉 Arraste e salve para não esquecer.\n\n1. Fale com a Upe e ganhe 14 dias grátis\n2. Cadastre os produtos (ou importe a planilha)\n3. Ative o PIX\n4. Coloque a sua cara\n5. Compartilhe o link\n\n👉 Teste 14 dias grátis: upe-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
-   "midias": [
-    "kits/upe-erp/carrossel/1-loja-no-ar-em-5-passos/01.png",
-    "kits/upe-erp/carrossel/1-loja-no-ar-em-5-passos/02.png",
-    "kits/upe-erp/carrossel/1-loja-no-ar-em-5-passos/03.png",
-    "kits/upe-erp/carrossel/1-loja-no-ar-em-5-passos/04.png",
-    "kits/upe-erp/carrossel/1-loja-no-ar-em-5-passos/05.png",
-    "kits/upe-erp/carrossel/1-loja-no-ar-em-5-passos/06.png",
-    "kits/upe-erp/carrossel/1-loja-no-ar-em-5-passos/07.png"
-   ],
-   "capa": "",
-   "origem": "Kit Upe ERP",
-   "pilar": "Upe ERP",
-   "canal": "instagram",
+   "id": "app-erp-02",
    "data": "2026-10-22",
    "hora": "12:00",
+   "canal": "instagram",
+   "formato": "carrossel",
+   "pilar": "Upe ERP",
+   "titulo": "5 datas até o fim do ano",
+   "legenda": "Salve o calendário! 📅 Estas são as 5 datas que mais vendem até o fim do ano:\n\n12/10 · Dia das Crianças\n11/11 · 11.11\n27/11 · Black Friday\n30/11 · Cyber Monday\n25/12 · Natal\n\nQual delas é a mais forte para a sua loja?\n\n👉 Teste 14 dias grátis: upe-criativo-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-erp/gerado/erp-02-01.jpg",
+    "kits/upe-erp/gerado/erp-02-02.jpg",
+    "kits/upe-erp/gerado/erp-02-03.jpg",
+    "kits/upe-erp/gerado/erp-02-04.jpg",
+    "kits/upe-erp/gerado/erp-02-05.jpg",
+    "kits/upe-erp/gerado/erp-02-06.jpg",
+    "kits/upe-erp/gerado/erp-02-07.jpg"
+   ],
+   "capa": "",
    "status": "planejado",
-   "id": "upe-028"
+   "origem": "Kit Upe ERP",
+   "modelo": [
+    {
+     "frente": "erp",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe ERP",
+     "titulo": "5 datas até o fim do ano",
+     "texto": "Salve o calendário!",
+     "cta": "Arraste para o lado",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": "1/7"
+    },
+    {
+     "frente": "erp",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "01",
+     "titulo": "12/10 · Dia das Crianças",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": "2/7"
+    },
+    {
+     "frente": "erp",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "02",
+     "titulo": "11/11 · 11.11",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": "3/7"
+    },
+    {
+     "frente": "erp",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "03",
+     "titulo": "27/11 · Black Friday",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": "4/7"
+    },
+    {
+     "frente": "erp",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "04",
+     "titulo": "30/11 · Cyber Monday",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": "5/7"
+    },
+    {
+     "frente": "erp",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "05",
+     "titulo": "25/12 · Natal",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": "6/7"
+    },
+    {
+     "frente": "erp",
+     "layout": "cta",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe ERP",
+     "titulo": "Sua loja no ar em poucos dias.",
+     "texto": "Teste 14 dias grátis, sem fidelidade. Chame no WhatsApp (11) 93439-3249.",
+     "cta": "Teste 14 dias grátis",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": "7/7"
+    }
+   ]
   },
   {
    "formato": "youtube",
    "canal": "youtube",
    "titulo": "Upe TV: como anunciar nas telas dos estabelecimentos do bairro",
-   "legenda": "Como funciona o Upe TV: campanhas em TVs e totens de cafés, academias, clínicas e lojas, com QR code para o seu WhatsApp e relatório do tempo de tela.\nupe-tv.web.app\n\nCapítulos:\n0:00 Abertura\n0:04 Na tela\n0:14 QR code e pedido\n0:26 Resultados\n0:34 Como anunciar",
-   "roteiro": "Versão história: A tela que todo mundo olha\nA história: Uma padaria queria ser lembrada por quem passa no bairro.\nContexto: Panfleto vai para o lixo. Anúncio online some no feed.\nNarrativa: Enquanto isso, na fila do café ao lado, todo mundo olhava para a TV.\nClímax: E ninguém estava falando com essas pessoas.\nA pergunta: E se a sua marca estivesse nessa tela, com um jeito de chamar você na hora?\nA solução: Upe TV: campanha nas TVs parceiras, com QR code para o seu WhatsApp.\nPor que funciona: Público local todos os dias, e cada leitura do QR aparece no relatório.\nPróximo passo: Anuncie ou seja um ponto parceiro: upe-tv.web.app.\n\nGravação:\n• Vídeo pronto (lançamento Upe TV).",
+   "legenda": "Como funciona o Upe TV: campanhas em TVs e totens de cafés, academias, clínicas e lojas, com QR code para o seu WhatsApp e relatório do tempo de tela.\nupe-criativo-tv.web.app\n\nCapítulos:\n0:00 Abertura\n0:04 Na tela\n0:14 QR code e pedido\n0:26 Resultados\n0:34 Como anunciar",
+   "roteiro": "Versão história: A tela que todo mundo olha\nA história: Uma padaria queria ser lembrada por quem passa no bairro.\nContexto: Panfleto vai para o lixo. Anúncio online some no feed.\nNarrativa: Enquanto isso, na fila do café ao lado, todo mundo olhava para a TV.\nClímax: E ninguém estava falando com essas pessoas.\nA pergunta: E se a sua marca estivesse nessa tela, com um jeito de chamar você na hora?\nA solução: Upe TV: campanha nas TVs parceiras, com QR code para o seu WhatsApp.\nPor que funciona: Público local todos os dias, e cada leitura do QR aparece no relatório.\nPróximo passo: Anuncie ou seja um ponto parceiro: upe-criativo-tv.web.app.\n\nGravação:\n• Vídeo pronto (lançamento Upe TV).",
    "historia": {
     "titulo": "A tela que todo mundo olha",
     "video": "kits/upe-branding/youtube/historia-yt-03-upe-tv.mp4",
@@ -656,7 +677,7 @@
      },
      {
       "rotulo": "Próximo passo",
-      "texto": "Anuncie ou seja um ponto parceiro: upe-tv.web.app."
+      "texto": "Anuncie ou seja um ponto parceiro: upe-criativo-tv.web.app."
      }
     ]
    },
@@ -672,6 +693,129 @@
    "tags": "midia indoor, publicidade local, upe tv",
    "status": "pronto",
    "id": "upe-029"
+  },
+  {
+   "id": "app-tv-02",
+   "data": "2026-10-23",
+   "hora": "12:00",
+   "canal": "instagram",
+   "formato": "carrossel",
+   "pilar": "Upe TV",
+   "titulo": "Apresentação do Upe TV",
+   "legenda": "Chegou o Upe TV. 📺 Arraste e conheça.\n\nA sua marca nas TVs e totens de cafés, academias, clínicas, salões e lojas parceiras, com QR code para o seu WhatsApp, cardápio com pedido e relatório do tempo de tela.\n\nEstamos selecionando os primeiros anunciantes.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-criativo-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-tv/gerado/tv-02-01.jpg",
+    "kits/upe-tv/gerado/tv-02-02.jpg",
+    "kits/upe-tv/gerado/tv-02-03.jpg",
+    "kits/upe-tv/gerado/tv-02-04.jpg",
+    "kits/upe-tv/gerado/tv-02-05.jpg",
+    "kits/upe-tv/gerado/tv-02-06.jpg",
+    "kits/upe-tv/gerado/tv-02-07.jpg"
+   ],
+   "capa": "",
+   "status": "planejado",
+   "origem": "Kit Upe TV",
+   "modelo": [
+    {
+     "frente": "tv",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "Apresentação do Upe TV",
+     "texto": "Chegou o Upe TV.",
+     "cta": "Arraste para o lado",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": "1/7"
+    },
+    {
+     "frente": "tv",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "A sua marca nas TVs e totens de cafés, academias, clínicas, salões e lojas parceiras, com…",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": "2/7"
+    },
+    {
+     "frente": "tv",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "Upe TV",
+     "titulo": "Estamos selecionando os primeiros anunciantes.",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-portal.jpg",
+     "handle": "@upecriativo",
+     "slide": "3/7"
+    },
+    {
+     "frente": "tv",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "Letreiro com o nome da sua marca",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": "4/7"
+    },
+    {
+     "frente": "tv",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "Upe TV",
+     "titulo": "QR code que leva ao WhatsApp",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": "5/7"
+    },
+    {
+     "frente": "tv",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "Relatório de cada exibição",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-portal.jpg",
+     "handle": "@upecriativo",
+     "slide": "6/7"
+    },
+    {
+     "frente": "tv",
+     "layout": "cta",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "Sua marca na tela certa.",
+     "texto": "Fale com a Upe: WhatsApp (11) 93439-3249. Planos para anunciantes e parceiros.",
+     "cta": "Anuncie no Upe TV",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": "7/7"
+    }
+   ]
   },
   {
    "formato": "reels",
@@ -724,7 +868,7 @@
   {
    "formato": "shorts",
    "titulo": "Sua marca na tela certa.",
-   "legenda": "Sua marca na tela certa. 🎯\n\nVídeo, motion ou imagem nas TVs de estabelecimentos parceiros, com relatório do tempo de tela.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
+   "legenda": "Sua marca na tela certa. 🎯\n\nVídeo, motion ou imagem nas TVs de estabelecimentos parceiros, com relatório do tempo de tela.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-criativo-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
    "midias": [
     "kits/upe-tv/reels/reel-3-anuncie-na-tv.mp4"
    ],
@@ -754,98 +898,141 @@
    "id": "upe-034"
   },
   {
-   "formato": "carrossel",
-   "titulo": "Checklist da Black Friday",
-   "legenda": "Black Friday é dia 27 de novembro. Dá tempo, mas é bom começar agora. 🖤\n\nArraste e salve o checklist: estoque, ofertas, cupom, frete, base de clientes e envio.\n\nMarque aqui alguém que vende e precisa ver isso!\n\n👉 Teste 14 dias grátis: upe-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
+   "id": "app-erp-08",
+   "data": "2026-10-27",
+   "hora": "10:00",
+   "canal": "instagram",
+   "formato": "story",
+   "pilar": "Upe ERP",
+   "titulo": "Vídeo em 2 minutos (link)",
+   "legenda": "Como usar: Adesivo de link: https://upe-criativo-erp.web.app/video",
+   "roteiro": "",
    "midias": [
-    "kits/upe-erp/carrossel/4-black-friday/01.png",
-    "kits/upe-erp/carrossel/4-black-friday/02.png",
-    "kits/upe-erp/carrossel/4-black-friday/03.png",
-    "kits/upe-erp/carrossel/4-black-friday/04.png",
-    "kits/upe-erp/carrossel/4-black-friday/05.png",
-    "kits/upe-erp/carrossel/4-black-friday/06.png",
-    "kits/upe-erp/carrossel/4-black-friday/07.png",
-    "kits/upe-erp/carrossel/4-black-friday/08.png"
+    "kits/upe-erp/gerado/erp-08-01.jpg"
    ],
    "capa": "",
+   "status": "planejado",
    "origem": "Kit Upe ERP",
-   "pilar": "Upe ERP",
-   "canal": "instagram",
+   "modelo": [
+    {
+     "frente": "erp",
+     "layout": "capa",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe ERP",
+     "titulo": "Veja a plataforma em 2 minutos",
+     "texto": "Toque no link e veja.",
+     "cta": "Teste 14 dias grátis",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
+  },
+  {
+   "id": "app-erp-04",
    "data": "2026-10-27",
    "hora": "12:00",
-   "status": "planejado",
-   "id": "upe-035"
-  },
-  {
-   "formato": "story",
-   "titulo": "09 e 10 · Parceiros",
-   "legenda": "Como usar: para donos de estabelecimento. Repita junto com o carrossel de parceiros.\n\nComo usar: adesivo de link para o WhatsApp: https://wa.me/5511934393249",
-   "midias": [
-    "kits/upe-tv/stories/09-parceiro-sua-tv.jpg",
-    "kits/upe-tv/stories/10-parceiro-seja-ponto.jpg"
-   ],
-   "capa": "",
-   "origem": "Kit Upe TV",
-   "pilar": "Upe TV",
    "canal": "instagram",
-   "data": "2026-10-28",
-   "hora": "10:00",
-   "status": "planejado",
-   "id": "upe-036"
-  },
-  {
-   "formato": "carrossel",
-   "titulo": "Como anunciar em 5 passos",
-   "legenda": "Anunciar na TV parece complicado? Em 5 passos a sua marca está no ar. 👉 Arraste e salve.\n\n1. Conversa\n2. Plano\n3. Material\n4. Aprovação\n5. No ar\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
-   "midias": [
-    "kits/upe-tv/carrossel/2-como-anunciar/01.jpg",
-    "kits/upe-tv/carrossel/2-como-anunciar/02.jpg",
-    "kits/upe-tv/carrossel/2-como-anunciar/03.jpg",
-    "kits/upe-tv/carrossel/2-como-anunciar/04.jpg",
-    "kits/upe-tv/carrossel/2-como-anunciar/05.jpg",
-    "kits/upe-tv/carrossel/2-como-anunciar/06.jpg",
-    "kits/upe-tv/carrossel/2-como-anunciar/07.jpg"
-   ],
-   "capa": "",
-   "origem": "Kit Upe TV",
-   "pilar": "Upe TV",
-   "canal": "instagram",
-   "data": "2026-10-28",
-   "hora": "12:00",
-   "status": "planejado",
-   "id": "upe-037"
-  },
-  {
-   "formato": "story",
-   "titulo": "PIX + teste grátis",
-   "legenda": "Como usar: Adesivo de link para o WhatsApp: https://wa.me/5511934393249",
-   "midias": [
-    "kits/upe-erp/stories/04-teste-gratis.png"
-   ],
-   "capa": "",
-   "origem": "Kit Upe ERP",
-   "pilar": "Upe ERP",
-   "canal": "instagram",
-   "data": "2026-10-29",
-   "hora": "10:00",
-   "status": "planejado",
-   "id": "upe-038"
-  },
-  {
    "formato": "feed",
-   "titulo": "Restaurante, lanchonete ou delivery?",
-   "legenda": "Restaurante, lanchonete ou delivery? 🍔\n\nCardápio na TV, pedido no celular. Até 10 produtos com foto, oferta e complementos. O pedido chega pronto no seu WhatsApp, com endereço e até etiqueta para imprimir.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
+   "pilar": "Upe ERP",
+   "titulo": "Se a sua loja funciona entre conversas de WhatsApp, cadernos e prints de PIX, você não está sozinho.",
+   "legenda": "Se a sua loja funciona entre conversas de WhatsApp, cadernos e prints de PIX, você não está sozinho. 📒\n\nMas cada pedido perdido, cada estoque errado e cada “cadê meu pedido?” custa caro.\n\nCom a plataforma da Upe Criativo, o pedido chega organizado, o PIX vem com valor certo e o cliente acompanha sozinho. Teste 14 dias grátis.\n\n👉 Teste 14 dias grátis: upe-criativo-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
+   "roteiro": "",
    "midias": [
-    "kits/upe-tv/feed/06-cardapio.jpg"
+    "kits/upe-erp/gerado/erp-04-01.jpg"
    ],
    "capa": "",
-   "origem": "Kit Upe TV",
-   "pilar": "Upe TV",
-   "canal": "instagram",
-   "data": "2026-10-29",
-   "hora": "12:00",
    "status": "planejado",
-   "id": "upe-039"
+   "origem": "Kit Upe ERP",
+   "modelo": [
+    {
+     "frente": "erp",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe ERP",
+     "titulo": "Se a sua loja funciona entre conversas de WhatsApp, cadernos e prints de PIX, você não está sozinho.",
+     "texto": "Mas cada pedido perdido, cada estoque errado e cada “cadê meu pedido?” custa caro.",
+     "cta": "Teste 14 dias grátis",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-pedidos.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
+  },
+  {
+   "id": "app-tv-08",
+   "data": "2026-10-28",
+   "hora": "10:00",
+   "canal": "instagram",
+   "formato": "story",
+   "pilar": "Upe TV",
+   "titulo": "06 · Caixa de perguntas",
+   "legenda": "Como usar: caixa de perguntas. Use as respostas como pauta dos próximos posts.",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-tv/gerado/tv-08-01.jpg"
+   ],
+   "capa": "",
+   "status": "planejado",
+   "origem": "Kit Upe TV",
+   "modelo": [
+    {
+     "frente": "tv",
+     "layout": "capa",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "Caixa de perguntas",
+     "texto": "Mande a sua pergunta.",
+     "cta": "Anuncie no Upe TV",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
+  },
+  {
+   "id": "app-tv-04",
+   "data": "2026-10-28",
+   "hora": "12:00",
+   "canal": "instagram",
+   "formato": "feed",
+   "pilar": "Upe TV",
+   "titulo": "Quatro jeitos de aparecer na mesma TV.",
+   "legenda": "Quatro jeitos de aparecer na mesma TV. 📺\n\n1. Tela cheia com vídeo, motion ou imagem\n2. Lateral que se abre com a sua chamada\n3. Letreiro e rodapé de parceiros\n4. QR code no canto, sem cobrir a mensagem\n\nDá para combinar formatos em um plano só.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-criativo-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-tv/gerado/tv-04-01.jpg"
+   ],
+   "capa": "",
+   "status": "planejado",
+   "origem": "Kit Upe TV",
+   "modelo": [
+    {
+     "frente": "tv",
+     "layout": "lista",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "Upe TV",
+     "titulo": "Quatro jeitos de aparecer na mesma TV.",
+     "texto": "",
+     "cta": "Anuncie no Upe TV",
+     "itens": [
+      "Tela cheia com vídeo, motion ou imagem",
+      "Lateral que se abre com a sua chamada",
+      "Letreiro e rodapé de parceiros",
+      "QR code no canto, sem cobrir a mensagem"
+     ],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
   },
   {
    "formato": "youtube",
@@ -904,20 +1091,70 @@
    "id": "upe-040"
   },
   {
-   "formato": "reels",
-   "titulo": "Tela cheia, lateral, rodapé e QR code. Tudo na mesma tela, sem um cobrir o outro.",
-   "legenda": "Tela cheia, lateral, rodapé e QR code. Tudo na mesma tela, sem um cobrir o outro. 📺\n\nA Upe cria, publica e você acompanha o resultado pelo celular.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
-   "midias": [
-    "kits/upe-tv/reels/reel-2-como-fica.mp4"
-   ],
-   "capa": "kits/upe-tv/stories/reel-capa-como-fica.jpg",
-   "origem": "Kit Upe TV",
-   "pilar": "Upe TV",
+   "id": "app-erp-05",
+   "data": "2026-10-29",
+   "hora": "19:00",
    "canal": "instagram",
+   "formato": "reels",
+   "pilar": "Upe ERP",
+   "titulo": "Como o seu cliente compra e paga no PIX, do celular, sem criar conta.",
+   "legenda": "Como o seu cliente compra e paga no PIX, do celular, sem criar conta. 📱💸\n\nVitrine com a sua marca, escolha de tamanho, frete calculado e QR Code na hora. Depois, ele acompanha o pedido pelo link.\n\n👉 Teste 14 dias grátis: upe-criativo-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-erp/gerado/erp-05.mp4"
+   ],
+   "capa": "kits/upe-erp/gerado/erp-05-01.jpg",
+   "status": "planejado",
+   "origem": "Kit Upe ERP",
+   "modelo": [
+    {
+     "frente": "erp",
+     "layout": "tela",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe ERP",
+     "titulo": "Como o seu cliente compra e paga no PIX, do celular, sem criar conta.",
+     "texto": "Vitrine com a sua marca, escolha de tamanho, frete calculado e QR Code na hora.",
+     "cta": "Teste 14 dias grátis",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-pdv.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
+  },
+  {
+   "id": "app-tv-05",
    "data": "2026-10-30",
    "hora": "19:00",
+   "canal": "instagram",
+   "formato": "reels",
+   "pilar": "Upe TV",
+   "titulo": "Seu cliente está olhando para a tela.",
+   "legenda": "Seu cliente está olhando para a tela. A sua marca está nela? 👀\n\nCom o Upe TV, o seu negócio entra na programação das TVs parceiras, com QR code para o cliente falar com você na hora.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-criativo-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-tv/gerado/tv-05.mp4"
+   ],
+   "capa": "kits/upe-tv/gerado/tv-05-01.jpg",
    "status": "planejado",
-   "id": "upe-041"
+   "origem": "Kit Upe TV",
+   "modelo": [
+    {
+     "frente": "tv",
+     "layout": "tela",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "Seu cliente está olhando para a tela.",
+     "texto": "Com o Upe TV, o seu negócio entra na programação das TVs parceiras, com QR code…",
+     "cta": "Anuncie no Upe TV",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-portal.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
   },
   {
    "formato": "story",
@@ -954,7 +1191,7 @@
   {
    "formato": "shorts",
    "titulo": "Viu na TV. Apontou a câmera. Pediu pelo WhatsApp.",
-   "legenda": "Viu na TV. Apontou a câmera. Pediu pelo WhatsApp. 📲\n\nE cada leitura do QR vira número no seu relatório.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
+   "legenda": "Viu na TV. Apontou a câmera. Pediu pelo WhatsApp. 📲\n\nE cada leitura do QR vira número no seu relatório.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-criativo-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
    "midias": [
     "kits/upe-tv/reels/reel-4-qr-que-vende.mp4"
    ],
@@ -989,84 +1226,259 @@
    "id": "upe-045"
   },
   {
-   "formato": "feed",
-   "titulo": "Cadastro obrigatório é um dos maiores motivos de carrinho abandonado.",
-   "legenda": "Cadastro obrigatório é um dos maiores motivos de carrinho abandonado. 🛒\n\nNa loja da plataforma Upe, o cliente informa nome, WhatsApp e CEP (o endereço completa sozinho), escolhe entrega ou retirada e paga. Pronto.\n\n👉 Teste 14 dias grátis: upe-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
+   "id": "app-erp-13",
+   "data": "2026-11-03",
+   "hora": "10:00",
+   "canal": "instagram",
+   "formato": "story",
+   "pilar": "Upe ERP",
+   "titulo": "Caixa de perguntas",
+   "legenda": "Como usar: Caixa de perguntas. Use as respostas como pauta dos próximos posts.",
+   "roteiro": "",
    "midias": [
-    "kits/upe-erp/feed/04-compra-sem-cadastro.png"
+    "kits/upe-erp/gerado/erp-13-01.jpg"
    ],
    "capa": "",
+   "status": "planejado",
    "origem": "Kit Upe ERP",
-   "pilar": "Upe ERP",
-   "canal": "instagram",
+   "modelo": [
+    {
+     "frente": "erp",
+     "layout": "capa",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe ERP",
+     "titulo": "Caixa de perguntas",
+     "texto": "Mande a sua pergunta.",
+     "cta": "Teste 14 dias grátis",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
+  },
+  {
+   "id": "app-erp-06",
    "data": "2026-11-03",
    "hora": "12:00",
-   "status": "planejado",
-   "id": "upe-046"
-  },
-  {
-   "formato": "story",
-   "titulo": "08 · WhatsApp",
-   "legenda": "Como usar: adesivo de link: https://wa.me/5511934393249",
+   "canal": "instagram",
+   "formato": "feed",
+   "pilar": "Upe ERP",
+   "titulo": "Pagou, caiu.",
+   "legenda": "Pagou, caiu. 💸\n\nCada pedido da sua loja gera o QR Code e o PIX copia e cola com o valor exato. Nada de conferir print ou digitar chave errada.\n\nE você ainda pode dar um desconto especial para quem paga no PIX.\n\n👉 Teste 14 dias grátis: upe-criativo-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
+   "roteiro": "",
    "midias": [
-    "kits/upe-tv/stories/08-whatsapp.jpg"
+    "kits/upe-erp/gerado/erp-06-01.jpg"
    ],
    "capa": "",
-   "origem": "Kit Upe TV",
-   "pilar": "Upe TV",
-   "canal": "instagram",
+   "status": "planejado",
+   "origem": "Kit Upe ERP",
+   "modelo": [
+    {
+     "frente": "erp",
+     "layout": "foto",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe ERP",
+     "titulo": "Pagou, caiu.",
+     "texto": "Cada pedido da sua loja gera o QR Code e o PIX copia e cola com o valor exato.",
+     "cta": "Teste 14 dias grátis",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
+  },
+  {
+   "id": "app-tv-13",
    "data": "2026-11-04",
    "hora": "10:00",
-   "status": "planejado",
-   "id": "upe-047"
-  },
-  {
-   "formato": "feed",
-   "titulo": "Anuncie onde as pessoas esperam.",
-   "legenda": "Anuncie onde as pessoas esperam. ⏳\n\nO Upe TV está em TVs e totens de cafés, academias, clínicas, salões e lojas parceiras. Público do bairro, todos os dias.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
+   "canal": "instagram",
+   "formato": "story",
+   "pilar": "Upe TV",
+   "titulo": "07 · Vídeo (link)",
+   "legenda": "Como usar: adesivo de link para o reel \"A TV ao vivo\" ou para upe-criativo-tv.web.app.",
+   "roteiro": "",
    "midias": [
-    "kits/upe-tv/feed/02-onde-aparece.jpg"
+    "kits/upe-tv/gerado/tv-13-01.jpg"
    ],
    "capa": "",
+   "status": "planejado",
    "origem": "Kit Upe TV",
-   "pilar": "Upe TV",
-   "canal": "instagram",
+   "modelo": [
+    {
+     "frente": "tv",
+     "layout": "capa",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "A TV ao vivo",
+     "texto": "Toque no link e veja.",
+     "cta": "Anuncie no Upe TV",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
+  },
+  {
+   "id": "app-tv-06",
    "data": "2026-11-04",
    "hora": "12:00",
-   "status": "planejado",
-   "id": "upe-048"
-  },
-  {
-   "formato": "story",
-   "titulo": "02-pix",
-   "legenda": "Como usar: Story com link para upe-erp.web.app/video.",
-   "midias": [
-    "kits/upe-erp/stories/02-pix.png"
-   ],
-   "capa": "",
-   "origem": "Kit Upe ERP",
-   "pilar": "Upe ERP",
    "canal": "instagram",
-   "data": "2026-11-05",
-   "hora": "10:00",
-   "status": "planejado",
-   "id": "upe-049"
-  },
-  {
    "formato": "feed",
-   "titulo": "Vende roupa, calçado ou acessório?",
-   "legenda": "Vende roupa, calçado ou acessório? 👕\n\nCadastre as variações (tamanho, cor) com o estoque de cada uma. O cliente escolhe na loja, o PDV pergunta no balcão e a venda baixa só a opção vendida.\n\n👉 Teste 14 dias grátis: upe-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
+   "pilar": "Upe TV",
+   "titulo": "Viu na TV, chamou no seu WhatsApp.",
+   "legenda": "Viu na TV, chamou no seu WhatsApp. 📲\n\nO cliente aponta a câmera para o QR, vê para onde vai e cai direto na sua conversa. E cada leitura aparece no seu relatório.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-criativo-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
+   "roteiro": "",
    "midias": [
-    "kits/upe-erp/feed/05-tamanho-e-cor.png"
+    "kits/upe-tv/gerado/tv-06-01.jpg"
    ],
    "capa": "",
-   "origem": "Kit Upe ERP",
-   "pilar": "Upe ERP",
-   "canal": "instagram",
+   "status": "planejado",
+   "origem": "Kit Upe TV",
+   "modelo": [
+    {
+     "frente": "tv",
+     "layout": "foto",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "Viu na TV, chamou no seu WhatsApp.",
+     "texto": "O cliente aponta a câmera para o QR, vê para onde vai e cai direto na sua conversa.",
+     "cta": "Anuncie no Upe TV",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
+  },
+  {
+   "id": "app-erp-07",
    "data": "2026-11-05",
    "hora": "12:00",
+   "canal": "instagram",
+   "formato": "carrossel",
+   "pilar": "Upe ERP",
+   "titulo": "Sua loja no ar em 5 passos",
+   "legenda": "Colocar a loja online parece complicado? Em 5 passos ela está vendendo. 👉 Arraste e salve para não esquecer.\n\n1. Fale com a Upe e ganhe 14 dias grátis\n2. Cadastre os produtos (ou importe a planilha)\n3. Ative o PIX\n4. Coloque a sua cara\n5. Compartilhe o link\n\n👉 Teste 14 dias grátis: upe-criativo-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-erp/gerado/erp-07-01.jpg",
+    "kits/upe-erp/gerado/erp-07-02.jpg",
+    "kits/upe-erp/gerado/erp-07-03.jpg",
+    "kits/upe-erp/gerado/erp-07-04.jpg",
+    "kits/upe-erp/gerado/erp-07-05.jpg",
+    "kits/upe-erp/gerado/erp-07-06.jpg",
+    "kits/upe-erp/gerado/erp-07-07.jpg"
+   ],
+   "capa": "",
    "status": "planejado",
-   "id": "upe-050"
+   "origem": "Kit Upe ERP",
+   "modelo": [
+    {
+     "frente": "erp",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe ERP",
+     "titulo": "Sua loja no ar em 5 passos",
+     "texto": "Colocar a loja online parece complicado?",
+     "cta": "Arraste para o lado",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": "1/7"
+    },
+    {
+     "frente": "erp",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "01",
+     "titulo": "Fale com a Upe e ganhe 14 dias grátis",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": "2/7"
+    },
+    {
+     "frente": "erp",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "02",
+     "titulo": "Cadastre os produtos (ou importe a planilha)",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": "3/7"
+    },
+    {
+     "frente": "erp",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "03",
+     "titulo": "Ative o PIX",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": "4/7"
+    },
+    {
+     "frente": "erp",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "04",
+     "titulo": "Coloque a sua cara",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": "5/7"
+    },
+    {
+     "frente": "erp",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "05",
+     "titulo": "Compartilhe o link",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": "6/7"
+    },
+    {
+     "frente": "erp",
+     "layout": "cta",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe ERP",
+     "titulo": "Sua loja no ar em poucos dias.",
+     "texto": "Teste 14 dias grátis, sem fidelidade. Chame no WhatsApp (11) 93439-3249.",
+     "cta": "Teste 14 dias grátis",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": "7/7"
+    }
+   ]
   },
   {
    "formato": "youtube",
@@ -1125,20 +1537,127 @@
    "id": "upe-051"
   },
   {
-   "formato": "reels",
-   "titulo": "O pedido chegou. E agora?",
-   "legenda": "O pedido chegou. E agora? 📦\n\nNo painel ele já entra aprovado. Você marca como enviado, coloca o rastreio, imprime o cupom e o cliente vê tudo pelo link. Ainda dá para cadastrar produtos por planilha.\n\n👉 Teste 14 dias grátis: upe-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
-   "midias": [
-    "kits/upe-erp/reels/reel-2-do-pedido-ao-envio.mp4"
-   ],
-   "capa": "kits/upe-erp/stories/reel-capa-2-do-pedido-ao-envio.png",
-   "origem": "Kit Upe ERP",
-   "pilar": "Upe ERP",
-   "canal": "instagram",
+   "id": "app-tv-07",
    "data": "2026-11-06",
-   "hora": "19:00",
+   "hora": "12:00",
+   "canal": "instagram",
+   "formato": "carrossel",
+   "pilar": "Upe TV",
+   "titulo": "Como anunciar em 5 passos",
+   "legenda": "Anunciar na TV parece complicado? Em 5 passos a sua marca está no ar. 👉 Arraste e salve.\n\n1. Conversa\n2. Plano\n3. Material\n4. Aprovação\n5. No ar\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-criativo-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-tv/gerado/tv-07-01.jpg",
+    "kits/upe-tv/gerado/tv-07-02.jpg",
+    "kits/upe-tv/gerado/tv-07-03.jpg",
+    "kits/upe-tv/gerado/tv-07-04.jpg",
+    "kits/upe-tv/gerado/tv-07-05.jpg",
+    "kits/upe-tv/gerado/tv-07-06.jpg",
+    "kits/upe-tv/gerado/tv-07-07.jpg"
+   ],
+   "capa": "",
    "status": "planejado",
-   "id": "upe-052"
+   "origem": "Kit Upe TV",
+   "modelo": [
+    {
+     "frente": "tv",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "Como anunciar em 5 passos",
+     "texto": "Anunciar na TV parece complicado?",
+     "cta": "Arraste para o lado",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": "1/7"
+    },
+    {
+     "frente": "tv",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "01",
+     "titulo": "Conversa",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": "2/7"
+    },
+    {
+     "frente": "tv",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "02",
+     "titulo": "Plano",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": "3/7"
+    },
+    {
+     "frente": "tv",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "03",
+     "titulo": "Material",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": "4/7"
+    },
+    {
+     "frente": "tv",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "04",
+     "titulo": "Aprovação",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": "5/7"
+    },
+    {
+     "frente": "tv",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "05",
+     "titulo": "No ar",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": "6/7"
+    },
+    {
+     "frente": "tv",
+     "layout": "cta",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "Sua marca na tela certa.",
+     "texto": "Fale com a Upe: WhatsApp (11) 93439-3249. Planos para anunciantes e parceiros.",
+     "cta": "Anuncie no Upe TV",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": "7/7"
+    }
+   ]
   },
   {
    "formato": "story",
@@ -1175,7 +1694,7 @@
   {
    "formato": "shorts",
    "titulo": "Cardápio na TV, pedido no celular.",
-   "legenda": "Cardápio na TV, pedido no celular. 🍔\n\nO cliente escolhe, adiciona complementos e o pedido chega no seu WhatsApp, pronto para imprimir.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
+   "legenda": "Cardápio na TV, pedido no celular. 🍔\n\nO cliente escolhe, adiciona complementos e o pedido chega no seu WhatsApp, pronto para imprimir.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-criativo-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
    "midias": [
     "kits/upe-tv/reels/reel-5-cardapio.mp4"
    ],
@@ -1205,94 +1724,151 @@
    "id": "upe-056"
   },
   {
-   "formato": "carrossel",
-   "titulo": "WhatsApp × plataforma de vendas",
-   "legenda": "O WhatsApp continua sendo o melhor lugar para conversar com o cliente. Mas para vender todo dia, ele sozinho deixa buracos. 👇\n\nArraste e veja a diferença entre vender só no WhatsApp e vender com uma plataforma.\n\n👉 Teste 14 dias grátis: upe-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
+   "id": "app-erp-18",
+   "data": "2026-11-10",
+   "hora": "10:00",
+   "canal": "instagram",
+   "formato": "story",
+   "pilar": "Upe ERP",
+   "titulo": "PIX + teste grátis",
+   "legenda": "Como usar: Adesivo de link para o WhatsApp: https://wa.me/5511934393249",
+   "roteiro": "",
    "midias": [
-    "kits/upe-erp/carrossel/2-whatsapp-x-plataforma/01.png",
-    "kits/upe-erp/carrossel/2-whatsapp-x-plataforma/02.png",
-    "kits/upe-erp/carrossel/2-whatsapp-x-plataforma/03.png",
-    "kits/upe-erp/carrossel/2-whatsapp-x-plataforma/04.png",
-    "kits/upe-erp/carrossel/2-whatsapp-x-plataforma/05.png",
-    "kits/upe-erp/carrossel/2-whatsapp-x-plataforma/06.png"
+    "kits/upe-erp/gerado/erp-18-01.jpg"
    ],
    "capa": "",
+   "status": "planejado",
    "origem": "Kit Upe ERP",
-   "pilar": "Upe ERP",
-   "canal": "instagram",
+   "modelo": [
+    {
+     "frente": "erp",
+     "layout": "capa",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe ERP",
+     "titulo": "PIX + teste grátis",
+     "texto": "Toque no link e veja.",
+     "cta": "Teste 14 dias grátis",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
+  },
+  {
+   "id": "app-erp-09",
    "data": "2026-11-10",
    "hora": "12:00",
-   "status": "planejado",
-   "id": "upe-057"
-  },
-  {
-   "formato": "story",
-   "titulo": "05 · Primeiros anunciantes",
-   "legenda": "Como usar: adesivo de link para o WhatsApp: https://wa.me/5511934393249",
-   "midias": [
-    "kits/upe-tv/stories/05-primeiros-anunciantes.jpg"
-   ],
-   "capa": "",
-   "origem": "Kit Upe TV",
-   "pilar": "Upe TV",
    "canal": "instagram",
-   "data": "2026-11-11",
-   "hora": "10:00",
-   "status": "planejado",
-   "id": "upe-058"
-  },
-  {
-   "formato": "carrossel",
-   "titulo": "Para quem é o Upe TV",
-   "legenda": "O Upe TV é para o seu negócio? 🤔 Arraste e veja.\n\nRestaurantes e delivery, saúde e beleza, academias e serviços, comércio local. Se o seu cliente passa por estabelecimentos do bairro, a sua marca pode estar na tela.\n\nMarque aqui um negócio que precisa ver isso!\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
-   "midias": [
-    "kits/upe-tv/carrossel/3-para-quem-e/01.jpg",
-    "kits/upe-tv/carrossel/3-para-quem-e/02.jpg",
-    "kits/upe-tv/carrossel/3-para-quem-e/03.jpg",
-    "kits/upe-tv/carrossel/3-para-quem-e/04.jpg",
-    "kits/upe-tv/carrossel/3-para-quem-e/05.jpg",
-    "kits/upe-tv/carrossel/3-para-quem-e/06.jpg"
-   ],
-   "capa": "",
-   "origem": "Kit Upe TV",
-   "pilar": "Upe TV",
-   "canal": "instagram",
-   "data": "2026-11-11",
-   "hora": "12:00",
-   "status": "planejado",
-   "id": "upe-059"
-  },
-  {
-   "formato": "story",
-   "titulo": "05-sua-cara",
-   "legenda": "",
-   "midias": [
-    "kits/upe-erp/stories/05-sua-cara.png"
-   ],
-   "capa": "",
-   "origem": "Kit Upe ERP",
-   "pilar": "Upe ERP",
-   "canal": "instagram",
-   "data": "2026-11-12",
-   "hora": "10:00",
-   "status": "planejado",
-   "id": "upe-060"
-  },
-  {
    "formato": "feed",
-   "titulo": "Não tem vídeo pronto? A Upe cria.",
-   "legenda": "Não tem vídeo pronto? A Upe cria. 🎬\n\nVocê manda o logo, as cores, a oferta e o WhatsApp. A gente entrega a campanha no formato certo para a TV e publica nas telas.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
+   "pilar": "Upe ERP",
+   "titulo": "Cadastro obrigatório é um dos maiores motivos de carrinho abandonado.",
+   "legenda": "Cadastro obrigatório é um dos maiores motivos de carrinho abandonado. 🛒\n\nNa loja da plataforma Upe, o cliente informa nome, WhatsApp e CEP (o endereço completa sozinho), escolhe entrega ou retirada e paga. Pronto.\n\n👉 Teste 14 dias grátis: upe-criativo-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
+   "roteiro": "",
    "midias": [
-    "kits/upe-tv/feed/07-a-upe-cria.jpg"
+    "kits/upe-erp/gerado/erp-09-01.jpg"
    ],
    "capa": "",
-   "origem": "Kit Upe TV",
-   "pilar": "Upe TV",
-   "canal": "instagram",
-   "data": "2026-11-12",
-   "hora": "12:00",
    "status": "planejado",
-   "id": "upe-061"
+   "origem": "Kit Upe ERP",
+   "modelo": [
+    {
+     "frente": "erp",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "Upe ERP",
+     "titulo": "Cadastro obrigatório é um dos maiores motivos de carrinho abandonado.",
+     "texto": "Na loja da plataforma Upe, o cliente informa nome, WhatsApp e CEP (o endereço completa sozinho), escolhe entrega ou retirada e paga.",
+     "cta": "Teste 14 dias grátis",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-pdv.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
+  },
+  {
+   "id": "app-tv-18",
+   "data": "2026-11-11",
+   "hora": "10:00",
+   "canal": "instagram",
+   "formato": "story",
+   "pilar": "Upe TV",
+   "titulo": "09 e 10 · Parceiros",
+   "legenda": "Como usar: para donos de estabelecimento. Repita junto com o carrossel de parceiros.\n\nComo usar: adesivo de link para o WhatsApp: https://wa.me/5511934393249",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-tv/gerado/tv-18-01.jpg",
+    "kits/upe-tv/gerado/tv-18-02.jpg"
+   ],
+   "capa": "",
+   "status": "planejado",
+   "origem": "Kit Upe TV",
+   "modelo": [
+    {
+     "frente": "tv",
+     "layout": "capa",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "Parceiros",
+     "texto": "Toque no link e veja.",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    },
+    {
+     "frente": "tv",
+     "layout": "tela",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "Quem espera, olha para a tela.",
+     "texto": "",
+     "cta": "Anuncie no Upe TV",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-portal.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
+  },
+  {
+   "id": "app-tv-09",
+   "data": "2026-11-11",
+   "hora": "12:00",
+   "canal": "instagram",
+   "formato": "feed",
+   "pilar": "Upe TV",
+   "titulo": "Restaurante, lanchonete ou delivery?",
+   "legenda": "Restaurante, lanchonete ou delivery? 🍔\n\nCardápio na TV, pedido no celular. Até 10 produtos com foto, oferta e complementos. O pedido chega pronto no seu WhatsApp, com endereço e até etiqueta para imprimir.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-criativo-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-tv/gerado/tv-09-01.jpg"
+   ],
+   "capa": "",
+   "status": "planejado",
+   "origem": "Kit Upe TV",
+   "modelo": [
+    {
+     "frente": "tv",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "Upe TV",
+     "titulo": "Restaurante, lanchonete ou delivery?",
+     "texto": "Cardápio na TV, pedido no celular.",
+     "cta": "Anuncie no Upe TV",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-portal.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
   },
   {
    "formato": "youtube",
@@ -1351,6 +1927,39 @@
    "id": "upe-062"
   },
   {
+   "id": "app-erp-10",
+   "data": "2026-11-12",
+   "hora": "19:00",
+   "canal": "instagram",
+   "formato": "reels",
+   "pilar": "Upe ERP",
+   "titulo": "O pedido chegou.",
+   "legenda": "O pedido chegou. E agora? 📦\n\nNo painel ele já entra aprovado. Você marca como enviado, coloca o rastreio, imprime o cupom e o cliente vê tudo pelo link. Ainda dá para cadastrar produtos por planilha.\n\n👉 Teste 14 dias grátis: upe-criativo-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-erp/gerado/erp-10.mp4"
+   ],
+   "capa": "kits/upe-erp/gerado/erp-10-01.jpg",
+   "status": "planejado",
+   "origem": "Kit Upe ERP",
+   "modelo": [
+    {
+     "frente": "erp",
+     "layout": "tela",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe ERP",
+     "titulo": "O pedido chegou.",
+     "texto": "No painel ele já entra aprovado.",
+     "cta": "Teste 14 dias grátis",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
+  },
+  {
    "formato": "reels",
    "titulo": "reel-2-antes-e-depois",
    "legenda": "Mesma essência, marca nova. 🔁\n\nRedesign com respeito à história da marca, pronto para tela, loja e embalagem. (Exemplo ilustrativo.)\n\n💬 Fale com a Upe: WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#branding #identidadevisual #rebranding #designdemarca #marketingdigital #publicidade #empreendedorismo #pequenosnegocios #upecriativo",
@@ -1365,6 +1974,39 @@
    "hora": "19:00",
    "status": "planejado",
    "id": "upe-063"
+  },
+  {
+   "id": "app-tv-10",
+   "data": "2026-11-13",
+   "hora": "19:00",
+   "canal": "instagram",
+   "formato": "reels",
+   "pilar": "Upe TV",
+   "titulo": "Tela cheia, lateral, rodapé e QR code.",
+   "legenda": "Tela cheia, lateral, rodapé e QR code. Tudo na mesma tela, sem um cobrir o outro. 📺\n\nA Upe cria, publica e você acompanha o resultado pelo celular.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-criativo-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-tv/gerado/tv-10.mp4"
+   ],
+   "capa": "kits/upe-tv/gerado/tv-10-01.jpg",
+   "status": "planejado",
+   "origem": "Kit Upe TV",
+   "modelo": [
+    {
+     "frente": "tv",
+     "layout": "tela",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "Tela cheia, lateral, rodapé e QR code.",
+     "texto": "A Upe cria, publica e você acompanha o resultado pelo celular.",
+     "cta": "Anuncie no Upe TV",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
   },
   {
    "formato": "story",
@@ -1401,7 +2043,7 @@
   {
    "formato": "shorts",
    "titulo": "Tudo sobre o Upe TV em 85 segundos.",
-   "legenda": "Tudo sobre o Upe TV em 85 segundos. ⏱️\n\nComo as campanhas giram na tela, como a lateral e o rodapé se abrem, o QR, o bloqueio por PIN, o tempo de tela e o portal do anunciante. Salve e mande para quem tem um negócio no bairro.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
+   "legenda": "Tudo sobre o Upe TV em 85 segundos. ⏱️\n\nComo as campanhas giram na tela, como a lateral e o rodapé se abrem, o QR, o bloqueio por PIN, o tempo de tela e o portal do anunciante. Salve e mande para quem tem um negócio no bairro.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-criativo-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
    "midias": [
     "kits/upe-tv/reels/reel-6-tv-ao-vivo.mp4"
    ],
@@ -1431,84 +2073,244 @@
    "id": "upe-067"
   },
   {
-   "formato": "feed",
-   "titulo": "Quantas mensagens de “cadê meu pedido?” você responde por dia?",
-   "legenda": "Quantas mensagens de “cadê meu pedido?” você responde por dia? 📦\n\nCada compra na sua loja gera um link de acompanhamento. Quando você marca como enviado e coloca o rastreio no painel, o cliente vê na hora.\n\n👉 Teste 14 dias grátis: upe-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
+   "id": "app-erp-27",
+   "data": "2026-11-17",
+   "hora": "10:00",
+   "canal": "instagram",
+   "formato": "story",
+   "pilar": "Upe ERP",
+   "titulo": "02-pix",
+   "legenda": "Como usar: Story com link para upe-criativo-erp.web.app/video.",
+   "roteiro": "",
    "midias": [
-    "kits/upe-erp/feed/06-cade-meu-pedido.png"
+    "kits/upe-erp/gerado/erp-27-01.jpg"
    ],
    "capa": "",
+   "status": "planejado",
    "origem": "Kit Upe ERP",
-   "pilar": "Upe ERP",
-   "canal": "instagram",
+   "modelo": [
+    {
+     "frente": "erp",
+     "layout": "capa",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe ERP",
+     "titulo": "02-pix",
+     "texto": "Toque no link e veja.",
+     "cta": "Teste 14 dias grátis",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
+  },
+  {
+   "id": "app-erp-11",
    "data": "2026-11-17",
    "hora": "12:00",
+   "canal": "instagram",
+   "formato": "feed",
+   "pilar": "Upe ERP",
+   "titulo": "Vende roupa, calçado ou acessório?",
+   "legenda": "Vende roupa, calçado ou acessório? 👕\n\nCadastre as variações (tamanho, cor) com o estoque de cada uma. O cliente escolhe na loja, o PDV pergunta no balcão e a venda baixa só a opção vendida.\n\n👉 Teste 14 dias grátis: upe-criativo-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-erp/gerado/erp-11-01.jpg"
+   ],
+   "capa": "",
    "status": "planejado",
-   "id": "upe-068"
+   "origem": "Kit Upe ERP",
+   "modelo": [
+    {
+     "frente": "erp",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe ERP",
+     "titulo": "Vende roupa, calçado ou acessório?",
+     "texto": "Cadastre as variações (tamanho, cor) com o estoque de cada uma.",
+     "cta": "Teste 14 dias grátis",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-pedidos.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
   },
   {
-   "formato": "story",
-   "titulo": "Repost do carrossel de apresentação",
-   "legenda": "",
-   "midias": [],
-   "capa": "",
-   "origem": "Kit Upe TV",
-   "pilar": "Upe TV",
-   "canal": "instagram",
+   "id": "app-tv-23",
    "data": "2026-11-18",
    "hora": "10:00",
-   "status": "planejado",
-   "id": "upe-069",
-   "repostDe": "upe-015",
-   "repost": true
-  },
-  {
-   "formato": "feed",
-   "titulo": "A sua TV passa o dia ligada. E se ela gerasse resultado para você?",
-   "legenda": "A sua TV passa o dia ligada. E se ela gerasse resultado para você? 💡\n\nCom o Upe TV, a tela do seu estabelecimento ganha programação profissional, espaço para as suas promoções e o seu nome no letreiro de parceiros.\n\n👉 Seja um ponto Upe TV: chame no WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#parceria #estabelecimento #midiaindoor #negociolocal #empreendedorismo #upetv #upecriativo",
+   "canal": "instagram",
+   "formato": "story",
+   "pilar": "Upe TV",
+   "titulo": "08 · WhatsApp",
+   "legenda": "Como usar: adesivo de link: https://wa.me/5511934393249",
+   "roteiro": "",
    "midias": [
-    "kits/upe-tv/feed/13-parceiro-tv-ligada.jpg"
+    "kits/upe-tv/gerado/tv-23-01.jpg"
    ],
    "capa": "",
+   "status": "planejado",
    "origem": "Kit Upe TV",
-   "pilar": "Upe TV",
-   "canal": "instagram",
+   "modelo": [
+    {
+     "frente": "tv",
+     "layout": "capa",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "WhatsApp",
+     "texto": "Toque no link e veja.",
+     "cta": "Anuncie no Upe TV",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
+  },
+  {
+   "id": "app-tv-11",
    "data": "2026-11-18",
    "hora": "12:00",
-   "status": "planejado",
-   "id": "upe-070"
-  },
-  {
-   "formato": "story",
-   "titulo": "06-acompanhar",
-   "legenda": "",
-   "midias": [
-    "kits/upe-erp/stories/06-acompanhar.png"
-   ],
-   "capa": "",
-   "origem": "Kit Upe ERP",
-   "pilar": "Upe ERP",
    "canal": "instagram",
-   "data": "2026-11-19",
-   "hora": "10:00",
-   "status": "planejado",
-   "id": "upe-071"
-  },
-  {
    "formato": "feed",
-   "titulo": "Vendeu no balcão, sumiu da loja online. Simples assim.",
-   "legenda": "Vendeu no balcão, sumiu da loja online. Simples assim. 🧾\n\nO PDV da plataforma usa o mesmo cadastro de produtos da loja: busca por código, leitor de código de barras, cliente, cupom e PIX com QR Code para mostrar na hora.\n\n👉 Teste 14 dias grátis: upe-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
+   "pilar": "Upe TV",
+   "titulo": "Anuncie onde as pessoas esperam.",
+   "legenda": "Anuncie onde as pessoas esperam. ⏳\n\nO Upe TV está em TVs e totens de cafés, academias, clínicas, salões e lojas parceiras. Público do bairro, todos os dias.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-criativo-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
+   "roteiro": "",
    "midias": [
-    "kits/upe-erp/feed/07-balcao-e-internet.png"
+    "kits/upe-tv/gerado/tv-11-01.jpg"
    ],
    "capa": "",
-   "origem": "Kit Upe ERP",
-   "pilar": "Upe ERP",
-   "canal": "instagram",
+   "status": "planejado",
+   "origem": "Kit Upe TV",
+   "modelo": [
+    {
+     "frente": "tv",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "Anuncie onde as pessoas esperam.",
+     "texto": "O Upe TV está em TVs e totens de cafés, academias, clínicas, salões e lojas parceiras.",
+     "cta": "Anuncie no Upe TV",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
+  },
+  {
+   "id": "app-erp-12",
    "data": "2026-11-19",
    "hora": "12:00",
+   "canal": "instagram",
+   "formato": "carrossel",
+   "pilar": "Upe ERP",
+   "titulo": "WhatsApp × plataforma de vendas",
+   "legenda": "O WhatsApp continua sendo o melhor lugar para conversar com o cliente. Mas para vender todo dia, ele sozinho deixa buracos. 👇\n\nArraste e veja a diferença entre vender só no WhatsApp e vender com uma plataforma.\n\n👉 Teste 14 dias grátis: upe-criativo-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-erp/gerado/erp-12-01.jpg",
+    "kits/upe-erp/gerado/erp-12-02.jpg",
+    "kits/upe-erp/gerado/erp-12-03.jpg",
+    "kits/upe-erp/gerado/erp-12-04.jpg",
+    "kits/upe-erp/gerado/erp-12-05.jpg",
+    "kits/upe-erp/gerado/erp-12-06.jpg"
+   ],
+   "capa": "",
    "status": "planejado",
-   "id": "upe-072"
+   "origem": "Kit Upe ERP",
+   "modelo": [
+    {
+     "frente": "erp",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe ERP",
+     "titulo": "WhatsApp × plataforma de vendas",
+     "texto": "O WhatsApp continua sendo o melhor lugar para conversar com o cliente.",
+     "cta": "Arraste para o lado",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": "1/6"
+    },
+    {
+     "frente": "erp",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe ERP",
+     "titulo": "Arraste e veja a diferença entre vender só no WhatsApp e vender com uma plataforma.",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": "2/6"
+    },
+    {
+     "frente": "erp",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "Upe ERP",
+     "titulo": "PIX com QR Code no valor certo",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-pdv.jpg",
+     "handle": "@upecriativo",
+     "slide": "3/6"
+    },
+    {
+     "frente": "erp",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe ERP",
+     "titulo": "PDV no balcão com o mesmo estoque",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-pedidos.jpg",
+     "handle": "@upecriativo",
+     "slide": "4/6"
+    },
+    {
+     "frente": "erp",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "Upe ERP",
+     "titulo": "Pedidos com status e rastreio",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": "5/6"
+    },
+    {
+     "frente": "erp",
+     "layout": "cta",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe ERP",
+     "titulo": "Sua loja no ar em poucos dias.",
+     "texto": "Teste 14 dias grátis, sem fidelidade. Chame no WhatsApp (11) 93439-3249.",
+     "cta": "Teste 14 dias grátis",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": "6/6"
+    }
+   ]
   },
   {
    "formato": "youtube",
@@ -1567,20 +2369,112 @@
    "id": "upe-073"
   },
   {
-   "formato": "reels",
-   "titulo": "Tudo sobre o Upe TV em 85 segundos.",
-   "legenda": "Tudo sobre o Upe TV em 85 segundos. ⏱️\n\nComo as campanhas giram na tela, como a lateral e o rodapé se abrem, o QR, o bloqueio por PIN, o tempo de tela e o portal do anunciante. Salve e mande para quem tem um negócio no bairro.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
-   "midias": [
-    "kits/upe-tv/reels/reel-6-tv-ao-vivo.mp4"
-   ],
-   "capa": "kits/upe-tv/stories/reel-capa-tv-ao-vivo.jpg",
-   "origem": "Kit Upe TV",
-   "pilar": "Upe TV",
-   "canal": "instagram",
+   "id": "app-tv-12",
    "data": "2026-11-20",
-   "hora": "19:00",
+   "hora": "12:00",
+   "canal": "instagram",
+   "formato": "carrossel",
+   "pilar": "Upe TV",
+   "titulo": "Para quem é o Upe TV",
+   "legenda": "O Upe TV é para o seu negócio? 🤔 Arraste e veja.\n\nRestaurantes e delivery, saúde e beleza, academias e serviços, comércio local. Se o seu cliente passa por estabelecimentos do bairro, a sua marca pode estar na tela.\n\nMarque aqui um negócio que precisa ver isso!\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-criativo-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-tv/gerado/tv-12-01.jpg",
+    "kits/upe-tv/gerado/tv-12-02.jpg",
+    "kits/upe-tv/gerado/tv-12-03.jpg",
+    "kits/upe-tv/gerado/tv-12-04.jpg",
+    "kits/upe-tv/gerado/tv-12-05.jpg",
+    "kits/upe-tv/gerado/tv-12-06.jpg"
+   ],
+   "capa": "",
    "status": "planejado",
-   "id": "upe-074"
+   "origem": "Kit Upe TV",
+   "modelo": [
+    {
+     "frente": "tv",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "Para quem é o Upe TV",
+     "texto": "O Upe TV é para o seu negócio?",
+     "cta": "Arraste para o lado",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": "1/6"
+    },
+    {
+     "frente": "tv",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "Restaurantes e delivery, saúde e beleza, academias e serviços, comércio local.",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": "2/6"
+    },
+    {
+     "frente": "tv",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "Upe TV",
+     "titulo": "Marque aqui um negócio que precisa ver isso!",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-portal.jpg",
+     "handle": "@upecriativo",
+     "slide": "3/6"
+    },
+    {
+     "frente": "tv",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "Letreiro com o nome da sua marca",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": "4/6"
+    },
+    {
+     "frente": "tv",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "Upe TV",
+     "titulo": "QR code que leva ao WhatsApp",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": "5/6"
+    },
+    {
+     "frente": "tv",
+     "layout": "cta",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "Sua marca na tela certa.",
+     "texto": "Fale com a Upe: WhatsApp (11) 93439-3249. Planos para anunciantes e parceiros.",
+     "cta": "Anuncie no Upe TV",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": "6/6"
+    }
+   ]
   },
   {
    "formato": "feed",
@@ -1601,7 +2495,7 @@
   {
    "formato": "shorts",
    "titulo": "Como o seu cliente compra e paga no PIX, do celular, sem criar conta.",
-   "legenda": "Como o seu cliente compra e paga no PIX, do celular, sem criar conta. 📱💸\n\nVitrine com a sua marca, escolha de tamanho, frete calculado e QR Code na hora. Depois, ele acompanha o pedido pelo link.\n\n👉 Teste 14 dias grátis: upe-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
+   "legenda": "Como o seu cliente compra e paga no PIX, do celular, sem criar conta. 📱💸\n\nVitrine com a sua marca, escolha de tamanho, frete calculado e QR Code na hora. Depois, ele acompanha o pedido pelo link.\n\n👉 Teste 14 dias grátis: upe-criativo-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
    "midias": [
     "kits/upe-erp/reels/reel-1-compra-com-pix.mp4"
    ],
@@ -1631,79 +2525,143 @@
    "id": "upe-077"
   },
   {
-   "formato": "feed",
-   "titulo": "Cada loja tem a sua regra de entrega.",
-   "legenda": "Cada loja tem a sua regra de entrega. 🚚\n\nNa plataforma Upe você define frete por estado, frete grátis acima de um valor, retirada no local, pedido mínimo e até o horário de funcionamento da loja.\n\n👉 Teste 14 dias grátis: upe-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
+   "id": "app-erp-28",
+   "data": "2026-11-24",
+   "hora": "10:00",
+   "canal": "instagram",
+   "formato": "story",
+   "pilar": "Upe ERP",
+   "titulo": "05-sua-cara",
+   "legenda": "",
+   "roteiro": "",
    "midias": [
-    "kits/upe-erp/feed/08-frete-e-retirada.png"
+    "kits/upe-erp/gerado/erp-28-01.jpg"
    ],
    "capa": "",
+   "status": "planejado",
    "origem": "Kit Upe ERP",
-   "pilar": "Upe ERP",
-   "canal": "instagram",
+   "modelo": [
+    {
+     "frente": "erp",
+     "layout": "capa",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe ERP",
+     "titulo": "05-sua-cara",
+     "texto": "",
+     "cta": "Teste 14 dias grátis",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
+  },
+  {
+   "id": "app-erp-14",
    "data": "2026-11-24",
    "hora": "12:00",
-   "status": "planejado",
-   "id": "upe-078"
-  },
-  {
-   "formato": "carrossel",
-   "titulo": "Seja um estabelecimento parceiro",
-   "legenda": "Tem uma TV no seu estabelecimento? Ela pode trabalhar para o seu negócio. 📺 Arraste.\n\nA Upe instala, atualiza e cuida da tela. Você ganha programação profissional, espaço para as suas promoções e o seu nome no letreiro de parceiros.\n\n👉 Seja um ponto Upe TV: chame no WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#parceria #estabelecimento #midiaindoor #negociolocal #empreendedorismo #upetv #upecriativo",
+   "canal": "instagram",
+   "formato": "feed",
+   "pilar": "Upe ERP",
+   "titulo": "Quantas mensagens de “cadê meu pedido?” você responde por dia?",
+   "legenda": "Quantas mensagens de “cadê meu pedido?” você responde por dia? 📦\n\nCada compra na sua loja gera um link de acompanhamento. Quando você marca como enviado e coloca o rastreio no painel, o cliente vê na hora.\n\n👉 Teste 14 dias grátis: upe-criativo-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
+   "roteiro": "",
    "midias": [
-    "kits/upe-tv/carrossel/4-seja-parceiro/01.jpg",
-    "kits/upe-tv/carrossel/4-seja-parceiro/02.jpg",
-    "kits/upe-tv/carrossel/4-seja-parceiro/03.jpg",
-    "kits/upe-tv/carrossel/4-seja-parceiro/04.jpg",
-    "kits/upe-tv/carrossel/4-seja-parceiro/05.jpg"
+    "kits/upe-erp/gerado/erp-14-01.jpg"
    ],
    "capa": "",
-   "origem": "Kit Upe TV",
-   "pilar": "Upe TV",
+   "status": "planejado",
+   "origem": "Kit Upe ERP",
+   "modelo": [
+    {
+     "frente": "erp",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe ERP",
+     "titulo": "Quantas mensagens de “cadê meu pedido?” você responde por dia?",
+     "texto": "Cada compra na sua loja gera um link de acompanhamento.",
+     "cta": "Teste 14 dias grátis",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
+  },
+  {
+   "id": "app-tv-28",
+   "data": "2026-11-25",
+   "hora": "10:00",
    "canal": "instagram",
+   "formato": "story",
+   "pilar": "Upe TV",
+   "titulo": "05 · Primeiros anunciantes",
+   "legenda": "Como usar: adesivo de link para o WhatsApp: https://wa.me/5511934393249",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-tv/gerado/tv-28-01.jpg"
+   ],
+   "capa": "",
+   "status": "planejado",
+   "origem": "Kit Upe TV",
+   "modelo": [
+    {
+     "frente": "tv",
+     "layout": "capa",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "Primeiros anunciantes",
+     "texto": "Toque no link e veja.",
+     "cta": "Anuncie no Upe TV",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
+  },
+  {
+   "id": "app-tv-14",
    "data": "2026-11-25",
    "hora": "12:00",
-   "status": "planejado",
-   "id": "upe-079"
-  },
-  {
-   "formato": "story",
-   "titulo": "08-whatsapp",
-   "legenda": "Como usar: Adesivo de link: https://wa.me/5511934393249",
-   "midias": [
-    "kits/upe-erp/stories/08-whatsapp.png"
-   ],
-   "capa": "",
-   "origem": "Kit Upe ERP",
-   "pilar": "Upe ERP",
    "canal": "instagram",
-   "data": "2026-11-26",
-   "hora": "10:00",
-   "status": "planejado",
-   "id": "upe-080"
-  },
-  {
    "formato": "feed",
-   "titulo": "Mídia que dá para medir.",
-   "legenda": "Mídia que dá para medir. 📊\n\nNo portal do anunciante você vê em quais telas a sua marca passou, por quanto tempo, quantas pessoas leram o QR e quantos pedidos chegaram.\n\n(Números da imagem são de demonstração.)\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
+   "pilar": "Upe TV",
+   "titulo": "Não tem vídeo pronto?",
+   "legenda": "Não tem vídeo pronto? A Upe cria. 🎬\n\nVocê manda o logo, as cores, a oferta e o WhatsApp. A gente entrega a campanha no formato certo para a TV e publica nas telas.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-criativo-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
+   "roteiro": "",
    "midias": [
-    "kits/upe-tv/feed/09-relatorio.jpg"
+    "kits/upe-tv/gerado/tv-14-01.jpg"
    ],
    "capa": "",
-   "origem": "Kit Upe TV",
-   "pilar": "Upe TV",
-   "canal": "instagram",
-   "data": "2026-11-26",
-   "hora": "12:00",
    "status": "planejado",
-   "id": "upe-081"
+   "origem": "Kit Upe TV",
+   "modelo": [
+    {
+     "frente": "tv",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "Não tem vídeo pronto?",
+     "texto": "Você manda o logo, as cores, a oferta e o WhatsApp.",
+     "cta": "Anuncie no Upe TV",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
   },
   {
    "formato": "youtube",
    "canal": "youtube",
    "titulo": "Upe TV na prática: do QR code ao pedido no WhatsApp",
    "legenda": "Passo a passo de uma campanha no Upe TV: a tela, o QR, o cardápio e o pedido chegando no WhatsApp.\n\nCapítulos:\n0:00 A tela\n1:00 O QR code\n2:00 O cardápio\n3:00 O pedido\n4:00 O relatório",
-   "roteiro": "Versão história: Viu na TV, pediu pelo celular\nA história: Uma hamburgueria (exemplo) apareceu na TV do café ao lado.\nContexto: O cliente esperava o café e viu o cardápio na tela.\nNarrativa: Apontou a câmera para o QR e abriu o cardápio no celular.\nClímax: Em minutos, o pedido chegou pronto no WhatsApp.\nA pergunta: Dá para saber de qual TV veio o pedido?\nA solução: Sim: o pedido mostra em qual tela o cliente viu a marca.\nPor que funciona: Do olhar à conversa, com cada leitura medida no portal.\nPróximo passo: Anuncie no Upe TV: upe-tv.web.app.\n\nGravação:\n• Gravar a tela do Upe TV ao vivo.\n• Mostrar o celular lendo o QR.\n• Fechar no portal do anunciante.",
+   "roteiro": "Versão história: Viu na TV, pediu pelo celular\nA história: Uma hamburgueria (exemplo) apareceu na TV do café ao lado.\nContexto: O cliente esperava o café e viu o cardápio na tela.\nNarrativa: Apontou a câmera para o QR e abriu o cardápio no celular.\nClímax: Em minutos, o pedido chegou pronto no WhatsApp.\nA pergunta: Dá para saber de qual TV veio o pedido?\nA solução: Sim: o pedido mostra em qual tela o cliente viu a marca.\nPor que funciona: Do olhar à conversa, com cada leitura medida no portal.\nPróximo passo: Anuncie no Upe TV: upe-criativo-tv.web.app.\n\nGravação:\n• Gravar a tela do Upe TV ao vivo.\n• Mostrar o celular lendo o QR.\n• Fechar no portal do anunciante.",
    "historia": {
     "titulo": "Viu na TV, pediu pelo celular",
     "video": "kits/upe-branding/youtube/historia-yt-08-upe-tv-na-pratica.mp4",
@@ -1738,7 +2696,7 @@
      },
      {
       "rotulo": "Próximo passo",
-      "texto": "Anuncie no Upe TV: upe-tv.web.app."
+      "texto": "Anuncie no Upe TV: upe-criativo-tv.web.app."
      }
     ]
    },
@@ -1755,41 +2713,75 @@
    "id": "upe-082"
   },
   {
-   "formato": "reels",
-   "titulo": "Edição em lote, PDV no balcão, gestão de pedidos, temas da loja, frete por…",
-   "legenda": "Edição em lote, PDV no balcão, gestão de pedidos, temas da loja, frete por estado, relatórios e suporte. Tudo num só painel. ⚡\n\n👉 Teste 14 dias grátis: upe-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
-   "midias": [
-    "kits/upe-erp/reels/reel-3-produtos-pdv-e-mais.mp4"
-   ],
-   "capa": "kits/upe-erp/stories/reel-capa-3-produtos-e-pdv.png",
-   "origem": "Kit Upe ERP",
-   "pilar": "Upe ERP",
-   "canal": "instagram",
-   "data": "2026-11-27",
+   "id": "app-erp-15",
+   "data": "2026-11-26",
    "hora": "19:00",
+   "canal": "instagram",
+   "formato": "reels",
+   "pilar": "Upe ERP",
+   "titulo": "Edição em lote, PDV no balcão, gestão de pedidos, temas da loja, frete por estado, relatórios e suporte.",
+   "legenda": "Edição em lote, PDV no balcão, gestão de pedidos, temas da loja, frete por estado, relatórios e suporte. Tudo num só painel. ⚡\n\n👉 Teste 14 dias grátis: upe-criativo-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-erp/gerado/erp-15.mp4"
+   ],
+   "capa": "kits/upe-erp/gerado/erp-15-01.jpg",
    "status": "planejado",
-   "id": "upe-083"
+   "origem": "Kit Upe ERP",
+   "modelo": [
+    {
+     "frente": "erp",
+     "layout": "tela",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe ERP",
+     "titulo": "Edição em lote, PDV no balcão, gestão de pedidos, temas da loja, frete por estado, relatórios e suporte.",
+     "texto": "",
+     "cta": "Teste 14 dias grátis",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-pedidos.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
   },
   {
-   "formato": "feed",
-   "titulo": "Salve este post para lembrar tudo o que vem na plataforma de vendas da Upe Criativo.",
-   "legenda": "Salve este post para lembrar tudo o que vem na plataforma de vendas da Upe Criativo. ✅\n\nE o melhor: você testa 14 dias grátis, sem fidelidade e sem instalar nada.\n\n👉 Teste 14 dias grátis: upe-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
-   "midias": [
-    "kits/upe-erp/feed/13-o-que-voce-ganha.png"
-   ],
-   "capa": "",
-   "origem": "Kit Upe ERP",
-   "pilar": "Upe ERP",
+   "id": "app-tv-15",
+   "data": "2026-11-27",
+   "hora": "19:00",
    "canal": "instagram",
-   "data": "2026-11-28",
-   "hora": "12:00",
+   "formato": "reels",
+   "pilar": "Upe TV",
+   "titulo": "Tudo sobre o Upe TV em 85 segundos.",
+   "legenda": "Tudo sobre o Upe TV em 85 segundos. ⏱️\n\nComo as campanhas giram na tela, como a lateral e o rodapé se abrem, o QR, o bloqueio por PIN, o tempo de tela e o portal do anunciante. Salve e mande para quem tem um negócio no bairro.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-criativo-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-tv/gerado/tv-15.mp4"
+   ],
+   "capa": "kits/upe-tv/gerado/tv-15-01.jpg",
    "status": "planejado",
-   "id": "upe-084"
+   "origem": "Kit Upe TV",
+   "modelo": [
+    {
+     "frente": "tv",
+     "layout": "tela",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "Tudo sobre o Upe TV em 85 segundos.",
+     "texto": "Como as campanhas giram na tela, como a lateral e o rodapé se abrem, o QR, o…",
+     "cta": "Anuncie no Upe TV",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
   },
   {
    "formato": "shorts",
    "titulo": "O pedido chegou. E agora?",
-   "legenda": "O pedido chegou. E agora? 📦\n\nNo painel ele já entra aprovado. Você marca como enviado, coloca o rastreio, imprime o cupom e o cliente vê tudo pelo link. Ainda dá para cadastrar produtos por planilha.\n\n👉 Teste 14 dias grátis: upe-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
+   "legenda": "O pedido chegou. E agora? 📦\n\nNo painel ele já entra aprovado. Você marca como enviado, coloca o rastreio, imprime o cupom e o cliente vê tudo pelo link. Ainda dá para cadastrar produtos por planilha.\n\n👉 Teste 14 dias grátis: upe-criativo-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
    "midias": [
     "kits/upe-erp/reels/reel-2-do-pedido-ao-envio.mp4"
    ],
@@ -1803,52 +2795,241 @@
    "id": "upe-085"
   },
   {
-   "formato": "feed",
-   "titulo": "Sua loja não precisa parecer com todas as outras.",
-   "legenda": "Sua loja não precisa parecer com todas as outras. 🎨\n\nEscolha um tema, coloque o seu logotipo e as suas cores, monte até 3 banners de campanha. Tudo com prévia antes de publicar.\n\n👉 Teste 14 dias grátis: upe-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
+   "id": "app-erp-29",
+   "data": "2026-12-01",
+   "hora": "10:00",
+   "canal": "instagram",
+   "formato": "story",
+   "pilar": "Upe ERP",
+   "titulo": "06-acompanhar",
+   "legenda": "",
+   "roteiro": "",
    "midias": [
-    "kits/upe-erp/feed/09-sua-cara.png"
+    "kits/upe-erp/gerado/erp-29-01.jpg"
    ],
    "capa": "",
+   "status": "planejado",
    "origem": "Kit Upe ERP",
-   "pilar": "Upe ERP",
-   "canal": "instagram",
+   "modelo": [
+    {
+     "frente": "erp",
+     "layout": "capa",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe ERP",
+     "titulo": "06-acompanhar",
+     "texto": "",
+     "cta": "Teste 14 dias grátis",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
+  },
+  {
+   "id": "app-erp-16",
    "data": "2026-12-01",
    "hora": "12:00",
-   "status": "planejado",
-   "id": "upe-086"
-  },
-  {
+   "canal": "instagram",
    "formato": "feed",
-   "titulo": "Seu anúncio onde o seu cliente já está.",
-   "legenda": "Seu anúncio onde o seu cliente já está. 📍\n\nQuem passa no café, na academia ou na clínica do bairro mora, trabalha e compra perto de você. O Upe TV leva a sua marca até essas pessoas.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
+   "pilar": "Upe ERP",
+   "titulo": "Vendeu no balcão, sumiu da loja online.",
+   "legenda": "Vendeu no balcão, sumiu da loja online. Simples assim. 🧾\n\nO PDV da plataforma usa o mesmo cadastro de produtos da loja: busca por código, leitor de código de barras, cliente, cupom e PIX com QR Code para mostrar na hora.\n\n👉 Teste 14 dias grátis: upe-criativo-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
+   "roteiro": "",
    "midias": [
-    "kits/upe-tv/feed/10-bairro.jpg"
+    "kits/upe-erp/gerado/erp-16-01.jpg"
    ],
    "capa": "",
-   "origem": "Kit Upe TV",
-   "pilar": "Upe TV",
-   "canal": "instagram",
+   "status": "planejado",
+   "origem": "Kit Upe ERP",
+   "modelo": [
+    {
+     "frente": "erp",
+     "layout": "foto",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe ERP",
+     "titulo": "Vendeu no balcão, sumiu da loja online.",
+     "texto": "O PDV da plataforma usa o mesmo cadastro de produtos da loja: busca por código, leitor de código de barras, cliente, cupom e PIX com QR Code para…",
+     "cta": "Teste 14 dias grátis",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-pdv.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
+  },
+  {
+   "id": "app-tv-16",
    "data": "2026-12-02",
    "hora": "12:00",
-   "status": "planejado",
-   "id": "upe-087"
-  },
-  {
+   "canal": "instagram",
    "formato": "feed",
-   "titulo": "Tem 50, 200, 500 produtos? Não precisa cadastrar um por um.",
-   "legenda": "Tem 50, 200, 500 produtos? Não precisa cadastrar um por um. 📊\n\nBaixe a planilha modelo, preencha (ou use a que você já tem) e importe. A plataforma confere tudo antes de salvar. Para promoções, edite preço e estoque de vários produtos de uma vez.\n\n👉 Teste 14 dias grátis: upe-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
+   "pilar": "Upe TV",
+   "titulo": "A sua TV passa o dia ligada.",
+   "legenda": "A sua TV passa o dia ligada. E se ela gerasse resultado para você? 💡\n\nCom o Upe TV, a tela do seu estabelecimento ganha programação profissional, espaço para as suas promoções e o seu nome no letreiro de parceiros.\n\n👉 Seja um ponto Upe TV: chame no WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#parceria #estabelecimento #midiaindoor #negociolocal #empreendedorismo #upetv #upecriativo",
+   "roteiro": "",
    "midias": [
-    "kits/upe-erp/feed/10-planilha.png"
+    "kits/upe-tv/gerado/tv-16-01.jpg"
    ],
    "capa": "",
-   "origem": "Kit Upe ERP",
-   "pilar": "Upe ERP",
-   "canal": "instagram",
+   "status": "planejado",
+   "origem": "Kit Upe TV",
+   "modelo": [
+    {
+     "frente": "tv",
+     "layout": "foto",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "A sua TV passa o dia ligada.",
+     "texto": "Com o Upe TV, a tela do seu estabelecimento ganha programação profissional, espaço para as suas promoções e o seu nome no letreiro de parceiros.",
+     "cta": "Anuncie no Upe TV",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-portal.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
+  },
+  {
+   "id": "app-erp-17",
    "data": "2026-12-03",
    "hora": "12:00",
+   "canal": "instagram",
+   "formato": "carrossel",
+   "pilar": "Upe ERP",
+   "titulo": "Checklist da Black Friday",
+   "legenda": "Black Friday é dia 27 de novembro. Dá tempo, mas é bom começar agora. 🖤\n\nArraste e salve o checklist: estoque, ofertas, cupom, frete, base de clientes e envio.\n\nMarque aqui alguém que vende e precisa ver isso!\n\n👉 Teste 14 dias grátis: upe-criativo-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-erp/gerado/erp-17-01.jpg",
+    "kits/upe-erp/gerado/erp-17-02.jpg",
+    "kits/upe-erp/gerado/erp-17-03.jpg",
+    "kits/upe-erp/gerado/erp-17-04.jpg",
+    "kits/upe-erp/gerado/erp-17-05.jpg",
+    "kits/upe-erp/gerado/erp-17-06.jpg",
+    "kits/upe-erp/gerado/erp-17-07.jpg",
+    "kits/upe-erp/gerado/erp-17-08.jpg"
+   ],
+   "capa": "",
    "status": "planejado",
-   "id": "upe-088"
+   "origem": "Kit Upe ERP",
+   "modelo": [
+    {
+     "frente": "erp",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe ERP",
+     "titulo": "Checklist da Black Friday",
+     "texto": "Black Friday é dia 27 de novembro.",
+     "cta": "Arraste para o lado",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": "1/8"
+    },
+    {
+     "frente": "erp",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe ERP",
+     "titulo": "Arraste e salve o checklist: estoque, ofertas, cupom, frete, base de clientes e envio.",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": "2/8"
+    },
+    {
+     "frente": "erp",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "Upe ERP",
+     "titulo": "Marque aqui alguém que vende e precisa ver isso!",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-pdv.jpg",
+     "handle": "@upecriativo",
+     "slide": "3/8"
+    },
+    {
+     "frente": "erp",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe ERP",
+     "titulo": "PDV no balcão com o mesmo estoque",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-pedidos.jpg",
+     "handle": "@upecriativo",
+     "slide": "4/8"
+    },
+    {
+     "frente": "erp",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "Upe ERP",
+     "titulo": "Pedidos com status e rastreio",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": "5/8"
+    },
+    {
+     "frente": "erp",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe ERP",
+     "titulo": "Cupons, frete e retirada",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-pdv.jpg",
+     "handle": "@upecriativo",
+     "slide": "6/8"
+    },
+    {
+     "frente": "erp",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "Upe ERP",
+     "titulo": "Relatórios de vendas",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-pedidos.jpg",
+     "handle": "@upecriativo",
+     "slide": "7/8"
+    },
+    {
+     "frente": "erp",
+     "layout": "cta",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe ERP",
+     "titulo": "Sua loja no ar em poucos dias.",
+     "texto": "Teste 14 dias grátis, sem fidelidade. Chame no WhatsApp (11) 93439-3249.",
+     "cta": "Teste 14 dias grátis",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": "8/8"
+    }
+   ]
   },
   {
    "formato": "youtube",
@@ -1907,6 +3088,99 @@
    "id": "upe-089"
   },
   {
+   "id": "app-tv-17",
+   "data": "2026-12-04",
+   "hora": "12:00",
+   "canal": "instagram",
+   "formato": "carrossel",
+   "pilar": "Upe TV",
+   "titulo": "Seja um estabelecimento parceiro",
+   "legenda": "Tem uma TV no seu estabelecimento? Ela pode trabalhar para o seu negócio. 📺 Arraste.\n\nA Upe instala, atualiza e cuida da tela. Você ganha programação profissional, espaço para as suas promoções e o seu nome no letreiro de parceiros.\n\n👉 Seja um ponto Upe TV: chame no WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#parceria #estabelecimento #midiaindoor #negociolocal #empreendedorismo #upetv #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-tv/gerado/tv-17-01.jpg",
+    "kits/upe-tv/gerado/tv-17-02.jpg",
+    "kits/upe-tv/gerado/tv-17-03.jpg",
+    "kits/upe-tv/gerado/tv-17-04.jpg",
+    "kits/upe-tv/gerado/tv-17-05.jpg"
+   ],
+   "capa": "",
+   "status": "planejado",
+   "origem": "Kit Upe TV",
+   "modelo": [
+    {
+     "frente": "tv",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "Seja um estabelecimento parceiro",
+     "texto": "Tem uma TV no seu estabelecimento?",
+     "cta": "Arraste para o lado",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": "1/5"
+    },
+    {
+     "frente": "tv",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "A Upe instala, atualiza e cuida da tela.",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": "2/5"
+    },
+    {
+     "frente": "tv",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "Upe TV",
+     "titulo": "Lateral que se abre com a sua chamada",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-portal.jpg",
+     "handle": "@upecriativo",
+     "slide": "3/5"
+    },
+    {
+     "frente": "tv",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "Letreiro com o nome da sua marca",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": "4/5"
+    },
+    {
+     "frente": "tv",
+     "layout": "cta",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "Sua marca na tela certa.",
+     "texto": "Fale com a Upe: WhatsApp (11) 93439-3249. Planos para anunciantes e parceiros.",
+     "cta": "Anuncie no Upe TV",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": "5/5"
+    }
+   ]
+  },
+  {
    "formato": "reels",
    "titulo": "reel-3-tres-frentes",
    "legenda": "Da identidade à venda. 🚀\n\nBranding e Redesign, Upe ERP e Upe TV: tudo o que a sua marca precisa para aparecer e vender.\n\n💬 Fale com a Upe: WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#branding #identidadevisual #rebranding #designdemarca #marketingdigital #publicidade #empreendedorismo #pequenosnegocios #upecriativo",
@@ -1923,25 +3197,9 @@
    "id": "upe-090"
   },
   {
-   "formato": "feed",
-   "titulo": "Bora tirar a sua loja do papel?",
-   "legenda": "Bora tirar a sua loja do papel? 🚀\n\nA Upe Criativo libera o seu acesso, você cadastra os produtos, ativa o PIX e compartilha o link. Em poucos dias a loja está vendendo.\n\n14 dias grátis, sem fidelidade. Chame no WhatsApp (11) 93439-3249 ou acesse o link da bio.\n\n👉 Teste 14 dias grátis: upe-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
-   "midias": [
-    "kits/upe-erp/feed/14-teste-gratis.png"
-   ],
-   "capa": "",
-   "origem": "Kit Upe ERP",
-   "pilar": "Upe ERP",
-   "canal": "instagram",
-   "data": "2026-12-05",
-   "hora": "12:00",
-   "status": "planejado",
-   "id": "upe-091"
-  },
-  {
    "formato": "shorts",
    "titulo": "Edição em lote, PDV no balcão, gestão de pedidos, temas da loja, frete por…",
-   "legenda": "Edição em lote, PDV no balcão, gestão de pedidos, temas da loja, frete por estado, relatórios e suporte. Tudo num só painel. ⚡\n\n👉 Teste 14 dias grátis: upe-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
+   "legenda": "Edição em lote, PDV no balcão, gestão de pedidos, temas da loja, frete por estado, relatórios e suporte. Tudo num só painel. ⚡\n\n👉 Teste 14 dias grátis: upe-criativo-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
    "midias": [
     "kits/upe-erp/reels/reel-3-produtos-pdv-e-mais.mp4"
    ],
@@ -1955,60 +3213,136 @@
    "id": "upe-092"
   },
   {
-   "formato": "carrossel",
-   "titulo": "7 ferramentas que toda loja precisa",
-   "legenda": "Quantas dessas a sua loja já tem? 🤔 Salve o post e confira.\n\n1. Loja online própria\n2. PIX com QR Code\n3. PDV no balcão\n4. Variações de produto\n5. Cupons de desconto\n6. Frete e retirada\n7. Relatórios\n\nNa plataforma da Upe Criativo, as 7 vêm juntas.\n\n👉 Teste 14 dias grátis: upe-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
+   "id": "app-erp-30",
+   "data": "2026-12-08",
+   "hora": "10:00",
+   "canal": "instagram",
+   "formato": "story",
+   "pilar": "Upe ERP",
+   "titulo": "08-whatsapp",
+   "legenda": "Como usar: Adesivo de link: https://wa.me/5511934393249",
+   "roteiro": "",
    "midias": [
-    "kits/upe-erp/carrossel/3-sete-ferramentas/01.png",
-    "kits/upe-erp/carrossel/3-sete-ferramentas/02.png",
-    "kits/upe-erp/carrossel/3-sete-ferramentas/03.png",
-    "kits/upe-erp/carrossel/3-sete-ferramentas/04.png",
-    "kits/upe-erp/carrossel/3-sete-ferramentas/05.png",
-    "kits/upe-erp/carrossel/3-sete-ferramentas/06.png",
-    "kits/upe-erp/carrossel/3-sete-ferramentas/07.png",
-    "kits/upe-erp/carrossel/3-sete-ferramentas/08.png",
-    "kits/upe-erp/carrossel/3-sete-ferramentas/09.png"
+    "kits/upe-erp/gerado/erp-30-01.jpg"
    ],
    "capa": "",
+   "status": "planejado",
    "origem": "Kit Upe ERP",
-   "pilar": "Upe ERP",
-   "canal": "instagram",
+   "modelo": [
+    {
+     "frente": "erp",
+     "layout": "capa",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe ERP",
+     "titulo": "08-whatsapp",
+     "texto": "Toque no link e veja.",
+     "cta": "Teste 14 dias grátis",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
+  },
+  {
+   "id": "app-erp-19",
    "data": "2026-12-08",
    "hora": "12:00",
-   "status": "planejado",
-   "id": "upe-093"
-  },
-  {
+   "canal": "instagram",
    "formato": "feed",
-   "titulo": "Cada anunciante tem a sua vez na tela cheia.",
-   "legenda": "Cada anunciante tem a sua vez na tela cheia. 🔁\n\nAs campanhas giram em sequência o dia todo, e a lateral e o rodapé se abrem com outros parceiros sem tirar ninguém do ar.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
+   "pilar": "Upe ERP",
+   "titulo": "Cada loja tem a sua regra de entrega.",
+   "legenda": "Cada loja tem a sua regra de entrega. 🚚\n\nNa plataforma Upe você define frete por estado, frete grátis acima de um valor, retirada no local, pedido mínimo e até o horário de funcionamento da loja.\n\n👉 Teste 14 dias grátis: upe-criativo-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
+   "roteiro": "",
    "midias": [
-    "kits/upe-tv/feed/05-sua-vez.jpg"
+    "kits/upe-erp/gerado/erp-19-01.jpg"
    ],
    "capa": "",
-   "origem": "Kit Upe TV",
-   "pilar": "Upe TV",
-   "canal": "instagram",
+   "status": "planejado",
+   "origem": "Kit Upe ERP",
+   "modelo": [
+    {
+     "frente": "erp",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "Upe ERP",
+     "titulo": "Cada loja tem a sua regra de entrega.",
+     "texto": "Na plataforma Upe você define frete por estado, frete grátis acima de um valor, retirada no local, pedido mínimo e até o horário de funcionamento da…",
+     "cta": "Teste 14 dias grátis",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-pedidos.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
+  },
+  {
+   "id": "app-tv-19",
    "data": "2026-12-09",
    "hora": "12:00",
-   "status": "planejado",
-   "id": "upe-094"
-  },
-  {
+   "canal": "instagram",
    "formato": "feed",
-   "titulo": "TV, totem ou tela vertical.",
-   "legenda": "TV, totem ou tela vertical. 📐\n\nA Upe adapta a sua campanha para cada formato de tela, na horizontal ou em pé, sem você precisar refazer nada.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
+   "pilar": "Upe TV",
+   "titulo": "Mídia que dá para medir.",
+   "legenda": "Mídia que dá para medir. 📊\n\nNo portal do anunciante você vê em quais telas a sua marca passou, por quanto tempo, quantas pessoas leram o QR e quantos pedidos chegaram.\n\n(Números da imagem são de demonstração.)\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-criativo-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
+   "roteiro": "",
    "midias": [
-    "kits/upe-tv/feed/08-totem.jpg"
+    "kits/upe-tv/gerado/tv-19-01.jpg"
    ],
    "capa": "",
+   "status": "planejado",
    "origem": "Kit Upe TV",
-   "pilar": "Upe TV",
-   "canal": "instagram",
+   "modelo": [
+    {
+     "frente": "tv",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "Upe TV",
+     "titulo": "Mídia que dá para medir.",
+     "texto": "No portal do anunciante você vê em quais telas a sua marca passou, por quanto tempo, quantas pessoas leram o QR e quantos pedidos chegaram.",
+     "cta": "Anuncie no Upe TV",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
+  },
+  {
+   "id": "app-erp-20",
    "data": "2026-12-10",
    "hora": "12:00",
+   "canal": "instagram",
+   "formato": "feed",
+   "pilar": "Upe ERP",
+   "titulo": "Sua loja não precisa parecer com todas as outras.",
+   "legenda": "Sua loja não precisa parecer com todas as outras. 🎨\n\nEscolha um tema, coloque o seu logotipo e as suas cores, monte até 3 banners de campanha. Tudo com prévia antes de publicar.\n\n👉 Teste 14 dias grátis: upe-criativo-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-erp/gerado/erp-20-01.jpg"
+   ],
+   "capa": "",
    "status": "planejado",
-   "id": "upe-095"
+   "origem": "Kit Upe ERP",
+   "modelo": [
+    {
+     "frente": "erp",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe ERP",
+     "titulo": "Sua loja não precisa parecer com todas as outras.",
+     "texto": "Escolha um tema, coloque o seu logotipo e as suas cores, monte até 3 banners de campanha.",
+     "cta": "Teste 14 dias grátis",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
   },
   {
    "formato": "youtube",
@@ -2067,36 +3401,37 @@
    "id": "upe-096"
   },
   {
-   "formato": "reels",
-   "titulo": "Viu na TV. Apontou a câmera. Pediu pelo WhatsApp.",
-   "legenda": "Viu na TV. Apontou a câmera. Pediu pelo WhatsApp. 📲\n\nE cada leitura do QR vira número no seu relatório.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
-   "midias": [
-    "kits/upe-tv/reels/reel-4-qr-que-vende.mp4"
-   ],
-   "capa": "kits/upe-tv/stories/reel-capa-qr-que-vende.jpg",
-   "origem": "Kit Upe TV",
-   "pilar": "Upe TV",
-   "canal": "instagram",
+   "id": "app-tv-20",
    "data": "2026-12-11",
    "hora": "19:00",
-   "status": "planejado",
-   "id": "upe-097"
-  },
-  {
-   "formato": "feed",
-   "titulo": "Essa tela pode ser sua.",
-   "legenda": "Essa tela pode ser sua. 📺\n\nEstamos fechando as primeiras campanhas do Upe TV. Vídeo, motion ou imagem da sua marca, com QR code e relatório.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
-   "midias": [
-    "kits/upe-tv/feed/12-essa-tela-pode-ser-sua.jpg"
-   ],
-   "capa": "",
-   "origem": "Kit Upe TV",
-   "pilar": "Upe TV",
    "canal": "instagram",
-   "data": "2026-12-12",
-   "hora": "12:00",
+   "formato": "reels",
+   "pilar": "Upe TV",
+   "titulo": "Viu na TV. Apontou a câmera.",
+   "legenda": "Viu na TV. Apontou a câmera. Pediu pelo WhatsApp. 📲\n\nE cada leitura do QR vira número no seu relatório.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-criativo-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-tv/gerado/tv-20.mp4"
+   ],
+   "capa": "kits/upe-tv/gerado/tv-20-01.jpg",
    "status": "planejado",
-   "id": "upe-098"
+   "origem": "Kit Upe TV",
+   "modelo": [
+    {
+     "frente": "tv",
+     "layout": "tela",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "Viu na TV. Apontou a câmera.",
+     "texto": "E cada leitura do QR vira número no seu relatório.",
+     "cta": "Anuncie no Upe TV",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-portal.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
   },
   {
    "formato": "shorts",
@@ -2115,52 +3450,223 @@
    "id": "upe-099"
   },
   {
-   "formato": "feed",
-   "titulo": "Personalizados, encomendas, produção sob pedido?",
-   "legenda": "Personalizados, encomendas, produção sob pedido? 🗂️\n\nO quadro de gestão mostra cada pedido numa coluna (criação, aguardando cliente, produção, enviados). Arraste, anote, guarde a pasta dos arquivos e veja quem fez o quê.\n\n👉 Teste 14 dias grátis: upe-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
-   "midias": [
-    "kits/upe-erp/feed/11-tudo-a-vista.png"
-   ],
-   "capa": "",
-   "origem": "Kit Upe ERP",
-   "pilar": "Upe ERP",
-   "canal": "instagram",
+   "id": "app-erp-21",
    "data": "2026-12-15",
    "hora": "12:00",
-   "status": "planejado",
-   "id": "upe-100"
-  },
-  {
+   "canal": "instagram",
    "formato": "feed",
-   "titulo": "Salve este post para lembrar tudo o que vem no Upe TV.",
-   "legenda": "Salve este post para lembrar tudo o que vem no Upe TV. ✅\n\nTelas parceiras, formatos, QR code, página da marca, cardápio com pedido, relatório e portal com o seu código.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
+   "pilar": "Upe ERP",
+   "titulo": "Tem 50, 200, 500 produtos?",
+   "legenda": "Tem 50, 200, 500 produtos? Não precisa cadastrar um por um. 📊\n\nBaixe a planilha modelo, preencha (ou use a que você já tem) e importe. A plataforma confere tudo antes de salvar. Para promoções, edite preço e estoque de vários produtos de uma vez.\n\n👉 Teste 14 dias grátis: upe-criativo-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
+   "roteiro": "",
    "midias": [
-    "kits/upe-tv/feed/11-salve.jpg"
+    "kits/upe-erp/gerado/erp-21-01.jpg"
    ],
    "capa": "",
-   "origem": "Kit Upe TV",
-   "pilar": "Upe TV",
-   "canal": "instagram",
+   "status": "planejado",
+   "origem": "Kit Upe ERP",
+   "modelo": [
+    {
+     "frente": "erp",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe ERP",
+     "titulo": "Tem 50, 200, 500 produtos?",
+     "texto": "Baixe a planilha modelo, preencha (ou use a que você já tem) e importe.",
+     "cta": "Teste 14 dias grátis",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-pdv.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
+  },
+  {
+   "id": "app-tv-21",
    "data": "2026-12-16",
    "hora": "12:00",
-   "status": "planejado",
-   "id": "upe-101"
-  },
-  {
+   "canal": "instagram",
    "formato": "feed",
-   "titulo": "Plataforma boa é a que tem gente do outro lado.",
-   "legenda": "Plataforma boa é a que tem gente do outro lado. 🤝\n\nDentro do painel você abre um chamado, conta o que aconteceu e acompanha a resposta da equipe da Upe Criativo. Para urgências, o WhatsApp fica a um clique.\n\n👉 Teste 14 dias grátis: upe-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
+   "pilar": "Upe TV",
+   "titulo": "Seu anúncio onde o seu cliente já está.",
+   "legenda": "Seu anúncio onde o seu cliente já está. 📍\n\nQuem passa no café, na academia ou na clínica do bairro mora, trabalha e compra perto de você. O Upe TV leva a sua marca até essas pessoas.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-criativo-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
+   "roteiro": "",
    "midias": [
-    "kits/upe-erp/feed/12-suporte.png"
+    "kits/upe-tv/gerado/tv-21-01.jpg"
    ],
    "capa": "",
-   "origem": "Kit Upe ERP",
-   "pilar": "Upe ERP",
-   "canal": "instagram",
+   "status": "planejado",
+   "origem": "Kit Upe TV",
+   "modelo": [
+    {
+     "frente": "tv",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "Seu anúncio onde o seu cliente já está.",
+     "texto": "Quem passa no café, na academia ou na clínica do bairro mora, trabalha e compra perto de você.",
+     "cta": "Anuncie no Upe TV",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
+  },
+  {
+   "id": "app-erp-22",
    "data": "2026-12-17",
    "hora": "12:00",
+   "canal": "instagram",
+   "formato": "carrossel",
+   "pilar": "Upe ERP",
+   "titulo": "7 ferramentas que toda loja precisa",
+   "legenda": "Quantas dessas a sua loja já tem? 🤔 Salve o post e confira.\n\n1. Loja online própria\n2. PIX com QR Code\n3. PDV no balcão\n4. Variações de produto\n5. Cupons de desconto\n6. Frete e retirada\n7. Relatórios\n\nNa plataforma da Upe Criativo, as 7 vêm juntas.\n\n👉 Teste 14 dias grátis: upe-criativo-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-erp/gerado/erp-22-01.jpg",
+    "kits/upe-erp/gerado/erp-22-02.jpg",
+    "kits/upe-erp/gerado/erp-22-03.jpg",
+    "kits/upe-erp/gerado/erp-22-04.jpg",
+    "kits/upe-erp/gerado/erp-22-05.jpg",
+    "kits/upe-erp/gerado/erp-22-06.jpg",
+    "kits/upe-erp/gerado/erp-22-07.jpg",
+    "kits/upe-erp/gerado/erp-22-08.jpg",
+    "kits/upe-erp/gerado/erp-22-09.jpg"
+   ],
+   "capa": "",
    "status": "planejado",
-   "id": "upe-102"
+   "origem": "Kit Upe ERP",
+   "modelo": [
+    {
+     "frente": "erp",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe ERP",
+     "titulo": "7 ferramentas que toda loja precisa",
+     "texto": "Quantas dessas a sua loja já tem?",
+     "cta": "Arraste para o lado",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": "1/9"
+    },
+    {
+     "frente": "erp",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "01",
+     "titulo": "Loja online própria",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": "2/9"
+    },
+    {
+     "frente": "erp",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "02",
+     "titulo": "PIX com QR Code",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": "3/9"
+    },
+    {
+     "frente": "erp",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "03",
+     "titulo": "PDV no balcão",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": "4/9"
+    },
+    {
+     "frente": "erp",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "04",
+     "titulo": "Variações de produto",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": "5/9"
+    },
+    {
+     "frente": "erp",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "05",
+     "titulo": "Cupons de desconto",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": "6/9"
+    },
+    {
+     "frente": "erp",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "06",
+     "titulo": "Frete e retirada",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": "7/9"
+    },
+    {
+     "frente": "erp",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "07",
+     "titulo": "Relatórios",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": "8/9"
+    },
+    {
+     "frente": "erp",
+     "layout": "cta",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe ERP",
+     "titulo": "Sua loja no ar em poucos dias.",
+     "texto": "Teste 14 dias grátis, sem fidelidade. Chame no WhatsApp (11) 93439-3249.",
+     "cta": "Teste 14 dias grátis",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": "9/9"
+    }
+   ]
   },
   {
    "formato": "youtube",
@@ -2219,6 +3725,39 @@
    "id": "upe-103"
   },
   {
+   "id": "app-tv-22",
+   "data": "2026-12-18",
+   "hora": "12:00",
+   "canal": "instagram",
+   "formato": "feed",
+   "pilar": "Upe TV",
+   "titulo": "Cada anunciante tem a sua vez na tela cheia.",
+   "legenda": "Cada anunciante tem a sua vez na tela cheia. 🔁\n\nAs campanhas giram em sequência o dia todo, e a lateral e o rodapé se abrem com outros parceiros sem tirar ninguém do ar.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-criativo-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-tv/gerado/tv-22-01.jpg"
+   ],
+   "capa": "",
+   "status": "planejado",
+   "origem": "Kit Upe TV",
+   "modelo": [
+    {
+     "frente": "tv",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "Cada anunciante tem a sua vez na tela cheia.",
+     "texto": "As campanhas giram em sequência o dia todo, e a lateral e o rodapé se abrem com outros parceiros sem tirar ninguém do ar.",
+     "cta": "Anuncie no Upe TV",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-portal.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
+  },
+  {
    "formato": "reels",
    "titulo": "reel-4-logo-upe",
    "legenda": "O foguete que virou marca. 🚀\n\nO logo reveal da Upe Criativo, com o padrão de foguetes e a paleta azul e creme.\n\n💬 Fale com a Upe: WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#branding #identidadevisual #rebranding #designdemarca #marketingdigital #publicidade #empreendedorismo #pequenosnegocios #upecriativo",
@@ -2251,36 +3790,301 @@
    "id": "upe-105"
   },
   {
-   "formato": "reels",
-   "titulo": "Cardápio na TV, pedido no celular.",
-   "legenda": "Cardápio na TV, pedido no celular. 🍔\n\nO cliente escolhe, adiciona complementos e o pedido chega no seu WhatsApp, pronto para imprimir.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
-   "midias": [
-    "kits/upe-tv/reels/reel-5-cardapio.mp4"
-   ],
-   "capa": "kits/upe-tv/stories/reel-capa-cardapio.jpg",
-   "origem": "Kit Upe TV",
-   "pilar": "Upe TV",
+   "id": "app-erp-23",
+   "data": "2026-12-22",
+   "hora": "12:00",
    "canal": "instagram",
-   "data": "2026-12-19",
-   "hora": "19:00",
+   "formato": "feed",
+   "pilar": "Upe ERP",
+   "titulo": "Personalizados, encomendas, produção sob pedido?",
+   "legenda": "Personalizados, encomendas, produção sob pedido? 🗂️\n\nO quadro de gestão mostra cada pedido numa coluna (criação, aguardando cliente, produção, enviados). Arraste, anote, guarde a pasta dos arquivos e veja quem fez o quê.\n\n👉 Teste 14 dias grátis: upe-criativo-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-erp/gerado/erp-23-01.jpg"
+   ],
+   "capa": "",
    "status": "planejado",
-   "id": "upe-106"
+   "origem": "Kit Upe ERP",
+   "modelo": [
+    {
+     "frente": "erp",
+     "layout": "foto",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe ERP",
+     "titulo": "Personalizados, encomendas, produção sob pedido?",
+     "texto": "O quadro de gestão mostra cada pedido numa coluna (criação, aguardando cliente, produção, enviados).",
+     "cta": "Teste 14 dias grátis",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-pedidos.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
   },
   {
-   "formato": "reels",
-   "titulo": "Sua marca na tela certa.",
-   "legenda": "Sua marca na tela certa. 🎯\n\nVídeo, motion ou imagem nas TVs de estabelecimentos parceiros, com relatório do tempo de tela.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
-   "midias": [
-    "kits/upe-tv/reels/reel-3-anuncie-na-tv.mp4"
-   ],
-   "capa": "kits/upe-tv/stories/reel-capa-anuncie-na-tv.jpg",
-   "origem": "Kit Upe TV",
-   "pilar": "Upe TV",
+   "id": "app-tv-24",
+   "data": "2026-12-23",
+   "hora": "12:00",
    "canal": "instagram",
-   "id": "upe-sd-01",
-   "data": "",
+   "formato": "feed",
+   "pilar": "Upe TV",
+   "titulo": "TV, totem ou tela vertical.",
+   "legenda": "TV, totem ou tela vertical. 📐\n\nA Upe adapta a sua campanha para cada formato de tela, na horizontal ou em pé, sem você precisar refazer nada.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-criativo-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-tv/gerado/tv-24-01.jpg"
+   ],
+   "capa": "",
+   "status": "planejado",
+   "origem": "Kit Upe TV",
+   "modelo": [
+    {
+     "frente": "tv",
+     "layout": "foto",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "TV, totem ou tela vertical.",
+     "texto": "A Upe adapta a sua campanha para cada formato de tela, na horizontal ou em pé, sem você precisar refazer nada.",
+     "cta": "Anuncie no Upe TV",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
+  },
+  {
+   "id": "app-erp-24",
+   "data": "2026-12-24",
+   "hora": "12:00",
+   "canal": "instagram",
+   "formato": "feed",
+   "pilar": "Upe ERP",
+   "titulo": "Plataforma boa é a que tem gente do outro lado.",
+   "legenda": "Plataforma boa é a que tem gente do outro lado. 🤝\n\nDentro do painel você abre um chamado, conta o que aconteceu e acompanha a resposta da equipe da Upe Criativo. Para urgências, o WhatsApp fica a um clique.\n\n👉 Teste 14 dias grátis: upe-criativo-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-erp/gerado/erp-24-01.jpg"
+   ],
+   "capa": "",
+   "status": "planejado",
+   "origem": "Kit Upe ERP",
+   "modelo": [
+    {
+     "frente": "erp",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "Upe ERP",
+     "titulo": "Plataforma boa é a que tem gente do outro lado.",
+     "texto": "Dentro do painel você abre um chamado, conta o que aconteceu e acompanha a resposta da equipe da Upe Criativo.",
+     "cta": "Teste 14 dias grátis",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
+  },
+  {
+   "id": "app-tv-25",
+   "data": "2026-12-25",
    "hora": "19:00",
-   "status": "planejado"
+   "canal": "instagram",
+   "formato": "reels",
+   "pilar": "Upe TV",
+   "titulo": "Cardápio na TV, pedido no celular.",
+   "legenda": "Cardápio na TV, pedido no celular. 🍔\n\nO cliente escolhe, adiciona complementos e o pedido chega no seu WhatsApp, pronto para imprimir.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-criativo-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-tv/gerado/tv-25.mp4"
+   ],
+   "capa": "kits/upe-tv/gerado/tv-25-01.jpg",
+   "status": "planejado",
+   "origem": "Kit Upe TV",
+   "modelo": [
+    {
+     "frente": "tv",
+     "layout": "tela",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "Cardápio na TV, pedido no celular.",
+     "texto": "O cliente escolhe, adiciona complementos e o pedido chega no seu WhatsApp,…",
+     "cta": "Anuncie no Upe TV",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
+  },
+  {
+   "id": "app-erp-25",
+   "data": "2026-12-29",
+   "hora": "12:00",
+   "canal": "instagram",
+   "formato": "feed",
+   "pilar": "Upe ERP",
+   "titulo": "Salve este post para lembrar tudo o que vem na plataforma de vendas da Upe Criativo.",
+   "legenda": "Salve este post para lembrar tudo o que vem na plataforma de vendas da Upe Criativo. ✅\n\nE o melhor: você testa 14 dias grátis, sem fidelidade e sem instalar nada.\n\n👉 Teste 14 dias grátis: upe-criativo-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-erp/gerado/erp-25-01.jpg"
+   ],
+   "capa": "",
+   "status": "planejado",
+   "origem": "Kit Upe ERP",
+   "modelo": [
+    {
+     "frente": "erp",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe ERP",
+     "titulo": "Salve este post para lembrar tudo o que vem na plataforma de vendas da Upe Criativo.",
+     "texto": "E o melhor: você testa 14 dias grátis, sem fidelidade e sem instalar nada.",
+     "cta": "Teste 14 dias grátis",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-pdv.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
+  },
+  {
+   "id": "app-tv-26",
+   "data": "2026-12-30",
+   "hora": "12:00",
+   "canal": "instagram",
+   "formato": "feed",
+   "pilar": "Upe TV",
+   "titulo": "Salve este post para lembrar tudo o que vem no Upe TV.",
+   "legenda": "Salve este post para lembrar tudo o que vem no Upe TV. ✅\n\nTelas parceiras, formatos, QR code, página da marca, cardápio com pedido, relatório e portal com o seu código.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-criativo-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-tv/gerado/tv-26-01.jpg"
+   ],
+   "capa": "",
+   "status": "planejado",
+   "origem": "Kit Upe TV",
+   "modelo": [
+    {
+     "frente": "tv",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "Upe TV",
+     "titulo": "Salve este post para lembrar tudo o que vem no Upe TV.",
+     "texto": "Telas parceiras, formatos, QR code, página da marca, cardápio com pedido, relatório e portal com o seu código.",
+     "cta": "Anuncie no Upe TV",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
+  },
+  {
+   "id": "app-erp-26",
+   "data": "2026-12-31",
+   "hora": "12:00",
+   "canal": "instagram",
+   "formato": "feed",
+   "pilar": "Upe ERP",
+   "titulo": "Bora tirar a sua loja do papel?",
+   "legenda": "Bora tirar a sua loja do papel? 🚀\n\nA Upe Criativo libera o seu acesso, você cadastra os produtos, ativa o PIX e compartilha o link. Em poucos dias a loja está vendendo.\n\n14 dias grátis, sem fidelidade. Chame no WhatsApp (11) 93439-3249 ou acesse o link da bio.\n\n👉 Teste 14 dias grátis: upe-criativo-erp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#lojavirtual #lojaonline #vendasonline #empreendedorismo #pequenosnegocios #empreendedora #pix #pdv #ecommerce #vendermais #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-erp/gerado/erp-26-01.jpg"
+   ],
+   "capa": "",
+   "status": "planejado",
+   "origem": "Kit Upe ERP",
+   "modelo": [
+    {
+     "frente": "erp",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe ERP",
+     "titulo": "Bora tirar a sua loja do papel?",
+     "texto": "A Upe Criativo libera o seu acesso, você cadastra os produtos, ativa o PIX e compartilha o link.",
+     "cta": "Teste 14 dias grátis",
+     "itens": [],
+     "imagem": "assets/img/ui/erp-pedidos.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
+  },
+  {
+   "id": "app-tv-27",
+   "data": "2027-01-01",
+   "hora": "19:00",
+   "canal": "instagram",
+   "formato": "reels",
+   "pilar": "Upe TV",
+   "titulo": "Sua marca na tela certa.",
+   "legenda": "Sua marca na tela certa. 🎯\n\nVídeo, motion ou imagem nas TVs de estabelecimentos parceiros, com relatório do tempo de tela.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-criativo-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-tv/gerado/tv-27.mp4"
+   ],
+   "capa": "kits/upe-tv/gerado/tv-27-01.jpg",
+   "status": "planejado",
+   "origem": "Kit Upe TV",
+   "modelo": [
+    {
+     "frente": "tv",
+     "layout": "tela",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "Sua marca na tela certa.",
+     "texto": "Vídeo, motion ou imagem nas TVs de estabelecimentos parceiros, com relatório do…",
+     "cta": "Anuncie no Upe TV",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-tela.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
+  },
+  {
+   "id": "app-tv-29",
+   "data": "2027-01-06",
+   "hora": "12:00",
+   "canal": "instagram",
+   "formato": "feed",
+   "pilar": "Upe TV",
+   "titulo": "Essa tela pode ser sua.",
+   "legenda": "Essa tela pode ser sua. 📺\n\nEstamos fechando as primeiras campanhas do Upe TV. Vídeo, motion ou imagem da sua marca, com QR code e relatório.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-criativo-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-tv/gerado/tv-29-01.jpg"
+   ],
+   "capa": "",
+   "status": "planejado",
+   "origem": "Kit Upe TV",
+   "modelo": [
+    {
+     "frente": "tv",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe TV",
+     "titulo": "Essa tela pode ser sua.",
+     "texto": "Estamos fechando as primeiras campanhas do Upe TV.",
+     "cta": "Anuncie no Upe TV",
+     "itens": [],
+     "imagem": "assets/img/ui/tv-portal.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ]
   }
  ]
 }
