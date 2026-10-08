@@ -1,7 +1,7 @@
-/* ===== Modelos editáveis (estilo Canva): Upe ERP, Upe TV, Loja Upe e Landing pages (em breve) =====
+/* ===== Modelos editáveis (estilo Canva): Upe ERP, Upe TV, Loja Upe, Upe Landing pages e Upe Sistemas =====
    Usa window.UpeModelos (portal/modelos.js). Cada post guarda os slides em x.modelo para poder ser editado de novo. */
 const MBASE = () => (CFG.siteUrl != null ? CFG.siteUrl : "../");
-const FRENTE_PILAR = { erp: "Upe ERP", tv: "Upe TV", loja: "Loja Upe", landing: "Landing pages" };
+const FRENTE_PILAR = { erp: "Upe ERP", tv: "Upe TV", loja: "Loja Upe", landing: "Landing pages", sistemas: "Upe Sistemas" };
 const PILAR_FRENTE = { "Upe ERP": "erp", "Upe TV": "tv", "Loja Upe": "loja" };
 async function renderModelo(cv, m) { await UpeModelos.render(cv, m, { base: MBASE() }); return cv; }
 // imagem final de um slide: arquivo no Storage (ou no navegador, no modo demonstração) ou JPEG embutido

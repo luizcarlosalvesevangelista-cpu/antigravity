@@ -1,5 +1,5 @@
 {
- "versao": 4,
+ "versao": 5,
  "gerado": "2026-10-04",
  "extras": [
   {
@@ -579,6 +579,102 @@
    ]
   },
   {
+   "data": "2026-10-21",
+   "hora": "18:00",
+   "titulo": "A página que vende, com o painel que mostra o que funciona.",
+   "legenda": "A página que vende, com o painel que mostra o que funciona. 🚀\n\nA Upe cria a sua landing page ou você envia o HTML pronto. Você edita os textos sem programar e acompanha visitas, cliques e leads.\n\n👉 Conheça: upe-criativo-lp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#landingpage #paginadevendas #marketingdigital #trafegopago #leads #empreendedorismo #pequenosnegocios #vendasonline #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-landing/gerado/lp-01-01.jpg"
+   ],
+   "capa": "",
+   "status": "planejado",
+   "modelo": [
+    {
+     "frente": "landing",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe Landing pages",
+     "titulo": "A página que vende, com o painel que mostra o que funciona.",
+     "texto": "Landing pages com a sua marca, domínio próprio e resultados no painel.",
+     "cta": "Quero a minha página",
+     "itens": [],
+     "imagem": "",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ],
+   "id": "app-lp-01",
+   "canal": "instagram",
+   "formato": "feed",
+   "pilar": "Landing pages",
+   "origem": "Kit Landing pages"
+  },
+  {
+   "data": "2026-10-22",
+   "hora": "10:00",
+   "titulo": "Enquete: a sua página converte?",
+   "legenda": "Stories: enquete + link.\n\n👉 Conheça: upe-criativo-lp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#landingpage #paginadevendas #marketingdigital #trafegopago #leads #empreendedorismo #pequenosnegocios #vendasonline #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-landing/gerado/lp-s1-01.jpg",
+    "kits/upe-landing/gerado/lp-s1-02.jpg",
+    "kits/upe-landing/gerado/lp-s1-03.jpg"
+   ],
+   "capa": "",
+   "status": "planejado",
+   "modelo": [
+    {
+     "frente": "landing",
+     "layout": "capa",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe Landing pages",
+     "titulo": "Você sabe quantos visitantes viram cliente?",
+     "texto": "Vote na enquete.",
+     "cta": "",
+     "itens": [],
+     "imagem": "",
+     "handle": "@upecriativo",
+     "slide": ""
+    },
+    {
+     "frente": "landing",
+     "layout": "tela",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe Landing pages",
+     "titulo": "No painel, você sabe.",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/lp-analise.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    },
+    {
+     "frente": "landing",
+     "layout": "cta",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe Landing pages",
+     "titulo": "Sua página no ar em poucos dias.",
+     "texto": "Toque no link e fale com a Upe.",
+     "cta": "Quero a minha página",
+     "itens": [],
+     "imagem": "",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ],
+   "id": "app-lp-s1",
+   "canal": "instagram",
+   "formato": "story",
+   "pilar": "Landing pages",
+   "origem": "Kit Landing pages"
+  },
+  {
    "id": "app-erp-02",
    "data": "2026-10-22",
    "hora": "12:00",
@@ -759,6 +855,69 @@
    "id": "upe-029"
   },
   {
+   "data": "2026-10-23",
+   "hora": "10:00",
+   "titulo": "Enquete: quantas mensagens para marcar um horário?",
+   "legenda": "Stories: enquete + link.\n\n👉 Conheça: upe-criativo-sistemas.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#agendaonline #agendamento #dashboard #gestao #clinica #estudio #salaodebeleza #pequenosnegocios #empreendedorismo #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-sistemas/gerado/sis-s1-01.jpg",
+    "kits/upe-sistemas/gerado/sis-s1-02.jpg",
+    "kits/upe-sistemas/gerado/sis-s1-03.jpg"
+   ],
+   "capa": "",
+   "status": "planejado",
+   "modelo": [
+    {
+     "frente": "sistemas",
+     "layout": "capa",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe Sistemas",
+     "titulo": "Quantas mensagens você troca para marcar um horário?",
+     "texto": "Responda na enquete.",
+     "cta": "",
+     "itens": [],
+     "imagem": "",
+     "handle": "@upecriativo",
+     "slide": ""
+    },
+    {
+     "frente": "sistemas",
+     "layout": "tela",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe Sistemas",
+     "titulo": "Com a agenda online, nenhuma.",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/ag-celular.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    },
+    {
+     "frente": "sistemas",
+     "layout": "cta",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe Sistemas",
+     "titulo": "Menos tempo no WhatsApp. Mais clareza no negócio.",
+     "texto": "Toque no link.",
+     "cta": "Quero a minha agenda",
+     "itens": [],
+     "imagem": "",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ],
+   "id": "app-sis-s1",
+   "canal": "instagram",
+   "formato": "story",
+   "pilar": "Upe Sistemas",
+   "origem": "Kit Upe Sistemas"
+  },
+  {
    "id": "app-tv-02",
    "data": "2026-10-23",
    "hora": "12:00",
@@ -882,6 +1041,39 @@
    ]
   },
   {
+   "data": "2026-10-23",
+   "hora": "18:30",
+   "titulo": "Seu cliente marca o horário sozinho.",
+   "legenda": "Seu cliente marca o horário sozinho. 📅\n\nAgenda online com os seus serviços, duração e preço. O horário escolhido sai da página na hora: sem dois clientes no mesmo horário.\n\n👉 Conheça: upe-criativo-sistemas.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#agendaonline #agendamento #dashboard #gestao #clinica #estudio #salaodebeleza #pequenosnegocios #empreendedorismo #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-sistemas/gerado/sis-01-01.jpg"
+   ],
+   "capa": "",
+   "status": "planejado",
+   "modelo": [
+    {
+     "frente": "sistemas",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe Sistemas",
+     "titulo": "Seu cliente marca o horário sozinho.",
+     "texto": "Agenda online com serviços, horários e confirmação pelo WhatsApp.",
+     "cta": "Quero a minha agenda",
+     "itens": [],
+     "imagem": "assets/img/ui/ag-celular.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ],
+   "id": "app-sis-01",
+   "canal": "instagram",
+   "formato": "feed",
+   "pilar": "Upe Sistemas",
+   "origem": "Kit Upe Sistemas"
+  },
+  {
    "formato": "reels",
    "titulo": "reel-1-branding",
    "legenda": "Branding e Redesign em 15 segundos. ✨\n\nLogotipo, paleta, tipografia, ícones e padrões, com um manual que deixa a marca igual em todo lugar.\n\n💬 Fale com a Upe: WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#branding #identidadevisual #rebranding #designdemarca #marketingdigital #publicidade #empreendedorismo #pequenosnegocios #upecriativo",
@@ -944,6 +1136,39 @@
    "hora": "12:00",
    "status": "planejado",
    "id": "upe-032"
+  },
+  {
+   "data": "2026-10-25",
+   "hora": "18:00",
+   "titulo": "Mudou a oferta? Muda a página em um minuto.",
+   "legenda": "Mudou a oferta? Muda a página em um minuto. ✏️\n\nClique no texto da prévia e escreva. O rascunho fica separado do que está no ar: você só publica quando estiver pronto.\n\n👉 Conheça: upe-criativo-lp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#landingpage #paginadevendas #marketingdigital #trafegopago #leads #empreendedorismo #pequenosnegocios #vendasonline #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-landing/gerado/lp-02-01.jpg"
+   ],
+   "capa": "",
+   "status": "planejado",
+   "modelo": [
+    {
+     "frente": "landing",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe Landing pages",
+     "titulo": "Mudou a oferta? Muda a página em um minuto.",
+     "texto": "Clique no texto e escreva. Publique quando quiser.",
+     "cta": "Quero a minha página",
+     "itens": [],
+     "imagem": "assets/img/ui/lp-editor.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ],
+   "id": "app-lp-02",
+   "canal": "instagram",
+   "formato": "feed",
+   "pilar": "Landing pages",
+   "origem": "Kit Landing pages"
   },
   {
    "formato": "feed",
@@ -1094,6 +1319,39 @@
    "origem": "Vídeo Loja Upe"
   },
   {
+   "data": "2026-10-27",
+   "hora": "18:30",
+   "titulo": "Menos “tem horário?” no WhatsApp.",
+   "legenda": "Menos “tem horário?” no WhatsApp. 💬\n\nColoque o link da agenda na bio, no Google e na mensagem automática. O cliente escolhe e você só confirma.\n\n👉 Conheça: upe-criativo-sistemas.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#agendaonline #agendamento #dashboard #gestao #clinica #estudio #salaodebeleza #pequenosnegocios #empreendedorismo #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-sistemas/gerado/sis-02-01.jpg"
+   ],
+   "capa": "",
+   "status": "planejado",
+   "modelo": [
+    {
+     "frente": "sistemas",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe Sistemas",
+     "titulo": "Menos “tem horário?” no WhatsApp.",
+     "texto": "Mais horários marcados, de dia ou de noite.",
+     "cta": "Quero a minha agenda",
+     "itens": [],
+     "imagem": "",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ],
+   "id": "app-sis-02",
+   "canal": "instagram",
+   "formato": "feed",
+   "pilar": "Upe Sistemas",
+   "origem": "Kit Upe Sistemas"
+  },
+  {
    "id": "app-tv-08",
    "data": "2026-10-28",
    "hora": "10:00",
@@ -1163,6 +1421,114 @@
      "slide": ""
     }
    ]
+  },
+  {
+   "data": "2026-10-28",
+   "hora": "18:00",
+   "titulo": "Sua landing page em 4 passos",
+   "legenda": "Sua landing page em 4 passos. 👇\n\n1. Escolha o plano\n2. A Upe cria (ou você envia o HTML)\n3. Revise os textos no painel\n4. Publique e acompanhe os resultados\n\n👉 Conheça: upe-criativo-lp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#landingpage #paginadevendas #marketingdigital #trafegopago #leads #empreendedorismo #pequenosnegocios #vendasonline #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-landing/gerado/lp-04-01.jpg",
+    "kits/upe-landing/gerado/lp-04-02.jpg",
+    "kits/upe-landing/gerado/lp-04-03.jpg",
+    "kits/upe-landing/gerado/lp-04-04.jpg",
+    "kits/upe-landing/gerado/lp-04-05.jpg",
+    "kits/upe-landing/gerado/lp-04-06.jpg"
+   ],
+   "capa": "",
+   "status": "planejado",
+   "modelo": [
+    {
+     "frente": "landing",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe Landing pages",
+     "titulo": "Sua landing page em 4 passos",
+     "texto": "Do pedido à página no ar.",
+     "cta": "Arraste para o lado",
+     "itens": [],
+     "imagem": "",
+     "handle": "@upecriativo",
+     "slide": "1/6"
+    },
+    {
+     "frente": "landing",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "01",
+     "titulo": "Escolha o plano",
+     "texto": "Criação essencial, completa ou envio do seu HTML.",
+     "cta": "",
+     "itens": [],
+     "imagem": "",
+     "handle": "@upecriativo",
+     "slide": "2/6"
+    },
+    {
+     "frente": "landing",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "02",
+     "titulo": "A Upe cria a página",
+     "texto": "Com a sua marca, formulário e botão de WhatsApp.",
+     "cta": "",
+     "itens": [],
+     "imagem": "",
+     "handle": "@upecriativo",
+     "slide": "3/6"
+    },
+    {
+     "frente": "landing",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "03",
+     "titulo": "Revise no painel",
+     "texto": "Clique no texto e ajuste. Peça mudanças por lá.",
+     "cta": "",
+     "itens": [],
+     "imagem": "",
+     "handle": "@upecriativo",
+     "slide": "4/6"
+    },
+    {
+     "frente": "landing",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "04",
+     "titulo": "Publique e acompanhe",
+     "texto": "Visitas, cliques e leads, todos os dias.",
+     "cta": "",
+     "itens": [],
+     "imagem": "",
+     "handle": "@upecriativo",
+     "slide": "5/6"
+    },
+    {
+     "frente": "landing",
+     "layout": "cta",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe Landing pages",
+     "titulo": "Sua página no ar em poucos dias.",
+     "texto": "Criação a partir de R$ 497. Hospedagem com painel a partir de R$ 29,90 por mês.",
+     "cta": "Quero a minha página",
+     "itens": [],
+     "imagem": "",
+     "handle": "@upecriativo",
+     "slide": "6/6"
+    }
+   ],
+   "id": "app-lp-04",
+   "canal": "instagram",
+   "formato": "carrossel",
+   "pilar": "Landing pages",
+   "origem": "Kit Landing pages"
   },
   {
    "formato": "youtube",
@@ -1252,6 +1618,114 @@
      "slide": ""
     }
    ]
+  },
+  {
+   "data": "2026-10-30",
+   "hora": "18:30",
+   "titulo": "Como funciona a agenda online",
+   "legenda": "Como funciona a agenda online. 👇\n\n1. Escolha o serviço\n2. Escolha o dia\n3. Escolha o horário\n4. Confirme pelo WhatsApp\n\n👉 Conheça: upe-criativo-sistemas.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#agendaonline #agendamento #dashboard #gestao #clinica #estudio #salaodebeleza #pequenosnegocios #empreendedorismo #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-sistemas/gerado/sis-04-01.jpg",
+    "kits/upe-sistemas/gerado/sis-04-02.jpg",
+    "kits/upe-sistemas/gerado/sis-04-03.jpg",
+    "kits/upe-sistemas/gerado/sis-04-04.jpg",
+    "kits/upe-sistemas/gerado/sis-04-05.jpg",
+    "kits/upe-sistemas/gerado/sis-04-06.jpg"
+   ],
+   "capa": "",
+   "status": "planejado",
+   "modelo": [
+    {
+     "frente": "sistemas",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe Sistemas",
+     "titulo": "Como funciona a agenda online",
+     "texto": "Do link na bio ao horário marcado.",
+     "cta": "Arraste para o lado",
+     "itens": [],
+     "imagem": "",
+     "handle": "@upecriativo",
+     "slide": "1/6"
+    },
+    {
+     "frente": "sistemas",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "01",
+     "titulo": "O cliente escolhe o serviço",
+     "texto": "Com duração e preço.",
+     "cta": "",
+     "itens": [],
+     "imagem": "",
+     "handle": "@upecriativo",
+     "slide": "2/6"
+    },
+    {
+     "frente": "sistemas",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "02",
+     "titulo": "Escolhe o dia",
+     "texto": "Só aparecem os dias com horário livre.",
+     "cta": "",
+     "itens": [],
+     "imagem": "",
+     "handle": "@upecriativo",
+     "slide": "3/6"
+    },
+    {
+     "frente": "sistemas",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "03",
+     "titulo": "Escolhe o horário",
+     "texto": "O horário sai da página na hora.",
+     "cta": "",
+     "itens": [],
+     "imagem": "",
+     "handle": "@upecriativo",
+     "slide": "4/6"
+    },
+    {
+     "frente": "sistemas",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "04",
+     "titulo": "Você confirma",
+     "texto": "Com mensagem pronta no WhatsApp.",
+     "cta": "",
+     "itens": [],
+     "imagem": "",
+     "handle": "@upecriativo",
+     "slide": "5/6"
+    },
+    {
+     "frente": "sistemas",
+     "layout": "cta",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe Sistemas",
+     "titulo": "Menos tempo no WhatsApp. Mais clareza no negócio.",
+     "texto": "Agenda online e dashboards sob medida, feitos pela Upe.",
+     "cta": "Quero a minha agenda",
+     "itens": [],
+     "imagem": "",
+     "handle": "@upecriativo",
+     "slide": "6/6"
+    }
+   ],
+   "id": "app-sis-04",
+   "canal": "instagram",
+   "formato": "carrossel",
+   "pilar": "Upe Sistemas",
+   "origem": "Kit Upe Sistemas"
   },
   {
    "id": "app-tv-05",
@@ -1366,6 +1840,56 @@
    "formato": "feed",
    "pilar": "Loja Upe",
    "origem": "Kit Loja Upe"
+  },
+  {
+   "data": "2026-11-01",
+   "hora": "12:00",
+   "titulo": "Marcar horário em 3 toques.",
+   "legenda": "Marcar horário em 3 toques. 🎬\n\nServiço, dia e horário. O cliente agenda sozinho e você confirma pelo WhatsApp.\n\n👉 Conheça: upe-criativo-sistemas.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#agendaonline #agendamento #dashboard #gestao #clinica #estudio #salaodebeleza #pequenosnegocios #empreendedorismo #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-sistemas/gerado/sis-08.mp4"
+   ],
+   "capa": "kits/upe-sistemas/gerado/sis-08-01.jpg",
+   "status": "planejado",
+   "id": "upe-sis-08-sh",
+   "canal": "youtube",
+   "formato": "shorts",
+   "pilar": "YouTube",
+   "origem": "YouTube Shorts"
+  },
+  {
+   "data": "2026-11-01",
+   "hora": "18:00",
+   "titulo": "Saiba de onde vêm os seus clientes.",
+   "legenda": "Saiba de onde vêm os seus clientes. 📊\n\nVisitas por dia, visitantes únicos, cliques nos botões, até onde leram e a origem de cada visita: Instagram, Google ou anúncio.\n\n👉 Conheça: upe-criativo-lp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#landingpage #paginadevendas #marketingdigital #trafegopago #leads #empreendedorismo #pequenosnegocios #vendasonline #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-landing/gerado/lp-03-01.jpg"
+   ],
+   "capa": "",
+   "status": "planejado",
+   "modelo": [
+    {
+     "frente": "landing",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "Upe Landing pages",
+     "titulo": "Saiba de onde vêm os seus clientes.",
+     "texto": "Visitas, cliques, leads e origem no painel.",
+     "cta": "Quero a minha página",
+     "itens": [],
+     "imagem": "assets/img/ui/lp-analise.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ],
+   "id": "app-lp-03",
+   "canal": "instagram",
+   "formato": "feed",
+   "pilar": "Landing pages",
+   "origem": "Kit Landing pages"
   },
   {
    "formato": "carrossel",
@@ -1578,6 +2102,72 @@
    ]
   },
   {
+   "data": "2026-11-03",
+   "hora": "18:00",
+   "titulo": "Upe Landing pages: a página que vende, com painel de resultados",
+   "legenda": "Conheça o Upe Landing pages: a Upe cria a sua página de vendas (ou você envia o HTML), você edita sem programar, conecta o domínio e acompanha visitas, cliques e leads.\n\n👉 upe-criativo-lp.web.app\n💬 WhatsApp (11) 93439-3249\n\nCapítulos:\n0:00 Abertura\n0:05 A página\n0:10 Editor\n0:15 Análise\n0:20 Leads\n0:25 Domínio próprio\n0:30 SEO e Pixel\n0:35 Como contratar\n\n#landingpage #marketingdigital #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-landing/gerado/lp-yt.mp4"
+   ],
+   "capa": "kits/upe-landing/gerado/lp-yt-capa.jpg",
+   "status": "planejado",
+   "modelo": [
+    {
+     "frente": "landing",
+     "layout": "foto",
+     "formato": "video",
+     "tema": "escuro",
+     "eyebrow": "Upe Landing pages",
+     "titulo": "Landing pages com painel de resultados",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/lp-editor.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ],
+   "id": "upe-lp-yt",
+   "canal": "youtube",
+   "formato": "youtube",
+   "pilar": "YouTube",
+   "origem": "Vídeo Landing pages"
+  },
+  {
+   "data": "2026-11-03",
+   "hora": "18:30",
+   "titulo": "A agenda do dia, organizada.",
+   "legenda": "A agenda do dia, organizada. 🗂️\n\nPróximos agendamentos por dia, confirmar, cancelar, marcar atendido ou falta, e mensagem pronta no WhatsApp.\n\n👉 Conheça: upe-criativo-sistemas.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#agendaonline #agendamento #dashboard #gestao #clinica #estudio #salaodebeleza #pequenosnegocios #empreendedorismo #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-sistemas/gerado/sis-03-01.jpg"
+   ],
+   "capa": "",
+   "status": "planejado",
+   "modelo": [
+    {
+     "frente": "sistemas",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "Upe Sistemas",
+     "titulo": "A agenda do dia, organizada.",
+     "texto": "Confirmar, cancelar e avisar pelo WhatsApp.",
+     "cta": "Quero a minha agenda",
+     "itens": [],
+     "imagem": "assets/img/ui/ag-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ],
+   "id": "app-sis-03",
+   "canal": "instagram",
+   "formato": "feed",
+   "pilar": "Upe Sistemas",
+   "origem": "Kit Upe Sistemas"
+  },
+  {
    "id": "app-tv-13",
    "data": "2026-11-04",
    "hora": "10:00",
@@ -1705,6 +2295,102 @@
      "slide": ""
     }
    ]
+  },
+  {
+   "data": "2026-11-04",
+   "hora": "19:00",
+   "titulo": "Da página ao lead em segundos.",
+   "legenda": "Da página ao lead em segundos. 🎬\n\nO visitante chega pelo anúncio, lê a página e preenche o formulário. O lead aparece no painel com a origem.\n\n👉 Conheça: upe-criativo-lp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#landingpage #paginadevendas #marketingdigital #trafegopago #leads #empreendedorismo #pequenosnegocios #vendasonline #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-landing/gerado/lp-08.mp4"
+   ],
+   "capa": "kits/upe-landing/gerado/lp-08-01.jpg",
+   "status": "planejado",
+   "modelo": [
+    {
+     "frente": "landing",
+     "layout": "tela",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe Landing pages",
+     "titulo": "Da página ao lead em segundos.",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/lp-pagina.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ],
+   "id": "app-lp-08",
+   "canal": "instagram",
+   "formato": "reels",
+   "pilar": "Landing pages",
+   "origem": "Kit Landing pages"
+  },
+  {
+   "data": "2026-11-05",
+   "hora": "10:00",
+   "titulo": "Bastidores: editando uma página",
+   "legenda": "Stories: bastidores do editor + link.\n\n👉 Conheça: upe-criativo-lp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#landingpage #paginadevendas #marketingdigital #trafegopago #leads #empreendedorismo #pequenosnegocios #vendasonline #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-landing/gerado/lp-s2-01.jpg",
+    "kits/upe-landing/gerado/lp-s2-02.jpg",
+    "kits/upe-landing/gerado/lp-s2-03.jpg"
+   ],
+   "capa": "",
+   "status": "planejado",
+   "modelo": [
+    {
+     "frente": "landing",
+     "layout": "tela",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe Landing pages",
+     "titulo": "Trocar um título leva 10 segundos.",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/lp-editor.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    },
+    {
+     "frente": "landing",
+     "layout": "foto",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe Landing pages",
+     "titulo": "E a página fica assim.",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/lp-pagina.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    },
+    {
+     "frente": "landing",
+     "layout": "cta",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe Landing pages",
+     "titulo": "Sua página no ar em poucos dias.",
+     "texto": "Toque no link.",
+     "cta": "Quero a minha página",
+     "itens": [],
+     "imagem": "",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ],
+   "id": "app-lp-s2",
+   "canal": "instagram",
+   "formato": "story",
+   "pilar": "Landing pages",
+   "origem": "Kit Landing pages"
   },
   {
    "id": "app-erp-07",
@@ -1886,6 +2572,69 @@
    "id": "upe-051"
   },
   {
+   "data": "2026-11-06",
+   "hora": "10:00",
+   "titulo": "Bastidores: um dashboard por dentro",
+   "legenda": "Stories: bastidores do dashboard + link.\n\n👉 Conheça: upe-criativo-sistemas.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#agendaonline #agendamento #dashboard #gestao #clinica #estudio #salaodebeleza #pequenosnegocios #empreendedorismo #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-sistemas/gerado/sis-s2-01.jpg",
+    "kits/upe-sistemas/gerado/sis-s2-02.jpg",
+    "kits/upe-sistemas/gerado/sis-s2-03.jpg"
+   ],
+   "capa": "",
+   "status": "planejado",
+   "modelo": [
+    {
+     "frente": "sistemas",
+     "layout": "tela",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe Sistemas",
+     "titulo": "Assim fica o painel de um estúdio.",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/dash-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    },
+    {
+     "frente": "sistemas",
+     "layout": "tela",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe Sistemas",
+     "titulo": "E a agenda do dia.",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/ag-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    },
+    {
+     "frente": "sistemas",
+     "layout": "cta",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe Sistemas",
+     "titulo": "Menos tempo no WhatsApp. Mais clareza no negócio.",
+     "texto": "Toque no link.",
+     "cta": "Quero a minha agenda",
+     "itens": [],
+     "imagem": "",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ],
+   "id": "app-sis-s2",
+   "canal": "instagram",
+   "formato": "story",
+   "pilar": "Upe Sistemas",
+   "origem": "Kit Upe Sistemas"
+  },
+  {
    "id": "app-tv-07",
    "data": "2026-11-06",
    "hora": "12:00",
@@ -2009,6 +2758,39 @@
    ]
   },
   {
+   "data": "2026-11-06",
+   "hora": "19:00",
+   "titulo": "Marcar horário em 3 toques.",
+   "legenda": "Marcar horário em 3 toques. 🎬\n\nServiço, dia e horário. O cliente agenda sozinho e você confirma pelo WhatsApp.\n\n👉 Conheça: upe-criativo-sistemas.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#agendaonline #agendamento #dashboard #gestao #clinica #estudio #salaodebeleza #pequenosnegocios #empreendedorismo #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-sistemas/gerado/sis-08.mp4"
+   ],
+   "capa": "kits/upe-sistemas/gerado/sis-08-01.jpg",
+   "status": "planejado",
+   "modelo": [
+    {
+     "frente": "sistemas",
+     "layout": "tela",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe Sistemas",
+     "titulo": "Marcar horário em 3 toques.",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/ag-celular.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ],
+   "id": "app-sis-08",
+   "canal": "instagram",
+   "formato": "reels",
+   "pilar": "Upe Sistemas",
+   "origem": "Kit Upe Sistemas"
+  },
+  {
    "formato": "story",
    "titulo": "Vamos conversar sobre a sua marca?",
    "legenda": "Como usar: adesivo de link https://wa.me/5511934393249",
@@ -2055,6 +2837,56 @@
    "hora": "12:00",
    "status": "planejado",
    "id": "upe-054"
+  },
+  {
+   "data": "2026-11-08",
+   "hora": "12:00",
+   "titulo": "Da página ao lead em segundos.",
+   "legenda": "Da página ao lead em segundos. 🎬\n\nO visitante chega pelo anúncio, lê a página e preenche o formulário. O lead aparece no painel com a origem.\n\n👉 Conheça: upe-criativo-lp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#landingpage #paginadevendas #marketingdigital #trafegopago #leads #empreendedorismo #pequenosnegocios #vendasonline #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-landing/gerado/lp-08.mp4"
+   ],
+   "capa": "kits/upe-landing/gerado/lp-08-01.jpg",
+   "status": "planejado",
+   "id": "upe-lp-08-sh",
+   "canal": "youtube",
+   "formato": "shorts",
+   "pilar": "YouTube",
+   "origem": "YouTube Shorts"
+  },
+  {
+   "data": "2026-11-08",
+   "hora": "18:00",
+   "titulo": "Cada formulário vira um lead no painel.",
+   "legenda": "Cada formulário vira um lead no painel. 📥\n\nCom data, origem e um botão para chamar no WhatsApp. Dá para marcar quem virou cliente e baixar tudo em planilha.\n\n👉 Conheça: upe-criativo-lp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#landingpage #paginadevendas #marketingdigital #trafegopago #leads #empreendedorismo #pequenosnegocios #vendasonline #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-landing/gerado/lp-05-01.jpg"
+   ],
+   "capa": "",
+   "status": "planejado",
+   "modelo": [
+    {
+     "frente": "landing",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe Landing pages",
+     "titulo": "Cada formulário vira um lead no painel.",
+     "texto": "Com origem, situação e atalho para o WhatsApp.",
+     "cta": "Quero a minha página",
+     "itens": [],
+     "imagem": "assets/img/ui/lp-leads.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ],
+   "id": "app-lp-05",
+   "canal": "instagram",
+   "formato": "feed",
+   "pilar": "Landing pages",
+   "origem": "Kit Landing pages"
   },
   {
    "formato": "feed",
@@ -2178,6 +3010,72 @@
    ]
   },
   {
+   "data": "2026-11-10",
+   "hora": "18:00",
+   "titulo": "Upe Sistemas: agenda online e dashboards sob medida",
+   "legenda": "Conheça o Upe Sistemas: agenda online para o seu cliente marcar horário sozinho e dashboards com os números do seu negócio, montados pela Upe.\n\n👉 upe-criativo-sistemas.web.app\n💬 WhatsApp (11) 93439-3249\n\nCapítulos:\n0:00 Abertura\n0:05 Agenda online\n0:10 Escolha do horário\n0:15 Agenda do dia\n0:20 Dashboards\n0:25 Indicadores\n0:30 De onde vêm os dados\n0:35 Como contratar\n\n#agendaonline #dashboard #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-sistemas/gerado/sis-yt.mp4"
+   ],
+   "capa": "kits/upe-sistemas/gerado/sis-yt-capa.jpg",
+   "status": "planejado",
+   "modelo": [
+    {
+     "frente": "sistemas",
+     "layout": "foto",
+     "formato": "video",
+     "tema": "escuro",
+     "eyebrow": "Upe Sistemas",
+     "titulo": "Agenda online e dashboards sob medida",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/dash-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ],
+   "id": "upe-sis-yt",
+   "canal": "youtube",
+   "formato": "youtube",
+   "pilar": "YouTube",
+   "origem": "Vídeo Upe Sistemas"
+  },
+  {
+   "data": "2026-11-10",
+   "hora": "18:30",
+   "titulo": "Os números do negócio num painel só.",
+   "legenda": "Os números do negócio num painel só. 📈\n\nFaturamento, atendimentos, vendas e leads em números grandes, gráficos e rankings. Atualiza sozinho a partir da sua planilha ou da agenda.\n\n👉 Conheça: upe-criativo-sistemas.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#agendaonline #agendamento #dashboard #gestao #clinica #estudio #salaodebeleza #pequenosnegocios #empreendedorismo #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-sistemas/gerado/sis-05-01.jpg"
+   ],
+   "capa": "",
+   "status": "planejado",
+   "modelo": [
+    {
+     "frente": "sistemas",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe Sistemas",
+     "titulo": "Os números do negócio num painel só.",
+     "texto": "Dashboards sob medida, que se atualizam sozinhos.",
+     "cta": "Quero a minha agenda",
+     "itens": [],
+     "imagem": "assets/img/ui/dash-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ],
+   "id": "app-sis-05",
+   "canal": "instagram",
+   "formato": "feed",
+   "pilar": "Upe Sistemas",
+   "origem": "Kit Upe Sistemas"
+  },
+  {
    "id": "app-tv-18",
    "data": "2026-11-11",
    "hora": "10:00",
@@ -2257,6 +3155,119 @@
      "slide": ""
     }
    ]
+  },
+  {
+   "data": "2026-11-11",
+   "hora": "18:00",
+   "titulo": "O que vem no painel das landing pages",
+   "legenda": "O que vem no painel das landing pages. 🧭\n\nEditor visual, análise de resultados, leads, domínio próprio, SEO, Meta Pixel e Google Analytics, e versões para voltar atrás quando quiser.\n\n👉 Conheça: upe-criativo-lp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#landingpage #paginadevendas #marketingdigital #trafegopago #leads #empreendedorismo #pequenosnegocios #vendasonline #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-landing/gerado/lp-06-01.jpg",
+    "kits/upe-landing/gerado/lp-06-02.jpg",
+    "kits/upe-landing/gerado/lp-06-03.jpg",
+    "kits/upe-landing/gerado/lp-06-04.jpg",
+    "kits/upe-landing/gerado/lp-06-05.jpg",
+    "kits/upe-landing/gerado/lp-06-06.jpg"
+   ],
+   "capa": "",
+   "status": "planejado",
+   "modelo": [
+    {
+     "frente": "landing",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe Landing pages",
+     "titulo": "O que vem no painel",
+     "texto": "Tudo para a sua página vender mais.",
+     "cta": "Arraste para o lado",
+     "itens": [],
+     "imagem": "",
+     "handle": "@upecriativo",
+     "slide": "1/6"
+    },
+    {
+     "frente": "landing",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe Landing pages",
+     "titulo": "Editor visual",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/lp-editor.jpg",
+     "handle": "@upecriativo",
+     "slide": "2/6"
+    },
+    {
+     "frente": "landing",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "Upe Landing pages",
+     "titulo": "Análise de resultados",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/lp-analise.jpg",
+     "handle": "@upecriativo",
+     "slide": "3/6"
+    },
+    {
+     "frente": "landing",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe Landing pages",
+     "titulo": "Leads organizados",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/lp-leads.jpg",
+     "handle": "@upecriativo",
+     "slide": "4/6"
+    },
+    {
+     "frente": "landing",
+     "layout": "lista",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "Upe Landing pages",
+     "titulo": "E mais",
+     "texto": "",
+     "cta": "",
+     "itens": [
+      "Domínio próprio com HTTPS",
+      "SEO no Google",
+      "Meta Pixel e Google Analytics",
+      "Versões para voltar atrás"
+     ],
+     "imagem": "",
+     "handle": "@upecriativo",
+     "slide": "5/6"
+    },
+    {
+     "frente": "landing",
+     "layout": "cta",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe Landing pages",
+     "titulo": "Sua página no ar em poucos dias.",
+     "texto": "Criação a partir de R$ 497. Hospedagem com painel a partir de R$ 29,90 por mês.",
+     "cta": "Quero a minha página",
+     "itens": [],
+     "imagem": "",
+     "handle": "@upecriativo",
+     "slide": "6/6"
+    }
+   ],
+   "id": "app-lp-06",
+   "canal": "instagram",
+   "formato": "carrossel",
+   "pilar": "Landing pages",
+   "origem": "Kit Landing pages"
   },
   {
    "formato": "youtube",
@@ -2346,6 +3357,103 @@
      "slide": ""
     }
    ]
+  },
+  {
+   "data": "2026-11-13",
+   "hora": "18:30",
+   "titulo": "O que um dashboard mostra",
+   "legenda": "O que um dashboard mostra. 📊\n\nNúmeros grandes, barras por dia ou mês, rankings e tabelas, com os indicadores que importam para o seu negócio.\n\n👉 Conheça: upe-criativo-sistemas.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#agendaonline #agendamento #dashboard #gestao #clinica #estudio #salaodebeleza #pequenosnegocios #empreendedorismo #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-sistemas/gerado/sis-06-01.jpg",
+    "kits/upe-sistemas/gerado/sis-06-02.jpg",
+    "kits/upe-sistemas/gerado/sis-06-03.jpg",
+    "kits/upe-sistemas/gerado/sis-06-04.jpg",
+    "kits/upe-sistemas/gerado/sis-06-05.jpg"
+   ],
+   "capa": "",
+   "status": "planejado",
+   "modelo": [
+    {
+     "frente": "sistemas",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe Sistemas",
+     "titulo": "O que um dashboard mostra",
+     "texto": "Os números do negócio, sem abrir cinco planilhas.",
+     "cta": "Arraste para o lado",
+     "itens": [],
+     "imagem": "",
+     "handle": "@upecriativo",
+     "slide": "1/5"
+    },
+    {
+     "frente": "sistemas",
+     "layout": "tela",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe Sistemas",
+     "titulo": "Indicadores e gráficos",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/dash-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": "2/5"
+    },
+    {
+     "frente": "sistemas",
+     "layout": "lista",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "Upe Sistemas",
+     "titulo": "De onde vêm os dados",
+     "texto": "",
+     "cta": "",
+     "itens": [
+      "Sua planilha do Google",
+      "A agenda online",
+      "Suas landing pages"
+     ],
+     "imagem": "",
+     "handle": "@upecriativo",
+     "slide": "3/5"
+    },
+    {
+     "frente": "sistemas",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Atualização",
+     "titulo": "Mudou a planilha, mudou o painel.",
+     "texto": "Sem copiar e colar.",
+     "cta": "",
+     "itens": [],
+     "imagem": "",
+     "handle": "@upecriativo",
+     "slide": "4/5"
+    },
+    {
+     "frente": "sistemas",
+     "layout": "cta",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe Sistemas",
+     "titulo": "Menos tempo no WhatsApp. Mais clareza no negócio.",
+     "texto": "Agenda online e dashboards sob medida, feitos pela Upe.",
+     "cta": "Quero a minha agenda",
+     "itens": [],
+     "imagem": "",
+     "handle": "@upecriativo",
+     "slide": "5/5"
+    }
+   ],
+   "id": "app-sis-06",
+   "canal": "instagram",
+   "formato": "carrossel",
+   "pilar": "Upe Sistemas",
+   "origem": "Kit Upe Sistemas"
   },
   {
    "formato": "reels",
@@ -2568,6 +3676,56 @@
    "origem": "Kit Loja Upe"
   },
   {
+   "data": "2026-11-15",
+   "hora": "12:00",
+   "titulo": "O negócio num painel só.",
+   "legenda": "O negócio num painel só. 🎬\n\nAtendimentos, faturamento e serviços mais vendidos, atualizados sozinhos.\n\n👉 Conheça: upe-criativo-sistemas.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#agendaonline #agendamento #dashboard #gestao #clinica #estudio #salaodebeleza #pequenosnegocios #empreendedorismo #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-sistemas/gerado/sis-10.mp4"
+   ],
+   "capa": "kits/upe-sistemas/gerado/sis-10-01.jpg",
+   "status": "planejado",
+   "id": "upe-sis-10-sh",
+   "canal": "youtube",
+   "formato": "shorts",
+   "pilar": "YouTube",
+   "origem": "YouTube Shorts"
+  },
+  {
+   "data": "2026-11-15",
+   "hora": "18:00",
+   "titulo": "Já tem a página pronta? Envie o HTML.",
+   "legenda": "Já tem a página pronta? Envie o HTML. 📄\n\nVocê sobe o arquivo e a página vai ao ar com análise de visitas, leads e domínio próprio funcionando.\n\n👉 Conheça: upe-criativo-lp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#landingpage #paginadevendas #marketingdigital #trafegopago #leads #empreendedorismo #pequenosnegocios #vendasonline #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-landing/gerado/lp-07-01.jpg"
+   ],
+   "capa": "",
+   "status": "planejado",
+   "modelo": [
+    {
+     "frente": "landing",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "Upe Landing pages",
+     "titulo": "Já tem a página pronta? Envie o HTML.",
+     "texto": "Ela vai ao ar com análise, leads e domínio próprio.",
+     "cta": "Quero a minha página",
+     "itens": [],
+     "imagem": "",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ],
+   "id": "app-lp-07",
+   "canal": "instagram",
+   "formato": "feed",
+   "pilar": "Landing pages",
+   "origem": "Kit Landing pages"
+  },
+  {
    "formato": "feed",
    "titulo": "Mesma essência, marca nova.",
    "legenda": "Antes e depois. 🔁\n\nNo redesign, mantivemos o espírito de café de bairro e ganhamos leitura, um monograma para o Instagram e uma paleta que funciona no copo, no cardápio e na fachada.\n\n(Exemplo ilustrativo.)\n\n💬 Fale com a Upe: WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#branding #identidadevisual #rebranding #designdemarca #marketingdigital #publicidade #empreendedorismo #pequenosnegocios #upecriativo",
@@ -2683,6 +3841,44 @@
    ]
   },
   {
+   "data": "2026-11-17",
+   "hora": "18:30",
+   "titulo": "Qual serviço mais vende? Quem mais falta?",
+   "legenda": "Qual serviço mais vende? Quem mais falta? 🤔\n\nPerguntas que um dashboard responde em segundos. A Upe define os indicadores com você.\n\n👉 Conheça: upe-criativo-sistemas.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#agendaonline #agendamento #dashboard #gestao #clinica #estudio #salaodebeleza #pequenosnegocios #empreendedorismo #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-sistemas/gerado/sis-07-01.jpg"
+   ],
+   "capa": "",
+   "status": "planejado",
+   "modelo": [
+    {
+     "frente": "sistemas",
+     "layout": "lista",
+     "formato": "feed",
+     "tema": "claro",
+     "eyebrow": "Upe Sistemas",
+     "titulo": "Perguntas que um dashboard responde",
+     "texto": "",
+     "cta": "Quero a minha agenda",
+     "itens": [
+      "Quanto entrou este mês?",
+      "Qual serviço mais vende?",
+      "Quantos clientes faltaram?",
+      "De onde vêm os novos clientes?"
+     ],
+     "imagem": "",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ],
+   "id": "app-sis-07",
+   "canal": "instagram",
+   "formato": "feed",
+   "pilar": "Upe Sistemas",
+   "origem": "Kit Upe Sistemas"
+  },
+  {
    "id": "app-tv-23",
    "data": "2026-11-18",
    "hora": "10:00",
@@ -2747,6 +3943,39 @@
      "slide": ""
     }
    ]
+  },
+  {
+   "data": "2026-11-18",
+   "hora": "19:00",
+   "titulo": "Edite sem programar.",
+   "legenda": "Edite sem programar. 🎬\n\nClique no texto e escreva. Publique quando estiver pronto. Volte para qualquer versão anterior.\n\n👉 Conheça: upe-criativo-lp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#landingpage #paginadevendas #marketingdigital #trafegopago #leads #empreendedorismo #pequenosnegocios #vendasonline #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-landing/gerado/lp-10.mp4"
+   ],
+   "capa": "kits/upe-landing/gerado/lp-10-01.jpg",
+   "status": "planejado",
+   "modelo": [
+    {
+     "frente": "landing",
+     "layout": "tela",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe Landing pages",
+     "titulo": "Edite sem programar.",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/lp-editor.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ],
+   "id": "app-lp-10",
+   "canal": "instagram",
+   "formato": "reels",
+   "pilar": "Landing pages",
+   "origem": "Kit Landing pages"
   },
   {
    "id": "app-erp-12",
@@ -3021,6 +4250,39 @@
    ]
   },
   {
+   "data": "2026-11-20",
+   "hora": "19:00",
+   "titulo": "O negócio num painel só.",
+   "legenda": "O negócio num painel só. 🎬\n\nAtendimentos, faturamento e serviços mais vendidos, atualizados sozinhos.\n\n👉 Conheça: upe-criativo-sistemas.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#agendaonline #agendamento #dashboard #gestao #clinica #estudio #salaodebeleza #pequenosnegocios #empreendedorismo #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-sistemas/gerado/sis-10.mp4"
+   ],
+   "capa": "kits/upe-sistemas/gerado/sis-10-01.jpg",
+   "status": "planejado",
+   "modelo": [
+    {
+     "frente": "sistemas",
+     "layout": "tela",
+     "formato": "story",
+     "tema": "escuro",
+     "eyebrow": "Upe Sistemas",
+     "titulo": "O negócio num painel só.",
+     "texto": "",
+     "cta": "",
+     "itens": [],
+     "imagem": "assets/img/ui/ag-painel.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ],
+   "id": "app-sis-10",
+   "canal": "instagram",
+   "formato": "reels",
+   "pilar": "Upe Sistemas",
+   "origem": "Kit Upe Sistemas"
+  },
+  {
    "formato": "shorts",
    "titulo": "Cardápio na TV, pedido no celular.",
    "legenda": "Cardápio na TV, pedido no celular. 🍔\n\nO cliente escolhe, adiciona complementos e o pedido chega no seu WhatsApp, pronto para imprimir.\n\n👉 Anuncie no Upe TV: chame no WhatsApp (11) 93439-3249\n🌐 upe-criativo-tv.web.app\n📲 Siga @upecriativo\n\n#midiaindoor #publicidadelocal #marketinglocal #anuncie #negociolocal #tvcorporativa #pequenosnegocios #empreendedorismo #qrcode #upetv #upecriativo",
@@ -3101,6 +4363,39 @@
    "formato": "shorts",
    "pilar": "YouTube",
    "origem": "YouTube Shorts"
+  },
+  {
+   "data": "2026-11-22",
+   "hora": "18:00",
+   "titulo": "www.suamarca.com.br abrindo a sua página.",
+   "legenda": "www.suamarca.com.br abrindo a sua página. 🔒\n\nConectamos o seu domínio com você e a página abre com cadeado (HTTPS). Até lá, ela já funciona no endereço da Upe.\n\n👉 Conheça: upe-criativo-lp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#landingpage #paginadevendas #marketingdigital #trafegopago #leads #empreendedorismo #pequenosnegocios #vendasonline #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-landing/gerado/lp-09-01.jpg"
+   ],
+   "capa": "",
+   "status": "planejado",
+   "modelo": [
+    {
+     "frente": "landing",
+     "layout": "foto",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe Landing pages",
+     "titulo": "Seu domínio abrindo a sua página.",
+     "texto": "Com cadeado (HTTPS), conectado com a ajuda da Upe.",
+     "cta": "Quero a minha página",
+     "itens": [],
+     "imagem": "assets/img/ui/lp-pagina.jpg",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ],
+   "id": "app-lp-09",
+   "canal": "instagram",
+   "formato": "feed",
+   "pilar": "Landing pages",
+   "origem": "Kit Landing pages"
   },
   {
    "formato": "feed",
@@ -3216,6 +4511,39 @@
      "slide": ""
     }
    ]
+  },
+  {
+   "data": "2026-11-24",
+   "hora": "18:30",
+   "titulo": "Agenda online e dashboards feitos pela Upe.",
+   "legenda": "Agenda online e dashboards feitos pela Upe. ✅\n\nA Upe configura, você usa. Criação única e mensalidade para manter no ar, sem fidelidade.\n\n👉 Conheça: upe-criativo-sistemas.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#agendaonline #agendamento #dashboard #gestao #clinica #estudio #salaodebeleza #pequenosnegocios #empreendedorismo #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-sistemas/gerado/sis-09-01.jpg"
+   ],
+   "capa": "",
+   "status": "planejado",
+   "modelo": [
+    {
+     "frente": "sistemas",
+     "layout": "capa",
+     "formato": "feed",
+     "tema": "escuro",
+     "eyebrow": "Upe Sistemas",
+     "titulo": "Agenda online e dashboards feitos pela Upe.",
+     "texto": "A Upe configura, você usa. Sem fidelidade.",
+     "cta": "Quero a minha agenda",
+     "itens": [],
+     "imagem": "",
+     "handle": "@upecriativo",
+     "slide": ""
+    }
+   ],
+   "id": "app-sis-09",
+   "canal": "instagram",
+   "formato": "feed",
+   "pilar": "Upe Sistemas",
+   "origem": "Kit Upe Sistemas"
   },
   {
    "id": "app-tv-28",
@@ -3420,6 +4748,23 @@
    "hora": "12:00",
    "status": "planejado",
    "id": "upe-066"
+  },
+  {
+   "data": "2026-11-29",
+   "hora": "12:00",
+   "titulo": "Edite sem programar.",
+   "legenda": "Edite sem programar. 🎬\n\nClique no texto e escreva. Publique quando estiver pronto. Volte para qualquer versão anterior.\n\n👉 Conheça: upe-criativo-lp.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n#landingpage #paginadevendas #marketingdigital #trafegopago #leads #empreendedorismo #pequenosnegocios #vendasonline #upecriativo",
+   "roteiro": "",
+   "midias": [
+    "kits/upe-landing/gerado/lp-10.mp4"
+   ],
+   "capa": "kits/upe-landing/gerado/lp-10-01.jpg",
+   "status": "planejado",
+   "id": "upe-lp-10-sh",
+   "canal": "youtube",
+   "formato": "shorts",
+   "pilar": "YouTube",
+   "origem": "YouTube Shorts"
   },
   {
    "data": "2026-11-30",

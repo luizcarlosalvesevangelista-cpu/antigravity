@@ -243,7 +243,7 @@ function aCalendario(w) {
 }
 
 /* ---------- cronograma da Upe ---------- */
-const PILARES = ["Branding", "Rebranding", "Marca", "Publicidade e marketing", "E-commerce", "Upe TV", "Upe ERP", "Loja Upe", "YouTube"];
+const PILARES = ["Branding", "Rebranding", "Marca", "Publicidade e marketing", "E-commerce", "Upe TV", "Upe ERP", "Loja Upe", "Landing pages", "Upe Sistemas", "YouTube"];
 const CST = { planejado: "Planejado", roteiro: "Roteiro", pronto: "Pronto", aprovado: "Aprovado", reprovado: "Reprovado", publicado: "Publicado" };
 const cstPill = s => `<span class="pill ${{ aprovado: "ok", publicado: "info", reprovado: "bad", pronto: "warn" }[s] || ""}">${esc(CST[s] || s)}</span>`;
 async function cronogramaArquivo() {

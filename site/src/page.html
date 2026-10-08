@@ -1,5 +1,5 @@
 <title>Upe Criativo</title>
-<meta name="description" content="Upe Criativo: Branding e Redesign, Upe ERP e Upe TV.">
+<meta name="description" content="Upe Criativo: Branding e Redesign, Upe ERP, Upe TV, landing pages, agenda online e dashboards.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,400&display=swap">
@@ -46,6 +46,7 @@ h3 { font-size: 1.2rem; font-weight: 900; }
 .btn-linha { border-color: currentColor; color: inherit; background: transparent; }
 .mat { display: inline-flex; width: fit-content; justify-self: start; align-self: start; align-items: center; gap: 8px; margin-top: 14px; font-weight: 900; font-size: .9rem; color: inherit; text-decoration: none; border-bottom: 2px solid currentColor; padding-bottom: 2px; }
 .mat::before { content: "↓"; }
+.mat.ext::before { content: "↗"; }
 .btn-azul { background: var(--azul); color: var(--creme); }
 :root[data-theme="dark"] .btn-azul { background: var(--creme); color: var(--azul); }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .btn-azul { background: var(--creme); color: var(--azul); } }
@@ -56,7 +57,7 @@ h3 { font-size: 1.2rem; font-weight: 900; }
 .top .wrap { display: flex; align-items: center; gap: 24px; height: 68px; }
 .top .brand { height: 24px; color: var(--creme); flex: none; }
 .top nav { display: flex; gap: 2px; margin-left: auto; overflow-x: auto; scrollbar-width: none; }
-.top nav a { text-decoration: none; font-weight: 700; font-size: .92rem; padding: 8px 12px; border-radius: 999px; white-space: nowrap; opacity: .86; }
+.top nav a { text-decoration: none; font-weight: 700; font-size: .9rem; padding: 8px 9px; border-radius: 999px; white-space: nowrap; opacity: .86; }
 .top nav a:hover { opacity: 1; background: rgba(242,240,225,.1); }
 .top nav a[aria-current="page"] { background: var(--creme); color: var(--azul); opacity: 1; }
 .top .theme { flex: none; background: transparent; border: 1.5px solid rgba(242,240,225,.35); color: var(--creme); width: 38px; height: 38px; border-radius: 50%; cursor: pointer; display: grid; place-items: center; }
@@ -96,11 +97,13 @@ section { position: relative; }
 .reel { position: relative; border-radius: 14px; overflow: hidden; background: var(--tinta); box-shadow: 0 30px 70px rgba(6,30,50,.28); }
 .reel video { width: 100%; height: auto; aspect-ratio: 16 / 9; background: var(--tinta); }
 .reel.v video { aspect-ratio: 9 / 16; }
+.reel.shot img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; object-position: top left; }
 .reel-cap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 20px; margin-top: 14px; font-size: .9rem; color: var(--fg-2); }
 .band-azul .reel-cap { color: rgba(242,240,225,.75); }
 
 /* serviços */
-.servs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.servs { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 18px; }
+.servs .serv { grid-column: span 2; } .servs .serv:nth-child(n+4) { grid-column: span 3; }
 @media (max-width: 900px) { .servs { grid-template-columns: 1fr; } }
 .serv { background: var(--cartao); border: 1px solid var(--linha); border-radius: 18px; padding: 28px; display: grid; gap: 12px; align-content: start; text-decoration: none; }
 .serv svg { width: 46px; height: 46px; color: var(--acento); }
@@ -213,11 +216,13 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
     <a href="#inicio" class="brand" aria-label="Upe Criativo, início"><svg class="wm" viewBox="786 2599 350 48" aria-hidden="true">__WM__</svg></a>
     <nav aria-label="Principal">
       <a href="#inicio" data-nav="inicio">Início</a>
-      <a href="#branding" data-nav="branding">Branding e Redesign</a>
+      <a href="#branding" data-nav="branding">Branding</a>
       <a href="#erp" data-nav="erp">Upe ERP</a>
       <a href="#tv" data-nav="tv">Upe TV</a>
+      <a href="#lp" data-nav="lp">Landing pages</a>
+      <a href="#sistemas" data-nav="sistemas">Sistemas</a>
       <a href="#portfolio" data-nav="portfolio">Portfólio</a>
-      <a href="#sobre" data-nav="sobre">Sobre mim</a>
+      <a href="#sobre" data-nav="sobre">Sobre</a>
       <a href="#contato" data-nav="contato">Contato</a>
       <a href="portal/">Área do cliente</a>
     </nav>
@@ -235,7 +240,7 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
     <div class="wrap copy">
       <p class="eb" style="color:#A9BBD0">Branding · Redesign · Sistemas · Mídia</p>
       <h1>Branding, sistemas e mídia para a sua marca decolar.</h1>
-      <p class="lead">Crio identidades visuais e redesenho marcas. E levo esse cuidado até a venda, com o Upe ERP e o Upe TV.</p>
+      <p class="lead">Crio identidades visuais e redesenho marcas. E levo esse cuidado até a venda, com o Upe ERP, o Upe TV, landing pages e sistemas sob medida.</p>
       <div class="ctas"><a class="btn btn-creme" href="#filme">Assistir ao filme</a><a class="btn btn-linha" href="#contato">Falar com a Upe</a></div>
     </div>
   </section>
@@ -257,11 +262,13 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
 
   <section class="band band-alt" id="frentes">
     <div class="wrap">
-      <div class="head reveal"><p class="eb">Três frentes</p><h2>Uma marca forte, do traço até o balcão.</h2></div>
+      <div class="head reveal"><p class="eb">Cinco frentes</p><h2>Uma marca forte, do traço até o balcão.</h2></div>
       <div class="servs">
         <a class="serv reveal" href="#branding">__IC_PEN__<h3>Branding e Redesign</h3><p>Logotipo, paleta, tipografia, ícones, padrões e manual de marca. Ou o redesenho da marca que você já tem.</p><span class="more">Ver como funciona →</span></a>
         <a class="serv reveal" href="#erp">__IC_PANEL__<h3>Upe ERP</h3><p>Loja virtual, PDV, PIX com QR Code, gestão de pedidos, cupons e relatórios num só painel.</p><span class="more">Conhecer o sistema →</span></a>
         <a class="serv reveal" href="#tv">__IC_TV__<h3>Upe TV</h3><p>A sua marca nas TVs e totens de cafés, academias, clínicas, salões e lojas parceiras.</p><span class="more">Anunciar ou ser parceiro →</span></a>
+        <a class="serv reveal" href="#lp">__IC_LP__<h3>Landing pages</h3><p>Páginas de venda com a sua marca, editor fácil, domínio próprio e painel de visitas, cliques e leads.</p><span class="more">Ver as landing pages →</span></a>
+        <a class="serv reveal" href="#sistemas">__IC_SIS__<h3>Agenda e dashboards</h3><p>Agenda online para o cliente marcar horário sozinho e dashboards com os números do seu negócio.</p><span class="more">Conhecer os sistemas →</span></a>
       </div>
     </div>
   </section>
@@ -328,6 +335,49 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
       <div class="reveal">
         <div class="reel" data-reel><video controls playsinline preload="none" data-h="assets/video/tv-h.mp4" data-v="assets/video/tv-v.mp4" data-ph="assets/img/tv-h.jpg" data-pv="assets/img/tv-v.jpg" poster="assets/img/tv-h.jpg"></video></div>
         <div class="reel-cap"><span>Vídeo de lançamento · 0:40</span><span>Campanhas de exemplo</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band band-azul" id="lp">
+    <div class="pat"></div>
+    <div class="wrap split">
+      <div class="stack reveal">
+        <p class="eb">Novo · Upe Landing pages</p>
+        <h2>A página que vende, com o painel que mostra o que funciona.</h2>
+        <p class="lead">Eu crio a sua landing page ou você envia o HTML pronto. Você edita os textos sem programar, conecta o seu domínio e acompanha visitas, cliques e leads.</p>
+        <div class="feats">
+          <div class="feat"><b>Editor fácil</b><span>Clique no texto e escreva.</span></div>
+          <div class="feat"><b>Envie o seu HTML</b><span>Página pronta vai ao ar.</span></div>
+          <div class="feat"><b>Domínio próprio</b><span>Com cadeado (HTTPS).</span></div>
+          <div class="feat"><b>Análise</b><span>Visitas, cliques e origem.</span></div>
+          <div class="feat"><b>Leads</b><span>Formulário direto no painel.</span></div>
+          <div class="feat"><b>SEO e Pixel</b><span>Google, Meta e Analytics.</span></div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center"><a class="btn btn-creme" href="https://upe-criativo-lp.web.app/" target="_blank" rel="noopener">Conhecer as landing pages</a><a class="btn btn-linha" href="https://upe-criativo-servicos.web.app/" target="_blank" rel="noopener">Painel do cliente</a></div>
+      </div>
+      <div class="reveal">
+        <div class="reel shot"><img src="assets/img/ui/lp-editor.jpg" alt="Editor de landing page do Painel Upe Serviços" loading="lazy" width="1600" height="1000"></div>
+        <div class="reel-cap"><span>Painel Upe Serviços · editor e análise</span><span>Telas com dados de exemplo</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="sistemas">
+    <div class="wrap split flip">
+      <div class="stack reveal">
+        <p class="eb">Novo · Upe Sistemas</p>
+        <h2>Agenda online e dashboards sob medida.</h2>
+        <p class="lead">O seu cliente marca o horário sozinho, pelo celular, e você vê a agenda do dia num painel. E os números do negócio, da planilha ou da agenda, viram um dashboard que se atualiza sozinho.</p>
+        <div class="aud">
+          <div><h3>Agenda online</h3><p>Serviços com duração e preço, horários por dia da semana, sem dois clientes no mesmo horário e confirmação pelo WhatsApp.</p><a class="mat ext" href="https://upe-criativo-sistemas.web.app/exemplo?demo=1" target="_blank" rel="noopener">Testar a agenda de exemplo</a></div>
+          <div><h3>Dashboards</h3><p>Faturamento, atendimentos, vendas e leads em números grandes, gráficos e rankings, montados com os indicadores que importam para você.</p><a class="mat ext" href="https://upe-criativo-sistemas.web.app/#dashboards" target="_blank" rel="noopener">Ver como funciona</a></div>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center"><a class="btn btn-azul" href="https://upe-criativo-sistemas.web.app/" target="_blank" rel="noopener">Conhecer os sistemas</a><a class="btn btn-linha" href="https://upe-criativo-servicos.web.app/" target="_blank" rel="noopener">Painel do cliente</a></div>
+      </div>
+      <div class="reveal">
+        <div class="reel shot"><img src="assets/img/ui/dash-painel.jpg" alt="Dashboard de atendimentos no Painel Upe Serviços" loading="lazy" width="1600" height="1000"></div>
+        <div class="reel-cap"><span>Dashboard de atendimentos</span><span>Dados de exemplo</span></div>
       </div>
     </div>
   </section>
@@ -420,13 +470,13 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
     <div class="stack">
       <p class="eb">Contato</p>
       <h2>Vamos colocar a sua marca no ar?</h2>
-      <p class="lead">Conte o que você precisa: uma identidade nova, o redesign da sua marca, a sua loja no Upe ERP ou a sua campanha no Upe TV.</p>
+      <p class="lead">Conte o que você precisa: uma identidade nova, o redesign da sua marca, a sua loja no Upe ERP, a sua campanha no Upe TV, uma landing page, uma agenda online ou um dashboard.</p>
       <form class="form" id="form" novalidate>
         <div class="row2">
           <label for="f-nome">Nome<input id="f-nome" name="nome" autocomplete="name" required></label>
           <label for="f-contato">E-mail ou WhatsApp<input id="f-contato" name="contato" autocomplete="email" required></label>
         </div>
-        <label for="f-assunto">Assunto<select id="f-assunto" name="assunto"><option>Branding</option><option>Redesign</option><option>Upe ERP</option><option>Upe TV</option><option>Outro assunto</option></select></label>
+        <label for="f-assunto">Assunto<select id="f-assunto" name="assunto"><option>Branding</option><option>Redesign</option><option>Upe ERP</option><option>Upe TV</option><option>Landing page</option><option>Agenda online ou dashboard</option><option>Outro assunto</option></select></label>
         <label for="f-msg">Mensagem<textarea id="f-msg" name="mensagem" rows="4" required></textarea></label>
         <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
         <div class="frow"><button class="btn btn-creme" type="submit" id="f-enviar">Enviar mensagem</button><span class="fmsg" id="f-msg-status" role="status"></span></div>
@@ -440,7 +490,7 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
 <footer>
   <div class="wrap">
     <a href="#inicio" class="brand" aria-label="Upe Criativo"><svg class="wm" viewBox="786 2599 350 48" aria-hidden="true">__WM__</svg></a>
-    <nav aria-label="Rodapé"><a href="#branding">Branding e Redesign</a><a href="https://upe-criativo-erp.web.app/" target="_blank" rel="noopener">Upe ERP</a><a href="https://upe-criativo-tv.web.app/" target="_blank" rel="noopener">Upe TV</a><a href="#portfolio">Portfólio</a><a href="#sobre">Sobre mim</a><a href="portal/">Área do cliente</a></nav>
+    <nav aria-label="Rodapé"><a href="#branding">Branding e Redesign</a><a href="https://upe-criativo-erp.web.app/" target="_blank" rel="noopener">Upe ERP</a><a href="https://upe-criativo-tv.web.app/" target="_blank" rel="noopener">Upe TV</a><a href="https://upe-criativo-lp.web.app/" target="_blank" rel="noopener">Landing pages</a><a href="https://upe-criativo-sistemas.web.app/" target="_blank" rel="noopener">Agenda e dashboards</a><a href="#portfolio">Portfólio</a><a href="#sobre">Sobre mim</a><a href="portal/">Área do cliente</a></nav>
     <span>© <span id="ano">2026</span> Upe Criativo</span>
   </div>
 </footer>
@@ -645,7 +695,7 @@ function renderCase(id) {
 })();
 
 /* rotas: #portfolio, #sobre, #case-xxx são abas; o resto são âncoras da página inicial */
-const homeAnchors = ["inicio", "filme", "frentes", "branding", "erp", "tv", "portfolio-teaser", "sobre-teaser"];
+const homeAnchors = ["inicio", "filme", "frentes", "branding", "erp", "tv", "lp", "sistemas", "portfolio-teaser", "sobre-teaser"];
 function route() {
   const h = location.hash.replace("#", "") || "inicio";
   let view = "home", nav = h;

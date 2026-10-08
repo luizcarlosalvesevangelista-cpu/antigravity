@@ -1,4 +1,4 @@
-/* Modelos editáveis de post (estilo Canva) das frentes da Upe: Upe ERP, Upe TV, Loja Upe (e Landing pages, em breve).
+/* Modelos editáveis de post (estilo Canva) das frentes da Upe: Upe ERP, Upe TV, Loja Upe, Upe Landing pages e Upe Sistemas (agenda e dashboards).
    Desenha no <canvas> com Lato e as imagens do site. Usado pelo editor do painel (Cronograma Upe → Modelos)
    e pelo gerador das artes e reels do cronograma (mesmo arquivo, mesmo resultado).
    UpeModelos.render(canvas, modelo, { base, t }) → Promise. t (0…1) anima a entrada dos elementos (reels). */
@@ -10,7 +10,10 @@
       imagens: ["assets/img/ui/tv-tela.jpg", "assets/img/ui/tv-portal.jpg", "assets/img/ui/tv-qr.jpg"] },
     loja: { nome: "Loja Upe", chip: "LOJA UPE", base: "#0b1d3a", escuro: "#060f20", destaque: "#ff7a59", creme: "#f4f1ea", tinta: "#0d1b33", cta: "Monte a sua loja", rodape: "A loja online da sua marca",
       imagens: ["assets/img/ui/loja-vitrine.jpg", "assets/img/ui/loja-produtos.jpg", "assets/img/ui/loja-pix.jpg", "assets/img/ui/loja-pedido.jpg", "assets/img/ui/loja-produto.jpg"] },
-    landing: { nome: "Upe Landing pages", chip: "LANDING PAGES", breve: true, base: "#3a2f6b", escuro: "#1d1738", destaque: "#c9b8ff", creme: "#f3f0fa", tinta: "#1d1738", cta: "Em breve", rodape: "Páginas de venda com a sua marca", imagens: [] }
+    landing: { nome: "Upe Landing pages", chip: "LANDING PAGES", base: "#3a2f6b", escuro: "#1d1738", destaque: "#c9b8ff", creme: "#f3f0fa", tinta: "#1d1738", cta: "Quero a minha página", rodape: "Páginas de venda com painel de resultados",
+      imagens: ["assets/img/ui/lp-editor.jpg", "assets/img/ui/lp-analise.jpg", "assets/img/ui/lp-pagina.jpg", "assets/img/ui/lp-leads.jpg"] },
+    sistemas: { nome: "Upe Sistemas", chip: "UPE SISTEMAS", base: "#1f5c50", escuro: "#0d2a24", destaque: "#7fe0c4", creme: "#eef6f2", tinta: "#0d2a24", cta: "Quero a minha agenda", rodape: "Agenda online e dashboards sob medida",
+      imagens: ["assets/img/ui/ag-celular.jpg", "assets/img/ui/dash-painel.jpg", "assets/img/ui/ag-painel.jpg", "assets/img/ui/ag-celular-2.jpg"] }
   };
   const FORMATOS = { feed: { nome: "Feed 4:5", w: 1080, h: 1350 }, story: { nome: "Story / Reels 9:16", w: 1080, h: 1920 }, quadrado: { nome: "Quadrado 1:1", w: 1080, h: 1080 }, video: { nome: "Vídeo / capa YouTube 16:9", w: 1920, h: 1080 } };
   const LAYOUTS = { capa: "Título forte", foto: "Imagem + texto", tela: "Tela do app", lista: "Lista numerada", cta: "Chamada final" };

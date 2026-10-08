@@ -1,4 +1,4 @@
-/* Modelos editáveis de post (estilo Canva) das frentes da Upe: Upe ERP, Upe TV, Loja Upe (e Landing pages, em breve).
+/* Modelos editáveis de post (estilo Canva) das frentes da Upe: Upe ERP, Upe TV, Loja Upe, Upe Landing pages e Upe Sistemas (agenda e dashboards).
    Desenha no <canvas> com Lato e as imagens do site. Usado pelo editor do painel (Cronograma Upe → Modelos)
    e pelo gerador das artes e reels do cronograma (mesmo arquivo, mesmo resultado).
    UpeModelos.render(canvas, modelo, { base, t }) → Promise. t (0…1) anima a entrada dos elementos (reels). */
@@ -10,7 +10,10 @@
       imagens: ["assets/img/ui/tv-tela.jpg", "assets/img/ui/tv-portal.jpg", "assets/img/ui/tv-qr.jpg"] },
     loja: { nome: "Loja Upe", chip: "LOJA UPE", base: "#0b1d3a", escuro: "#060f20", destaque: "#ff7a59", creme: "#f4f1ea", tinta: "#0d1b33", cta: "Monte a sua loja", rodape: "A loja online da sua marca",
       imagens: ["assets/img/ui/loja-vitrine.jpg", "assets/img/ui/loja-produtos.jpg", "assets/img/ui/loja-pix.jpg", "assets/img/ui/loja-pedido.jpg", "assets/img/ui/loja-produto.jpg"] },
-    landing: { nome: "Upe Landing pages", chip: "LANDING PAGES", breve: true, base: "#3a2f6b", escuro: "#1d1738", destaque: "#c9b8ff", creme: "#f3f0fa", tinta: "#1d1738", cta: "Em breve", rodape: "Páginas de venda com a sua marca", imagens: [] }
+    landing: { nome: "Upe Landing pages", chip: "LANDING PAGES", base: "#3a2f6b", escuro: "#1d1738", destaque: "#c9b8ff", creme: "#f3f0fa", tinta: "#1d1738", cta: "Quero a minha página", rodape: "Páginas de venda com painel de resultados",
+      imagens: ["assets/img/ui/lp-editor.jpg", "assets/img/ui/lp-analise.jpg", "assets/img/ui/lp-pagina.jpg", "assets/img/ui/lp-leads.jpg"] },
+    sistemas: { nome: "Upe Sistemas", chip: "UPE SISTEMAS", base: "#1f5c50", escuro: "#0d2a24", destaque: "#7fe0c4", creme: "#eef6f2", tinta: "#0d2a24", cta: "Quero a minha agenda", rodape: "Agenda online e dashboards sob medida",
+      imagens: ["assets/img/ui/ag-celular.jpg", "assets/img/ui/dash-painel.jpg", "assets/img/ui/ag-painel.jpg", "assets/img/ui/ag-celular-2.jpg"] }
   };
   const FORMATOS = { feed: { nome: "Feed 4:5", w: 1080, h: 1350 }, story: { nome: "Story / Reels 9:16", w: 1080, h: 1920 }, quadrado: { nome: "Quadrado 1:1", w: 1080, h: 1080 }, video: { nome: "Vídeo / capa YouTube 16:9", w: 1920, h: 1080 } };
   const LAYOUTS = { capa: "Título forte", foto: "Imagem + texto", tela: "Tela do app", lista: "Lista numerada", cta: "Chamada final" };
@@ -1611,7 +1614,7 @@ function aCalendario(w) {
 }
 
 /* ---------- cronograma da Upe ---------- */
-const PILARES = ["Branding", "Rebranding", "Marca", "Publicidade e marketing", "E-commerce", "Upe TV", "Upe ERP", "Loja Upe", "YouTube"];
+const PILARES = ["Branding", "Rebranding", "Marca", "Publicidade e marketing", "E-commerce", "Upe TV", "Upe ERP", "Loja Upe", "Landing pages", "Upe Sistemas", "YouTube"];
 const CST = { planejado: "Planejado", roteiro: "Roteiro", pronto: "Pronto", aprovado: "Aprovado", reprovado: "Reprovado", publicado: "Publicado" };
 const cstPill = s => `<span class="pill ${{ aprovado: "ok", publicado: "info", reprovado: "bad", pronto: "warn" }[s] || ""}">${esc(CST[s] || s)}</span>`;
 async function cronogramaArquivo() {
@@ -1904,9 +1907,14 @@ const APPS_PADRAO = {
   tv: { nome: "Upe TV", desc: "A marca do cliente nas telas de estabelecimentos parceiros, com QR code.", painel: "https://upe-criativo-tv.web.app", teste: 0,
     planos: [{ k: "rodape", nome: "Rodapé", preco: 0 }, { k: "lateral", nome: "Lateral", preco: 0 }, { k: "cheia", nome: "Tela cheia", preco: 0 }, { k: "vitrine", nome: "Combo Vitrine", preco: 0 }, { k: "destaque", nome: "Combo Destaque", preco: 0 }, { k: "total", nome: "Presença Total", preco: 0 }, { k: "rede", nome: "Rede Upe", preco: 0 }],
     extras: [{ k: "cta", nome: "Página CTA + QR", desc: "Página da marca feita pela Upe, com QR e contagem de visitas.", preco: 0 }, { k: "motion", nome: "Motion do anúncio", desc: "Vídeo animado com a marca para as telas.", preco: 0 }, { k: "telas", nome: "Tela parceira adicional", desc: "Mais um estabelecimento na campanha.", preco: 0 }] },
-  landing: { nome: "Upe Landing pages", desc: "Páginas de venda com a identidade do cliente.", painel: "", teste: 0, breve: true, planos: [], extras: [] }
+  landing: { nome: "Upe Landing pages", desc: "Páginas de venda com a marca do cliente, editor, domínio próprio e painel de visitas, cliques e leads.", painel: "https://upe-criativo-servicos.web.app", site: "https://upe-criativo-lp.web.app", teste: 0,
+    planos: [{ k: "hospedagem", nome: "Hospedagem", preco: 29.9 }, { k: "ajustes", nome: "Hospedagem + ajustes", preco: 79.9 }],
+    extras: [{ k: "essencial", nome: "Criação: landing page essencial", desc: "Até 5 seções, formulário e WhatsApp (pagamento único).", preco: 497 }, { k: "completa", nome: "Criação: landing page completa", desc: "Até 10 seções, copy, SEO e Pixel (pagamento único).", preco: 997 }] },
+  sistemas: { nome: "Upe Sistemas", desc: "Agenda online para o cliente marcar horário e dashboards com os números do negócio.", painel: "https://upe-criativo-servicos.web.app", site: "https://upe-criativo-sistemas.web.app", teste: 0,
+    planos: [{ k: "agenda", nome: "Agenda no ar", preco: 49.9 }, { k: "dash", nome: "Dashboard no ar", preco: 59.9 }],
+    extras: [{ k: "agcriacao", nome: "Criação: agenda online", desc: "Serviços, horários e página (pagamento único).", preco: 697 }, { k: "dashcriacao", nome: "Criação: dashboard sob medida", desc: "Até 8 indicadores e 3 gráficos (pagamento único).", preco: 1200 }] }
 };
-const APP_IDS = ["erp", "tv", "landing"];
+const APP_IDS = ["erp", "tv", "landing", "sistemas"];
 const AST = { teste: ["Em teste", "info"], ativo: ["Ativo", "ok"], pendente: ["Aguardando pagamento", "warn"], pausado: ["Pausado", ""], cancelado: ["Cancelado", ""] };
 const astPill = s => { const [l, c] = AST[s] || [s, ""]; return `<span class="pill ${c}">${esc(l)}</span>`; };
 function appsCat(pub) { const c = clone(APPS_PADRAO), o = (pub || {}).apps || {}; APP_IDS.forEach(k => { if (o[k]) c[k] = { ...c[k], ...o[k] }; if (/upe-(erp|tv)[.-]/.test(c[k].painel || "")) c[k].painel = APPS_PADRAO[k].painel; }); return c; }
@@ -1975,7 +1983,8 @@ const rowCat = (t, i, x, ex) => `<div class="row" style="flex-wrap:nowrap"><inpu
 const ADM_LINKS = {
   erp: [["Gerenciador do ERP", "Licenças, cobranças, suporte e páginas", "https://upe-criativo-gestao.web.app/", true], ["Painel das empresas", "Entre como Upe e escolha a empresa", "https://upe-criativo-painel.web.app/", true], ["Lojas", "Endereço público das lojas", "https://upe-criativo-lojas.web.app/"], ["Página de vendas", "Página do Upe ERP", "https://upe-criativo-erp.web.app/"]],
   tv: [["Gestão do Upe TV", "Programação, campanhas, telas e anunciantes", "https://upe-criativo-tv.web.app/", true], ["Portal do anunciante", "Como o anunciante vê", "https://upe-criativo-tv.web.app/#cliente"]],
-  landing: []
+  landing: [["Painel Upe Serviços", "Clientes, planos, cobranças, páginas e domínios (Gestão Upe)", "https://upe-criativo-servicos.web.app/#/adm/clientes", true], ["Páginas de todos os clientes", "Editar, publicar ou suspender", "https://upe-criativo-servicos.web.app/#/adm/paginas", true], ["Página de vendas", "Upe Landing pages", "https://upe-criativo-lp.web.app/"], ["Página de exemplo", "upe-criativo-lp.web.app/exemplo", "https://upe-criativo-lp.web.app/exemplo"]],
+  sistemas: [["Painel Upe Serviços", "Clientes, planos e cobranças (Gestão Upe)", "https://upe-criativo-servicos.web.app/#/adm/clientes", true], ["Cobranças", "Mensalidades e atrasos", "https://upe-criativo-servicos.web.app/#/adm/cobrancas", true], ["Página de vendas", "Agenda online e dashboards", "https://upe-criativo-sistemas.web.app/"], ["Agenda de exemplo", "Como o cliente final agenda", "https://upe-criativo-sistemas.web.app/exemplo?demo=1"]]
 };
 function admLinks(app) {
   const l = ADM_LINKS[app] || []; if (!l.length) return "";
@@ -1989,7 +1998,7 @@ function aClienteApps(ct, { id, doc, acoes, save }) {
   doc.apps = doc.apps || {};
   ct.innerHTML = `${peds.filter(p => p.status === "novo").length ? `<section class="card grid prio"><b>Pedidos do cliente</b>${peds.filter(p => p.status === "novo").map(p => `<div class="row" style="flex-wrap:nowrap"><span style="flex:1">${esc(cat[p.app]?.nome || p.app)}${p.extra ? ` · extra <b>${esc((cat[p.app]?.extras.find(e => e.k === p.extra) || {}).nome || p.extra)}</b>` : " · contratar"} <span class="muted small">${fdt(p.em)}</span>${p.texto ? `<br><span class="small">${esc(p.texto)}</span>` : ""}</span><button class="btn sm" data-pok="${p.id}">Atendido</button></div>`).join("")}</section>` : ""}
     <p class="muted small">Os apps contratados ficam numa conta só: a cobrança sai em Pagamentos (PIX ou cartão), a renovação entra na agenda do cliente e no seu calendário, e o cliente vê tudo em “Apps Upe” no portal.</p>
-    <div class="g3">${APP_IDS.map(k => { const c = cat[k], a = doc.apps[k] || {};
+    <div class="g4">${APP_IDS.map(k => { const c = cat[k], a = doc.apps[k] || {};
       return `<section class="card grid" data-app="${k}"><div class="spread"><h3>${esc(c.nome)}</h3>${a.status && a.status !== "cancelado" ? astPill(a.status) : c.breve ? '<span class="pill">em breve</span>' : '<span class="pill">Sem adesão</span>'}</div>
         <p class="muted small">${esc(c.desc)}</p>
         ${c.breve ? "" : `<label class="f">Status<select data-k="status"><option value="">Sem adesão</option>${Object.entries(AST).map(([s, [l]]) => `<option value="${s}" ${a.status === s ? "selected" : ""}>${l}</option>`).join("")}</select></label>
@@ -2015,7 +2024,7 @@ function cApps(m, c) {
   const { doc, acoes } = c, cat = appsCat(state.cfg), meus = doc.apps || {}, peds = appPedidos(doc, acoes);
   const pediu = (app, ex = "") => peds.some(p => p.app === app && p.extra === ex && p.status === "novo");
   m.innerHTML = `<div class="grid" style="gap:6px"><span class="eb">Apps Upe</span><h1>Ferramentas para o seu negócio</h1><p class="muted small">Os apps contratados ficam na mesma conta do seu projeto: um pagamento só e as renovações na sua agenda.</p></div>
-    <div class="g3">${APP_IDS.map(k => { const ap = cat[k], a = meus[k], tem = a && a.status && a.status !== "cancelado";
+    <div class="g4">${APP_IDS.map(k => { const ap = cat[k], a = meus[k], tem = a && a.status && a.status !== "cancelado";
       return `<article class="card grid"><div class="spread"><h3>${esc(ap.nome)}</h3>${tem ? astPill(a.status) : ap.breve ? '<span class="pill">em breve</span>' : ""}</div><p class="muted small">${esc(ap.desc)}</p>
         ${tem ? `<div class="grid" style="gap:2px"><span class="small"><b>Plano:</b> ${esc((ap.planos.find(p => p.k === a.plano) || {}).nome || "—")}</span>${(a.extras || []).length ? `<span class="small"><b>Extras:</b> ${esc(a.extras.map(x => (ap.extras.find(e => e.k === x) || {}).nome || x).join(", "))}</span>` : ""}<span class="small"><b>Mensal:</b> ${brl(valorAdesao(cat, k, a))}${a.status === "teste" && a.fimTeste ? ` · teste grátis até ${fdate(a.fimTeste)}` : a.status === "ativo" ? ` · renova em ${fdate(proxVenc(a))}` : ""}</span>${a.obs ? `<span class="small muted">${esc(a.obs)}</span>` : ""}</div>${ap.painel ? `<a class="btn sec sm" href="${esc(ap.painel)}" target="_blank" rel="noopener" style="justify-self:start">Abrir o ${esc(ap.nome)}</a>` : ""}`
         : ap.breve ? `<button class="btn sec sm" data-quero="${k}" ${pediu(k) ? "disabled" : ""}>${pediu(k) ? "Interesse enviado" : "Quero saber quando lançar"}</button>`
@@ -2026,10 +2035,10 @@ function cApps(m, c) {
     await Api.act(c.id, { tipo: "pedido", alvo: `app:${app}${ex ? ":" + ex : ""}`, modo: "app", quantidade: 1, texto: "" }); toast("Pedido enviado. A Upe entra em contato para ativar."); refreshClient(); });
 }
 
-/* ===== Modelos editáveis (estilo Canva): Upe ERP, Upe TV, Loja Upe e Landing pages (em breve) =====
+/* ===== Modelos editáveis (estilo Canva): Upe ERP, Upe TV, Loja Upe, Upe Landing pages e Upe Sistemas =====
    Usa window.UpeModelos (portal/modelos.js). Cada post guarda os slides em x.modelo para poder ser editado de novo. */
 const MBASE = () => (CFG.siteUrl != null ? CFG.siteUrl : "../");
-const FRENTE_PILAR = { erp: "Upe ERP", tv: "Upe TV", loja: "Loja Upe", landing: "Landing pages" };
+const FRENTE_PILAR = { erp: "Upe ERP", tv: "Upe TV", loja: "Loja Upe", landing: "Landing pages", sistemas: "Upe Sistemas" };
 const PILAR_FRENTE = { "Upe ERP": "erp", "Upe TV": "tv", "Loja Upe": "loja" };
 async function renderModelo(cv, m) { await UpeModelos.render(cv, m, { base: MBASE() }); return cv; }
 // imagem final de um slide: arquivo no Storage (ou no navegador, no modo demonstração) ou JPEG embutido
