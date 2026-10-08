@@ -677,6 +677,7 @@ body.gated .app{display:none}
         <label class="f" for="lgPass">Senha<input id="lgPass" type="password" autocomplete="current-password" required></label>
         <p class="err" id="lgErr" hidden></p>
         <button class="btn" type="submit" id="lgSubmit">Entrar na gestão</button>
+        <button class="btn ghost" type="button" id="lgReset">Esqueci a senha / primeiro acesso</button>
       </form>
     </details>
   </div>
@@ -1192,7 +1193,8 @@ const Store = {
     fb.auth().onAuthStateChanged(u => { this.user = u; this.status(); this.onAuth && this.onAuth(u); });
   },
   isAdmin() { return HOSTED ? !!(this.user && !this.user.isAnonymous) : (!!this.db && !this.readOnly); },
-  async login(email, pass) { await this.fb.auth().signInWithEmailAndPassword(email, pass); },
+  async login(email, pass) { if (!this.fb) throw { code: 'carregando' }; await Promise.race([this.fb.auth().signInWithEmailAndPassword(email, pass), new Promise((_, no) => setTimeout(() => no({ code: 'tempo' }), 20000))]); },
+  async reset(email) { if (!this.fb) throw { code: 'carregando' }; await this.fb.auth().sendPasswordResetEmail(email); },
   async logout() { await this.fb.auth().signOut(); try { await this.fb.auth().signInAnonymously(); } catch (e) {} },
   async upload(file, path) { const ref = this.fb.storage().ref(path); await ref.put(file, { contentType: file.type }); return ref.getDownloadURL(); },
   status() {
@@ -3036,9 +3038,10 @@ window.addEventListener('hashchange', () => { route(); window.scrollTo(0, 0); })
     e.preventDefault();
     const b = $('#lgSubmit'); b.disabled = true; b.textContent = 'Entrando…';
     try { await Store.login($('#lgEmail').value.trim(), $('#lgPass').value); $('#lgPass').value = ''; $('#lgErr').hidden = true; authKnown = true; applyGate(); route(); toast('Bem-vindo. As alterações vão para as TVs quando você tocar em Confirmar alterações.'); }
-    catch (err) { const el = $('#lgErr'); el.hidden = false; el.textContent = 'E-mail ou senha incorretos. Confira e tente de novo.'; }
+    catch (err) { const el = $('#lgErr'); el.hidden = false; el.textContent = ({ carregando: 'Ainda conectando. Aguarde alguns segundos e tente de novo.', tempo: 'Sem resposta do servidor. Confira a internet e tente de novo.', 'auth/network-request-failed': 'Sem conexão. Confira a internet e tente de novo.', 'auth/too-many-requests': 'Muitas tentativas. Aguarde alguns minutos ou use “Esqueci a senha”.' })[err && err.code] || 'E-mail ou senha incorretos. No primeiro acesso, use “Esqueci a senha” para criar a sua senha.'; }
     b.disabled = false; b.textContent = 'Entrar';
   });
+  $('#lgReset').addEventListener('click', async () => { const el = $('#lgErr'), em = $('#lgEmail').value.trim(); el.hidden = false; if (!em) { el.textContent = 'Digite o e-mail e toque de novo.'; return; } try { await Store.reset(em); el.textContent = 'Enviamos um link para ' + em + '. Abra o e-mail, crie a senha e volte aqui.'; } catch (e) { el.textContent = 'Não foi possível enviar agora. Tente de novo em instantes.'; } });
   $('#gateTv').addEventListener('submit', e => { e.preventDefault(); const c = $('#gtCode').value.trim().toUpperCase(); if (c) location.hash = 'tv-' + c; });
   applyGate();
   await Files.open(); await Files.loadAll();

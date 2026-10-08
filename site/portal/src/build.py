@@ -7,7 +7,8 @@ app = open(os.path.join(root, 'modelos.js')).read() + '\n' + open(os.path.join(h
 shell = open(os.path.join(here, 'shell.html')).read()
 head, body = shell.split('<!--BODY-->')
 open(os.path.join(root, 'app.js'), 'w').write(app)
-site_body = body.replace('__QR__', 'vendor/qrcode.min.js').replace('<script>__CONFIG__</script>', '<script src="config.js"></script>').replace('<script>__APP__</script>', '<script src="app.js"></script>')
+import hashlib; ver = hashlib.md5(app.encode()).hexdigest()[:8]
+site_body = body.replace('__QR__', 'vendor/qrcode.min.js').replace('<script>__CONFIG__</script>', f'<script src="config.js?v={ver}"></script>').replace('<script>__APP__</script>', f'<script src="app.js?v={ver}"></script>')
 open(os.path.join(root, 'index.html'), 'w').write('<!doctype html>\n<html lang="pt-BR">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n<link rel="icon" href="../favicon.svg" type="image/svg+xml">\n' + head + '\n</head>\n<body>\n' + site_body + '\n</body>\n</html>\n')
 if '--artifact' in sys.argv:
     out = sys.argv[sys.argv.index('--artifact') + 1]
