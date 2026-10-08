@@ -54,6 +54,7 @@ function aApps(w, app = "erp") {
   const peds = clients.flatMap(cl => appPedidos(cl.doc, cl.acoes).filter(p => p.app === app).map(p => ({ ...p, cl })));
   w.innerHTML = `<div class="spread"><div class="grid" style="gap:4px"><span class="eb">Apps Extra</span><h1>${esc(c.nome)}</h1><p class="muted small">${esc(c.desc)}</p></div>
       <div class="row">${c.gestor ? `<a class="btn sec" href="${esc(c.gestor)}" target="_blank" rel="noopener">Gerenciador do ERP</a>` : ""}${c.site ? `<a class="btn sec" href="${esc(c.site)}" target="_blank" rel="noopener">Página de vendas</a>` : ""}${c.painel ? `<a class="btn sec" href="${esc(c.painel)}" target="_blank" rel="noopener">Abrir o painel do app</a>` : ""}${!c.breve ? `<button class="btn" id="apCob">Gerar cobranças do mês</button>` : ""}</div></div>
+    ${admLinks(app)}
     <nav class="subtabs">${APP_IDS.map(k => `<a class="tab" href="#/admin/apps/${k}" ${k === app ? 'aria-current="page"' : ""}>${esc(cat[k].nome)}${cat[k].breve ? ' <span class="pill" style="margin-left:6px">em breve</span>' : ""}</a>`).join("")}</nav>
     ${c.breve ? `<section class="card grid"><h3>Em breve</h3><p class="muted">O Upe Landing pages entra aqui com o mesmo esquema dos outros apps: catálogo, adesão do cliente, cobrança única no portal e agenda unificada. Já dá para montar o catálogo abaixo e registrar o interesse dos clientes.</p></section>` : `
     <div class="g4"><div class="card stat"><b>${ade.filter(x => x.a.status === "ativo").length}</b><span>clientes ativos</span></div><div class="card stat"><b>${ade.filter(x => x.a.status === "teste").length}</b><span>em teste</span></div><div class="card stat"><b>${brl(mrr)}</b><span>por mês (ativos)</span></div><div class="card stat"><b>${peds.filter(p => p.status === "novo").length}</b><span>pedidos novos</span></div></div>`}
@@ -80,6 +81,18 @@ function aApps(w, app = "erp") {
     toast(n ? `${n} cobrança(s) gerada(s) e liberada(s) no portal` : "As cobranças deste mês já existem"); reAdmin(); };
 }
 const rowCat = (t, i, x, ex) => `<div class="row" style="flex-wrap:nowrap"><input data-${t}-k="${i}" value="${esc(x.k)}" aria-label="Código" style="max-width:80px"><input data-${t}-n="${i}" value="${esc(x.nome)}" aria-label="Nome">${ex ? `<input data-${t}-d="${i}" value="${esc(x.desc || "")}" aria-label="Descrição" placeholder="Descrição">` : ""}<input data-${t}-p="${i}" type="number" step="0.01" min="0" value="${esc(x.preco)}" aria-label="Preço (R$)" style="max-width:120px"><button class="btn sec sm" data-del="${t}:${i}" aria-label="Remover">×</button></div>`;
+
+// acesso direto às áreas de administração de cada app (mesmo login do painel: e-mail e senha da Upe)
+const ADM_LINKS = {
+  erp: [["Gerenciador do ERP", "Licenças, cobranças, suporte e páginas", "https://upe-criativo-gestao.web.app/", true], ["Painel das empresas", "Entre como Upe e escolha a empresa", "https://upe-criativo-painel.web.app/", true], ["Lojas", "Endereço público das lojas", "https://upe-criativo-lojas.web.app/"], ["Página de vendas", "Página do Upe ERP", "https://upe-criativo-erp.web.app/"]],
+  tv: [["Gestão do Upe TV", "Programação, campanhas, telas e anunciantes", "https://upe-criativo-tv.web.app/", true], ["Portal do anunciante", "Como o anunciante vê", "https://upe-criativo-tv.web.app/#cliente"]],
+  landing: []
+};
+function admLinks(app) {
+  const l = ADM_LINKS[app] || []; if (!l.length) return "";
+  return `<section class="card grid admquick"><div class="spread"><h3>Acesso de administrador</h3><span class="muted small">Mesmo login do painel. No primeiro acesso de cada app, entre com o seu e-mail e senha; depois ele lembra.</span></div>
+    <div class="admlinks">${l.map(([t, s, u, p]) => `<a class="admlink ${p ? "pri" : ""}" href="${esc(u)}" target="_blank" rel="noopener"><b>${esc(t)}</b><span>${esc(s)}</span></a>`).join("")}</div></section>`;
+}
 
 /* ---------- admin: ficha do cliente → Apps Extra ---------- */
 function aClienteApps(ct, { id, doc, acoes, save }) {

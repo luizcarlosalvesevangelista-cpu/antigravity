@@ -597,7 +597,7 @@ async function adminRoute(rest) {
   const w = $("#w");
   if (sec === "clientes") return aClientes(w, clients);
   if (sec === "calendario") return aCalendario(w);
-  if (sec === "cronograma") return aCronograma(w, a1 || "instagram");
+  if (sec === "cronograma") return aCronograma(w, a1 || "instagram", a2 || "");
   if (sec === "apps") return aApps(w, APP_IDS.includes(a1) ? a1 : "erp");
   if (sec === "cliente") return aCliente(w, a1, a2 || "projeto", a3);
   if (sec === "contatos") return aContatos(w, contatos);

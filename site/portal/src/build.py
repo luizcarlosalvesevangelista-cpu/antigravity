@@ -3,7 +3,7 @@ import json, os, sys, re
 here = os.path.dirname(os.path.abspath(__file__)); root = os.path.dirname(here)
 g = json.load(open(os.path.join(root, '..', 'src', 'glyphs.json')))
 app = open(os.path.join(here, 'app.js')).read().replace('__GLYPHS__', json.dumps({k: g[k] for k in g}))
-app = open(os.path.join(here, 'kit.js')).read() + '\n' + app.replace('/*__AGENDA__*/', open(os.path.join(here, 'agenda.js')).read() + '\n' + open(os.path.join(here, 'apps.js')).read())
+app = open(os.path.join(root, 'modelos.js')).read() + '\n' + open(os.path.join(here, 'kit.js')).read() + '\n' + app.replace('/*__AGENDA__*/', open(os.path.join(here, 'agenda.js')).read() + '\n' + open(os.path.join(here, 'apps.js')).read() + '\n' + open(os.path.join(here, 'editor.js')).read())
 shell = open(os.path.join(here, 'shell.html')).read()
 head, body = shell.split('<!--BODY-->')
 open(os.path.join(root, 'app.js'), 'w').write(app)

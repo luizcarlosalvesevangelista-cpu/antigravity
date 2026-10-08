@@ -24,6 +24,10 @@ Portal do cliente e painel do administrador para os serviços de **Branding, Mí
 - **Timeline por app:** aba do Cronograma Upe com ritmo, horários, formatos e fases para Instagram, YouTube, LinkedIn, TikTok, WhatsApp e Google. Para cada cliente, a timeline sai da ficha "Canais" e da jornada do dossiê e aparece em Conteúdo (para você e para o cliente).
 - **YouTube em versão história:** cada vídeo do canal tem um roteiro em 8 atos (história, contexto, narrativa, clímax, pergunta, solução, fundamentação e CTA) e um motion com áudio e efeitos em `kits/upe-branding/youtube/historia-*.mp4` (gerados em `motion/studio`, `run_yt.sh`). Só material próprio da Upe: nada de trechos de vídeos ou prints de terceiros, para não correr risco de strike.
 
+### Modelos editáveis (estilo Canva)
+
+Em **Cronograma Upe → Modelos editáveis**: escolha a frente (Upe ERP, Upe TV ou Loja Upe; Landing pages fica "em breve"), o formato (feed 4:5, story 9:16 ou quadrado) e um dos 5 modelos (título forte, imagem + texto, tela do app, lista numerada, chamada final). Edite os textos, troque a imagem (telas dos apps ou uma foto sua), crie vários slides para um carrossel e clique em **Adicionar ao cronograma** ou **Baixar**. Os posts gerados guardam o modelo: na janela do post, **Editar no modelo** abre o editor de novo e refaz as imagens. Os modelos ficam em `portal/modelos.js` (o mesmo arquivo gera as artes e os reels do cronograma).
+
 ### Kits da Upe
 
 - `kits/upe-branding/`: kit completo (artes, carrosséis, stories, reels com som, thumbnails e plano de YouTube).

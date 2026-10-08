@@ -243,7 +243,7 @@ function aCalendario(w) {
 }
 
 /* ---------- cronograma da Upe ---------- */
-const PILARES = ["Branding", "Rebranding", "Marca", "Publicidade e marketing", "E-commerce", "Upe TV", "Upe ERP", "YouTube"];
+const PILARES = ["Branding", "Rebranding", "Marca", "Publicidade e marketing", "E-commerce", "Upe TV", "Upe ERP", "Loja Upe", "YouTube"];
 const CST = { planejado: "Planejado", roteiro: "Roteiro", pronto: "Pronto", aprovado: "Aprovado", reprovado: "Reprovado", publicado: "Publicado" };
 const cstPill = s => `<span class="pill ${{ aprovado: "ok", publicado: "info", reprovado: "bad", pronto: "warn" }[s] || ""}">${esc(CST[s] || s)}</span>`;
 async function cronogramaArquivo() {
@@ -256,13 +256,13 @@ async function cronogramaPadrao() { return (await cronogramaArquivo()).itens; }
 const EXTRAS_ID = "_extras";
 async function salvarExtras(lista) { await S.set(`cronograma/${EXTRAS_ID}`, { id: EXTRAS_ID, tipo: "extras", lista }); }
 async function carregarCronogramaPadrao() { const arq = await cronogramaArquivo(); for (const it of arq.itens) await S.set(`cronograma/${it.id}`, it); await salvarExtras(arq.extras || []); return arq.itens.length; }
-function aCronograma(w, aba = "instagram") {
+function aCronograma(w, aba = "instagram", alvo = "") {
   const crono = state.cache.crono;
   const pf = ss.get("upe-pf") || "", rows = crono.filter(x => aba === "semdata" ? !x.data : x.data && (aba === "youtube" ? x.canal === "youtube" : x.canal !== "youtube")).filter(x => !pf || x.pilar === pf).sort((a, b) => (a.data + a.hora).localeCompare(b.data + b.hora)).map(x => comRepost(x, crono));
   const cnt = k => crono.filter(x => k === "semdata" ? !x.data : x.data && (k === "youtube" ? x.canal === "youtube" : x.canal !== "youtube")).length;
   const vw = ls.get("upe-cvw") || "lista";
   const semanas = {}; rows.forEach(x => { const d = new Date((x.data || todayIso()) + "T12:00"); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); const k = x.data ? isoDay(d) : "sem"; (semanas[k] = semanas[k] || []).push(x); });
-  const tabs = [["instagram", "Instagram", cnt("instagram")], ["youtube", "YouTube", cnt("youtube")], ["semdata", "Sem data", cnt("semdata")], ["timeline", "Timeline por app", 0]];
+  const tabs = [["instagram", "Instagram", cnt("instagram")], ["youtube", "YouTube", cnt("youtube")], ["semdata", "Sem data", cnt("semdata")], ["timeline", "Timeline por app", 0], ["modelos", "Modelos editáveis", 0]];
   w.innerHTML = `<div class="spread"><div class="grid" style="gap:4px"><span class="eb">@upecriativo · YouTube</span><h1>Cronograma Upe</h1><p class="muted small">Branding, rebranding, marca, publicidade e marketing, e-commerce, Upe TV e Upe ERP.</p></div>
       <div class="row"><button class="btn sec" id="cKit">Importar kit</button><button class="btn sec" id="cDup">Limpar duplicados</button><button class="btn sec" id="cPad">${crono.length ? "Refazer cronograma" : "Carregar cronograma padrão"}</button><button class="btn" id="cNew">Novo item</button></div></div>
     <nav class="subtabs">${tabs.map(([k, l, n]) => `<a class="tab" href="#/admin/cronograma/${k}" ${k === aba ? 'aria-current="page"' : ""}>${l}${k !== "timeline" ? `<span class="cnt" style="background:var(--mute-bg);color:var(--fg-2)">${n}</span>` : ""}</a>`).join("")}</nav>
@@ -277,6 +277,7 @@ function aCronograma(w, aba = "instagram") {
     modal("Refazer o cronograma?", `<p>Apaga os ${crono.length} itens atuais (inclusive os importados) e carrega de novo o cronograma padrão da Upe: kit de branding, Upe TV, Upe ERP e YouTube, com as datas organizadas.</p><p class="muted small">Depois, importe as pastas dos kits do Upe TV e do Upe ERP: os arquivos entram nos itens que já estão no cronograma, sem duplicar.</p>`, `<button class="btn sec" data-close>Cancelar</button><button class="btn bad" id="rfOk">Refazer</button>`);
     $("#rfOk").onclick = () => { dlg.close(); refazer(); }; };
   const refazer = async () => { try { for (const x of crono) await S.del(`cronograma/${x.id}`); const n = await carregarCronogramaPadrao(); toast(`Cronograma refeito: ${n} itens`); reAdmin(); } catch (e) { toast(e.message); } };
+  if (aba === "modelos") { aModelos(body, alvo ? crono.find(x => x.id === alvo) || null : null); return; }
   if (aba === "timeline") { body.innerHTML = timelineHTML(timelineApps(PERFIL_UPE, crono), "Sugestão de timeline para cada app da Upe, a partir do cronograma e dos públicos da marca."); return; }
   body.innerHTML = `<div class="row" style="align-items:flex-end"><div class="row" role="group" aria-label="Visualização" style="margin-right:8px"><button class="chip" data-vw="lista" aria-pressed="${vw === "lista"}">Lista</button><button class="chip" data-vw="grade" aria-pressed="${vw === "grade"}">Grade</button></div><label class="f" for="pf" style="max-width:240px">Pilar<select id="pf"><option value="">Todos</option>${PILARES.map(p => `<option ${pf === p ? "selected" : ""}>${p}</option>`).join("")}</select></label>
       <span class="muted small">${rows.filter(x => x.status === "publicado").length} de ${rows.length} publicados · ${rows.filter(x => x.status === "aprovado").length} aprovados · ${rows.filter(x => x.status === "reprovado").length} reprovados</span></div>
@@ -346,7 +347,8 @@ function cronoModal(x0) {
     <label class="f" for="xL">${yt ? "Descrição" : "Legenda"}<textarea id="xL" rows="6">${esc(x.legenda)}</textarea></label>
     <label class="f" for="xR">Roteiro / notas<textarea id="xR" rows="${H ? 8 : 3}">${esc(x.roteiro || "")}</textarea></label>
     <label class="f" for="xM">Arquivos (um link por linha)<textarea id="xM" rows="2">${esc((x.midias || []).join("\n"))}</textarea></label>`,
-    `${!n ? `<button class="btn bad" id="xX">Excluir</button>` : ""}<button class="btn sec" data-close>Fechar</button><button class="btn" id="xOk">Salvar</button>`, true);
+    `${!n ? `<button class="btn bad" id="xX">Excluir</button>` : ""}${!n && x.canal !== "youtube" ? `<button class="btn sec" id="xMod">${x.modelo ? "Editar no modelo" : "Criar arte no modelo"}</button>` : ""}<button class="btn sec" data-close>Fechar</button><button class="btn" id="xOk">Salvar</button>`, true);
+  if ($("#xMod")) $("#xMod").onclick = () => { dlg.close(); go(`#/admin/cronograma/modelos/${x.id}`); };
   if ($("#xCp")) $("#xCp").onclick = () => copy(v.legenda, "Copiado");
   $("#xOk").onclick = async () => {
     const t = $("#xT").value.trim(); if (!t) return $("#xT").focus();
