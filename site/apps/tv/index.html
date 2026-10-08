@@ -585,7 +585,8 @@ label.btn input[hidden]{display:none}
 .side-foot .sync{align-self:flex-start;max-width:100%;white-space:normal}
 .side-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .side-foot .btn.primary{justify-content:center}
-.side .bell-pop{right:auto;left:0;top:auto;bottom:calc(100% + 8px)}
+.side{z-index:70}
+.side .bell-pop{right:auto;left:0;top:auto;bottom:calc(100% + 8px);width:min(400px,calc(100vw - 280px));box-shadow:0 24px 60px rgba(0,0,0,.6)}
 .main{min-width:0;padding:26px clamp(16px,3vw,40px) 120px;background-image:radial-gradient(70% 50% at 100% 0%,rgba(12,79,127,.5),transparent 60%)}
 .page-head{display:flex;flex-direction:column;gap:4px;padding-bottom:18px;border-bottom:1px solid var(--line);animation:pgIn .45s ease both}
 .page-head .kick{margin:0;font:500 11px var(--f-mono);letter-spacing:.16em;text-transform:uppercase;color:var(--cyan)}
@@ -2491,15 +2492,11 @@ function notices() {
   const local = [...cfg.playlist.filter(i => i.source === 'file' && i.fileId && !i.fileUrl), ...cfg.side.items.filter(i => i.fileId && !i.fileUrl), ...cfg.footer.items.filter(i => i.fileId && !i.fileUrl)];
   if (local.length) list.push({ id: 'local', title: `${local.length} ${local.length === 1 ? 'arquivo está' : 'arquivos estão'} só neste aparelho`,
     text: 'As outras TVs mostram o modelo da campanha no lugar. Coloque um link do arquivo na campanha ou ative o plano Blaze.' });
-  list.push({ id: 'publish-v3', title: 'Publicar o painel novo (menu lateral, login e Materiais)',
-    text: 'Esta versão traz a tela de login, o menu lateral, a prévia em balão com o botão Confirmar alterações e a página Materiais com o kit do Instagram e a apresentação comercial. Para ela ir para o site, rode no Terminal os dois comandos abaixo. Depois toque em "Já publiquei".',
-    code: 'cd ~/Desktop/"Upe TV - App"\nnpx firebase-tools deploy --only hosting --project upe-tv', doneLabel: 'Já publiquei' });
   list.push({ id: 'apk-v1', title: 'Gerar o app da TV (APK)',
     text: 'Abra a pasta android-tv (dentro de Upe TV - App) no Android Studio e use Build › Build APK(s). O arquivo sai em android-tv/app/build/outputs/apk/. Se aparecer algum erro, envie a mensagem para o Claude.',
     doneLabel: 'Já gerei' });
-  list.push({ id: 'deploy', soft: true, title: 'Como atualizar o site e subir vídeos',
-    text: '1. Coloque os vídeos em Upe TV - App › site › media (na Mesa), com nomes sem espaço nem acento. 2. No Terminal, rode os dois comandos abaixo. 3. Na campanha, cole o link em "Ou link do arquivo": https://upe-criativo-tv.web.app/media/nome.mp4',
-    code: 'cd ~/Desktop/"Upe TV - App"\nnpx firebase-tools deploy --only hosting --project upe-tv' });
+  list.push({ id: 'deploy', soft: true, title: 'Como usar vídeos hospedados',
+    text: 'Se o arquivo for grande ou estiver em outro lugar (Drive público, site do cliente), cole o link direto do .mp4 em "Ou link do arquivo" na campanha. Todas as TVs passam a usar esse link.' });
   return list.filter(n => n.soft || !(s.dismissed || []).includes(n.id));
 }
 function renderBell() {
