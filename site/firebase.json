@@ -11,7 +11,13 @@
         "README.md",
         "portal/README.md",
         "**/.*",
-        "apps/**"
+        "apps/README.md",
+        "apps/erp/**",
+        "apps/gestao/**",
+        "apps/lojas/**",
+        "apps/lp/**",
+        "apps/sistemas/**",
+        "apps/servicos/robots.txt"
       ],
       "headers": [
         {
@@ -26,6 +32,19 @@
         {
           "source": "**/*.@(html|js|json)",
           "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "no-cache"
+            }
+          ]
+        },
+        {
+          "source": "apps/**",
+          "headers": [
+            {
+              "key": "X-Robots-Tag",
+              "value": "noindex"
+            },
             {
               "key": "Cache-Control",
               "value": "no-cache"

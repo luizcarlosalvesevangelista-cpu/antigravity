@@ -37,5 +37,7 @@ jobs:
         run: node tools/capturas/agenda.js
       - name: Páginas de vendas (computador e celular)
         run: node tools/capturas/vendas.js
+      - name: Painel central (cadastro único, preços, painel do cliente)
+        run: node tools/capturas/painel-central.js
       - name: Valida os modelos de landing page
         run: node tools/validar-html.js site/apps/servicos/modelos/*.html

@@ -16,17 +16,17 @@ views["adm/clientes"] = async M => {
   const cobs = await db.group("cobrancas");
   const atraso = cid => cobs.filter(c => c._path.startsWith(`srv_clientes/${cid}/`) && c.status === "aberta" && c.venc < hoje()).length;
   const mrr = S.clientes.filter(c => ["ativo", "atrasado"].includes(c.plano?.mensal?.status)).reduce((s, c) => s + (+c.plano.mensal.valor || 0), 0);
-  M.innerHTML = topo("Clientes e planos", `<button class="btn azul" type="button" id="novoCli">+ Novo cliente</button>`) +
+  M.innerHTML = topo("Clientes e planos", `<a class="btn azul" href="https://www.upecriativo.com.br/portal/#/admin/clientes" target="_blank" rel="noopener">+ Cliente (painel central)</a>`) + `<div class="banner"><b>Cadastro único.</b> Clientes, planos e cobranças novas são feitos no painel central (ficha do cliente › Serviços). Aqui ficam as ferramentas de cada página e agenda.</div>` +
     `<div class="kpis"><div class="kpi"><b class="num">${S.clientes.length}</b><span>clientes</span></div><div class="kpi"><b class="num">${brl(mrr)}</b><span>mensalidades ativas por mês</span></div>
       <div class="kpi"><b class="num">${S.clientes.filter(c => c.plano?.mensal?.status === "teste").length}</b><span>em teste</span></div><div class="kpi"><b class="num">${S.clientes.filter(c => atraso(c.id)).length}</b><span>com cobrança vencida</span></div></div>
     <section class="card">${S.clientes.length ? `<div class="rolar"><table class="tabela"><thead><tr><th>Cliente</th><th>Serviços</th><th>Criação</th><th>Mensalidade</th><th>Situação</th><th></th></tr></thead><tbody>
       ${S.clientes.map(c => { const cr = c.plano?.criacao || {}, m = c.plano?.mensal || {}, at = atraso(c.id); return `<tr><td><b>${esc(c.nome)}</b><br><span class="muted">${esc((c.emails || []).join(", "))}</span></td>
         <td>${(c.frentes || []).map(f => pill("info", FRENTES[f] || f)).join(" ")}</td><td>${cr.nome ? `${esc(cr.nome)}<br><span class="muted">${brl(cr.valor)} · ${cr.status === "pago" ? "pago" : "a receber"}</span>` : "—"}</td>
         <td>${m.nome ? `${esc(m.nome)}<br><span class="muted">${brl(m.valor)}/mês · dia ${esc(m.dia || 10)}</span>` : "—"}</td><td>${statusMensal(m.status)} ${at ? pill("crit", at + " vencida" + (at > 1 ? "s" : "")) : ""}</td>
-        <td><div class="linha"><button class="btn sm azul" type="button" data-abrir="${esc(c.id)}">Abrir painel</button><button class="btn sm" type="button" data-editar="${esc(c.id)}">Editar</button></div></td></tr>`; }).join("")}</tbody></table></div>` : vazio("Nenhum cliente ainda. Cadastre o primeiro ou converta um interessado.")}</section>`;
-  $("#novoCli").onclick = () => editarCliente(null);
+        <td><div class="linha"><button class="btn sm azul" type="button" data-abrir="${esc(c.id)}">Abrir painel</button><button class="btn sm" type="button" data-editar="${esc(c.id)}">Editar</button></div></td></tr>`; }).join("")}</tbody></table></div>` : vazio("Nenhum cliente ainda. Cadastre no painel central (ficha › Serviços) ou converta um interessado.")}</section>`;
   $$("[data-abrir]").forEach(b => b.onclick = () => abrirCliente(b.dataset.abrir));
-  $$("[data-editar]").forEach(b => b.onclick = () => editarCliente(S.clientes.find(c => c.id === b.dataset.editar)));
+  // clientes do cadastro único abrem a ficha no painel central; os antigos ainda podem ser editados aqui
+  $$("[data-editar]").forEach(b => b.onclick = () => { const c = S.clientes.find(x => x.id === b.dataset.editar); if (c?.portalId) window.open("https://www.upecriativo.com.br/portal/#/admin/cliente/" + c.portalId + "/apps", "_blank", "noopener"); else editarCliente(c); });
 };
 export async function editarCliente(c, pre = {}) {
   const ps = await planos(), cr = c?.plano?.criacao || {}, m = c?.plano?.mensal || {};
@@ -117,8 +117,8 @@ views["adm/cobrancas"] = async (M, filtro = "abertas") => {
 /* ---------- catálogo de planos ---------- */
 views["adm/planos"] = async M => {
   const ps = await planos();
-  M.innerHTML = topo("Catálogo de planos", `<button class="btn azul" type="button" id="novoPl">+ Plano</button>`) +
-    `<p class="muted">Estes planos aparecem nas páginas de vendas e na hora de cadastrar um cliente. Valores iniciais são exemplos: ajuste aos seus preços.</p>` +
+  M.innerHTML = topo("Catálogo de planos", `<a class="btn azul" href="https://www.upecriativo.com.br/portal/#/admin/apps/landing" target="_blank" rel="noopener">Editar preços no painel central</a>`) +
+    `<p class="muted">Estes planos aparecem nas páginas de vendas. Os preços são editados num lugar só: painel central › Serviços e preços (Landing pages e Upe Sistemas).</p>` +
     Object.entries(FRENTES).map(([f, t]) => `<section class="card"><h3>${esc(t)}</h3><div class="rolar"><table class="tabela"><thead><tr><th>Plano</th><th>Tipo</th><th>Valor</th><th>Na página de vendas</th><th></th></tr></thead><tbody>
       ${ps.filter(p => p.frente === f).map(p => `<tr><td><b>${esc(p.nome)}</b><br><span class="muted">${esc(p.descricao || "")}</span></td><td>${p.tipo === "mensal" ? "Mensalidade" : "Criação"}</td><td class="num">${brl(p.valor)}${p.tipo === "mensal" ? "/mês" : ""}</td><td>${p.ativo !== false ? pill("ok", "Aparece") : pill("", "Oculto")}</td><td><button class="btn sm" type="button" data-pl="${esc(p.id)}">Editar</button></td></tr>`).join("")}</tbody></table></div></section>`).join("");
   const ed = p => dialogo(`<h3>${p ? "Editar plano" : "Novo plano"}</h3>
@@ -129,7 +129,7 @@ views["adm/planos"] = async M => {
     const id = p?.id || slugify(fd.get("frente") + "-" + fd.get("nome"));
     await db.set("srv_planos/" + id, { frente: fd.get("frente"), tipo: fd.get("tipo"), nome: String(fd.get("nome")).trim(), valor: +fd.get("valor"), descricao: String(fd.get("descricao")).trim(), itens: String(fd.get("itens")).split("\n").map(s => s.trim()).filter(Boolean), ordem: +fd.get("ordem") || 0, ativo: !!fd.get("ativo") });
     toast("Plano salvo."); ctx.rota(); });
-  $("#novoPl").onclick = () => ed(null); $$("[data-pl]").forEach(b => b.onclick = () => ed(ps.find(p => p.id === b.dataset.pl)));
+  $$("[data-pl]").forEach(b => b.onclick = () => window.open("https://www.upecriativo.com.br/portal/#/admin/apps/" + (ps.find(p => p.id === b.dataset.pl)?.frente === "lp" ? "landing" : "sistemas"), "_blank", "noopener"));
 };
 
 /* ---------- interessados ---------- */
@@ -142,7 +142,10 @@ views["adm/interessados"] = async M => {
       <td><div class="linha">${x.whatsapp ? `<a class="btn sm" target="_blank" rel="noopener" href="https://wa.me/${esc(String(x.whatsapp).replace(/\D/g, "").replace(/^(?!55)/, "55"))}?text=${encodeURIComponent("Olá, " + String(x.nome).split(" ")[0] + "! Aqui é da Upe Criativo. Vi o seu interesse em " + (FRENTES[x.frente] || "nossos serviços") + ".")}">WhatsApp</a>` : ""}
         ${x.status !== "cliente" ? `<button class="btn sm azul" type="button" data-conv="${esc(x.id)}">Virar cliente</button>` : ""}</div></td></tr>`).join("")}</tbody></table></div>` : vazio("Ninguém ainda. Os formulários das páginas de vendas chegam aqui.")}</section>`;
   $$("[data-st]").forEach(s => s.onchange = async () => { await db.set("srv_interessados/" + s.dataset.st, { status: s.value }, { merge: true }); toast("Atualizado."); });
-  $$("[data-conv]").forEach(b => b.onclick = () => { const x = ls.find(y => y.id === b.dataset.conv); editarCliente(null, { nome: x.nome, email: x.email, whatsapp: x.whatsapp, frente: x.frente, interessado: x.id }); });
+  // vira cliente no cadastro único (painel central), já com nome, e-mail e WhatsApp
+  $$("[data-conv]").forEach(b => b.onclick = async () => { const x = ls.find(y => y.id === b.dataset.conv);
+    window.open("https://www.upecriativo.com.br/portal/#/admin/novo/" + encodeURIComponent(JSON.stringify({ nome: x.nome || "", email: x.email || "", telefone: x.whatsapp || "", mensagem: [x.frente && "Interesse: " + (FRENTES[x.frente] || x.frente), x.plano, x.mensagem].filter(Boolean).join(" · ") })), "_blank", "noopener");
+    await db.set("srv_interessados/" + x.id, { status: "cliente" }, { merge: true }); ctx.rota(); });
 };
 
 /* ---------- domínios ---------- */

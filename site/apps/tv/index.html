@@ -658,6 +658,8 @@ body.gated .app{display:none}
 }
 @media (prefers-reduced-motion:reduce){.monitor.fly,.monitor.bump .mon-frame,.page-head,.tabpanel:not([hidden]),.cbar.float{animation:none!important}}
 </style>
+<script>if (new URLSearchParams(location.search).has("embed")) document.documentElement.classList.add("embed");</script>
+<style>.embed .back-bar, .embed #ptOut { display: none !important; }</style>
 </head>
 <body>
 <div class="gate" id="gate" hidden>
@@ -793,7 +795,7 @@ body.gated .app{display:none}
           <h2 class="sec">Planos avulsos e combos</h2>
           <div class="confirm"><button class="btn sm" type="button" data-add="plan-solo">+ Plano avulso</button><button class="btn sm" type="button" data-add="plan-combo">+ Combo</button></div>
         </div>
-        <p class="small muted" style="margin:0">A economia de cada combo é calculada sozinha a partir dos preços avulsos de cada formato. Os planos marcados como destaque aparecem primeiro no anúncio da Upe na TV.</p>
+        <p class="small muted" style="margin:0"><b>Preços: edite no <a href="https://www.upecriativo.com.br/portal/#/admin/apps/tv" target="_blank" rel="noopener">painel central › Serviços e preços › Upe TV</a></b> (um lugar só para todas as frentes); aqui ficam os formatos e combos. A economia de cada combo é calculada sozinha a partir dos preços avulsos de cada formato. Os planos marcados como destaque aparecem primeiro no anúncio da Upe na TV.</p>
         <div class="plan-grid" id="planGrid"></div>
         <div id="planEditor"></div>
         <div class="card" data-scope="house">
@@ -2433,7 +2435,7 @@ function renderPlanEditor() {
     <div class="fields">
       <label class="f">Nome<input id="plan-name" data-k="name" value="${esc(p.name)}"></label>
       <label class="f">Tipo<select id="plan-kind" data-k="kind">${opt({ solo: 'Avulso', combo: 'Combo' }, p.kind)}</select></label>
-      <label class="f">Preço por mês (R$)<input type="number" min="0" step="1" id="plan-price" data-k="price" value="${esc(p.price)}"></label>
+      <label class="f">Preço por mês (R$)<input type="number" min="0" step="1" id="plan-price" data-k="price" value="${esc(p.price)}" readonly title="Edite no painel central › Serviços e preços › Upe TV"></label>
       <label class="f">Quantidade de telas<input type="number" min="1" id="plan-screens" data-k="screens" value="${esc(p.screens)}"></label>
       <label class="f full">Descrição<input id="plan-desc" data-k="desc" value="${esc(p.desc)}"></label>
       <div class="f full"><span>Formatos incluídos</span><div class="checks">${Object.entries(PLACES).map(([k, l]) => `<label class="chk"><input type="checkbox" id="plan-inc-${k}" data-k="inc.${k}"${p.inc && p.inc[k] ? ' checked' : ''}>${l}</label>`).join('')}</div></div>
@@ -3065,7 +3067,7 @@ window.addEventListener('hashchange', () => { route(); window.scrollTo(0, 0); })
 })();
 </script>
 
-<script>if ("serviceWorker" in navigator && location.protocol.indexOf("http") === 0) navigator.serviceWorker.register("sw.js").catch(function(){});</script>
+<script>if ("serviceWorker" in navigator && location.protocol.indexOf("http") === 0 && window.top === window) navigator.serviceWorker.register("sw.js").catch(function(){});</script>
 <script>(function(){var d=document.getElementById('gateAdm'),e=document.getElementById('lgErr'),m=document.getElementById('gateMsg'),t0=m&&m.textContent;if(!d)return;new MutationObserver(function(){if((e&&!e.hidden)||(m&&m.textContent!==t0))d.open=true;}).observe(document.getElementById('gate'),{subtree:true,childList:true,attributes:true,characterData:true});})();</script>
 </body>
 </html>

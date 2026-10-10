@@ -549,7 +549,7 @@ const kpi = (eb, v, s, cls = "") => `<div class="kpi ${cls}"><span class="eyebro
 
 /* visão geral */
 function pgGeral() {
-  $("#top-act").innerHTML = `<button type="button" class="btn" data-pg="cobrancas">Cobranças do mês</button><button type="button" class="btn primary" data-novo-cliente="1">+ Nova plataforma</button>`;
+  $("#top-act").innerHTML = `<button type="button" class="btn" data-pg="cobrancas">Cobranças do mês</button><a class="btn primary" href="https://www.upecriativo.com.br/portal/#/admin/clientes" target="_blank" rel="noopener" title="O cadastro de clientes é único, no painel central">+ Cliente (painel central)</a>`;
   const cs = [...D().clientes.values()], at = ativos(), teste = cs.filter(c => c.status === "teste"), m = mesAtual();
   const mrr = at.reduce((a, c) => a + valorCliente(c), 0), upe = at.length * CFG.upe, mt = mrr - upe;
   const pagas = pagasNoMes(m), receb = pagas.reduce((a, b) => a + b.total, 0);
@@ -596,7 +596,7 @@ function barras(meses) {
 
 /* plataformas (clientes) */
 function pgPlataformas() {
-  $("#top-act").innerHTML = `<button type="button" class="btn primary" data-novo-cliente="1">+ Nova plataforma</button>`;
+  $("#top-act").innerHTML = `<a class="btn primary" href="https://www.upecriativo.com.br/portal/#/admin/clientes" target="_blank" rel="noopener" title="O cadastro de clientes é único, no painel central">+ Cliente (painel central)</a>`;
   const all = [...D().clientes.values()].sort((a, b) => a.id.localeCompare(b.id));
   const filtros = { todos: "Todas", ativo: "Ativas", teste: "Em teste", atrasado: "Em atraso", suspenso: "Suspensas", cancelado: "Canceladas" };
   const list = all.filter(c => match(S.cq, c.id, c.empresa, c.responsavel, c.cnpj, c.email, c.cidade) && (S.cSt === "todos" || (S.cSt === "atrasado" ? sitCliente(c)[1].startsWith("Atrasado") : c.status === S.cSt)));
@@ -611,7 +611,7 @@ function pgPlataformas() {
       <td class="num"><b>${R$(valorCliente(c))}</b><span class="sub">${c.extras ? [...c.extras].map(k => esc(EXT(k)?.nome || k)).join(", ") : "plano básico"}</span></td><td class="num">${c.dia || CFG.dia}</td>
       <td class="num">${c.licenca?.validade ? fmtD(c.licenca.validade) : c.status === "teste" ? "teste até " + fmtD(c.testeAte) : "—"}</td><td><span class="pill ${cl}">${tx}</span></td>
       <td class="acoes">${c.plataforma ? `<a class="btn sm ghost" href="${esc(c.plataforma)}" target="_blank" rel="noopener">Abrir ↗</a>` : ""}<button type="button" class="btn sm" data-codigo="${esc(c.id)}">Código</button><button type="button" class="btn sm" data-cliente="${esc(c.id)}">Detalhes</button></td></tr>`; }).join("")
-    : `<tr><td colspan="7"><div class="empty">${all.length ? "Nenhuma plataforma com esse filtro." : "Nenhuma plataforma ainda. Clique em “+ Nova plataforma”."}</div></td></tr>`}</tbody></table></div>`;
+    : `<tr><td colspan="7"><div class="empty">${all.length ? "Nenhuma plataforma com esse filtro." : "Nenhuma plataforma ainda. Cadastre o cliente no painel central (ficha › Serviços › Upe ERP): ele aparece aqui sozinho."}</div></td></tr>`}</tbody></table></div>`;
 }
 function openCliente(id, pre = {}) {
   const prev = id ? D().clientes.get(id) : null, c = prev || { status: "teste", dia: CFG.dia, extras: "", inicio: hoje(), testeAte: addDias(hoje(), CFG.teste), ...pre };
@@ -853,9 +853,9 @@ function pgConfig() {
   $("#pg").innerHTML = `<form id="cfg" autocomplete="off" style="display:grid;gap:18px">
     <div class="cols even">
       <section class="panel"><div class="panel-head"><h2>Plano</h2><span class="eyebrow">por plataforma</span></div>
-        <div class="form tres"><label>Mensalidade (R$)<input id="c-mensal" inputmode="decimal" value="${vIn(c.mensal)}"></label><label>Parte Upe (R$)<input id="c-upe" inputmode="decimal" value="${vIn(c.upe)}"></label><label>Manutenção (R$)<input id="c-man" value="${vIn(manut())}" readonly></label>
+        <div class="form tres"><label>Mensalidade (R$)<input id="c-mensal" inputmode="decimal" value="${vIn(c.mensal)}" readonly title="Edite no painel central › Serviços e preços › Upe ERP"></label><label>Parte Upe (R$)<input id="c-upe" inputmode="decimal" value="${vIn(c.upe)}" readonly title="Edite no painel central › Serviços e preços › Upe ERP"></label><label>Manutenção (R$)<input id="c-man" value="${vIn(manut())}" readonly></label>
           <label>Dias de teste grátis<input id="c-teste" type="number" min="0" value="${c.teste}"></label><label>Carência após vencer (dias)<input id="c-car" type="number" min="0" value="${c.carencia}"></label><label>Dia de vencimento padrão<input id="c-dia" type="number" min="1" max="28" value="${c.dia}"></label></div>
-        <p class="explica">Tudo o que passa da parte Upe vai para o fundo de manutenção. <b>Esses valores também estão no painel de cada plataforma</b> (o cliente vê a composição em Plano e assinatura): ao mudar aqui, atualize também o modelo do painel.</p></section>
+        <p class="explica"><b>Preços (mensalidade, parte Upe e adicionais) ficam no <a href="https://www.upecriativo.com.br/portal/#/admin/apps/erp" target="_blank" rel="noopener">painel central › Serviços e preços › Upe ERP</a>.</b> Ao salvar lá, este gerenciador e as páginas de vendas são atualizados. Tudo o que passa da parte Upe vai para o fundo de manutenção. <b>Esses valores também estão no painel de cada plataforma</b> (o cliente vê a composição em Plano e assinatura): ao mudar aqui, atualize também o modelo do painel.</p></section>
       <section class="panel"><div class="panel-head"><h2>Conta da Upe para receber</h2><span class="eyebrow">PIX das mensalidades</span></div>
         <div class="form"><label>Tipo de chave<select id="c-tipo">${Object.entries(PIX_TIPOS).map(([k, n]) => `<option value="${k}" ${c.conta.tipo === k ? "selected" : ""}>${n}</option>`).join("")}</select></label><label>Chave PIX<input id="c-chave" value="${esc(c.conta.chave)}"></label>
           <label>Nome do recebedor (até 25)<input id="c-nome" maxlength="25" value="${esc(c.conta.nome)}"></label><label>Cidade (até 15)<input id="c-cid" maxlength="15" value="${esc(c.conta.cidade)}"></label>
@@ -864,7 +864,7 @@ function pgConfig() {
     </div>
     <section class="panel"><div class="panel-head"><h2>Servidores e APIs</h2><div class="toolbar"><span class="eyebrow">custo vai para a manutenção · a diferença é da Upe</span><button type="button" class="btn sm" id="c-sug">Usar a tabela sugerida</button></div></div>
       <div class="tablebox" style="box-shadow:none"><table style="min-width:980px"><thead><tr><th style="width:44px">Letra</th><th>Nome</th><th>Descrição</th><th>Capacidade</th><th style="width:110px">Preço (R$)</th><th style="width:110px">Custo (R$)</th><th class="r" style="width:110px">Margem Upe</th></tr></thead><tbody>
-      ${c.extras.map((x, i) => `<tr><td class="num"><b>${esc(x.k)}</b></td><td><input data-xn="${i}" value="${esc(x.nome)}"></td><td><input data-xd="${i}" value="${esc(x.desc)}"></td><td><input data-xc="${i}" value="${esc(x.cap || "")}"></td><td><input data-xp="${i}" inputmode="decimal" value="${vIn(x.preco)}"></td><td><input data-xu="${i}" inputmode="decimal" value="${vIn(x.custo || 0)}"></td><td class="r num" data-xm="${i}">${R$(margemExt(x))}</td></tr>`).join("")}</tbody></table></div>
+      ${c.extras.map((x, i) => `<tr><td class="num"><b>${esc(x.k)}</b></td><td><input data-xn="${i}" value="${esc(x.nome)}"></td><td><input data-xd="${i}" value="${esc(x.desc)}"></td><td><input data-xc="${i}" value="${esc(x.cap || "")}"></td><td><input data-xp="${i}" readonly title="Edite no painel central › Serviços e preços › Upe ERP" inputmode="decimal" value="${vIn(x.preco)}"></td><td><input data-xu="${i}" inputmode="decimal" value="${vIn(x.custo || 0)}"></td><td class="r num" data-xm="${i}">${R$(margemExt(x))}</td></tr>`).join("")}</tbody></table></div>
       <p class="hint" style="font-size:12px">A letra entra no código de ativação e libera o extra no painel do cliente. Não troque a letra de um extra já vendido. Custo = servidor ou API por plataforma (estimativa); vai para o fundo de manutenção.</p></section>
     <section class="panel"><div class="panel-head"><h2>Limites do plano</h2><span class="eyebrow">valem para todas as plataformas · ajuste por cliente em Plataformas › Plano e licença</span></div>
       <div class="tablebox" style="box-shadow:none"><table><thead><tr><th>Recurso</th><th style="width:150px">Plano básico</th><th style="width:150px">Com o adicional</th><th>Adicional</th></tr></thead><tbody>

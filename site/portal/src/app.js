@@ -94,7 +94,8 @@ function pendencias(doc, acoes, lastSeen = 0) {
   const artes = (doc.graficos || []).filter(vis).filter(g => statusOf(g, acoes).status === "pendente");
   const cobs = (doc.cobrancas || []).filter(c => c.liberada && cobStatus(c, acoes) === "aberta");
   const msgs = thread(doc, acoes).filter(m => m.autor === "upe" && m.em > lastSeen);
-  return { posts, artes, cobs, msgs };
+  const cobsFrente = {}; cobs.forEach(c => { const k = c.app || "branding"; cobsFrente[k] = (cobsFrente[k] || 0) + 1; });
+  return { posts, artes, cobs, msgs, cobsFrente };
 }
 
 /* ---------------- PIX (BR Code) ---------------- */
@@ -110,7 +111,7 @@ function pixPayload({ chave, nome, cidade, valor, txid, descricao }) {
 }
 
 /* ---------------- armazenamento ---------------- */
-const DEMO_KEY = "upe-portal-demo-v5";
+const DEMO_KEY = "upe-portal-demo-v6";
 class LocalStore {
   constructor() { this.mode = "demo"; let d = null; try { d = JSON.parse(ls.get(DEMO_KEY)); } catch (e) {} this.d = d && d.cols ? d : { cols: {} }; }
   async init() {
@@ -127,6 +128,14 @@ class LocalStore {
   async login(email, pass) { if (email.trim().toLowerCase() === "admin@upe.demo" && pass === "upe-demo") { ss.set("upe-adm", "1"); return true; } throw new Error("E-mail ou senha incorretos."); }
   async currentAdmin() { return ss.get("upe-adm") === "1"; }
   async logout() { ss.set("upe-adm", null); }
+  // conta do cliente (demonstração): cliente@upe.demo / upe-demo
+  async contaEntrar(email, pass) { if (email.trim().toLowerCase() === "cliente@upe.demo" && pass === "upe-demo") { ss.set("upe-conta-demo", "1"); return this.contaAtual(); } throw new Error("E-mail ou senha incorretos. No modo demonstração use cliente@upe.demo / upe-demo."); }
+  async contaCriar(email, pass) { return this.contaEntrar(email, pass); }
+  async contaReset() { throw new Error("No modo demonstração não há envio de e-mail."); }
+  async contaRecarregar() { return this.contaAtual(); }
+  async contaReenviar() {}
+  async contaSair() { ss.set("upe-conta-demo", null); }
+  contaAtual() { return ss.get("upe-conta-demo") === "1" ? { uid: "demo-conta", email: "cliente@upe.demo", emailVerified: true } : null; }
   async upload(file) { const k = uid(12) + "/" + file.name.replace(/[^\w.\-]/g, "_"); MEDIA.set(k, URL.createObjectURL(file)); if (this.idb) { try { await idb.put(k, file); } catch (e) { this.idb = false; } } return "idb:" + k; }
   async reset() { ls.set(DEMO_KEY, null); if (this.idb) await idb.clear(); location.reload(); }
 }
@@ -151,6 +160,15 @@ class FireStore {
   }
   async currentAdmin() { await this.ready; const u = this.auth.currentUser; if (!u) return false; try { return !!(await this.get(`admins/${u.uid}`)); } catch (e) { return false; } }
   async logout() { await this.auth.signOut(); }
+  // conta do cliente (mesmo login dos apps: e-mail e senha, e-mail confirmado)
+  erroConta(e) { return new Error({ "auth/invalid-credential": "E-mail ou senha incorretos.", "auth/wrong-password": "E-mail ou senha incorretos.", "auth/user-not-found": "Não há conta com este e-mail. Use “Primeiro acesso”.", "auth/email-already-in-use": "Este e-mail já tem senha. Use “Entrar” ou “Esqueci a senha”.", "auth/weak-password": "A senha precisa de pelo menos 6 caracteres.", "auth/invalid-email": "E-mail inválido.", "auth/too-many-requests": "Muitas tentativas. Aguarde alguns minutos ou redefina a senha.", "auth/network-request-failed": "Sem conexão. Tente de novo." }[e && e.code] || (e && e.message) || "Não foi possível entrar."); }
+  async contaEntrar(email, pass) { try { return (await this.auth.signInWithEmailAndPassword(email.trim(), pass)).user; } catch (e) { throw this.erroConta(e); } }
+  async contaCriar(email, pass) { try { const u = (await this.auth.createUserWithEmailAndPassword(email.trim(), pass)).user; await u.sendEmailVerification().catch(() => {}); return u; } catch (e) { throw this.erroConta(e); } }
+  async contaReset(email) { try { await this.auth.sendPasswordResetEmail(email.trim()); } catch (e) { throw this.erroConta(e); } }
+  async contaRecarregar() { const u = this.auth.currentUser; if (!u) return null; await u.reload(); await u.getIdToken(true); return this.auth.currentUser; }
+  async contaReenviar() { const u = this.auth.currentUser; if (u) await u.sendEmailVerification(); }
+  async contaSair() { await this.auth.signOut(); }
+  contaAtual() { return this.auth && this.auth.currentUser; }
   // sufixo aleatório: envios em paralelo com o mesmo nome não se sobrescrevem
   async upload(file, path) { if (!this.st) return null; const ref = this.st.ref(`${path}/${Date.now()}-${uid(5)}-${file.name.replace(/[^\w.\-]/g, "_")}`); await ref.put(file); return await ref.getDownloadURL(); }
 }
@@ -179,6 +197,7 @@ const Api = {
   },
   async deleteClient(id) {
     const p = await S.get(`privado/${id}`); if (p?.codigoHash) await S.del(`codigos/${p.codigoHash}`).catch(() => {});
+    const em = String(p?.emailConvite || p?.email || "").toLowerCase(); if (em) for (const c of ["portal_convites", "convites", "srv_convites"]) await S.del(`${c}/${em}`).catch(() => {});
     for (const a of await S.list(`clientes/${id}/acoes`)) await S.del(`clientes/${id}/acoes/${a.id}`);
     await S.del(`privado/${id}`); await S.del(`clientes/${id}`);
   },
@@ -191,6 +210,12 @@ const Api = {
 };
 
 /* ---------------- dados de demonstração ---------------- */
+// painel em branco de exemplo: HTML próprio que conversa só com os pagamentos (mesmo contrato de docs/PAINEL-PERSONALIZADO.md)
+const PAINEL_EXEMPLO = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{font-family:system-ui,sans-serif;margin:0;padding:24px;background:#f6f5ee;color:#1d2433}.k{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}.c{background:#fff;border-radius:14px;padding:16px;box-shadow:0 1px 3px rgba(0,0,0,.08)}.c b{display:block;font-size:26px}button{background:#234e7b;color:#fff;border:0;border-radius:10px;padding:10px 16px;font-weight:700;cursor:pointer}</style></head><body>
+<h1 id="t">Painel da loja</h1><p>Exemplo de painel em branco: a Upe sobe um HTML próprio para o cliente. Ele recebe os dados básicos e abre os pagamentos.</p>
+<div class="k"><div class="c"><b>128</b>pedidos no mês</div><div class="c"><b>R$ 9.870</b>vendido</div><div class="c"><b id="ab">—</b>cobranças em aberto</div></div>
+<p><button id="pg">Ver pagamentos deste serviço</button></p>
+<script>addEventListener("message",e=>{if(e.data&&e.data.upe==="cliente"){document.getElementById("t").textContent="Painel da "+(e.data.marca||"loja");document.getElementById("ab").textContent=e.data.emAberto;}});document.getElementById("pg").onclick=()=>parent.postMessage({upe:"pagamentos"},"*");parent.postMessage({upe:"dados"},"*");<\/script></body></html>`;
 async function seedDemo(st) {
   const A = CFG.assetsDemo || "../assets/";
   const day = o => { const d = new Date(); d.setDate(d.getDate() + o); return isoDay(d); };
@@ -210,7 +235,10 @@ async function seedDemo(st) {
       motions: [], semanas: ["Semana 1 · lançamento"],
       instagram: [{ img: A + "img/brand.jpg", titulo: "Nova identidade", data: "", semana: 1, legenda: "" }, { img: A + "img/redesign.jpg", titulo: "Antes e depois", data: "", semana: 1, legenda: "" }, { img: A + "img/filme-h.jpg", titulo: "Assinatura", data: "", semana: 1, legenda: "" }]
     },
-    apps: { erp: { status: "teste", plano: "upe", extras: ["E"], dia: 10, ajuste: 0, inicio: day(-12), fimTeste: day(2), obs: "Loja em cafeaurora.upe (exemplo)" }, tv: { status: "ativo", plano: "vitrine", extras: ["cta"], dia: 15, ajuste: 189.9, inicio: day(-40), fimTeste: "", obs: "2 telas parceiras no bairro" } },
+    apps: { erp: { status: "teste", plano: "upe", extras: ["E"], dia: 10, ajuste: 0, inicio: day(-12), fimTeste: day(2), obs: "Loja em cafeaurora.upe (exemplo)" }, tv: { status: "ativo", plano: "p_vitrine", extras: [], dia: 15, ajuste: 0, inicio: day(-40), fimTeste: "", obs: "2 telas parceiras no bairro", codigo: "UPE-PD7K" },
+      landing: { status: "ativo", plano: "lp-hospedagem", extras: [], dia: 10, ajuste: 0, inicio: day(-30), fimTeste: "", obs: "" },
+      sistemas: { status: "teste", plano: "ag-mensal", extras: [], dia: 10, ajuste: 0, inicio: day(-5), fimTeste: day(9), obs: "", modulos: ["agenda", "dash"] } },
+    paineis: { erp: { modo: "personalizado", nome: "painel-erp-exemplo.html", em: now - 20 * H } },
     perfil: { nome: "Café Aurora", canais: ["instagram", "whatsapp", "google", "loja"], negocio: "Cafeteria de bairro com delivery", regiao: "São Paulo · zona oeste", publicos: ["Vizinhos que tomam café todo dia", "Quem trabalha perto e pede delivery"], atributos: ["Café coado", "Pão na chapa", "Bolos caseiros"],
       jornada: [{ etapa: "Descobrir", texto: "Reels do café sendo coado e do balcão" }, { etapa: "Confiar", texto: "Avaliações do Google e fotos de clientes" }, { etapa: "Escolher", texto: "Cardápio da semana nos stories" }, { etapa: "Comprar", texto: "Pedido pelo WhatsApp e iFood" }], em: now - 72 * H },
     posts: [
@@ -227,7 +255,8 @@ async function seedDemo(st) {
     ],
     cobrancas: [
       { id: uid(8), descricao: "Mídias digitais · " + MESES[new Date().getMonth()], valor: 890, vencimento: day(5), liberada: true, status: "aberta", pix: true, cartao: true, linkCartao: "" },
-      { id: uid(8), descricao: "Cartões de visita (1.000 un.)", valor: 189, vencimento: day(-20), liberada: true, status: "paga", pix: true, cartao: false, linkCartao: "" }
+      { id: uid(8), descricao: "Cartões de visita (1.000 un.)", valor: 189, vencimento: day(-20), liberada: true, status: "paga", pix: true, cartao: false, linkCartao: "" },
+      { id: uid(8), app: "tv", ref: "app-tv-exemplo", descricao: "Upe TV · Combo Vitrine · " + MESES[new Date().getMonth()], valor: 349, vencimento: day(8), liberada: true, status: "aberta", pix: true, cartao: true, linkCartao: "" }
     ],
     mensagens: [{ id: uid(8), texto: "Oi, Marina! Os posts da semana já estão no calendário para você aprovar.", em: now - 6 * H }]
   });
@@ -235,6 +264,8 @@ async function seedDemo(st) {
   // código fixo do demo
   const p = await st.get(`privado/${id}`); await st.del(`codigos/${p.codigoHash}`); const code = "AURO-RA26-DEMO", h = await sha256(normCode(code));
   await st.set(`codigos/${h}`, { clienteId: id }); await st.set(`privado/${id}`, { ...p, codigo: code, codigoHash: h });
+  await st.set("portal_convites/cliente@upe.demo", { cliente: id, criadoEm: now });
+  await st.set(`paineis_cliente/${id}_erp`, { cliente: id, frente: "erp", nome: "painel-erp-exemplo.html", em: now - 20 * H, html: PAINEL_EXEMPLO });
   await st.add(`clientes/${id}/acoes`, { tipo: "mensagem", texto: "Perfeito! Vou olhar hoje à tarde.", em: now - 5 * H });
   await st.add(`clientes/${id}/acoes`, { tipo: "pedido", alvo: "app:erp:K", modo: "app", quantidade: 1, texto: "", em: now - 4 * H });
   await st.add(`clientes/${id}/acoes`, { tipo: "ajuste", alvo: "p-lanc", versao: 1, texto: "Pode usar a foto com o letreiro novo?", em: now - 3 * H });
@@ -285,7 +316,9 @@ async function route() {
     if (area === "c") return await clientRoute(rest[0] || "inicio", rest[1]);
     const cid = ss.get("upe-cliente");
     if (cid) return go("#/c/inicio");
-    return gate();
+    if (S.mode === "firebase") { await S.ready; const u = S.contaAtual(); if (u && !(await S.currentAdmin())) return seguirConta(u); }
+    else if (S.contaAtual()) return seguirConta(S.contaAtual());
+    return gateConta();
   } catch (e) { console.error(e); app.innerHTML = `<div class="cl-main"><div class="empty"><b>Algo deu errado.</b><span>${esc(e.message)}</span><button class="btn" onclick="location.reload()">Recarregar</button></div></div>`; }
 }
 const demoBar = () => S.mode === "demo" ? `<div class="demo"><b>Modo demonstração.</b> Os dados ficam só neste navegador. Cliente de exemplo: <span class="code">AURO-RA26-DEMO</span> · Admin: admin@upe.demo / upe-demo</div>` : "";
@@ -303,7 +336,7 @@ function gate(mode = "cliente", err = "") {
         <button class="btn" type="submit">Entrar</button>
       </form>
       <p class="alt">Não tem o código? <a href="${esc(waLink(CFG.whatsappUpe, "Olá! Preciso do meu código de acesso ao portal Upe."))}" target="_blank" rel="noopener" style="color:var(--creme);font-weight:900">Fale com a Upe</a></p>
-      <p class="alt"><button class="lnk" id="toAdm">Acesso administrador</button></p>` : `
+      <p class="alt"><button class="lnk" id="toMail">Entrar com e-mail e senha</button> · <button class="lnk" id="toAdm">Acesso administrador</button></p>` : `
       <div class="grid" style="gap:8px"><h1>Administrador</h1><p>Entre com o seu e-mail e senha.</p></div>
       <form id="fAdm" novalidate>
         <input class="pl" id="aEmail" type="email" autocomplete="username" placeholder="E-mail" aria-label="E-mail">
@@ -333,6 +366,7 @@ function gate(mode = "cliente", err = "") {
       ss.set("upe-cliente", id); go("#/c/inicio");
     };
     $("#toAdm").onclick = () => go("#/admin");
+    $("#toMail").onclick = () => gateConta();
   } else {
     $("#aEmail").focus();
     $("#fAdm").onsubmit = async e => {
@@ -340,7 +374,7 @@ function gate(mode = "cliente", err = "") {
       try { await S.login($("#aEmail").value, $("#aPass").value); state.admin = true; go("#/admin/clientes"); }
       catch (er) { gate("admin", er.message); }
     };
-    $("#toCli").onclick = () => { history.replaceState(null, "", "#/"); gate(); };
+    $("#toCli").onclick = () => { history.replaceState(null, "", "#/"); gateConta(); };
   }
 }
 
@@ -350,7 +384,7 @@ function gate(mode = "cliente", err = "") {
 async function clientRoute(tab, arg) {
   const id = ss.get("upe-cliente"); if (!id) return go("#/");
   const c = await Api.loadClient(id); if (!c || c.doc.ativo === false) { ss.set("upe-cliente", null); return gate("cliente", "Este acesso não está ativo. Fale com a Upe."); }
-  state.client = c; state.cfg = await Api.config();
+  state.client = c; state.cfg = await Api.config(); await carregarFontes();
   const { doc, acoes } = c, ac = doc.acesso || {}, pl = doc.plano || {};
   const seenKey = `upe-visto-${id}`, lastSeen = +(ls.get(seenKey) || 0);
   const pend = pendencias(doc, acoes, lastSeen);
@@ -362,27 +396,31 @@ async function clientRoute(tab, arg) {
     ["conteudo", "Conteúdo", pend.posts.length, pl.midias && ac.calendario],
     ["graficos", "Materiais gráficos", pend.artes.length, pl.grafica && ac.graficos],
     ["produtos", "Comprar de novo", 0, pl.grafica && ac.recompra && recItems.length],
-    ["apps", "Apps Upe", 0, APP_IDS.some(k => !appsCat(state.cfg)[k].breve) || adesoes(doc).length],
+    ...FRENTES_DO_CLIENTE(doc).filter(k => k !== "branding" || temPainelProprio(doc, "branding")).map(k => [`s-${k}`, k === "branding" ? "Painel da marca" : appsCat(state.cfg)[k].curto || appsCat(state.cfg)[k].nome, pend.cobsFrente?.[k] || 0, true, true]),
+    ["apps", "Contratar serviços", 0, APP_IDS.some(k => !appsCat(state.cfg)[k].breve) || adesoes(doc).length],
     ["pagamentos", "Pagamentos", pend.cobs.length, ac.pagamentos],
     ["mensagens", "Mensagens", tab === "mensagens" ? 0 : pend.msgs.length, true]
   ].filter(t => t[3]);
   const kitView = tab === "kit" && pl.midias && ac.calendario;
+  const servico = /^s-/.test(tab) && tabs.some(t => t[0] === tab) ? tab.slice(2) : "";
   if (kitView) tab = "conteudo"; else if (!tabs.some(t => t[0] === tab)) tab = "inicio";
+  if (tab === "pagamentos" && !ac.pagamentos && FRENTES_DO_CLIENTE(doc).length) tab = "inicio";
   if (tab === "mensagens") ls.set(seenKey, String(Date.now()));
   const voltar = state.admin && ss.get("upe-voltar");
   const prox = proximos(doc, acoes);
   app.innerHTML = demoBar() + (voltar ? `<div class="asadm">Você está vendo o portal como este cliente.<a href="${esc(voltar)}" id="voltarAdm">Voltar ao painel</a></div>` : "") + `
     <div class="adm cli"><aside class="side cside"><div class="logo">${WM}</div>
       <div class="cname"><b>${esc(doc.marca || doc.empresa || doc.nome)}</b><span>${esc(doc.nome)}</span></div>
-      <nav class="nav" aria-label="Seções do portal">${tabs.map(([k, l, n]) => `<a href="#/c/${k}" ${k === tab ? 'aria-current="page"' : ""}><span>${l}</span>${n ? `<span class="cnt">${n}</span>` : ""}</a>`).join("")}</nav>
+      <nav class="nav" aria-label="Seções do painel">${tabs.map(([k, l, n, , sv], i) => `${sv && !(tabs[i - 1] || [])[4] ? '<span class="navsec">Seus serviços</span>' : ""}<a href="#/c/${k}" ${k === tab ? 'aria-current="page"' : ""}><span>${esc(l)}</span>${n ? `<span class="cnt">${n}</span>` : ""}</a>`).join("")}</nav>
       <div class="prox"><span class="eb">Próximos</span>${prox.length ? prox.map(e => `<a href="#/c/agenda" class="proxi"><b>${fdate(e.data).slice(0, 5)}${e.hora ? " · " + e.hora : ""}</b><span>${esc(e.tag)}: ${esc(e.titulo)}</span></a>`).join("") : '<span class="small" style="opacity:.7">Nada marcado.</span>'}</div>
       <div class="foot"><button class="lnk" id="sair">Sair</button></div></aside>
-    <main class="work"><div class="wtop"><span class="eb">Portal do cliente</span><div id="bellH"></div></div><div id="cmain" class="grid" style="gap:18px"></div></main></div>`;
+    <main class="work"><div class="wtop"><span class="eb">Painel do cliente</span><div id="bellH"></div></div><div id="cmain" class="grid" style="gap:18px"></div></main></div>`;
   bell($("#bellH"), "cli-" + id, notifsCliente(doc, acoes));
-  $("#sair").onclick = () => { ss.set("upe-cliente", null); ss.set("upe-voltar", null); go(voltar || "#/"); };
+  $("#sair").onclick = async () => { ss.set("upe-cliente", null); ss.set("upe-voltar", null); if (!voltar && ss.get("upe-conta")) { ss.set("upe-conta", null); await S.contaSair(); } go(voltar || "#/"); };
   if (voltar) $("#voltarAdm").onclick = () => { ss.set("upe-cliente", null); ss.set("upe-voltar", null); };
   const m = $("#cmain");
   if (kitView) return cKit(m, c, arg);
+  if (servico) return cServico(m, c, servico, arg);
   ({ inicio: cInicio, agenda: cAgenda, apresentacao: cApres, conteudo: cConteudo, graficos: cGraficos, produtos: cProdutos, pagamentos: cPagamentos, mensagens: cMensagens, apps: cApps })[tab](m, c, { pend, recItems, tabs, arg });
 }
 const refreshClient = () => clientRoute((location.hash.split("/")[2]) || "inicio");
@@ -538,19 +576,23 @@ function cProdutos(m, c, { recItems }) {
 }
 
 /* ---------- pagamentos ---------- */
-function cPagamentos(m, c) {
-  const { doc, acoes } = c, cfg = state.cfg;
-  const cobs = (doc.cobrancas || []).filter(x => x.liberada).map(x => ({ ...x, st: cobStatus(x, acoes) })).sort((a, b) => (a.st === "paga") - (b.st === "paga") || String(a.vencimento).localeCompare(b.vencimento));
-  m.innerHTML = `<div class="grid" style="gap:6px"><span class="eb">Pagamentos</span><h1>Suas cobranças</h1><p class="muted small">Pague por PIX ou cartão. Depois de pagar, toque em “Já paguei” para a Upe confirmar.</p></div>
-    ${doc.recorrente?.ativo ? `<div class="card spread"><div><span class="eb">Plano recorrente</span><h3>${esc(doc.recorrente.descricao)}</h3></div><div class="num"><b>${brl(doc.recorrente.valor)}</b><span class="muted small"> / mês · dia ${esc(doc.recorrente.dia)}</span></div></div>` : ""}
+async function cPagamentos(m, c, opt = {}) {
+  const { doc, acoes } = c, cfg = state.cfg, fr = opt.frente || (FRENTES_UPE[opt.arg] ? opt.arg : "");
+  const srv = (fr === "" || fr === "landing" || fr === "sistemas") ? (await cobrancasServicos()).filter(x => x.status !== "cancelada").map(x => ({ id: "srv:" + x.id, _srv: x._srv, app: "landing", descricao: x.descricao, valor: x.valor, vencimento: x.venc, st: x.status === "paga" ? "paga" : x.status === "informada" ? "informado" : "aberta", pix: true, cartao: false })) : [];
+  const todas = [...cobrancasFrente(c, ""), ...srv];
+  const frentes = [...new Set(todas.map(x => x.app || "branding"))];
+  const cobs = todas.filter(x => !fr || (x.app || "branding") === fr).sort((a, b) => (a.st === "paga") - (b.st === "paga") || String(a.vencimento).localeCompare(b.vencimento));
+  m.innerHTML = `${opt.embutido ? "" : `<div class="grid" style="gap:6px"><span class="eb">Pagamentos</span><h1>Suas cobranças</h1><p class="muted small">Todas as cobranças dos seus serviços num lugar só. Pague por PIX ou cartão e toque em “Já paguei” para a Upe confirmar.</p></div>
+    ${frentes.length > 1 ? `<div class="row" role="group" aria-label="Filtrar por serviço"><a class="btn ${fr ? "sec" : ""} sm" href="#/c/pagamentos">Todas</a>${frentes.map(k => `<a class="btn ${fr === k ? "" : "sec"} sm" href="#/c/pagamentos/${k}">${esc(FRENTE_COB[k] || k)}</a>`).join("")}</div>` : ""}`}
+    ${doc.recorrente?.ativo && (!fr || fr === "branding") ? `<div class="card spread"><div><span class="eb">Plano recorrente</span><h3>${esc(doc.recorrente.descricao)}</h3></div><div class="num"><b>${brl(doc.recorrente.valor)}</b><span class="muted small"> / mês · dia ${esc(doc.recorrente.dia)}</span></div></div>` : ""}
     ${cobs.length ? `<div class="grid">${cobs.map(x => `<article class="card spread">
-      <div class="grid" style="gap:4px"><h3>${esc(x.descricao)}</h3><span class="muted small">Vencimento ${fdate(x.vencimento)}</span></div>
+      <div class="grid" style="gap:4px"><h3>${esc(x.descricao)}</h3><span class="muted small">${!fr && frentes.length > 1 ? `${esc(FRENTE_COB[x.app || "branding"] || "")} · ` : ""}Vencimento ${fdate(x.vencimento)}</span></div>
       <div class="row"><b class="num" style="font-size:1.2rem">${brl(x.valor)}</b>${pill(x.st)}</div>
       ${x.st === "aberta" || x.st === "informado" ? `<div class="row" style="width:100%;justify-content:flex-end">
         ${x.pix && cfg.pixChave ? `<button class="btn sm" data-pix="${x.id}">Pagar com PIX</button>` : ""}
         ${x.cartao && (x.linkCartao || cfg.linkCartao) ? `<a class="btn sec sm" href="${esc(x.linkCartao || cfg.linkCartao)}" target="_blank" rel="noopener">Pagar com cartão</a>` : ""}
         ${x.st === "aberta" ? `<button class="btn sec sm" data-paid="${x.id}">Já paguei</button>` : `<span class="muted small">A Upe vai confirmar o seu pagamento.</span>`}</div>` : ""}
-    </article>`).join("")}</div>` : `<div class="empty">Nenhuma cobrança liberada no momento.</div>`}`;
+    </article>`).join("")}</div>` : `<div class="empty">Nenhuma cobrança ${fr ? "deste serviço " : ""}liberada no momento.</div>`}`;
   $$("[data-pix]", m).forEach(b => b.onclick = () => {
     const x = cobs.find(y => y.id === b.dataset.pix);
     const payload = pixPayload({ chave: cfg.pixChave, nome: cfg.pixNome, cidade: cfg.pixCidade, valor: x.valor, txid: ("UPE" + x.id).slice(0, 25), descricao: x.descricao });
@@ -559,9 +601,15 @@ function cPagamentos(m, c) {
       `<button class="btn sec" id="cpx">Copiar código</button><button class="btn" id="paid2">Já paguei</button>`);
     try { new QRCode($("#qr"), { text: payload, width: 220, height: 220, correctLevel: QRCode.CorrectLevel.M }); } catch (e) { $("#qr").innerHTML = '<span class="muted small">Use o código copia e cola abaixo.</span>'; }
     $("#cpx").onclick = () => copy(payload, "Código PIX copiado");
-    $("#paid2").onclick = async () => { await Api.act(c.id, { tipo: "pagamento", alvo: x.id, metodo: "pix" }); dlg.close(); toast("Obrigado! A Upe vai confirmar."); refreshClient(); };
+    $("#paid2").onclick = async () => { await informarPago(c, x, "pix"); dlg.close(); };
   });
-  $$("[data-paid]", m).forEach(b => b.onclick = async () => { await Api.act(c.id, { tipo: "pagamento", alvo: b.dataset.paid, metodo: "informado" }); toast("Obrigado! A Upe vai confirmar."); refreshClient(); });
+  $$("[data-paid]", m).forEach(b => b.onclick = () => informarPago(c, cobs.find(y => y.id === b.dataset.paid), "informado"));
+}
+
+async function informarPago(c, x, metodo) {
+  if (x._srv) await S.set(x._srv, { status: "informada", informadoEm: Date.now() }, true);
+  else await Api.act(c.id, { tipo: "pagamento", alvo: x.id, metodo });
+  toast("Obrigado! A Upe vai confirmar."); refreshClient();
 }
 
 /* ---------- mensagens ---------- */
@@ -588,9 +636,9 @@ async function adminRoute(rest) {
   const unread = clients.reduce((s, c) => s + c.acoes.filter(a => a.tipo === "mensagem" && a.em > (c.doc.lidoAdmEm || 0)).length, 0);
   const novos = contatos.filter(c => (c.status || "novo") === "novo").length;
   const hoje = todayIso(), agendaHoje = reunioes.filter(r => r.data === hoje && r.status !== "cancelada").length + crono.filter(x => x.data === hoje && x.status !== "publicado").length;
-  const nav = [["clientes", "Clientes", 0], ["calendario", "Calendário", agendaHoje], ["cronograma", "Cronograma Upe", 0], ["apps", "Apps Extra", clients.reduce((s, c) => s + appPedidos(c.doc, c.acoes).filter(p => p.status === "novo").length, 0)], ["contatos", "Contatos do site", novos], ["mensagens", "Inbox", unread], ["newsletter", "Newsletter", 0], ["config", "Configurações", 0]];
+  const nav = [["clientes", "Clientes", 0], ["calendario", "Calendário", agendaHoje], ["cronograma", "Cronograma Upe", 0], ["apps", "Serviços e preços", clients.reduce((s, c) => s + appPedidos(c.doc, c.acoes).filter(p => p.status === "novo").length, 0)], ["contatos", "Contatos do site", novos], ["mensagens", "Inbox", unread], ["newsletter", "Newsletter", 0], ["config", "Configurações", 0]];
   const cur = sec === "cliente" ? "clientes" : sec;
-  app.innerHTML = demoBar() + `<div class="adm"><aside class="side"><div class="logo">${WM}</div><nav class="nav">${nav.map(([k, l, n]) => `<a href="#/admin/${k}" ${k === cur ? 'aria-current="page"' : ""}><span>${l}</span>${n ? `<span class="cnt">${n}</span>` : ""}</a>` + (k === "apps" ? APP_IDS.map(ap => `<a class="sub" href="#/admin/apps/${ap}" ${cur === "apps" && (a1 || "erp") === ap ? 'aria-current="true"' : ""}><span>${esc(APPS_PADRAO[ap].nome.replace("Upe ", ""))}</span></a>`).join("") : "")).join("")}</nav>
+  app.innerHTML = demoBar() + `<div class="adm"><aside class="side"><div class="logo">${WM}</div><nav class="nav">${nav.map(([k, l, n]) => `<a href="#/admin/${k}" ${k === cur ? 'aria-current="page"' : ""}><span>${l}</span>${n ? `<span class="cnt">${n}</span>` : ""}</a>` + (k === "apps" ? ["branding", ...APP_IDS].map(ap => `<a class="sub" href="#/admin/apps/${ap}" ${cur === "apps" && (a1 || "branding") === ap ? 'aria-current="true"' : ""}><span>${esc(FRENTES_UPE[ap].replace("Upe ", ""))}</span></a>`).join("") : "")).join("")}</nav>
     <div class="foot"><span>${S.mode === "demo" ? "Modo demonstração" : "Firebase conectado"}</span><button class="lnk" id="logout">Sair</button></div></aside><main class="work"><div class="wtop"><button class="btn sec sm" id="topReu">Agendar reunião</button><div id="bellH"></div></div><div id="w" class="grid" style="gap:18px"></div></main></div>`;
   bell($("#bellH"), "adm", notifsAdmin(state.cache)); $("#topReu").onclick = () => reuniaoModal();
   $("#logout").onclick = async () => { await S.logout(); state.admin = false; go("#/"); };
@@ -598,9 +646,10 @@ async function adminRoute(rest) {
   if (sec === "clientes") return aClientes(w, clients);
   if (sec === "calendario") return aCalendario(w);
   if (sec === "cronograma") return aCronograma(w, a1 || "instagram", a2 || "");
-  if (sec === "apps") return aApps(w, APP_IDS.includes(a1) ? a1 : "erp");
+  if (sec === "apps") return aApps(w, APP_IDS.includes(a1) ? a1 : "branding");
   if (sec === "cliente") return aCliente(w, a1, a2 || "projeto", a3);
   if (sec === "contatos") return aContatos(w, contatos);
+  if (sec === "novo") { aClientes(w, clients); let pre = {}; try { pre = JSON.parse(decodeURIComponent(a1 || "")) || {}; } catch (e) {} history.replaceState(null, "", "#/admin/clientes"); return newClientModal(pre); }
   if (sec === "mensagens") return aInbox(w, clients, a1);
   if (sec === "newsletter") return a1 ? aNewsEditor(w, a1) : aNewsletter(w);
   if (sec === "config") return aConfig(w);
@@ -619,11 +668,11 @@ function aClientes(w, clients) {
       ["A receber (liberado)", brl(clients.reduce((s, c) => s + (c.doc.cobrancas || []).filter(x => x.liberada && cobStatus(x, c.acoes) !== "paga" && x.status !== "cancelado").reduce((t, x) => t + (+x.valor || 0), 0), 0))],
       ["Pedidos de recompra novos", clients.reduce((s, c) => s + pedidosOf(c.doc, c.acoes).filter(p => p.status === "novo").length, 0)]
     ].map(([l, n]) => `<div class="card stat"><b>${n}</b><span>${l}</span></div>`).join("")}</div>
-    <div class="card pad0 tbl">${rows.length ? `<table><thead><tr><th>Cliente</th><th>Plano</th><th>Pendências</th><th>Pagamentos</th><th>Última atividade</th></tr></thead><tbody>${rows.map(c => {
+    <div class="card pad0 tbl">${rows.length ? `<table><thead><tr><th>Cliente</th><th>Serviços</th><th>Pendências</th><th>Pagamentos</th><th>Última atividade</th></tr></thead><tbody>${rows.map(c => {
       const p = pendencias(c.doc, c.acoes), last = Math.max(c.doc.criadoEm || 0, ...c.acoes.map(a => a.em)), unread = c.acoes.filter(a => a.tipo === "mensagem" && a.em > (c.doc.lidoAdmEm || 0)).length;
       const inf = (c.doc.cobrancas || []).filter(x => cobStatus(x, c.acoes) === "informado").length;
       return `<tr class="click" data-id="${c.id}" tabindex="0"><td><b>${esc(c.doc.marca || c.doc.empresa || c.doc.nome)}</b><br><span class="muted small">${esc(c.doc.nome)}${c.doc.ativo === false ? " · inativo" : ""}</span></td>
-      <td><div class="row" style="gap:4px">${c.doc.plano?.branding ? '<span class="pill">Branding</span>' : ""}${c.doc.plano?.midias ? '<span class="pill">Mídias</span>' : ""}${c.doc.plano?.grafica ? '<span class="pill">Gráfica</span>' : ""}${c.doc.recorrente?.ativo ? '<span class="pill info">Recorrente</span>' : ""}</div></td>
+      <td><div class="row" style="gap:4px">${c.doc.plano?.branding ? '<span class="pill">Branding</span>' : ""}${c.doc.plano?.midias ? '<span class="pill">Mídias</span>' : ""}${c.doc.plano?.grafica ? '<span class="pill">Gráfica</span>' : ""}${APP_IDS.filter(k => ativoApp((c.doc.apps || {})[k])).map(k => `<span class="pill">${esc(FRENTES_UPE[k].replace("Upe ", ""))}</span>`).join("")}${c.doc.recorrente?.ativo ? '<span class="pill info">Recorrente</span>' : ""}</div></td>
       <td class="small">${p.posts.length ? `${p.posts.length} post(s) · ` : ""}${p.artes.length ? `${p.artes.length} arte(s) · ` : ""}${unread ? `<b>${unread} msg nova(s)</b>` : ""}${!p.posts.length && !p.artes.length && !unread ? '<span class="muted">—</span>' : ""}</td>
       <td class="small">${inf ? `<span class="pill info">${inf} informado(s)</span>` : p.cobs.length ? `${p.cobs.length} em aberto` : '<span class="muted">—</span>'}</td>
       <td class="small num muted">${fdt(last)}</td></tr>`; }).join("")}</tbody></table>` : `<div class="empty" style="margin:16px">Nenhum cliente${q ? " encontrado" : " ainda"}. <button class="btn" id="novo2">Cadastrar o primeiro</button></div>`}</div>`;
@@ -648,6 +697,7 @@ function newClientModal(pre = {}) {
     doc.acesso = { apresentacao: false, manual: false, calendario: doc.plano.midias, graficos: doc.plano.grafica, recompra: false, pagamentos: true };
     const { id, code } = await Api.createClient(doc, { email: $("#nEmail").value.trim(), telefone: tel ? (tel.length <= 11 ? "55" + tel : tel) : "", origemContato: pre.contatoId || "" });
     if (pre.contatoId) await S.set(`contatos/${pre.contatoId}`, { status: "convertido", clienteId: id }, true);
+    if ($("#nEmail").value.trim()) { try { const pv = await S.get(`privado/${id}`); await provisionar(id, doc, pv); } catch (e) { console.error(e); } }
     codeModal(id, code, doc, { telefone: tel ? (tel.length <= 11 ? "55" + tel : tel) : "", email: $("#nEmail").value.trim() });
   };
 }
@@ -667,7 +717,7 @@ async function aCliente(w, id, tab, alvo) {
   const doc = clone(c.doc), priv = clone(c.priv), acoes = c.acoes;
   const p = pendencias(doc, acoes), unread = acoes.filter(a => a.tipo === "mensagem" && a.em > (doc.lidoAdmEm || 0)).length, pedNovos = pedidosOf(doc, acoes).filter(x => x.status === "novo").length;
   const ajustes = [...(doc.posts || []), ...(doc.graficos || [])].filter(x => statusOf(x, acoes).status === "ajustes");
-  const tabs = [["projeto", "Projeto e acessos", 0], ["apresentacao", "Apresentação e dossiê", 0], ["conteudo", "Conteúdo", p.posts.length + (doc.posts || []).filter(x => ajustes.includes(x)).length], ["graficos", "Gráficos e recompra", pedNovos], ["pagamentos", "Pagamentos", (doc.cobrancas || []).filter(x => cobStatus(x, acoes) === "informado").length], ["apps", "Apps Extra", appPedidos(doc, acoes).filter(x => x.status === "novo").length], ["mensagens", "Inbox", unread]];
+  const tabs = [["projeto", "Projeto e acessos", 0], ["apresentacao", "Apresentação e dossiê", 0], ["conteudo", "Conteúdo", p.posts.length + (doc.posts || []).filter(x => ajustes.includes(x)).length], ["graficos", "Gráficos e recompra", pedNovos], ["pagamentos", "Pagamentos", (doc.cobrancas || []).filter(x => cobStatus(x, acoes) === "informado").length], ["apps", "Serviços", appPedidos(doc, acoes).filter(x => x.status === "novo").length], ["mensagens", "Inbox", unread]];
   w.innerHTML = `<div class="spread"><div class="grid" style="gap:4px"><a href="#/admin/clientes" class="small">← Clientes</a><h1>${esc(doc.marca || doc.empresa || doc.nome)}</h1><span class="muted">${esc(doc.nome)}${priv.email ? ` · ${esc(priv.email)}` : ""}</span></div>
     <div class="row"><button class="btn sec sm" id="vCli">Ver como cliente</button></div></div>
     <nav class="subtabs">${tabs.map(([k, l, n]) => `<a class="tab" href="#/admin/cliente/${id}/${k}" ${k === tab ? 'aria-current="page"' : ""}>${l}${n ? `<span class="cnt">${n}</span>` : ""}</a>`).join("")}</nav>
@@ -684,7 +734,7 @@ function aProjeto(ct, { id, doc, priv, save }) {
     <div class="g2">
       <section class="card grid"><h3>Dados do cliente</h3>
         <div class="g2"><label class="f" for="dNome">Nome do contato<input id="dNome" value="${esc(doc.nome)}"></label><label class="f" for="dEmp">Empresa<input id="dEmp" value="${esc(doc.empresa)}"></label></div>
-        <div class="g2"><label class="f" for="dMarca">Marca<input id="dMarca" value="${esc(doc.marca)}"></label><label class="f" for="dEmail">E-mail (newsletter)<input id="dEmail" type="email" value="${esc(priv.email || "")}"></label></div>
+        <div class="g2"><label class="f" for="dMarca">Marca<input id="dMarca" value="${esc(doc.marca)}"></label><label class="f" for="dEmail">E-mail (login do cliente e newsletter)<input id="dEmail" type="email" value="${esc(priv.email || "")}"></label></div>
         <div class="g2"><label class="f" for="dTel">WhatsApp<input id="dTel" value="${esc(priv.telefone || "")}"></label><label class="tg" style="align-self:end"><input type="checkbox" id="dAtivo" ${doc.ativo !== false ? "checked" : ""}>Acesso ativo</label></div>
         <label class="f" for="dNotas">Notas internas (o cliente não vê)<textarea id="dNotas">${esc(priv.notas || "")}</textarea></label>
       </section>
@@ -705,6 +755,7 @@ function aProjeto(ct, { id, doc, priv, save }) {
       </section>
       <section class="card grid"><h3>Recorrência e manual</h3>
         <label class="tg"><input type="checkbox" id="rAt" ${doc.recorrente?.ativo ? "checked" : ""}><span>Serviço recorrente<small>Mensalidade de mídias ou manutenção</small></span></label>
+        <label class="f" for="rTab">Preço de tabela (Serviços e preços › Branding)<select id="rTab"><option value="">— escolher para preencher —</option>${precosBranding(state.cache.pub).filter(p => !p.unico).map(p => `<option value="${esc(p.k)}">${esc(p.nome)} · ${+p.preco ? brl(p.preco) + "/mês" : "sob consulta"}</option>`).join("")}</select></label>
         <div class="g3"><label class="f" for="rDesc">Descrição<input id="rDesc" value="${esc(doc.recorrente?.descricao || "Mensalidade")}"></label><label class="f" for="rVal">Valor (R$)<input id="rVal" type="number" step="0.01" value="${esc(doc.recorrente?.valor || 0)}"></label><label class="f" for="rDia">Dia do vencimento<input id="rDia" type="number" min="1" max="28" value="${esc(doc.recorrente?.dia || 10)}"></label></div>
         <label class="f" for="mUrl">Manual da marca: link do arquivo (PDF)<input id="mUrl" value="${esc(doc.manual?.url || "")}" placeholder="https://…"></label>
         <div class="row"><label class="f" for="mNome" style="flex:1">Nome do arquivo<input id="mNome" value="${esc(doc.manual?.nome || "")}"></label><label class="btn sec sm" style="align-self:end">Enviar arquivo<input type="file" id="mFile" accept=".pdf,image/*" hidden></label></div>
@@ -728,7 +779,10 @@ function aProjeto(ct, { id, doc, priv, save }) {
     Object.assign(priv, { email: $("#dEmail").value.trim(), telefone: $("#dTel").value.replace(/\D/g, ""), notas: $("#dNotas").value });
     doc.entregas = doc.entregas || []; entregasCollect(ct, doc);
   }
-  $("#sv").onclick = async () => { collect(); doc.incluso = doc.incluso.filter(i => i.item); await S.set(`privado/${id}`, priv); await save(); };
+  $("#sv").onclick = async () => { collect(); doc.incluso = doc.incluso.filter(i => i.item); await S.set(`privado/${id}`, priv);
+    if (priv.email && (priv.emailConvite || FRENTES_DO_CLIENTE(doc).some(k => k !== "branding")) && String(priv.emailConvite || "").toLowerCase() !== priv.email.toLowerCase()) { try { await provisionar(id, doc, priv); } catch (e) { console.error(e); toast("Acessos dos apps não atualizados: " + e.message); } }
+    await save(); };
+  if ($("#rTab")) $("#rTab").onchange = e => { const p = precosBranding(state.cache.pub).find(x => x.k === e.target.value); if (p) { $("#rDesc").value = p.nome; $("#rVal").value = p.preco; $("#rAt").checked = true; } };
   $("#cShow").onclick = () => codeModal(id, priv.codigo, doc, priv);
   $("#cRegen").onclick = () => { modal("Gerar novo código?", `<p>O código atual (<span class="code">${esc(priv.codigo)}</span>) vai parar de funcionar.</p>`, `<button class="btn sec" data-close>Cancelar</button><button class="btn" id="rg">Gerar novo código</button>`);
     $("#rg").onclick = async () => { const code = await Api.regenCode(id); priv.codigo = code; dlg.close(); codeModal(id, code, doc, priv); }; };
@@ -911,7 +965,7 @@ function aPagamentosA(ct, { id, doc, acoes, save }) {
   const cobs = (doc.cobrancas || []).map(x => ({ ...x, st: cobStatus(x, acoes) })).sort((a, b) => String(b.vencimento).localeCompare(a.vencimento));
   ct.innerHTML = `<div class="spread"><h3>Cobranças</h3><div class="row">${doc.recorrente?.ativo ? `<button class="btn sec" id="cMes">Gerar mensalidade</button>` : ""}<button class="btn" id="cNew">Nova cobrança</button></div></div>
     ${doc.acesso?.pagamentos ? "" : `<div class="card" style="background:var(--warn-bg)">O acesso a Pagamentos está desligado para este cliente.</div>`}
-    <div class="card pad0 tbl">${cobs.length ? `<table><thead><tr><th>Descrição</th><th>Vencimento</th><th>Valor</th><th>Visível ao cliente</th><th>Status</th><th></th></tr></thead><tbody>${cobs.map(x => `<tr><td><b>${esc(x.descricao)}</b><br><span class="muted small">${[x.pix && "PIX", x.cartao && "Cartão"].filter(Boolean).join(" · ")}</span></td><td class="num">${fdate(x.vencimento)}</td><td class="num">${brl(x.valor)}</td><td><label class="row small" style="gap:6px"><input type="checkbox" data-lib="${x.id}" ${x.liberada ? "checked" : ""}>${x.liberada ? "Liberada" : "Oculta"}</label></td><td>${pill(x.st)}</td><td><div class="row" style="gap:6px">${x.st !== "paga" ? `<button class="btn ok sm" data-pg="${x.id}">Confirmar pagamento</button>` : ""}<button class="btn sec sm" data-ed="${x.id}">Editar</button></div></td></tr>`).join("")}</tbody></table>` : `<div class="empty" style="margin:16px">Nenhuma cobrança.</div>`}</div>`;
+    <div class="card pad0 tbl">${cobs.length ? `<table><thead><tr><th>Descrição</th><th>Vencimento</th><th>Valor</th><th>Visível ao cliente</th><th>Status</th><th></th></tr></thead><tbody>${cobs.map(x => `<tr><td><b>${esc(x.descricao)}</b><br><span class="muted small">${esc(FRENTE_COB[x.app || "branding"])} · ${[x.pix && "PIX", x.cartao && "Cartão"].filter(Boolean).join(" · ")}</span></td><td class="num">${fdate(x.vencimento)}</td><td class="num">${brl(x.valor)}</td><td><label class="row small" style="gap:6px"><input type="checkbox" data-lib="${x.id}" ${x.liberada ? "checked" : ""}>${x.liberada ? "Liberada" : "Oculta"}</label></td><td>${pill(x.st)}</td><td><div class="row" style="gap:6px">${x.st !== "paga" ? `<button class="btn ok sm" data-pg="${x.id}">Confirmar pagamento</button>` : ""}<button class="btn sec sm" data-ed="${x.id}">Editar</button></div></td></tr>`).join("")}</tbody></table>` : `<div class="empty" style="margin:16px">Nenhuma cobrança.</div>`}</div>`;
   const edit = x => {
     const n = !x; x = x || { id: uid(8), descricao: "", valor: 0, vencimento: isoDay(new Date(Date.now() + 5 * 864e5)), liberada: true, status: "aberta", pix: true, cartao: true, linkCartao: "" };
     modal(n ? "Nova cobrança" : "Editar cobrança", `
@@ -919,10 +973,11 @@ function aPagamentosA(ct, { id, doc, acoes, save }) {
       <div class="g2"><label class="f" for="xV">Valor (R$)<input id="xV" type="number" step="0.01" value="${esc(x.valor)}"></label><label class="f" for="xVe">Vencimento<input id="xVe" type="date" value="${esc(x.vencimento)}"></label></div>
       <div class="g3"><label class="tg"><input type="checkbox" id="xP" ${x.pix ? "checked" : ""}>PIX</label><label class="tg"><input type="checkbox" id="xC" ${x.cartao ? "checked" : ""}>Cartão</label><label class="tg"><input type="checkbox" id="xL" ${x.liberada ? "checked" : ""}>Liberar ao cliente</label></div>
       <label class="f" for="xLk">Link de pagamento com cartão (opcional; sem ele, usa o link padrão das configurações)<input id="xLk" value="${esc(x.linkCartao)}" placeholder="https://link.mercadopago.com.br/…"></label>
+      <label class="f" for="xF">Serviço (aparece no painel desse serviço)<select id="xF">${Object.entries(FRENTE_COB).map(([k, l]) => `<option value="${k}" ${(x.app || "branding") === k ? "selected" : ""}>${esc(l)}</option>`).join("")}</select></label>
       <label class="f" for="xS">Status<select id="xS">${["aberta", "paga", "cancelado"].map(s => `<option value="${s}" ${x.status === s ? "selected" : ""}>${ST[s][0]}</option>`).join("")}</select></label>`,
       `${!n ? `<button class="btn bad" id="xX">Excluir</button>` : ""}<button class="btn sec" data-close>Cancelar</button><button class="btn" id="xOk">Salvar</button>`);
     $("#xOk").onclick = async () => { const d = $("#xD").value.trim(); if (!d) return $("#xD").focus();
-      const nx = { ...x, liberadaEm: !x.liberada && $("#xL").checked ? Date.now() : (x.liberadaEm || 0), descricao: d, valor: +$("#xV").value || 0, vencimento: $("#xVe").value, pix: $("#xP").checked, cartao: $("#xC").checked, liberada: $("#xL").checked, linkCartao: $("#xLk").value.trim(), status: $("#xS").value };
+      const nx = { ...x, liberadaEm: !x.liberada && $("#xL").checked ? Date.now() : (x.liberadaEm || 0), descricao: d, valor: +$("#xV").value || 0, vencimento: $("#xVe").value, pix: $("#xP").checked, cartao: $("#xC").checked, liberada: $("#xL").checked, linkCartao: $("#xLk").value.trim(), status: $("#xS").value, app: $("#xF").value === "branding" ? "" : $("#xF").value };
       doc.cobrancas = n ? [...(doc.cobrancas || []), nx] : doc.cobrancas.map(y => y.id === x.id ? nx : y); dlg.close(); await save("Cobrança salva"); };
     if ($("#xX")) $("#xX").onclick = async () => { doc.cobrancas = doc.cobrancas.filter(y => y.id !== x.id); dlg.close(); await save("Cobrança excluída"); };
   };

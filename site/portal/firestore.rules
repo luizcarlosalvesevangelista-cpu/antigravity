@@ -257,6 +257,30 @@ service cloud.firestore {
       allow write: if ehUpe();
     }
 
+    /* ================= Conta única do cliente (painel central) =================
+       portal_convites/{email} → { cliente }: a Upe libera o e-mail na ficha do cliente.
+       portal_acessos/{uid} → { cliente, email }: o cliente cria no primeiro login (e-mail confirmado e convite igual).
+       paineis_cliente/{cliente_frente} → painel personalizado (HTML) que a Upe sobe para uma frente do cliente. */
+    function portalAcesso() { return /databases/$(database)/documents/portal_acessos/$(request.auth.uid); }
+    function portalMembro(cli) { return ehUpe() || (verificado() && exists(portalAcesso()) && get(portalAcesso()).data.cliente == cli); }
+    match /portal_convites/{email} {
+      allow read: if ehUpe() || (verificado() && request.auth.token.email == email);
+      allow write: if ehUpe();
+    }
+    match /portal_acessos/{uid} {
+      allow read: if ehUpe() || (logado() && request.auth.uid == uid);
+      allow create: if verificado() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['cliente', 'email', 'criadoEm'])
+        && exists(/databases/$(database)/documents/portal_convites/$(request.auth.token.email))
+        && request.resource.data.cliente == get(/databases/$(database)/documents/portal_convites/$(request.auth.token.email)).data.cliente
+        && request.resource.data.email == request.auth.token.email;
+      allow update, delete: if ehUpe();
+    }
+    match /paineis_cliente/{id} {
+      allow read: if portalMembro(resource.data.cliente);
+      allow write: if ehUpe();
+    }
+
     /* ================= Upe TV (campanhas, telas e player) ================= */
     function tvLogado() { return request.auth != null; }
     function tvAdmin() {

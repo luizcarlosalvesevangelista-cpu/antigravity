@@ -1,8 +1,8 @@
 # Portal Upe
 
-Portal do cliente e painel do administrador para os serviços de **Branding, Mídias digitais e Papelaria gráfica**. Upe ERP e Upe TV ficam fora deste painel.
+**Painel central** da Upe Criativo: cadastro único de clientes, preços de todas as frentes e o painel do cliente com Branding, Mídias digitais, Papelaria gráfica, Upe ERP, Upe TV, Landing pages e Upe Sistemas num login só. Como funciona: [`docs/PAINEL-CENTRAL.md`](../../docs/PAINEL-CENTRAL.md).
 
-- **Cliente:** entra com o código `XXXX-XXXX-XXXX`. Vê só o que você liberar: a apresentação (aba 05 do dossiê), o manual da marca, o calendário de aprovação de posts, a aprovação de artes gráficas, a tela "Comprar de novo", os pagamentos por PIX ou cartão e as mensagens.
+- **Cliente:** entra com o e-mail cadastrado (um login para todos os serviços) ou, só para o portal de branding, com o código `XXXX-XXXX-XXXX`. Vê só o que você liberar: a apresentação (aba 05 do dossiê), o manual da marca, o calendário de aprovação de posts, a aprovação de artes gráficas, a tela "Comprar de novo", os pagamentos por PIX ou cartão e as mensagens.
 - **Administrador:** entra com e-mail e senha. Cadastra clientes (manualmente ou a partir dos contatos do site), gera e reenvia códigos, escolhe o que está incluso e o que o cliente vê, publica posts e artes para aprovação, libera recompras, cria e libera cobranças, responde mensagens e monta newsletters.
 
 ## Agenda, reuniões, cronograma e notificações

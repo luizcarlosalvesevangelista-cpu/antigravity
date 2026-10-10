@@ -5,6 +5,13 @@ import { DEMO, ADMIN_EMAIL, SITES, WHATS, PLANOS_PADRAO, FRENTES, esc, brl, hoje
 import * as vPaginas from "./v-paginas.js"; import * as vAnalise from "./v-analise.js"; import * as vAgenda from "./v-agenda.js";
 import * as vDash from "./v-dash.js"; import * as vConta from "./v-conta.js"; import * as vAdmin from "./v-admin.js";
 
+/* aberto dentro do painel central da Upe (?embed=1&frente=landing|sistemas[&cid=…] para a Upe ver como o cliente):
+   sem menu lateral, sem plano e cobranças (ficam no painel central) e só as seções da frente */
+const QS = new URLSearchParams(location.search), EMBED = QS.has("embed"), FRENTE_EMB = QS.get("frente") || "";
+if (EMBED) document.body.classList.add("embed");
+const SECOES_EMB = { landing: ["#/paginas", "#/analise", "#/leads", "#/dominios", "#/chamados"], sistemas: ["#/agenda", "#/dash", "#/chamados"] };
+const permitidaEmb = h => !EMBED || !SECOES_EMB[FRENTE_EMB] || SECOES_EMB[FRENTE_EMB].some(x => h.startsWith(x)) || /^#\/pagina\//.test(h);
+
 /* ---------- login ---------- */
 function telaLogin(msg = "", ok = "") {
   const L = $("#login"); L.hidden = false; $("#app").hidden = true;
@@ -52,6 +59,7 @@ async function ehAdmin(u) {
 }
 auth.onChange(async u => {
   S.user = u;
+  if (!u && EMBED && DEMO) return auth.entrar("cliente@exemplo.com");
   if (!u) return telaLogin();
   if (!u.emailVerified) return telaAviso("Confirme o seu e-mail", `Enviamos um link para <b>${esc(u.email)}</b>. Abra o e-mail, toque no link e depois volte aqui.`,
     `<button class="btn azul" type="button" id="lgJa">Já confirmei</button><button class="btn" type="button" id="lgRe">Reenviar o e-mail</button>`), $("#lgJa").onclick = async () => { const n = await auth.recarregar(); if (n?.emailVerified) location.reload(); else toast("Ainda não aparece como confirmado. Tente em alguns segundos."); }, $("#lgRe").onclick = async () => { await auth.verificar(); toast("E-mail reenviado."); };
@@ -61,7 +69,7 @@ auth.onChange(async u => {
     S.recursos = (await db.get("srv_config/recursos").catch(() => null)) || {};
     if (S.admin) {
       S.clientes = (await db.list("srv_clientes")).sort((a, b) => (a.nome || "").localeCompare(b.nome || ""));
-      S.cid = sessionStorage.getItem("srv-cid") || null;
+      S.cid = (EMBED && QS.get("cid")) || sessionStorage.getItem("srv-cid") || null;
       if (S.cid && !S.clientes.some(c => c.id === S.cid)) S.cid = null;
       if (!(await db.list("srv_planos")).length) await db.batch(PLANOS_PADRAO.map(p => ({ set: ["srv_planos/" + p.id, p] })));
     } else {
@@ -100,6 +108,7 @@ function menu() {
     n += `<h4>Conta</h4>` + it("#/conta", "Plano e cobranças") + it("#/chamados", "Pedidos de ajuste");
   }
   if (S.admin) n += `<h4>Gestão Upe</h4>` + it("#/adm/clientes", "Clientes e planos") + it("#/adm/cobrancas", "Cobranças") + it("#/adm/planos", "Catálogo de planos") + it("#/adm/interessados", "Interessados") + it("#/adm/dominios", "Domínios") + it("#/adm/paginas", "Todas as páginas") + it("#/adm/chamados", "Pedidos de ajuste") + it("#/adm/config", "PIX e contato") + it("#/adm/erros", "Erros dos sites");
+  if (EMBED) { const t = document.createElement("div"); t.innerHTML = n; t.querySelectorAll("h4").forEach(x => x.remove()); t.querySelectorAll("[data-ir]").forEach(b => { if (!SECOES_EMB[FRENTE_EMB] ? b.dataset.ir.startsWith("#/adm") || b.dataset.ir === "#/conta" : !permitidaEmb(b.dataset.ir)) b.remove(); }); n = t.innerHTML; }
   $("#nav").innerHTML = n;
   $("#quem").innerHTML = S.admin
     ? `<span>Upe Criativo · administrador</span><label class="f" style="color:var(--side-muted)">Cliente aberto<select id="selCli"><option value="">Nenhum (só gestão)</option>${S.clientes.map(c => `<option value="${esc(c.id)}" ${c.id === S.cid ? "selected" : ""}>${esc(c.nome)}</option>`).join("")}</select></label>`
@@ -117,6 +126,7 @@ async function rota() {
   if (!h || h === "#/") h = S.cliente ? "#/inicio" : "#/adm/clientes";
   if (!S.cliente && !h.startsWith("#/adm") ) h = "#/adm/clientes";
   if (h.startsWith("#/adm") && !S.admin) h = "#/inicio";
+  if (EMBED && S.cliente && (h.startsWith("#/adm") || h === "#/conta" || h === "#/inicio" || !permitidaEmb(h))) h = (SECOES_EMB[FRENTE_EMB] || ["#/paginas"])[0];
   S.view = h; menu();
   const [, a, b, c] = h.split("/"), chave = a === "adm" ? "adm/" + b : a;
   const fn = VIEWS[chave] || VIEWS.inicio;

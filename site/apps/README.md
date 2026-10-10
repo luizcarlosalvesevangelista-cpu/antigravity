@@ -1,5 +1,7 @@
 # Apps da Upe Criativo (projeto único `upecriativo-cc472`)
 
+> **Cadastro de clientes, preços e o painel do cliente ficam no painel central** (`site/portal`): veja [`docs/PAINEL-CENTRAL.md`](../../docs/PAINEL-CENTRAL.md). Os apps abaixo abrem dentro dele (`?embed=1`, mesmo endereço) e as telas de administração de cada app ficam só para operar.
+
 Os apps que antes ficavam nos projetos `upe-erp` e `upe-tv` agora rodam no mesmo projeto Firebase do site e do portal: um login, um banco de dados e um plano Blaze.
 
 | Pasta | Endereço | O que é |
@@ -22,4 +24,5 @@ Os apps que antes ficavam nos projetos `upe-erp` e `upe-tv` agora rodam no mesmo
 - Recursos do plano Blaze (funções em `site/functions`, Storage, e-mails, PIX automático): `docs/ATIVACAO-BLAZE.md` e `tools/blaze/ativar.sh`.
 - Domínio próprio de landing page: o cliente pede no painel; a Upe adiciona o domínio no Hosting do site `upe-criativo-lp` e marca o pedido como ativo em Gestão Upe › Domínios.
 - Postagens: ficam só no painel principal (Cronograma Upe). A aba "Redes sociais" do gerenciador foi retirada.
+- `painel/`, `servicos/` e `tv/` também são publicados no site principal (`/apps/...`) para abrir dentro do painel central com o mesmo login. Use caminhos relativos nesses apps.
 - Publicar: `cd site && firebase deploy --only hosting` (publica o site, o portal e os 8 apps).

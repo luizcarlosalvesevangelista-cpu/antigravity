@@ -7,7 +7,7 @@
 <meta name="robots" content="noindex">
 <title>Painel Upe Serviços</title>
 <meta name="theme-color" content="#0b1d3a">
-<link rel="icon" type="image/png" href="/icone-192.png">
+<link rel="icon" type="image/png" href="icone-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Figtree:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -158,6 +158,15 @@ dialog h3 { font-family: var(--f-display); font-size: 24px; text-transform: uppe
 .lg-err:empty, .lg-ok:empty { display: none; }
 .lg-link { background: none; border: 0; color: var(--accent-ink); font-weight: 600; padding: 0; justify-self: start; }
 .lg-sep { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 12px; } .lg-sep::before, .lg-sep::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+
+/* dentro do painel central (?embed=1): as seções viram abas no topo */
+.embed .app { grid-template-columns: minmax(0, 1fr); }
+.embed .side { position: sticky; top: 0; height: auto; flex-direction: row; align-items: center; padding: 8px 12px; gap: 10px; }
+.embed .side-brand, .embed .side-foot { display: none; }
+.embed .side-quem { display: none; }
+.embed .nav { display: flex; flex-wrap: wrap; gap: 4px; }
+.embed .nav button { padding: 7px 12px; }
+.embed .main { padding-top: 16px; }
 
 @media (max-width: 980px) {
   .app { grid-template-columns: minmax(0, 1fr); }
