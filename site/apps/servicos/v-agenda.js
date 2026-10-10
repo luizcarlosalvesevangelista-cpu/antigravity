@@ -1,4 +1,4 @@
-/* Agenda online: reservas, serviços, horários e página pública de agendamento (upe-criativo-sistemas.web.app/<endereço>). */
+/* Agenda online: reservas, serviços, horários e página pública de agendamento (agenda.upecriativo.com.br/<endereço>). */
 import { db, S, $, $$, toast, dialogo, botoesDlg, pill, vazio, topo, fmtData, agendaDoCliente, ctx } from "./nucleo.js";
 import { SITES, esc, brl, hoje, slugify, uid } from "./srv.js";
 

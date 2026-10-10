@@ -1,6 +1,6 @@
 # Projetos de clientes
 
-Uma pasta por cliente, com tudo o que for subir no Painel Upe Serviços (https://upe-criativo-servicos.web.app):
+Uma pasta por cliente, com tudo o que for subir no Painel Upe Serviços (https://servicos.upecriativo.com.br):
 
 ```
 clientes/<cliente>/

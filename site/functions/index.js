@@ -26,7 +26,7 @@ setGlobalOptions({ region: "southamerica-east1", maxInstances: 10, memory: "256M
 
 const MP_ACCESS_TOKEN = defineSecret("MP_ACCESS_TOKEN");        // conta Mercado Pago da Upe (cobranças); "desligado" enquanto não houver
 const WHATSAPP_WEBHOOK = defineString("WHATSAPP_WEBHOOK", { default: "" }); // URL que recebe {phone, message} (opcional)
-const PAINEL = "https://upe-criativo-servicos.web.app", LP = "https://upe-criativo-lp.web.app", AGENDAS = "https://upe-criativo-sistemas.web.app", LOJAS = "https://upe-criativo-lojas.web.app";
+const PAINEL = "https://servicos.upecriativo.com.br", LP = "https://lp.upecriativo.com.br", AGENDAS = "https://agenda.upecriativo.com.br", LOJAS = "https://loja.upecriativo.com.br";
 const TZ = "America/Sao_Paulo", DIA = 864e5;
 
 /* ---------- utilidades ---------- */
@@ -181,7 +181,7 @@ exports.api = onRequest({ secrets: [MP_ACCESS_TOKEN], cors: false }, async (req,
 let MONTAR = null, VENDAS = null;
 exports.lpRender = onRequest({ memory: "256MiB" }, async (req, res) => {
   MONTAR = MONTAR || (await import("./lp-render.mjs")).montar;
-  const host = String(req.get("x-forwarded-host") || req.hostname || "").toLowerCase().split(":")[0], deUpe = /(^|\.)(web\.app|firebaseapp\.com)$/.test(host);
+  const host = String(req.get("x-forwarded-host") || req.hostname || "").toLowerCase().split(":")[0], deUpe = /(^|\.)(web\.app|firebaseapp\.com|lp\.upecriativo\.com\.br)$/.test(host);
   let slug = "";
   if (deUpe) { slug = (req.path.split("/").filter(Boolean)[0] || "").toLowerCase(); if (!slug) { VENDAS = VENDAS || fs.readFileSync(path.join(__dirname, "vendas-lp.html"), "utf8"); res.set("Cache-Control", "public, max-age=300, s-maxage=600"); return res.send(VENDAS); } }
   else for (const h of [host, host.replace(/^www\./, ""), "www." + host]) { const d = (await db.doc("lp_dominios/" + h).get()).data(); if (d?.status === "ativo") { slug = d.slug; break; } }

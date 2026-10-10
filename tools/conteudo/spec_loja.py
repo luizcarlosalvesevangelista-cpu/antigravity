@@ -1,11 +1,11 @@
-# Peças da Loja Upe (Instagram, Shorts e vídeo do YouTube) com os modelos editáveis. Textos a partir da página upe-criativo-lojas.web.app.
+# Peças da Loja Upe (Instagram, Shorts e vídeo do YouTube) com os modelos editáveis. Textos a partir da página loja.upecriativo.com.br.
 import json, os, sys
 S=sys.argv[1]
 I={'vit':'assets/img/ui/loja-vitrine.jpg','prods':'assets/img/ui/loja-produtos.jpg','pix':'assets/img/ui/loja-pix.jpg','ped':'assets/img/ui/loja-pedido.jpg','prod':'assets/img/ui/loja-produto.jpg'}
 def M(layout,formato='feed',**k):
     m=dict(frente='loja',layout=layout,formato=formato,tema=k.pop('tema','escuro'),eyebrow=k.pop('eyebrow','Loja Upe'),titulo='',texto='',cta='Monte a sua loja',itens=[],imagem=I['vit'],handle='@upecriativo',slide='')
     m.update(k); return m
-RODA=("\n\n👉 Conheça: upe-criativo-lojas.web.app\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n"
+RODA=("\n\n👉 Conheça: loja.upecriativo.com.br\n💬 WhatsApp (11) 93439-3249\n📲 Siga @upecriativo\n\n"
       "#lojavirtual #lojaonline #vendasonline #pix #empreendedorismo #pequenosnegocios #ecommerce #vendermais #lojaupe #upecriativo")
 def leg(*ps): return "\n\n".join(ps)+RODA
 FIM=M('cta',titulo='Sua loja no ar em poucos dias.',texto='Teste 14 dias grátis. Depois, R$ 29,99 por mês, sem fidelidade.')
@@ -71,7 +71,7 @@ cen=[V('capa',titulo='Loja Upe: a loja online da sua marca',texto='Do cadastro a
      V('lista',tema='claro',titulo='E no seu painel',itens=['PDV no balcão com o mesmo estoque','Cupons de desconto','Relatórios e base de clientes'],cta=''),
      V('cta',titulo='Teste 14 dias grátis',texto='Depois, R$ 29,99 por mês, sem fidelidade. WhatsApp (11) 93439-3249.')]
 add('loja-yt','youtube','2026-10-27','18:00','Loja Upe: a loja online da sua marca, do cadastro ao primeiro pedido',
-    'Conheça a Loja Upe: vitrine com a sua marca, compra sem cadastro, PIX com QR Code e pedido acompanhado pelo link. No painel, PDV, estoque, cupons e relatórios.\nTeste 14 dias grátis, depois R$ 29,99 por mês, sem fidelidade.\n\n👉 upe-criativo-lojas.web.app\n💬 WhatsApp (11) 93439-3249\n\nCapítulos:\n0:00 Abertura\n0:05 Vitrine\n0:10 Busca e categorias\n0:15 Produto\n0:20 PIX\n0:25 Pedido\n0:30 Painel\n0:35 Como testar\n\n#lojavirtual #lojaonline #pix #ecommerce #lojaupe #upecriativo',
+    'Conheça a Loja Upe: vitrine com a sua marca, compra sem cadastro, PIX com QR Code e pedido acompanhado pelo link. No painel, PDV, estoque, cupons e relatórios.\nTeste 14 dias grátis, depois R$ 29,99 por mês, sem fidelidade.\n\n👉 loja.upecriativo.com.br\n💬 WhatsApp (11) 93439-3249\n\nCapítulos:\n0:00 Abertura\n0:05 Vitrine\n0:10 Busca e categorias\n0:15 Produto\n0:20 PIX\n0:25 Pedido\n0:30 Painel\n0:35 Como testar\n\n#lojavirtual #lojaonline #pix #ecommerce #lojaupe #upecriativo',
     [V('foto',titulo='Loja Upe: a loja online da sua marca',texto='',imagem=I['vit'],cta='')], dict(dur=5,cenas=cen))
 json.dump(itens,open(f'{S}/loja_spec.json','w'),ensure_ascii=False,indent=1)
 print(len(itens),sum(len(i['slides']) for i in itens),'imagens')

@@ -1,6 +1,6 @@
 # Kit Upe · contrato do HTML com as plataformas da Upe Criativo
 
-O Kit Upe (`site/apps/lp/kit/upe-kit.js`, publicado em `https://upe-criativo-lp.web.app/kit/upe-kit.js`) liga qualquer página HTML aos dados das plataformas:
+O Kit Upe (`site/apps/lp/kit/upe-kit.js`, publicado em `https://lp.upecriativo.com.br/kit/upe-kit.js`) liga qualquer página HTML aos dados das plataformas:
 
 - **Upe ERP:** produtos, preços, estoque, carrinho e finalização na loja;
 - **Agenda online:** serviços e agendamento;
@@ -14,13 +14,13 @@ Quando o HTML sobe no **Painel Upe Serviços**, o kit entra sozinho e usa as **L
 Ordem de prioridade (a primeira encontrada vale):
 
 1. Ligações da página no painel (injetadas como `window.UPE_KIT`).
-2. Atributos do script: `<script src="https://upe-criativo-lp.web.app/kit/upe-kit.js" data-loja="doce-encanto" data-agenda="studio" data-whatsapp="5511999999999" data-compra="loja"></script>`.
+2. Atributos do script: `<script src="https://lp.upecriativo.com.br/kit/upe-kit.js" data-loja="doce-encanto" data-agenda="studio" data-whatsapp="5511999999999" data-compra="loja"></script>`.
 3. Atributos no `<html>`: `<html lang="pt-BR" data-upe-loja="doce-encanto" data-upe-agenda="studio" data-upe-whatsapp="5511999999999" data-upe-compra="loja">`.
 
 | Chave | Valor |
 |---|---|
-| `loja` | Endereço da loja no Upe ERP (`upe-criativo-lojas.web.app/<loja>`) |
-| `agenda` | Endereço da agenda online (`upe-criativo-sistemas.web.app/<agenda>`) |
+| `loja` | Endereço da loja no Upe ERP (`loja.upecriativo.com.br/<loja>`) |
+| `agenda` | Endereço da agenda online (`agenda.upecriativo.com.br/<agenda>`) |
 | `whatsapp` | DDI + DDD + número, só dígitos (`5511999999999`) |
 | `compra` | `loja` (finaliza na loja do ERP: PIX, cartão, frete e cupom da loja) · `whatsapp` (pedido pronto no WhatsApp) · `gateway` (pagamento na própria página; só com o servidor ligado) |
 | `cor` | Cor dos botões gerados pelo kit (senão usa a variável CSS `--upe-cor`) |

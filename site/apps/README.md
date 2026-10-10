@@ -4,14 +4,14 @@ Os apps que antes ficavam nos projetos `upe-erp` e `upe-tv` agora rodam no mesmo
 
 | Pasta | Endereço | O que é |
 |---|---|---|
-| `erp/` | https://upe-criativo-erp.web.app | Página de vendas da plataforma (Upe ERP) e vídeo |
-| `painel/` | https://upe-criativo-painel.web.app | Painel de pedidos, loja e PDV de cada empresa cliente |
-| `lojas/` | https://upe-criativo-lojas.web.app | Lojas públicas (`/nome-da-loja`) |
-| `gestao/` | https://upe-criativo-gestao.web.app | Gerenciador das plataformas (licenças, cobranças, suporte, páginas) |
-| `tv/` | https://upe-criativo-tv.web.app | Upe TV: campanhas, telas e player |
-| `servicos/` | https://upe-criativo-servicos.web.app | Painel Upe Serviços: landing pages, agenda online e dashboards do cliente; Gestão Upe (clientes, planos, cobranças, domínios) |
-| `lp/` | https://upe-criativo-lp.web.app | Página de vendas das landing pages e páginas publicadas dos clientes (`/endereco` ou domínio próprio) |
-| `sistemas/` | https://upe-criativo-sistemas.web.app | Página de vendas da agenda online e dos dashboards, e agendas públicas (`/endereco`) |
+| `erp/` | https://erp.upecriativo.com.br | Página de vendas da plataforma (Upe ERP) e vídeo |
+| `painel/` | https://painel.upecriativo.com.br | Painel de pedidos, loja e PDV de cada empresa cliente |
+| `lojas/` | https://loja.upecriativo.com.br | Lojas públicas (`/nome-da-loja`) |
+| `gestao/` | https://gestao.upecriativo.com.br | Gerenciador das plataformas (licenças, cobranças, suporte, páginas) |
+| `tv/` | https://tv.upecriativo.com.br | Upe TV: campanhas, telas e player |
+| `servicos/` | https://servicos.upecriativo.com.br | Painel Upe Serviços: landing pages, agenda online e dashboards do cliente; Gestão Upe (clientes, planos, cobranças, domínios) |
+| `lp/` | https://lp.upecriativo.com.br | Página de vendas das landing pages e páginas publicadas dos clientes (`/endereco` ou domínio próprio) |
+| `sistemas/` | https://agenda.upecriativo.com.br | Página de vendas da agenda online e dos dashboards, e agendas públicas (`/endereco`) |
 
 - Conexão: `*/upe-firebase.js` (ERP) e `tv/config.js` (TV) apontam para `upecriativo-cc472`.
 - Administração: entra no gerenciador, no painel (como Upe) e no TV quem usa `upecriativo@gmail.com` **ou** é administrador do portal (`admins/{uid}`).

@@ -7,14 +7,14 @@ description: Cria a página inicial personalizada (capa) ou um site com vitrine 
 
 Objetivo: um **HTML com o visual da marca** que puxa os produtos do Upe ERP em tempo real. Dois usos:
 
-- **Capa da loja**: quem abre `upe-criativo-lojas.web.app/<loja>` vê esta página. A vitrine padrão continua em “Ver todos os produtos” (`?vitrine=1`).
+- **Capa da loja**: quem abre `loja.upecriativo.com.br/<loja>` vê esta página. A vitrine padrão continua em “Ver todos os produtos” (`?vitrine=1`).
 - **Site ou landing page da marca** com vitrine embutida, no endereço da Upe ou no domínio próprio.
 
 Os dois sobem pelo Painel Upe Serviços e usam o Kit Upe. O contrato completo está em `docs/KIT-UPE.md`.
 
 ## Antes de escrever
 
-- **Endereço da loja** (o que vem depois de `upe-criativo-lojas.web.app/`). Sem ele, não há produtos.
+- **Endereço da loja** (o que vem depois de `loja.upecriativo.com.br/`). Sem ele, não há produtos.
 - Categorias usadas no painel do ERP (campo “classe”/categoria do produto): servem para `data-categoria`.
 - IDs de produtos que devem aparecer em destaque (opcional; aparecem no endereço `/p/<id>` da loja).
 - Modo de compra: `loja` (padrão, recomendado: frete, cupom, PIX com QR e pedido no painel do lojista), `whatsapp` (pedido pronto no WhatsApp) ou `gateway` (pagamento na própria página: só depois do plano Blaze).

@@ -14,7 +14,7 @@ export const CONFIG = {
   appId: "1:574926941318:web:effa37317480bde29fb507",
 };
 /* endereços (.web.app) do projeto único. Quando lojaupe.com.br for registrado, trocar só aqui. */
-export const SITES = { vendas: "https://upe-criativo-erp.web.app", gestao: "https://upe-criativo-gestao.web.app", painel: "https://upe-criativo-painel.web.app", lojas: "https://upe-criativo-lojas.web.app" };
+export const SITES = { vendas: "https://erp.upecriativo.com.br", gestao: "https://gestao.upecriativo.com.br", painel: "https://painel.upecriativo.com.br", lojas: "https://loja.upecriativo.com.br" };
 export const ADMIN_EMAIL = "upecriativo@gmail.com";
 
 export const app = initializeApp(CONFIG);

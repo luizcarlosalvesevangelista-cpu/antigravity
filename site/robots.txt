@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 Disallow: /portal/
-Sitemap: https://upe-criativo.web.app/sitemap.xml
+Sitemap: https://www.upecriativo.com.br/sitemap.xml

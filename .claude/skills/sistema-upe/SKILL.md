@@ -5,10 +5,10 @@ description: Monta o pacote Upe Sistemas de um cliente: site ou página de servi
 
 # Sistema Upe (agenda online + dashboards)
 
-Três entregas que se encaixam no Painel Upe Serviços (https://upe-criativo-servicos.web.app):
+Três entregas que se encaixam no Painel Upe Serviços (https://servicos.upecriativo.com.br):
 
 1. **Página do negócio** com os serviços e o agendamento embutido (HTML com o Kit Upe);
-2. **Agenda online configurada**: serviços, horários, profissionais e página pública em `upe-criativo-sistemas.web.app/<agenda>`;
+2. **Agenda online configurada**: serviços, horários, profissionais e página pública em `agenda.upecriativo.com.br/<agenda>`;
 3. **Dashboard** com os indicadores que o cliente acompanha.
 
 Contrato do HTML com a plataforma: `docs/KIT-UPE.md`. Regras de qualidade do HTML: habilidade `landing-pages-upe`.

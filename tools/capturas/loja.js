@@ -1,7 +1,7 @@
 const __R=require('path').resolve(__dirname,'../..'), __T=process.env.UPE_TRABALHO||__R+'/tools/.trabalho';
 const {chromium}=require('playwright');const S=process.argv[2]||__T;const SITE=__R+'/site/apps/lojas/';const FS=__dirname+'/node_modules/@fontsource/';
-const CSS=['figtree:400','figtree:500','figtree:600','figtree:700','barlow-condensed:600','barlow-condensed:700'].map(x=>{const [f,w]=x.split(':');const fam=f==='figtree'?'Figtree':'Barlow Condensed';return `@font-face{font-family:'${fam}';font-weight:${w};src:url(http://upe-criativo-lojas.web.app/__f/${f}/files/${f}-latin-${w}-normal.woff2)}`}).join('\n');
-const H='http://upe-criativo-lojas.web.app';
+const CSS=['figtree:400','figtree:500','figtree:600','figtree:700','barlow-condensed:600','barlow-condensed:700'].map(x=>{const [f,w]=x.split(':');const fam=f==='figtree'?'Figtree':'Barlow Condensed';return `@font-face{font-family:'${fam}';font-weight:${w};src:url(http://loja.upecriativo.com.br/__f/${f}/files/${f}-latin-${w}-normal.woff2)}`}).join('\n');
+const H='http://loja.upecriativo.com.br';
 (async()=>{const b=await chromium.launch();
 const shot=async(vp,path,out,act)=>{const ctx=await b.newContext({viewport:vp,deviceScaleFactor:2,colorScheme:'light'});
  await ctx.route(/fonts\.googleapis\.com/,r=>r.fulfill({body:CSS,contentType:'text/css'}));

@@ -13,6 +13,6 @@ window.UPE_CONFIG = {
     appId: '1:574926941318:web:effa37317480bde29fb507'
   },
   // Opcional: endereço público do site, usado dentro dos QR codes.
-  // Deixe vazio para usar o endereço em que o site estiver aberto. Ex.: 'https://upe-criativo-tv.web.app/'
-  baseUrl: 'https://upe-criativo-tv.web.app/'
+  // Deixe vazio para usar o endereço em que o site estiver aberto. Ex.: 'https://tv.upecriativo.com.br/'
+  baseUrl: 'https://tv.upecriativo.com.br/'
 };

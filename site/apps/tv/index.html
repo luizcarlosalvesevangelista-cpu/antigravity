@@ -2153,7 +2153,7 @@ function renderEditor() {
         <input type="file" id="it-file" data-file="item" accept="${accept}">
         <span class="fileinfo">${it.fileName ? esc(it.fileName) + (it.fileUrl ? ' · na nuvem, todas as TVs recebem' : Files.url(it.fileId) ? ' · salvo só neste aparelho' : ' · não está neste aparelho, envie de novo') : 'Nenhum arquivo enviado'}</span></label>
       <label class="f full" data-show="source:file">Ou link do arquivo <small>para todas as TVs receberem sem o plano Blaze: um endereço público de MP4, WebM, GIF, PNG ou JPG</small>
-        <input id="it-fileurl" data-k="fileUrl" value="${esc(it.fileUrl || '')}" placeholder="https://upe-criativo-tv.web.app/media/nome-do-video.mp4"></label>
+        <input id="it-fileurl" data-k="fileUrl" value="${esc(it.fileUrl || '')}" placeholder="https://tv.upecriativo.com.br/media/nome-do-video.mp4"></label>
       <label class="f" data-show="source:template">Modelo<select id="it-template" data-k="template">${opt(TEMPLATES, it.template)}</select></label>
       <label class="f" data-show="source:template">Formato do conteúdo<select id="it-format" data-k="format">${opt({ '16:9': '16:9 horizontal', '9:16': '9:16 vertical', '1:1': '1:1 quadrado', '4:5': '4:5 retrato' }, it.format)}</select></label>
       <label class="f" data-show="source:template">Cor de fundo<input type="color" id="it-c1" data-k="c1" value="${esc(it.c1)}"></label>
@@ -2969,7 +2969,7 @@ function monTick(s) {
 }
 
 /* ---------- Materiais ---------- */
-const MAT_BASE = HOSTED ? '' : 'https://upe-criativo-tv.web.app/';
+const MAT_BASE = HOSTED ? '' : 'https://tv.upecriativo.com.br/';
 function renderMaterials() {
   const L = p => MAT_BASE + p;
   const card = (tag, h, p, acts) => `<article class="mat"><span class="tagline">${tag}</span><h3>${h}</h3><p>${p}</p><div class="acts">${acts}</div></article>`;

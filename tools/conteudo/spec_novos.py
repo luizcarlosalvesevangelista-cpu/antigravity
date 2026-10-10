@@ -3,9 +3,9 @@ import json, os, sys, datetime as dt
 S=sys.argv[1]
 U='assets/img/ui/'
 I={'ed':U+'lp-editor.jpg','an':U+'lp-analise.jpg','pg':U+'lp-pagina.jpg','ld':U+'lp-leads.jpg','agc':U+'ag-celular.jpg','agc2':U+'ag-celular-2.jpg','agp':U+'ag-painel.jpg','dash':U+'dash-painel.jpg'}
-CFG={'landing':dict(ey='Upe Landing pages',cta='Quero a minha página',link='upe-criativo-lp.web.app',tags='#landingpage #paginadevendas #marketingdigital #trafegopago #leads #empreendedorismo #pequenosnegocios #vendasonline #upecriativo',
+CFG={'landing':dict(ey='Upe Landing pages',cta='Quero a minha página',link='lp.upecriativo.com.br',tags='#landingpage #paginadevendas #marketingdigital #trafegopago #leads #empreendedorismo #pequenosnegocios #vendasonline #upecriativo',
   fim=('Sua página no ar em poucos dias.','Criação a partir de R$ 497. Hospedagem com painel a partir de R$ 29,90 por mês.')),
- 'sistemas':dict(ey='Upe Sistemas',cta='Quero a minha agenda',link='upe-criativo-sistemas.web.app',tags='#agendaonline #agendamento #dashboard #gestao #clinica #estudio #salaodebeleza #pequenosnegocios #empreendedorismo #upecriativo',
+ 'sistemas':dict(ey='Upe Sistemas',cta='Quero a minha agenda',link='agenda.upecriativo.com.br',tags='#agendaonline #agendamento #dashboard #gestao #clinica #estudio #salaodebeleza #pequenosnegocios #empreendedorismo #upecriativo',
   fim=('Menos tempo no WhatsApp. Mais clareza no negócio.','Agenda online e dashboards sob medida, feitos pela Upe.'))}
 def M(fr,layout,formato='feed',**k):
     c=CFG[fr];m=dict(frente=fr,layout=layout,formato=formato,tema=k.pop('tema','escuro'),eyebrow=k.pop('eyebrow',c['ey']),titulo='',texto='',cta=c['cta'],itens=[],imagem='',handle='@upecriativo',slide='')
@@ -80,19 +80,19 @@ reel(X,'sis-10','O negócio num painel só.','Atendimentos, faturamento e servi�
 # ---------- vídeos do YouTube (16:9, 8 cenas de 5 s) ----------
 def V(fr,l,**k): return M(fr,l,'video',**k)
 add('lp-yt',L,'youtube','Upe Landing pages: a página que vende, com painel de resultados',
-    'Conheça o Upe Landing pages: a Upe cria a sua página de vendas (ou você envia o HTML), você edita sem programar, conecta o domínio e acompanha visitas, cliques e leads.\n\n👉 upe-criativo-lp.web.app\n💬 WhatsApp (11) 93439-3249\n\nCapítulos:\n0:00 Abertura\n0:05 A página\n0:10 Editor\n0:15 Análise\n0:20 Leads\n0:25 Domínio próprio\n0:30 SEO e Pixel\n0:35 Como contratar\n\n#landingpage #marketingdigital #upecriativo',
+    'Conheça o Upe Landing pages: a Upe cria a sua página de vendas (ou você envia o HTML), você edita sem programar, conecta o domínio e acompanha visitas, cliques e leads.\n\n👉 lp.upecriativo.com.br\n💬 WhatsApp (11) 93439-3249\n\nCapítulos:\n0:00 Abertura\n0:05 A página\n0:10 Editor\n0:15 Análise\n0:20 Leads\n0:25 Domínio próprio\n0:30 SEO e Pixel\n0:35 Como contratar\n\n#landingpage #marketingdigital #upecriativo',
     [V(L,'foto',titulo='Landing pages com painel de resultados',texto='',imagem=I['ed'],cta='')],
     dict(dur=5,cenas=[V(L,'capa',titulo='Upe Landing pages',texto='A página que vende, com o painel que mostra o que funciona.',cta=''),V(L,'tela',titulo='Sua página com a sua marca',texto='Criada pela Upe ou enviada por você.',imagem=I['pg'],cta=''),
       V(L,'tela',tema='claro',titulo='Edite sem programar',texto='Clique no texto e escreva.',imagem=I['ed'],cta=''),V(L,'tela',titulo='Saiba o que funciona',texto='Visitas, cliques e origem.',imagem=I['an'],cta=''),
       V(L,'tela',tema='claro',titulo='Leads organizados',texto='Com atalho para o WhatsApp.',imagem=I['ld'],cta=''),V(L,'capa',titulo='Seu domínio, com HTTPS',texto='A Upe conecta com você.',cta=''),
-      V(L,'lista',tema='claro',titulo='E mais',itens=['SEO no Google','Meta Pixel e Google Analytics','Versões para voltar atrás'],cta=''),V(L,'cta',titulo='Sua página no ar em poucos dias',texto='upe-criativo-lp.web.app · WhatsApp (11) 93439-3249')]))
+      V(L,'lista',tema='claro',titulo='E mais',itens=['SEO no Google','Meta Pixel e Google Analytics','Versões para voltar atrás'],cta=''),V(L,'cta',titulo='Sua página no ar em poucos dias',texto='lp.upecriativo.com.br · WhatsApp (11) 93439-3249')]))
 add('sis-yt',X,'youtube','Upe Sistemas: agenda online e dashboards sob medida',
-    'Conheça o Upe Sistemas: agenda online para o seu cliente marcar horário sozinho e dashboards com os números do seu negócio, montados pela Upe.\n\n👉 upe-criativo-sistemas.web.app\n💬 WhatsApp (11) 93439-3249\n\nCapítulos:\n0:00 Abertura\n0:05 Agenda online\n0:10 Escolha do horário\n0:15 Agenda do dia\n0:20 Dashboards\n0:25 Indicadores\n0:30 De onde vêm os dados\n0:35 Como contratar\n\n#agendaonline #dashboard #upecriativo',
+    'Conheça o Upe Sistemas: agenda online para o seu cliente marcar horário sozinho e dashboards com os números do seu negócio, montados pela Upe.\n\n👉 agenda.upecriativo.com.br\n💬 WhatsApp (11) 93439-3249\n\nCapítulos:\n0:00 Abertura\n0:05 Agenda online\n0:10 Escolha do horário\n0:15 Agenda do dia\n0:20 Dashboards\n0:25 Indicadores\n0:30 De onde vêm os dados\n0:35 Como contratar\n\n#agendaonline #dashboard #upecriativo',
     [V(X,'foto',titulo='Agenda online e dashboards sob medida',texto='',imagem=I['dash'],cta='')],
     dict(dur=5,cenas=[V(X,'capa',titulo='Upe Sistemas',texto='Agenda online e dashboards sob medida.',cta=''),V(X,'tela',titulo='Seu cliente marca sozinho',texto='Serviço, dia e horário pelo celular.',imagem=I['agc'],cta=''),
       V(X,'tela',tema='claro',titulo='Sem dois no mesmo horário',texto='O horário sai da página na hora.',imagem=I['agc2'],cta=''),V(X,'tela',titulo='A agenda do dia',texto='Confirmar, cancelar e avisar no WhatsApp.',imagem=I['agp'],cta=''),
       V(X,'tela',tema='claro',titulo='Os números num painel só',texto='Faturamento, atendimentos e serviços.',imagem=I['dash'],cta=''),V(X,'lista',titulo='Indicadores sob medida',itens=['Faturamento do mês','Serviços mais vendidos','Faltas e cancelamentos'],cta=''),
-      V(X,'lista',tema='claro',titulo='De onde vêm os dados',itens=['Sua planilha do Google','A agenda online','Suas landing pages'],cta=''),V(X,'cta',titulo='Menos tempo no WhatsApp',texto='upe-criativo-sistemas.web.app · WhatsApp (11) 93439-3249')]))
+      V(X,'lista',tema='claro',titulo='De onde vêm os dados',itens=['Sua planilha do Google','A agenda online','Suas landing pages'],cta=''),V(X,'cta',titulo='Menos tempo no WhatsApp',texto='agenda.upecriativo.com.br · WhatsApp (11) 93439-3249')]))
 
 # ---------- datas: a partir de 21/10. Landing pages: quarta e domingo 18h; Sistemas: terça e sexta 18h30; stories 10h; reels 19h ----------
 D0=dt.date(2026,10,21)

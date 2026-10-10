@@ -25,7 +25,7 @@ function telaLogin(msg = "", ok = "") {
     <button class="btn" type="button" id="lgGoogle">Entrar com o Google</button>`}
     <p class="lg-err" id="lgErr">${esc(msg)}</p><p class="lg-ok" id="lgOk">${esc(ok)}</p>
     <p class="muted" style="font-size:12.5px">Ainda não é cliente? <a href="${SITES.lp}">Landing pages</a> · <a href="${SITES.sistemas}">Agenda e dashboards</a></p>
-    <p class="muted" style="font-size:12px"><a href="https://upe-criativo.web.app/privacidade.html" target="_blank" rel="noopener">Privacidade</a> · <a href="https://upe-criativo.web.app/termos.html" target="_blank" rel="noopener">Termos de uso</a></p>
+    <p class="muted" style="font-size:12px"><a href="https://www.upecriativo.com.br/privacidade.html" target="_blank" rel="noopener">Privacidade</a> · <a href="https://www.upecriativo.com.br/termos.html" target="_blank" rel="noopener">Termos de uso</a></p>
   </div>`;
   const err = m => { $("#lgErr").textContent = m; $("#lgOk").textContent = ""; };
   $$("[data-demo]", L).forEach(b => b.onclick = () => auth.entrar(b.dataset.demo === "admin" ? ADMIN_EMAIL : "cliente@exemplo.com"));

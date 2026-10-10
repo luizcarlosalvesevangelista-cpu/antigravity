@@ -11,7 +11,7 @@ export const CONFIG = {
   messagingSenderId: "574926941318",
   appId: "1:574926941318:web:effa37317480bde29fb507",
 };
-export const SITES = { servicos: "https://upe-criativo-servicos.web.app", lp: "https://upe-criativo-lp.web.app", sistemas: "https://upe-criativo-sistemas.web.app", site: "https://upe-criativo.web.app" };
+export const SITES = { servicos: "https://servicos.upecriativo.com.br", lp: "https://lp.upecriativo.com.br", sistemas: "https://agenda.upecriativo.com.br", site: "https://www.upecriativo.com.br" };
 export const ADMIN_EMAIL = "upecriativo@gmail.com";
 export const WHATS = "5511934393249";
 
@@ -91,7 +91,7 @@ export async function enviarArquivo(caminho, arquivo) {
 }
 export async function chamar(nome, dados) { if (DEMO) throw new Error("Indisponível no modo demonstração."); const { app } = await fb(), fn = await import(G + "firebase-functions.js"); return (await fn.httpsCallable(fn.getFunctions(app, "southamerica-east1"), nome)(dados)).data; }
 export async function tokenUsuario() { if (DEMO) return ""; const { auth } = await fb(); return auth.currentUser ? auth.currentUser.getIdToken() : ""; }
-export const API = "https://upe-criativo-lp.web.app/api";
+export const API = "https://lp.upecriativo.com.br/api";
 
 export function banco(seed) { return DEMO ? demoDb(seed) : realDb(); }
 

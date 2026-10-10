@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <script>/* registro de erros (Upe): até 5 por visita, sem dados pessoais */(function(){var n=0,v={};function e(m,o){try{m=String(m||"").slice(0,300);if(n>=5||v[m]||/ResizeObserver|Script error/i.test(m))return;v[m]=1;n++;fetch("https://firestore.googleapis.com/v1/projects/upecriativo-cc472/databases/(default)/documents/erros?key=AIzaSyDJqqSMLWZLKSt9K1jPzvvQgyikZy4q9vw",{method:"POST",keepalive:true,headers:{"Content-Type":"application/json"},body:JSON.stringify({fields:{app:{stringValue:"lp-vendas"},msg:{stringValue:m},onde:{stringValue:String(o||"").slice(0,200)},url:{stringValue:(location.host+location.pathname).slice(0,200)},ua:{stringValue:navigator.userAgent.slice(0,160)},t:{integerValue:String(Date.now())}}})})}catch(_){}}addEventListener("error",function(x){e(x.message,(x.filename||"")+":"+(x.lineno||""))});addEventListener("unhandledrejection",function(x){var r=x.reason;e(r&&(r.message||r.code)||r,"promise")})})();</script>
 <script>/* domínio próprio de cliente: esconde a página de vendas e mostra a landing page dele */
-if (!/(^|\.)(web\.app|firebaseapp\.com)$|^localhost$|^127\.|\.test$/.test(location.hostname)) { document.documentElement.style.visibility = "hidden"; window.__lpCliente = true; }</script>
+if (!/(^|\.)(web\.app|firebaseapp\.com|lp\.upecriativo\.com\.br)$|^localhost$|^127\.|\.test$/.test(location.hostname)) { document.documentElement.style.visibility = "hidden"; window.__lpCliente = true; }</script>
 <title>Upe Landing pages · Páginas de venda com painel de resultados</title>
 <meta name="description" content="Landing pages com a sua marca, editor fácil, domínio próprio e painel com visitas, cliques e leads. A Upe cria a página ou você envia o seu HTML.">
-<meta property="og:title" content="Upe Landing pages"><meta property="og:description" content="Páginas de venda com a sua marca e painel de resultados."><meta property="og:image" content="https://upe-criativo-lp.web.app/img/editor.jpg">
+<meta property="og:title" content="Upe Landing pages"><meta property="og:description" content="Páginas de venda com a sua marca e painel de resultados."><meta property="og:image" content="https://lp.upecriativo.com.br/img/editor.jpg">
 <link rel="icon" type="image/png" href="/icone.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
@@ -16,7 +16,7 @@ if (!/(^|\.)(web\.app|firebaseapp\.com)$|^localhost$|^127\.|\.test$/.test(locati
 </head>
 <body>
 <header><div class="in top"><a href="/"><img src="/logo.png" alt="Upe Criativo" width="196" height="40"></a>
-  <nav><a href="#recursos">Recursos</a><a href="#planos">Planos</a><a href="#duvidas">Dúvidas</a><a class="btn contorno" href="https://upe-criativo-servicos.web.app">Sou cliente: entrar</a></nav></div></header>
+  <nav><a href="#recursos">Recursos</a><a href="#planos">Planos</a><a href="#duvidas">Dúvidas</a><a class="btn contorno" href="https://servicos.upecriativo.com.br">Sou cliente: entrar</a></nav></div></header>
 <section class="hero"><div class="in hero-g">
   <div class="hero-txt">
     <span class="eyebrow">Upe Landing pages</span>
@@ -24,7 +24,7 @@ if (!/(^|\.)(web\.app|firebaseapp\.com)$|^localhost$|^127\.|\.test$/.test(locati
     <p>A Upe cria a sua landing page ou você envia o HTML pronto. Você edita os textos sem programar, conecta o seu domínio e acompanha visitas, cliques e leads.</p>
     <div class="acoes"><a class="btn creme" href="#contato">Quero a minha página</a><a class="btn contorno" href="/exemplo" target="_blank" rel="noopener">Ver uma página de exemplo</a></div>
   </div>
-  <div class="tela"><div class="barra"><i></i><i></i><i></i><span>upe-criativo-servicos.web.app</span></div><img src="/img/editor.jpg" alt="Editor de landing page do Painel Upe Serviços" width="1600" height="1000"></div>
+  <div class="tela"><div class="barra"><i></i><i></i><i></i><span>servicos.upecriativo.com.br</span></div><img src="/img/editor.jpg" alt="Editor de landing page do Painel Upe Serviços" width="1600" height="1000"></div>
 </div></section>
 <div class="faixa"><div class="in"><div><b>7 dias</b><span>para a página ficar pronta</span></div><div><b>Seu domínio</b><span>com cadeado (HTTPS)</span></div><div><b>Leads</b><span>no painel e no WhatsApp</span></div><div><b>Sem fidelidade</b><span>cancele quando quiser</span></div></div></div>
 <section id="recursos"><div class="in">
@@ -61,7 +61,7 @@ if (!/(^|\.)(web\.app|firebaseapp\.com)$|^localhost$|^127\.|\.test$/.test(locati
     <p style="margin-top:18px"><a class="btn linha" href="https://wa.me/5511934393249?text=Ol%C3%A1!%20Quero%20uma%20landing%20page." target="_blank" rel="noopener">Prefiro chamar no WhatsApp</a></p></div>
   <form class="f" id="fContato"><label>Nome<input name="nome" required maxlength="120" autocomplete="name"></label><label>WhatsApp<input name="whatsapp" required inputmode="tel" maxlength="40" autocomplete="tel"></label>
     <label>E-mail (opcional)<input name="email" type="email" maxlength="120" autocomplete="email"></label><label>Plano<select name="plano"></select></label>
-    <label>O que você quer vender na página?<textarea name="mensagem" rows="3" maxlength="1000"></textarea></label><input type="hidden" name="frente" value="lp"><p style="font-size:13px;color:var(--muted)">Ao enviar, você concorda com a <a href="https://upe-criativo.web.app/privacidade.html" target="_blank" rel="noopener">Política de privacidade</a>.</p><button class="btn azul">Enviar</button></form>
+    <label>O que você quer vender na página?<textarea name="mensagem" rows="3" maxlength="1000"></textarea></label><input type="hidden" name="frente" value="lp"><p style="font-size:13px;color:var(--muted)">Ao enviar, você concorda com a <a href="https://www.upecriativo.com.br/privacidade.html" target="_blank" rel="noopener">Política de privacidade</a>.</p><button class="btn azul">Enviar</button></form>
 </div></section>
 <section class="alt" id="duvidas"><div class="in" style="max-width:820px">
   <div class="sec-head"><span class="eyebrow">Dúvidas</span><h2>Perguntas frequentes</h2></div>
@@ -72,7 +72,7 @@ if (!/(^|\.)(web\.app|firebaseapp\.com)$|^localhost$|^127\.|\.test$/.test(locati
   <details><summary>E se eu atrasar a mensalidade?</summary><p>Você recebe um lembrete. Depois de 10 dias de atraso a página pode sair do ar, e volta assim que o pagamento é confirmado.</p></details>
 </div></section>
 <section class="final"><div class="in"><h2>Sua próxima campanha merece uma página à altura.</h2><p>Página pronta, domínio próprio e resultados no painel.</p><a class="btn creme" href="#contato">Quero a minha página</a></div></section>
-<footer><div class="in"><span>© Upe Criativo · <a href="https://upe-criativo.web.app">upe-criativo.web.app</a> · <a href="https://upe-criativo.web.app/privacidade.html">Privacidade</a> · <a href="https://upe-criativo.web.app/termos.html">Termos</a></span><span><a href="https://upe-criativo-sistemas.web.app">Agenda online e dashboards</a> · <a href="https://upe-criativo-erp.web.app">Upe ERP</a> · <a href="https://upe-criativo-tv.web.app">Upe TV</a></span></div></footer>
+<footer><div class="in"><span>© Upe Criativo · <a href="https://www.upecriativo.com.br">www.upecriativo.com.br</a> · <a href="https://www.upecriativo.com.br/privacidade.html">Privacidade</a> · <a href="https://www.upecriativo.com.br/termos.html">Termos</a></span><span><a href="https://agenda.upecriativo.com.br">Agenda online e dashboards</a> · <a href="https://erp.upecriativo.com.br">Upe ERP</a> · <a href="https://tv.upecriativo.com.br">Upe TV</a></span></div></footer>
 <script type="module">
 if (window.__lpCliente) { const m = await import("/lp-render.js"); await m.mostrar(); }
 else { const v = await import("/vendas.js"); v.planos(["lp"], document.getElementById("listaPlanos")); v.contato("lp", "upe-criativo-lp"); }

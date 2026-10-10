@@ -3,7 +3,7 @@
    Adesão de cada cliente em clientes/{id}.apps[app] = { status, plano, extras[], dia, inicio, fimTeste, ajuste, obs }.
    Pedidos do cliente: ação "pedido" com alvo "app:<app>[:<extra>]". */
 const APPS_PADRAO = {
-  erp: { nome: "Upe ERP", desc: "Loja online, PDV e pedidos num só painel.", painel: "https://upe-criativo-painel.web.app", gestor: "https://upe-criativo-gestao.web.app", site: "https://upe-criativo-erp.web.app", lojas: "https://upe-criativo-lojas.web.app", teste: 14,
+  erp: { nome: "Upe ERP", desc: "Loja online, PDV e pedidos num só painel.", painel: "https://painel.upecriativo.com.br", gestor: "https://gestao.upecriativo.com.br", site: "https://erp.upecriativo.com.br", lojas: "https://loja.upecriativo.com.br", teste: 14,
     planos: [{ k: "mensal", nome: "Plano mensal", preco: 49.99 }, { k: "upe", nome: "Cliente Upe (com branding ou mídias)", preco: 34.99 }],
     extras: [
       { k: "B", nome: "Banco de dados ampliado", desc: "Até 5.000 produtos e 2 GB de fotos.", preco: 9.9 },
@@ -12,13 +12,13 @@ const APPS_PADRAO = {
       { k: "E", nome: "Envio de e-mails", desc: "Newsletter real, até 5.000 e-mails por mês.", preco: 14.9 },
       { k: "K", nome: "Backup diário", desc: "Cópia diária guardada por 30 dias.", preco: 4.9 },
       { k: "D", nome: "Domínio próprio da loja", desc: "1 domínio com SSL; o registro é do cliente.", preco: 7.9 }] },
-  tv: { nome: "Upe TV", desc: "A marca do cliente nas telas de estabelecimentos parceiros, com QR code.", painel: "https://upe-criativo-tv.web.app", teste: 0,
+  tv: { nome: "Upe TV", desc: "A marca do cliente nas telas de estabelecimentos parceiros, com QR code.", painel: "https://tv.upecriativo.com.br", teste: 0,
     planos: [{ k: "rodape", nome: "Rodapé", preco: 0 }, { k: "lateral", nome: "Lateral", preco: 0 }, { k: "cheia", nome: "Tela cheia", preco: 0 }, { k: "vitrine", nome: "Combo Vitrine", preco: 0 }, { k: "destaque", nome: "Combo Destaque", preco: 0 }, { k: "total", nome: "Presença Total", preco: 0 }, { k: "rede", nome: "Rede Upe", preco: 0 }],
     extras: [{ k: "cta", nome: "Página CTA + QR", desc: "Página da marca feita pela Upe, com QR e contagem de visitas.", preco: 0 }, { k: "motion", nome: "Motion do anúncio", desc: "Vídeo animado com a marca para as telas.", preco: 0 }, { k: "telas", nome: "Tela parceira adicional", desc: "Mais um estabelecimento na campanha.", preco: 0 }] },
-  landing: { nome: "Upe Landing pages", desc: "Páginas de venda com a marca do cliente, editor, domínio próprio e painel de visitas, cliques e leads.", painel: "https://upe-criativo-servicos.web.app", site: "https://upe-criativo-lp.web.app", teste: 0,
+  landing: { nome: "Upe Landing pages", desc: "Páginas de venda com a marca do cliente, editor, domínio próprio e painel de visitas, cliques e leads.", painel: "https://servicos.upecriativo.com.br", site: "https://lp.upecriativo.com.br", teste: 0,
     planos: [{ k: "hospedagem", nome: "Hospedagem", preco: 29.9 }, { k: "ajustes", nome: "Hospedagem + ajustes", preco: 79.9 }],
     extras: [{ k: "essencial", nome: "Criação: landing page essencial", desc: "Até 5 seções, formulário e WhatsApp (pagamento único).", preco: 497 }, { k: "completa", nome: "Criação: landing page completa", desc: "Até 10 seções, copy, SEO e Pixel (pagamento único).", preco: 997 }] },
-  sistemas: { nome: "Upe Sistemas", desc: "Agenda online para o cliente marcar horário e dashboards com os números do negócio.", painel: "https://upe-criativo-servicos.web.app", site: "https://upe-criativo-sistemas.web.app", teste: 0,
+  sistemas: { nome: "Upe Sistemas", desc: "Agenda online para o cliente marcar horário e dashboards com os números do negócio.", painel: "https://servicos.upecriativo.com.br", site: "https://agenda.upecriativo.com.br", teste: 0,
     planos: [{ k: "agenda", nome: "Agenda no ar", preco: 49.9 }, { k: "dash", nome: "Dashboard no ar", preco: 59.9 }],
     extras: [{ k: "agcriacao", nome: "Criação: agenda online", desc: "Serviços, horários e página (pagamento único).", preco: 697 }, { k: "dashcriacao", nome: "Criação: dashboard sob medida", desc: "Até 8 indicadores e 3 gráficos (pagamento único).", preco: 1200 }] }
 };
@@ -89,10 +89,10 @@ const rowCat = (t, i, x, ex) => `<div class="row" style="flex-wrap:nowrap"><inpu
 
 // acesso direto às áreas de administração de cada app (mesmo login do painel: e-mail e senha da Upe)
 const ADM_LINKS = {
-  erp: [["Gerenciador do ERP", "Licenças, cobranças, suporte e páginas", "https://upe-criativo-gestao.web.app/", true], ["Painel das empresas", "Entre como Upe e escolha a empresa", "https://upe-criativo-painel.web.app/", true], ["Lojas", "Endereço público das lojas", "https://upe-criativo-lojas.web.app/"], ["Página de vendas", "Página do Upe ERP", "https://upe-criativo-erp.web.app/"]],
-  tv: [["Gestão do Upe TV", "Programação, campanhas, telas e anunciantes", "https://upe-criativo-tv.web.app/", true], ["Portal do anunciante", "Como o anunciante vê", "https://upe-criativo-tv.web.app/#cliente"]],
-  landing: [["Painel Upe Serviços", "Clientes, planos, cobranças, páginas e domínios (Gestão Upe)", "https://upe-criativo-servicos.web.app/#/adm/clientes", true], ["Páginas de todos os clientes", "Editar, publicar ou suspender", "https://upe-criativo-servicos.web.app/#/adm/paginas", true], ["Página de vendas", "Upe Landing pages", "https://upe-criativo-lp.web.app/"], ["Página de exemplo", "upe-criativo-lp.web.app/exemplo", "https://upe-criativo-lp.web.app/exemplo"]],
-  sistemas: [["Painel Upe Serviços", "Clientes, planos e cobranças (Gestão Upe)", "https://upe-criativo-servicos.web.app/#/adm/clientes", true], ["Cobranças", "Mensalidades e atrasos", "https://upe-criativo-servicos.web.app/#/adm/cobrancas", true], ["Página de vendas", "Agenda online e dashboards", "https://upe-criativo-sistemas.web.app/"], ["Agenda de exemplo", "Como o cliente final agenda", "https://upe-criativo-sistemas.web.app/exemplo?demo=1"]]
+  erp: [["Gerenciador do ERP", "Licenças, cobranças, suporte e páginas", "https://gestao.upecriativo.com.br/", true], ["Painel das empresas", "Entre como Upe e escolha a empresa", "https://painel.upecriativo.com.br/", true], ["Lojas", "Endereço público das lojas", "https://loja.upecriativo.com.br/"], ["Página de vendas", "Página do Upe ERP", "https://erp.upecriativo.com.br/"]],
+  tv: [["Gestão do Upe TV", "Programação, campanhas, telas e anunciantes", "https://tv.upecriativo.com.br/", true], ["Portal do anunciante", "Como o anunciante vê", "https://tv.upecriativo.com.br/#cliente"]],
+  landing: [["Painel Upe Serviços", "Clientes, planos, cobranças, páginas e domínios (Gestão Upe)", "https://servicos.upecriativo.com.br/#/adm/clientes", true], ["Páginas de todos os clientes", "Editar, publicar ou suspender", "https://servicos.upecriativo.com.br/#/adm/paginas", true], ["Página de vendas", "Upe Landing pages", "https://lp.upecriativo.com.br/"], ["Página de exemplo", "lp.upecriativo.com.br/exemplo", "https://lp.upecriativo.com.br/exemplo"]],
+  sistemas: [["Painel Upe Serviços", "Clientes, planos e cobranças (Gestão Upe)", "https://servicos.upecriativo.com.br/#/adm/clientes", true], ["Cobranças", "Mensalidades e atrasos", "https://servicos.upecriativo.com.br/#/adm/cobrancas", true], ["Página de vendas", "Agenda online e dashboards", "https://agenda.upecriativo.com.br/"], ["Agenda de exemplo", "Como o cliente final agenda", "https://agenda.upecriativo.com.br/exemplo?demo=1"]]
 };
 function admLinks(app) {
   const l = ADM_LINKS[app] || []; if (!l.length) return "";

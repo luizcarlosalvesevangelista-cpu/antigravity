@@ -3,7 +3,7 @@ import json, os, re, datetime as dt, sys
 S=sys.argv[1]
 parsed=json.load(open(f'{S}/content/parsed.json'))
 EMO=re.compile('[\U0001F000-\U0001FAFF⌀-⏿☀-➿️‍⭐⭕]')
-URL=[('upe-erp-painel.web.app','upe-criativo-painel.web.app'),('upe-erp.web.app','upe-criativo-erp.web.app'),('upe-tv.web.app','upe-criativo-tv.web.app')]
+URL=[('upe-erp-painel.web.app','painel.upecriativo.com.br'),('upe-erp.web.app','erp.upecriativo.com.br'),('upe-tv.web.app','tv.upecriativo.com.br')]
 def fix(s):
     for a,b in URL: s=(s or '').replace(a,b)
     return s

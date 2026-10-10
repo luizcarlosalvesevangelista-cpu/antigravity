@@ -1,10 +1,10 @@
-/* Mostra a landing page publicada de um cliente (upe-criativo-lp.web.app/<endereço> ou o domínio próprio dele).
+/* Mostra a landing page publicada de um cliente (lp.upecriativo.com.br/<endereço> ou o domínio próprio dele).
    Lê lp_paginas/<endereço> pela API REST do Firestore (leve, sem SDK) e grava visitas, cliques, rolagem e leads
    em lp_paginas/<endereço>/eventos e /leads. As regras só liberam a leitura de página publicada e não suspensa. */
 const P = "upecriativo-cc472", KEY = "AIzaSyDJqqSMLWZLKSt9K1jPzvvQgyikZy4q9vw";
 const API = `https://firestore.googleapis.com/v1/projects/${P}/databases/(default)/documents/`;
-export const KIT_URL = "https://upe-criativo-lp.web.app/kit/upe-kit.js";
-export const HOSTS_UPE = /(^|\.)(web\.app|firebaseapp\.com)$|^localhost$|^127\.|\.test$/;
+export const KIT_URL = "https://lp.upecriativo.com.br/kit/upe-kit.js";
+export const HOSTS_UPE = /(^|\.)(web\.app|firebaseapp\.com|lp\.upecriativo\.com\.br)$|^localhost$|^127\.|\.test$/;
 
 const dec = v => v == null ? null : "stringValue" in v ? v.stringValue : "integerValue" in v ? +v.integerValue : "doubleValue" in v ? v.doubleValue : "booleanValue" in v ? v.booleanValue
   : "mapValue" in v ? Object.fromEntries(Object.entries(v.mapValue.fields || {}).map(([k, x]) => [k, dec(x)])) : "arrayValue" in v ? (v.arrayValue.values || []).map(dec) : "timestampValue" in v ? v.timestampValue : null;
@@ -59,7 +59,7 @@ document.addEventListener("submit",function(){try{gtag("event","generate_lead")}
 var v;try{v=localStorage.getItem(K)}catch(_){}if(v==="sim")return carrega();if(v==="nao")return;
 var d=document.createElement("div");d.setAttribute("role","dialog");d.setAttribute("aria-label","Aviso de cookies");
 d.style.cssText="position:fixed;left:16px;right:16px;bottom:16px;z-index:2147483001;max-width:560px;margin:0 auto;background:#0b1d3a;color:#f2f0e2;border-radius:14px;padding:14px 16px;font:14px/1.45 system-ui,sans-serif;box-shadow:0 12px 40px rgba(0,0,0,.35);display:flex;gap:10px;align-items:center;flex-wrap:wrap";
-d.innerHTML='<span style="flex:1;min-width:220px">Usamos cookies de medição e anúncios para melhorar esta página. <a href="https://upe-criativo.web.app/privacidade.html" target="_blank" rel="noopener" style="color:#ff9a7a">Saiba mais</a></span>';
+d.innerHTML='<span style="flex:1;min-width:220px">Usamos cookies de medição e anúncios para melhorar esta página. <a href="https://www.upecriativo.com.br/privacidade.html" target="_blank" rel="noopener" style="color:#ff9a7a">Saiba mais</a></span>';
 function bt(t,val,cor){var b=document.createElement("button");b.type="button";b.textContent=t;b.style.cssText="border:0;border-radius:10px;padding:9px 14px;font:700 14px system-ui,sans-serif;cursor:pointer;"+cor;b.onclick=function(){try{localStorage.setItem(K,val)}catch(_){}d.remove();if(val==="sim")carrega()};d.appendChild(b)}
 bt("Recusar","nao","background:transparent;color:#f2f0e2;border:1px solid rgba(242,240,226,.4)");bt("Aceitar","sim","background:#ff7a59;color:#1b0f0a");
 (document.body||document.documentElement).appendChild(d)})();<\/script>`;

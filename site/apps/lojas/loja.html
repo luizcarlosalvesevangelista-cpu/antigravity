@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Figtree:wght@400;500;600;700&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
-/* Loja pública de cada cliente (upe-criativo-lojas.web.app/<endereço>). Lê lojas/<endereço> no Firestore; pedidos entram em lojas/<endereço>/pedidos e o painel da empresa importa. */
+/* Loja pública de cada cliente (loja.upecriativo.com.br/<endereço>). Lê lojas/<endereço> no Firestore; pedidos entram em lojas/<endereço>/pedidos e o painel da empresa importa. */
 :root { --base: #0b1d3a; --dest: #1a73d9; --claro: #5fb3ff; --bg: #f2f5fa; --surface: #fff; --fg: #0d1b33; --muted: #5a6a82; --line: #d8e1ee; --ok: #2f8f5b; --crit: #c2412d; --warn: #a8701a;
   --fd: "Barlow Condensed", "Arial Narrow", system-ui, sans-serif; --fb: "Figtree", system-ui, -apple-system, "Segoe UI", sans-serif; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #0a1426; --surface: #111f38; --fg: #e8eefa; --muted: #9aabc6; --line: #22375c; } }
@@ -277,7 +277,7 @@ async function render() {
   document.title = CFG.nome + (ST.tela === "vitrine" ? " · Loja" : "");
   let corpo = "";
   if (ST.tela === "vitrine") corpo = vitrine(); else if (ST.tela === "carrinho") corpo = carrinho(); else if (ST.tela === "checkout") corpo = checkout(); else if (ST.tela === "pedidos") corpo = await meusPedidos(); else if (ST.tela === "pedido") corpo = pedidoHtml(ST.pedido?.id, ST.pedido?.d);
-  $("#app").innerHTML = topo() + `<main><div class="in">${corpo}</div></main><footer><div class="in"><span>© ${new Date().getFullYear()} ${esc(CFG.nome)}${CFG.site && !/suaempresa/i.test(CFG.site) ? ` · ${esc(CFG.site)}` : ""}</span><span>Loja criada com a plataforma Upe Criativo · <a href="https://upe-criativo.web.app/privacidade.html" target="_blank" rel="noopener">Privacidade</a></span></div></footer>`;
+  $("#app").innerHTML = topo() + `<main><div class="in">${corpo}</div></main><footer><div class="in"><span>© ${new Date().getFullYear()} ${esc(CFG.nome)}${CFG.site && !/suaempresa/i.test(CFG.site) ? ` · ${esc(CFG.site)}` : ""}</span><span>Loja criada com a plataforma Upe Criativo · <a href="https://www.upecriativo.com.br/privacidade.html" target="_blank" rel="noopener">Privacidade</a></span></div></footer>`;
   bnAuto();
 }
 let BN_T = null;
@@ -378,7 +378,7 @@ function indisponivel(titulo, texto) { document.title = titulo; $("#app").innerH
     $("#app").innerHTML = `<div class="centro"><div style="display:grid;gap:14px;max-width:520px;justify-items:center"><h1>Lojas Upe Criativo</h1>
       <p>Cada loja tem o próprio endereço, no formato <b style="color:var(--fg)">${esc(location.host)}/nome-da-loja</b>. Se você recebeu o link de uma loja, abra o link completo.</p>
       <form id="f-ir" style="display:flex;gap:8px;width:100%"><input id="ir-loja" placeholder="nome-da-loja" aria-label="Endereço da loja" autocapitalize="none"><button type="submit" class="btn dest">Abrir loja</button></form>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><a class="btn" href="https://upe-criativo-painel.web.app">Sou lojista: abrir o painel</a><a class="btn" href="https://upe-criativo-erp.web.app">Quero uma loja assim</a></div></div></div>`;
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><a class="btn" href="https://painel.upecriativo.com.br">Sou lojista: abrir o painel</a><a class="btn" href="https://erp.upecriativo.com.br">Quero uma loja assim</a></div></div></div>`;
     $("#f-ir").addEventListener("submit", e => { e.preventDefault(); const n = norm($("#ir-loja").value).trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); if (n) location.href = "/" + n; }, true);
     return;
   }
@@ -407,7 +407,7 @@ function indisponivel(titulo, texto) { document.title = titulo; $("#app").innerH
       if (lp) {
         const pg = await getDoc(doc(fs, "lp_paginas/" + lp)).catch(() => null);
         if (pg?.exists() && pg.data().html) {
-          const { montar } = await import("https://upe-criativo-lp.web.app/lp-render.js");
+          const { montar } = await import("https://lp.upecriativo.com.br/lp-render.js");
           const d = pg.data(); document.open(); document.write(montar(d.html, { ...d, vinculos: { ...(d.vinculos || {}), loja: SLUG } }, lp)); document.close(); return;
         }
       }

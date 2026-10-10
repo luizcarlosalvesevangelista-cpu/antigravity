@@ -1,8 +1,8 @@
 <script>/* registro de erros (Upe): até 5 por visita, sem dados pessoais */(function(){var n=0,v={};function e(m,o){try{m=String(m||"").slice(0,300);if(n>=5||v[m]||/ResizeObserver|Script error/i.test(m))return;v[m]=1;n++;fetch("https://firestore.googleapis.com/v1/projects/upecriativo-cc472/databases/(default)/documents/erros?key=AIzaSyDJqqSMLWZLKSt9K1jPzvvQgyikZy4q9vw",{method:"POST",keepalive:true,headers:{"Content-Type":"application/json"},body:JSON.stringify({fields:{app:{stringValue:"site"},msg:{stringValue:m},onde:{stringValue:String(o||"").slice(0,200)},url:{stringValue:(location.host+location.pathname).slice(0,200)},ua:{stringValue:navigator.userAgent.slice(0,160)},t:{integerValue:String(Date.now())}}})})}catch(_){}}addEventListener("error",function(x){e(x.message,(x.filename||"")+":"+(x.lineno||""))});addEventListener("unhandledrejection",function(x){var r=x.reason;e(r&&(r.message||r.code)||r,"promise")})})();</script>
 <title>Upe Criativo</title>
 <meta name="description" content="Upe Criativo: Branding e Redesign, Upe ERP, Upe TV, landing pages, agenda online e dashboards.">
-<link rel="canonical" href="https://upe-criativo.web.app/">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"ProfessionalService","name":"Upe Criativo","url":"https://upe-criativo.web.app/","logo":"https://upe-criativo.web.app/favicon.svg","image":"https://upe-criativo.web.app/assets/img/filme-h.jpg","description":"Branding e Redesign, Upe ERP (loja online, PDV e pedidos), Upe TV (mídia em telas), landing pages, agenda online e dashboards.","telephone":"+55 11 93439-3249","areaServed":"BR","sameAs":["https://www.instagram.com/upecriativo/"],"makesOffer":[{"@type":"Offer","itemOffered":{"@type":"Service","name":"Branding e Redesign"}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"Upe ERP","applicationCategory":"BusinessApplication"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Upe TV"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Upe Landing pages"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Agenda online e dashboards"}}]}</script>
+<link rel="canonical" href="https://www.upecriativo.com.br/">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"ProfessionalService","name":"Upe Criativo","url":"https://www.upecriativo.com.br/","logo":"https://www.upecriativo.com.br/favicon.svg","image":"https://www.upecriativo.com.br/assets/img/filme-h.jpg","description":"Branding e Redesign, Upe ERP (loja online, PDV e pedidos), Upe TV (mídia em telas), landing pages, agenda online e dashboards.","telephone":"+55 11 93439-3249","areaServed":"BR","sameAs":["https://www.instagram.com/upecriativo/"],"makesOffer":[{"@type":"Offer","itemOffered":{"@type":"Service","name":"Branding e Redesign"}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"Upe ERP","applicationCategory":"BusinessApplication"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Upe TV"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Upe Landing pages"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Agenda online e dashboards"}}]}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,400&display=swap">
@@ -314,7 +314,7 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
           <div class="feat"><b>Cupons</b><span>Promoções e frete grátis.</span></div>
           <div class="feat"><b>Relatórios</b><span>Vendas, clientes e newsletter.</span></div>
         </div>
-        <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center"><a class="btn btn-creme" href="https://upe-criativo-erp.web.app/" target="_blank" rel="noopener">Conhecer o Upe ERP</a><a class="btn btn-linha" href="https://upe-criativo-painel.web.app/" target="_blank" rel="noopener">Portal do assinante</a></div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center"><a class="btn btn-creme" href="https://erp.upecriativo.com.br/" target="_blank" rel="noopener">Conhecer o Upe ERP</a><a class="btn btn-linha" href="https://painel.upecriativo.com.br/" target="_blank" rel="noopener">Portal do assinante</a></div>
       </div>
       <div class="reveal">
         <div class="reel" data-reel><video controls playsinline preload="none" data-h="assets/video/erp-h.mp4" data-v="assets/video/erp-v.mp4" data-ph="assets/img/erp-h.jpg" data-pv="assets/img/erp-v.jpg" poster="assets/img/erp-h.jpg"></video></div>
@@ -333,7 +333,7 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
           <div><h3>Para anunciantes</h3><p>Tela cheia, lateral que expande, letreiro e cardápio com pedido pelo celular. No portal, você vê onde passou, por quanto tempo e quantos leram o QR.</p><a class="mat" href="assets/docs/upe-tv-guia-do-anunciante.pdf" target="_blank" rel="noopener" download>Material do anunciante</a></div>
           <div><h3>Para estabelecimentos</h3><p>A sua TV com programação profissional, o seu nome no letreiro e espaço para as suas promoções. A Upe instala e cuida da tela.</p><a class="mat" href="assets/docs/upe-tv-guia-do-estabelecimento.pdf" target="_blank" rel="noopener" download>Material do estabelecimento</a></div>
         </div>
-        <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center"><a class="btn btn-azul" href="https://upe-criativo-tv.web.app/" target="_blank" rel="noopener">Conhecer o Upe TV</a><a class="btn btn-linha" href="https://upe-criativo-tv.web.app/#cliente" target="_blank" rel="noopener">Portal do assinante</a></div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center"><a class="btn btn-azul" href="https://tv.upecriativo.com.br/" target="_blank" rel="noopener">Conhecer o Upe TV</a><a class="btn btn-linha" href="https://tv.upecriativo.com.br/#cliente" target="_blank" rel="noopener">Portal do assinante</a></div>
       </div>
       <div class="reveal">
         <div class="reel" data-reel><video controls playsinline preload="none" data-h="assets/video/tv-h.mp4" data-v="assets/video/tv-v.mp4" data-ph="assets/img/tv-h.jpg" data-pv="assets/img/tv-v.jpg" poster="assets/img/tv-h.jpg"></video></div>
@@ -357,7 +357,7 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
           <div class="feat"><b>Leads</b><span>Formulário direto no painel.</span></div>
           <div class="feat"><b>SEO e Pixel</b><span>Google, Meta e Analytics.</span></div>
         </div>
-        <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center"><a class="btn btn-creme" href="https://upe-criativo-lp.web.app/" target="_blank" rel="noopener">Conhecer as landing pages</a><a class="btn btn-linha" href="https://upe-criativo-servicos.web.app/" target="_blank" rel="noopener">Painel do cliente</a></div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center"><a class="btn btn-creme" href="https://lp.upecriativo.com.br/" target="_blank" rel="noopener">Conhecer as landing pages</a><a class="btn btn-linha" href="https://servicos.upecriativo.com.br/" target="_blank" rel="noopener">Painel do cliente</a></div>
       </div>
       <div class="reveal">
         <div class="reel shot"><img src="assets/img/ui/lp-editor.jpg" alt="Editor de landing page do Painel Upe Serviços" loading="lazy" width="1600" height="1000"></div>
@@ -373,10 +373,10 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
         <h2>Agenda online e dashboards sob medida.</h2>
         <p class="lead">O seu cliente marca o horário sozinho, pelo celular, e você vê a agenda do dia num painel. E os números do negócio, da planilha ou da agenda, viram um dashboard que se atualiza sozinho.</p>
         <div class="aud">
-          <div><h3>Agenda online</h3><p>Serviços com duração e preço, horários por dia da semana, sem dois clientes no mesmo horário e confirmação pelo WhatsApp.</p><a class="mat ext" href="https://upe-criativo-sistemas.web.app/exemplo?demo=1" target="_blank" rel="noopener">Testar a agenda de exemplo</a></div>
-          <div><h3>Dashboards</h3><p>Faturamento, atendimentos, vendas e leads em números grandes, gráficos e rankings, montados com os indicadores que importam para você.</p><a class="mat ext" href="https://upe-criativo-sistemas.web.app/#dashboards" target="_blank" rel="noopener">Ver como funciona</a></div>
+          <div><h3>Agenda online</h3><p>Serviços com duração e preço, horários por dia da semana, sem dois clientes no mesmo horário e confirmação pelo WhatsApp.</p><a class="mat ext" href="https://agenda.upecriativo.com.br/exemplo?demo=1" target="_blank" rel="noopener">Testar a agenda de exemplo</a></div>
+          <div><h3>Dashboards</h3><p>Faturamento, atendimentos, vendas e leads em números grandes, gráficos e rankings, montados com os indicadores que importam para você.</p><a class="mat ext" href="https://agenda.upecriativo.com.br/#dashboards" target="_blank" rel="noopener">Ver como funciona</a></div>
         </div>
-        <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center"><a class="btn btn-azul" href="https://upe-criativo-sistemas.web.app/" target="_blank" rel="noopener">Conhecer os sistemas</a><a class="btn btn-linha" href="https://upe-criativo-servicos.web.app/" target="_blank" rel="noopener">Painel do cliente</a></div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center"><a class="btn btn-azul" href="https://agenda.upecriativo.com.br/" target="_blank" rel="noopener">Conhecer os sistemas</a><a class="btn btn-linha" href="https://servicos.upecriativo.com.br/" target="_blank" rel="noopener">Painel do cliente</a></div>
       </div>
       <div class="reveal">
         <div class="reel shot"><img src="assets/img/ui/dash-painel.jpg" alt="Dashboard de atendimentos no Painel Upe Serviços" loading="lazy" width="1600" height="1000"></div>
@@ -493,7 +493,7 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
 <footer>
   <div class="wrap">
     <a href="#inicio" class="brand" aria-label="Upe Criativo"><svg class="wm" viewBox="786 2599 350 48" aria-hidden="true">__WM__</svg></a>
-    <nav aria-label="Rodapé"><a href="#branding">Branding e Redesign</a><a href="https://upe-criativo-erp.web.app/" target="_blank" rel="noopener">Upe ERP</a><a href="https://upe-criativo-tv.web.app/" target="_blank" rel="noopener">Upe TV</a><a href="https://upe-criativo-lp.web.app/" target="_blank" rel="noopener">Landing pages</a><a href="https://upe-criativo-sistemas.web.app/" target="_blank" rel="noopener">Agenda e dashboards</a><a href="#portfolio">Portfólio</a><a href="#sobre">Sobre mim</a><a href="portal/">Área do cliente</a><a href="privacidade.html">Privacidade</a><a href="termos.html">Termos de uso</a></nav>
+    <nav aria-label="Rodapé"><a href="#branding">Branding e Redesign</a><a href="https://erp.upecriativo.com.br/" target="_blank" rel="noopener">Upe ERP</a><a href="https://tv.upecriativo.com.br/" target="_blank" rel="noopener">Upe TV</a><a href="https://lp.upecriativo.com.br/" target="_blank" rel="noopener">Landing pages</a><a href="https://agenda.upecriativo.com.br/" target="_blank" rel="noopener">Agenda e dashboards</a><a href="#portfolio">Portfólio</a><a href="#sobre">Sobre mim</a><a href="portal/">Área do cliente</a><a href="privacidade.html">Privacidade</a><a href="termos.html">Termos de uso</a></nav>
     <span>© <span id="ano">2026</span> Upe Criativo</span>
   </div>
 </footer>

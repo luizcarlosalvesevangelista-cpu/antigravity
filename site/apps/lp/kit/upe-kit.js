@@ -1,8 +1,8 @@
 /* Kit Upe · liga qualquer HTML às plataformas da Upe Criativo (Upe ERP, agenda online, WhatsApp e pagamento).
    Uso: marque os elementos com atributos data-upe-* (contrato completo nas habilidades em .claude/skills e em /kit/README.md).
    Configuração (a primeira encontrada vale): window.UPE_KIT = {…}  →  atributos do <script src=".../upe-kit.js" data-loja="…">  →  <html data-upe-loja="…">.
-     loja      endereço da loja do Upe ERP (upe-criativo-lojas.web.app/<loja>)
-     agenda    endereço da agenda online (upe-criativo-sistemas.web.app/<agenda>)
+     loja      endereço da loja do Upe ERP (loja.upecriativo.com.br/<loja>)
+     agenda    endereço da agenda online (agenda.upecriativo.com.br/<agenda>)
      whatsapp  número com DDI e DDD, só dígitos (5511999999999)
      compra    "loja" (finaliza na loja do ERP) · "whatsapp" (pedido pronto no WhatsApp) · "gateway" (pagamento direto; precisa do servidor ligado)
      cor       cor dos botões gerados pelo kit (senão usa --upe-cor do CSS da página)
@@ -11,7 +11,7 @@
   if (window.__upeKit) return; window.__upeKit = true;
   const P = "upecriativo-cc472", KEY = "AIzaSyDJqqSMLWZLKSt9K1jPzvvQgyikZy4q9vw";
   const API = `https://firestore.googleapis.com/v1/projects/${P}/databases/(default)/documents/`;
-  const LOJAS = "https://upe-criativo-lojas.web.app", AGENDAS = "https://upe-criativo-sistemas.web.app", API_UPE = "https://upe-criativo-lp.web.app/api";
+  const LOJAS = "https://loja.upecriativo.com.br", AGENDAS = "https://agenda.upecriativo.com.br", API_UPE = "https://lp.upecriativo.com.br/api";
   const sc = document.currentScript, html = document.documentElement, W = window.UPE_KIT || {};
   const cfgDe = k => W[k] ?? sc?.dataset?.[k] ?? html.dataset["upe" + k[0].toUpperCase() + k.slice(1)] ?? "";
   const C = { loja: cfgDe("loja"), agenda: cfgDe("agenda"), whatsapp: String(cfgDe("whatsapp")).replace(/\D/g, ""), compra: cfgDe("compra") || "loja", cor: cfgDe("cor"), gateway: !!W.gateway, pagina: W.pagina || "" };
@@ -52,7 +52,7 @@
   function ligarLinks(r = document) {
     $$("[data-upe-link]", r).forEach(a => {
       const v = a.dataset.upeLink, [tipo, arg] = v.split(":");
-      const href = tipo === "inicio" ? (C.pagina ? "/" + (location.hostname.includes("web.app") ? C.pagina : "") : "/") : tipo === "loja" ? urlLoja() : tipo === "produto" ? urlLoja("/p/" + encodeURIComponent(arg || "")) : tipo === "agenda" ? urlAgenda(arg ? "?servico=" + encodeURIComponent(arg) : "") : tipo === "whatsapp" ? urlWa(a.dataset.mensagem || "") : tipo === "carrinho" ? "#carrinho" : a.getAttribute("href");
+      const href = tipo === "inicio" ? (C.pagina ? "/" + (/web\.app$|^lp\.upecriativo\.com\.br$/.test(location.hostname) ? C.pagina : "") : "/") : tipo === "loja" ? urlLoja() : tipo === "produto" ? urlLoja("/p/" + encodeURIComponent(arg || "")) : tipo === "agenda" ? urlAgenda(arg ? "?servico=" + encodeURIComponent(arg) : "") : tipo === "whatsapp" ? urlWa(a.dataset.mensagem || "") : tipo === "carrinho" ? "#carrinho" : a.getAttribute("href");
       if (href) a.setAttribute("href", href);
       if (/^https?:/.test(href) && !/^#/.test(href) && tipo !== "inicio") { a.target = a.target || "_blank"; a.rel = "noopener"; }
       if (tipo === "carrinho") a.addEventListener("click", e => { e.preventDefault(); abrirCarrinho(); });
