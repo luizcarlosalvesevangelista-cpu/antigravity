@@ -1710,7 +1710,7 @@ function cronoModal(x0) {
         <ol class="beats">${(H.beats || []).map(b => `<li><b>${esc(b.rotulo)}</b><span>${esc(b.texto)}</span></li>`).join("")}</ol>
         <p class="muted small">Motion com áudio e efeitos feito só com material próprio da Upe (marca, telas dos apps e textos). Sem trechos de vídeos ou prints de terceiros: sem risco de strike de direitos autorais.</p></section>` : ""}
       ${outras.length ? `<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px">${outras.map(u => `<div class="media-box" style="min-height:120px">${mediaHTML(u, x.formato === "reels" || x.formato === "shorts" || x.formato === "youtube" ? "video" : "")}</div>`).join("")}</div>` : v.capa && !H ? `<div class="media-box">${imgTag(v.capa)}</div>` : ""}
-      <div class="row">${outras.map((u, i) => dlBtn(u, outras.length > 1 ? `Baixar ${i + 1}` : "Baixar arquivo")).join("")}${v.capa ? dlBtn(v.capa, yt ? "Baixar thumbnail" : "Baixar capa") : ""}${v.legenda ? `<button class="btn sm" id="xCp">Copiar ${yt ? "descrição" : "legenda"}</button>` : ""}</div>` : ""}
+      <div class="row">${outras.map((u, i) => dlBtn(u, outras.length > 1 ? `Baixar ${i + 1}` : "Baixar arquivo")).join("")}${v.capa ? dlBtn(v.capa, yt ? "Baixar thumbnail" : "Baixar capa") : ""}${v.legenda ? `<button class="btn sm" id="xCp">Copiar ${yt ? "descrição" : "legenda"}</button>` : ""}<button class="btn sm" id="xZip" title="Arquivos, legenda e dados do post num .zip">Baixar pacote (.zip)</button></div>` : ""}
     <div class="g3"><label class="f" for="xD">Data<input id="xD" type="date" value="${esc(x.data)}"></label><label class="f" for="xH">Hora<input id="xH" type="time" value="${esc(x.hora)}"></label><label class="f" for="xSt">Status<select id="xSt">${Object.entries(CST).map(([s, l]) => `<option value="${s}" ${x.status === s ? "selected" : ""}>${l}</option>`).join("")}</select></label></div>
     <div class="g3"><label class="f" for="xC">Canal<select id="xC"><option value="instagram" ${!yt ? "selected" : ""}>Instagram</option><option value="youtube" ${yt ? "selected" : ""}>YouTube</option></select></label><label class="f" for="xF">Formato<select id="xF">${["feed", "carrossel", "reels", "story", "youtube", "shorts"].map(f => `<option value="${f}" ${x.formato === f ? "selected" : ""}>${FMT_LBL[f]}</option>`).join("")}</select></label><label class="f" for="xP">Pilar<select id="xP">${PILARES.map(p => `<option ${x.pilar === p ? "selected" : ""}>${p}</option>`).join("")}</select></label></div>
     <label class="f" for="xT">Título<input id="xT" value="${esc(x.titulo)}"></label>
@@ -1721,6 +1721,7 @@ function cronoModal(x0) {
     `${!n ? `<button class="btn bad" id="xX">Excluir</button>` : ""}${!n && x.canal !== "youtube" ? `<button class="btn sec" id="xMod">${x.modelo ? "Editar no modelo" : "Criar arte no modelo"}</button>` : ""}<button class="btn sec" data-close>Fechar</button><button class="btn" id="xOk">Salvar</button>`, true);
   if ($("#xMod")) $("#xMod").onclick = () => { dlg.close(); go(`#/admin/cronograma/modelos/${x.id}`); };
   if ($("#xCp")) $("#xCp").onclick = () => copy(v.legenda, "Copiado");
+  if ($("#xZip")) $("#xZip").onclick = () => pacotePost(v, $("#xZip"));
   $("#xOk").onclick = async () => {
     const t = $("#xT").value.trim(); if (!t) return $("#xT").focus();
     const rp = $("#xRp").value;
@@ -1890,6 +1891,24 @@ function postsDoDossie(D, base, doc) {
   return out;
 }
 
+/* pacote do post: imagens/vídeo, capa, legenda e dados num .zip, pronto para publicar no Instagram ou no YouTube */
+async function pacotePost(v, bt) {
+  bt.disabled = true; const t0 = bt.textContent; bt.textContent = "Montando…";
+  try {
+    if (!window.JSZip) await new Promise((ok, no) => { const sc = document.createElement("script"); sc.src = "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"; sc.onload = ok; sc.onerror = no; document.head.append(sc); });
+    const z = new window.JSZip(), nome = `${v.data || "sem-data"}-${String(v.titulo || "post").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 40)}`;
+    const arqs = [...(v.midias || []), v.capa].filter(Boolean); let i = 0, falhas = 0;
+    for (const u of arqs) { const url = resolveMedia(u); if (!url) continue; try { const r = await fetch(url); if (!r.ok) throw 0; i++; z.file(`${String(i).padStart(2, "0")}-${fileName(u)}`, await r.blob()); } catch { falhas++; } }
+    const tags = (String(v.legenda || "").match(/#[\p{L}\d_]+/gu) || []).join(" ");
+    z.file("legenda.txt", String(v.legenda || ""));
+    if (tags) z.file("hashtags.txt", tags);
+    z.file("post.txt", [`Título: ${v.titulo || ""}`, `Canal: ${v.canal || ""} · Formato: ${FMT_LBL[v.formato] || v.formato || ""} · Pilar: ${v.pilar || ""}`, `Data: ${v.data || ""} ${v.hora || ""}`, v.roteiro ? `\nRoteiro:\n${v.roteiro}` : ""].join("\n"));
+    const blob = await z.generateAsync({ type: "blob" }), a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = nome + ".zip"; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    toast(falhas ? `Pacote baixado (${falhas} arquivo(s) não puderam ser incluídos).` : "Pacote baixado.");
+  } catch (e) { toast("Não foi possível montar o pacote agora."); }
+  bt.disabled = false; bt.textContent = t0;
+}
+
 /* ===== Apps Extra: Upe ERP, Upe TV e Upe Landing pages (incluído dentro do app.js) =====
    Catálogo em config/publico.apps (preços públicos, editáveis no painel).
    Adesão de cada cliente em clientes/{id}.apps[app] = { status, plano, extras[], dia, inicio, fimTeste, ajuste, obs }.
@@ -2042,6 +2061,19 @@ const FRENTE_PILAR = { erp: "Upe ERP", tv: "Upe TV", loja: "Loja Upe", landing: 
 const PILAR_FRENTE = { "Upe ERP": "erp", "Upe TV": "tv", "Loja Upe": "loja" };
 async function renderModelo(cv, m) { await UpeModelos.render(cv, m, { base: MBASE() }); return cv; }
 // imagem final de um slide: arquivo no Storage (ou no navegador, no modo demonstração) ou JPEG embutido
+/* grava os slides animados (entrada dos elementos, 3 s por slide) num vídeo, no próprio navegador */
+async function gravarReel(slides, progresso) {
+  const tipos = ["video/mp4;codecs=avc1", "video/mp4", "video/webm;codecs=vp9", "video/webm"], tipo = window.MediaRecorder && tipos.find(t => MediaRecorder.isTypeSupported(t));
+  if (!tipo) throw new Error("sem MediaRecorder");
+  const cv = document.createElement("canvas"); await UpeModelos.render(cv, slides[0], { base: MBASE(), t: 0 });
+  const fps = 30, rec = new MediaRecorder(cv.captureStream(fps), { mimeType: tipo, videoBitsPerSecond: 8e6 }), partes = [];
+  rec.ondataavailable = e => e.data.size && partes.push(e.data); const fim = new Promise(ok => rec.onstop = ok); rec.start(250);
+  for (const [k, m] of slides.entries()) { progresso(k + 1); const t0 = performance.now();
+    for (;;) { const dt = (performance.now() - t0) / 1000; if (dt >= 3) break; await UpeModelos.render(cv, m, { base: MBASE(), t: Math.min(1, dt / 1.65) }); await new Promise(r => requestAnimationFrame(r)); } }
+  rec.stop(); await fim;
+  const blob = new Blob(partes, { type: tipo.split(";")[0] }), a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `upe-${slides[0].frente}-reel.${tipo.includes("mp4") ? "mp4" : "webm"}`; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  if (!tipo.includes("mp4")) toast("Vídeo salvo em .webm. Para o Instagram, converta para .mp4 (ex.: CapCut) ou use o Safari/Chrome mais novo.");
+}
 async function exportarSlide(m, nome) {
   const cv = document.createElement("canvas"); await renderModelo(cv, m);
   if (S.mode !== "firebase" || S.st) {
@@ -2072,7 +2104,7 @@ function aModelos(body, x0 = null) {
         <div class="mprev"><canvas id="mCv"></canvas></div>
         <div class="row" id="mSlides"></div>
         <div class="row"><button class="btn sec sm" id="mAdd">+ Slide</button><button class="btn sec sm" id="mDup">Duplicar slide</button><button class="btn sec sm" id="mDel">Remover slide</button></div>
-        <div class="row"><button class="btn sec" id="mDl">Baixar ${ed.slides.length > 1 ? "imagens" : "imagem"}</button>${x0 ? `<button class="btn" id="mSave">Salvar no post</button>` : `<button class="btn" id="mCron">Adicionar ao cronograma</button>`}</div>
+        <div class="row"><button class="btn sec" id="mDl">Baixar ${ed.slides.length > 1 ? "imagens" : "imagem"}</button><button class="btn sec" id="mVid" title="Grava os slides animados (3 s cada) em vídeo, sem trilha: escolha a música no próprio Instagram">Baixar vídeo (reel)</button>${x0 ? `<button class="btn" id="mSave">Salvar no post</button>` : `<button class="btn" id="mCron">Adicionar ao cronograma</button>`}</div>
       </div>
     </section>`;
   const fill = () => { const m = cur(); $("#mFr").value = m.frente; $("#mFm").value = m.formato; $("#mLy").value = m.layout; $("#mTe").value = m.tema; $("#mEy").value = m.eyebrow || ""; $("#mSl").value = m.slide || ""; $("#mTi").value = m.titulo || ""; $("#mTx").value = m.texto || ""; $("#mIt").value = (m.itens || []).join("\n"); $("#mCt").value = m.cta || ""; $("#mHa").value = m.handle || "";
@@ -2094,6 +2126,7 @@ function aModelos(body, x0 = null) {
   $("#mDup").onclick = () => { read(); ed.slides.splice(ed.i + 1, 0, clone(cur())); ed.i++; fill(); draw(); };
   $("#mDel").onclick = () => { if (ed.slides.length < 2) return toast("O post precisa de pelo menos um slide"); ed.slides.splice(ed.i, 1); ed.i = Math.max(0, ed.i - 1); fill(); draw(); };
   $("#mDl").onclick = async () => { read(); for (const [k, m] of ed.slides.entries()) { const cv = document.createElement("canvas"); await renderModelo(cv, m); const a = document.createElement("a"); a.href = cv.toDataURL("image/png"); a.download = `upe-${m.frente}-${String(k + 1).padStart(2, "0")}.png`; document.body.append(a); a.click(); a.remove(); } };
+  $("#mVid").onclick = async () => { read(); const b = $("#mVid"), t0 = b.textContent; b.disabled = true; try { await gravarReel(ed.slides, k => b.textContent = `Gravando ${k}/${ed.slides.length}…`); } catch (e) { toast("Este navegador não grava vídeo. Use o Chrome ou o Safari atualizados."); } b.disabled = false; b.textContent = t0; };
   const gerar = async (btn, id) => { btn.disabled = true; const out = []; for (const [k, m] of ed.slides.entries()) { btn.textContent = `Gerando ${k + 1}/${ed.slides.length}…`; out.push(await exportarSlide(m, `${id}-${k + 1}`)); } return out; };
   if ($("#mSave")) $("#mSave").onclick = async () => { read(); const midias = await gerar($("#mSave"), x0.id); const x = state.cache.crono.find(y => y.id === x0.id) || x0;
     Object.assign(x, { modelo: clone(ed.slides), midias: x.formato === "reels" ? x.midias : midias, capa: x.formato === "reels" ? midias[0] : x.capa }); await S.set(`cronograma/${x.id}`, x); toast("Post atualizado"); reAdmin(); };

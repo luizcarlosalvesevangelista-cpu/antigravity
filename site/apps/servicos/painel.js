@@ -25,6 +25,7 @@ function telaLogin(msg = "", ok = "") {
     <button class="btn" type="button" id="lgGoogle">Entrar com o Google</button>`}
     <p class="lg-err" id="lgErr">${esc(msg)}</p><p class="lg-ok" id="lgOk">${esc(ok)}</p>
     <p class="muted" style="font-size:12.5px">Ainda não é cliente? <a href="${SITES.lp}">Landing pages</a> · <a href="${SITES.sistemas}">Agenda e dashboards</a></p>
+    <p class="muted" style="font-size:12px"><a href="https://upe-criativo.web.app/privacidade.html" target="_blank" rel="noopener">Privacidade</a> · <a href="https://upe-criativo.web.app/termos.html" target="_blank" rel="noopener">Termos de uso</a></p>
   </div>`;
   const err = m => { $("#lgErr").textContent = m; $("#lgOk").textContent = ""; };
   $$("[data-demo]", L).forEach(b => b.onclick = () => auth.entrar(b.dataset.demo === "admin" ? ADMIN_EMAIL : "cliente@exemplo.com"));
@@ -57,6 +58,7 @@ auth.onChange(async u => {
   S.admin = await ehAdmin(u);
   try {
     S.cfg = (await db.get("srv_config/publico")) || {};
+    S.recursos = (await db.get("srv_config/recursos").catch(() => null)) || {};
     if (S.admin) {
       S.clientes = (await db.list("srv_clientes")).sort((a, b) => (a.nome || "").localeCompare(b.nome || ""));
       S.cid = sessionStorage.getItem("srv-cid") || null;
@@ -97,7 +99,7 @@ function menu() {
     if (tem("dash") || tem("agenda") || tem("lp")) n += `<h4>Dashboards</h4>` + it("#/dash", "Dashboards");
     n += `<h4>Conta</h4>` + it("#/conta", "Plano e cobranças") + it("#/chamados", "Pedidos de ajuste");
   }
-  if (S.admin) n += `<h4>Gestão Upe</h4>` + it("#/adm/clientes", "Clientes e planos") + it("#/adm/cobrancas", "Cobranças") + it("#/adm/planos", "Catálogo de planos") + it("#/adm/interessados", "Interessados") + it("#/adm/dominios", "Domínios") + it("#/adm/paginas", "Todas as páginas") + it("#/adm/chamados", "Pedidos de ajuste") + it("#/adm/config", "PIX e contato");
+  if (S.admin) n += `<h4>Gestão Upe</h4>` + it("#/adm/clientes", "Clientes e planos") + it("#/adm/cobrancas", "Cobranças") + it("#/adm/planos", "Catálogo de planos") + it("#/adm/interessados", "Interessados") + it("#/adm/dominios", "Domínios") + it("#/adm/paginas", "Todas as páginas") + it("#/adm/chamados", "Pedidos de ajuste") + it("#/adm/config", "PIX e contato") + it("#/adm/erros", "Erros dos sites");
   $("#nav").innerHTML = n;
   $("#quem").innerHTML = S.admin
     ? `<span>Upe Criativo · administrador</span><label class="f" style="color:var(--side-muted)">Cliente aberto<select id="selCli"><option value="">Nenhum (só gestão)</option>${S.clientes.map(c => `<option value="${esc(c.id)}" ${c.id === S.cid ? "selected" : ""}>${esc(c.nome)}</option>`).join("")}</select></label>`

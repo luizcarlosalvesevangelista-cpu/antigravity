@@ -1,0 +1,18 @@
+# dependências e trabalho das ferramentas
+node_modules/
+tools/.trabalho/
+site/functions/node_modules/
+# chaves de serviço (nunca no repositório)
+*firebase-adminsdk*.json
+.chaves/
+*.key
+.env
+
+# cópias geradas no deploy das funções
+site/functions/lp-render.mjs
+site/functions/vendas-lp.html
+
+# variáveis locais das funções
+site/functions/.env.*
+__pycache__/
+*.pyc

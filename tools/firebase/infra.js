@@ -1,0 +1,12 @@
+const __R=require('path').resolve(__dirname,'../..'), __T=process.env.UPE_TRABALHO||__R+'/tools/.trabalho';
+const {GoogleAuth}=require('google-auth-library');const P='upecriativo-cc472';
+(async()=>{const c=await new GoogleAuth({keyFile:process.env.GOOGLE_APPLICATION_CREDENTIALS,scopes:['https://www.googleapis.com/auth/cloud-platform']}).getClient();
+const g=async(u)=>{const r=await c.request({url:u}).catch(e=>e.response);return [r.status,r.data]};
+let [s,d]=await g(`https://storage.googleapis.com/storage/v1/b/${P}.firebasestorage.app`);console.log('bucket storage:',s,d?.location||d?.error?.message?.slice(0,100));
+[s,d]=await g(`https://firebaseextensions.googleapis.com/v1beta/projects/${P}/instances`);console.log('extensões:',s,JSON.stringify(d).slice(0,200));
+[s,d]=await g(`https://cloudbilling.googleapis.com/v1/projects/${P}/billingInfo`);console.log('faturamento:',s,JSON.stringify(d).slice(0,200));
+[s,d]=await g(`https://cloudfunctions.googleapis.com/v2/projects/${P}/locations/-/functions`);console.log('functions:',s,JSON.stringify(d).slice(0,150));
+[s,d]=await g(`https://firestore.googleapis.com/v1/projects/${P}/databases/(default)`);console.log('firestore:',s,d?.locationId,d?.pointInTimeRecoveryEnablement,d?.deleteProtectionState);
+[s,d]=await g(`https://firebaseappcheck.googleapis.com/v1/projects/${P}/apps/1:574926941318:web:effa37317480bde29fb507/recaptchaEnterpriseConfig`);console.log('appcheck:',s,JSON.stringify(d).slice(0,120));
+[s,d]=await g(`https://firebasehosting.googleapis.com/v1beta1/projects/${P}/sites/upe-criativo/customDomains`);console.log('domínios site:',s,JSON.stringify(d).slice(0,200));
+})();

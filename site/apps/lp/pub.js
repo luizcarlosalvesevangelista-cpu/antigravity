@@ -21,9 +21,11 @@ export async function criar(col, dados) {
   const r = await fetch(`${API}/${col}?key=${KEY}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ fields: campos(dados) }) });
   if (!r.ok) throw new Error("Não foi possível enviar agora. Tente de novo."); return true;
 }
-/* grava vários documentos de uma vez; "novo: true" exige que o documento ainda não exista (horário livre) */
+/* grava vários documentos de uma vez; "novo: true" exige que o documento ainda não exista (horário livre);
+   "mascara" atualiza só esses campos; "apagar: true" apaga o documento */
 export async function gravarJuntos(lista) {
-  const writes = lista.map(({ caminho, dados, novo }) => ({ update: { name: `${BASE}/${caminho}`, fields: campos(dados) }, ...(novo ? { currentDocument: { exists: false } } : {}) }));
+  const writes = lista.map(({ caminho, dados, novo, mascara, apagar }) => apagar ? { delete: `${BASE}/${caminho}` }
+    : { update: { name: `${BASE}/${caminho}`, fields: campos(dados) }, ...(mascara ? { updateMask: { fieldPaths: mascara } } : {}), ...(novo ? { currentDocument: { exists: false } } : mascara ? { currentDocument: { exists: true } } : {}) });
   const r = await fetch(`https://firestore.googleapis.com/v1/${BASE}:commit?key=${KEY}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ writes }) });
   if (!r.ok) { const e = new Error("conflito"); e.status = r.status; throw e; } return true;
 }

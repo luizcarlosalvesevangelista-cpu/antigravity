@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<script>/* registro de erros (Upe): até 5 por visita, sem dados pessoais */(function(){var n=0,v={};function e(m,o){try{m=String(m||"").slice(0,300);if(n>=5||v[m]||/ResizeObserver|Script error/i.test(m))return;v[m]=1;n++;fetch("https://firestore.googleapis.com/v1/projects/upecriativo-cc472/databases/(default)/documents/erros?key=AIzaSyDJqqSMLWZLKSt9K1jPzvvQgyikZy4q9vw",{method:"POST",keepalive:true,headers:{"Content-Type":"application/json"},body:JSON.stringify({fields:{app:{stringValue:"lp-vendas"},msg:{stringValue:m},onde:{stringValue:String(o||"").slice(0,200)},url:{stringValue:(location.host+location.pathname).slice(0,200)},ua:{stringValue:navigator.userAgent.slice(0,160)},t:{integerValue:String(Date.now())}}})})}catch(_){}}addEventListener("error",function(x){e(x.message,(x.filename||"")+":"+(x.lineno||""))});addEventListener("unhandledrejection",function(x){var r=x.reason;e(r&&(r.message||r.code)||r,"promise")})})();</script>
 <script>/* domínio próprio de cliente: esconde a página de vendas e mostra a landing page dele */
 if (!/(^|\.)(web\.app|firebaseapp\.com)$|^localhost$|^127\.|\.test$/.test(location.hostname)) { document.documentElement.style.visibility = "hidden"; window.__lpCliente = true; }</script>
 <title>Upe Landing pages · Páginas de venda com painel de resultados</title>
@@ -60,7 +61,7 @@ if (!/(^|\.)(web\.app|firebaseapp\.com)$|^localhost$|^127\.|\.test$/.test(locati
     <p style="margin-top:18px"><a class="btn linha" href="https://wa.me/5511934393249?text=Ol%C3%A1!%20Quero%20uma%20landing%20page." target="_blank" rel="noopener">Prefiro chamar no WhatsApp</a></p></div>
   <form class="f" id="fContato"><label>Nome<input name="nome" required maxlength="120" autocomplete="name"></label><label>WhatsApp<input name="whatsapp" required inputmode="tel" maxlength="40" autocomplete="tel"></label>
     <label>E-mail (opcional)<input name="email" type="email" maxlength="120" autocomplete="email"></label><label>Plano<select name="plano"></select></label>
-    <label>O que você quer vender na página?<textarea name="mensagem" rows="3" maxlength="1000"></textarea></label><input type="hidden" name="frente" value="lp"><button class="btn azul">Enviar</button></form>
+    <label>O que você quer vender na página?<textarea name="mensagem" rows="3" maxlength="1000"></textarea></label><input type="hidden" name="frente" value="lp"><p style="font-size:13px;color:var(--muted)">Ao enviar, você concorda com a <a href="https://upe-criativo.web.app/privacidade.html" target="_blank" rel="noopener">Política de privacidade</a>.</p><button class="btn azul">Enviar</button></form>
 </div></section>
 <section class="alt" id="duvidas"><div class="in" style="max-width:820px">
   <div class="sec-head"><span class="eyebrow">Dúvidas</span><h2>Perguntas frequentes</h2></div>
@@ -71,7 +72,7 @@ if (!/(^|\.)(web\.app|firebaseapp\.com)$|^localhost$|^127\.|\.test$/.test(locati
   <details><summary>E se eu atrasar a mensalidade?</summary><p>Você recebe um lembrete. Depois de 10 dias de atraso a página pode sair do ar, e volta assim que o pagamento é confirmado.</p></details>
 </div></section>
 <section class="final"><div class="in"><h2>Sua próxima campanha merece uma página à altura.</h2><p>Página pronta, domínio próprio e resultados no painel.</p><a class="btn creme" href="#contato">Quero a minha página</a></div></section>
-<footer><div class="in"><span>© Upe Criativo · <a href="https://upe-criativo.web.app">upe-criativo.web.app</a></span><span><a href="https://upe-criativo-sistemas.web.app">Agenda online e dashboards</a> · <a href="https://upe-criativo-erp.web.app">Upe ERP</a> · <a href="https://upe-criativo-tv.web.app">Upe TV</a></span></div></footer>
+<footer><div class="in"><span>© Upe Criativo · <a href="https://upe-criativo.web.app">upe-criativo.web.app</a> · <a href="https://upe-criativo.web.app/privacidade.html">Privacidade</a> · <a href="https://upe-criativo.web.app/termos.html">Termos</a></span><span><a href="https://upe-criativo-sistemas.web.app">Agenda online e dashboards</a> · <a href="https://upe-criativo-erp.web.app">Upe ERP</a> · <a href="https://upe-criativo-tv.web.app">Upe TV</a></span></div></footer>
 <script type="module">
 if (window.__lpCliente) { const m = await import("/lp-render.js"); await m.mostrar(); }
 else { const v = await import("/vendas.js"); v.planos(["lp"], document.getElementById("listaPlanos")); v.contato("lp", "upe-criativo-lp"); }

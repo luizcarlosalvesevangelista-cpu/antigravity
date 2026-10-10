@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<script>/* registro de erros (Upe): até 5 por visita, sem dados pessoais */(function(){var n=0,v={};function e(m,o){try{m=String(m||"").slice(0,300);if(n>=5||v[m]||/ResizeObserver|Script error/i.test(m))return;v[m]=1;n++;fetch("https://firestore.googleapis.com/v1/projects/upecriativo-cc472/databases/(default)/documents/erros?key=AIzaSyDJqqSMLWZLKSt9K1jPzvvQgyikZy4q9vw",{method:"POST",keepalive:true,headers:{"Content-Type":"application/json"},body:JSON.stringify({fields:{app:{stringValue:"loja"},msg:{stringValue:m},onde:{stringValue:String(o||"").slice(0,200)},url:{stringValue:(location.host+location.pathname).slice(0,200)},ua:{stringValue:navigator.userAgent.slice(0,160)},t:{integerValue:String(Date.now())}}})})}catch(_){}}addEventListener("error",function(x){e(x.message,(x.filename||"")+":"+(x.lineno||""))});addEventListener("unhandledrejection",function(x){var r=x.reason;e(r&&(r.message||r.code)||r,"promise")})})();</script>
 <title>Loja</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -276,7 +277,7 @@ async function render() {
   document.title = CFG.nome + (ST.tela === "vitrine" ? " · Loja" : "");
   let corpo = "";
   if (ST.tela === "vitrine") corpo = vitrine(); else if (ST.tela === "carrinho") corpo = carrinho(); else if (ST.tela === "checkout") corpo = checkout(); else if (ST.tela === "pedidos") corpo = await meusPedidos(); else if (ST.tela === "pedido") corpo = pedidoHtml(ST.pedido?.id, ST.pedido?.d);
-  $("#app").innerHTML = topo() + `<main><div class="in">${corpo}</div></main><footer><div class="in"><span>© ${new Date().getFullYear()} ${esc(CFG.nome)}${CFG.site && !/suaempresa/i.test(CFG.site) ? ` · ${esc(CFG.site)}` : ""}</span><span>Loja criada com a plataforma Upe Criativo</span></div></footer>`;
+  $("#app").innerHTML = topo() + `<main><div class="in">${corpo}</div></main><footer><div class="in"><span>© ${new Date().getFullYear()} ${esc(CFG.nome)}${CFG.site && !/suaempresa/i.test(CFG.site) ? ` · ${esc(CFG.site)}` : ""}</span><span>Loja criada com a plataforma Upe Criativo · <a href="https://upe-criativo.web.app/privacidade.html" target="_blank" rel="noopener">Privacidade</a></span></div></footer>`;
   bnAuto();
 }
 let BN_T = null;
@@ -391,6 +392,26 @@ function indisponivel(titulo, texto) { document.title = titulo; $("#app").innerH
     if (r.ativa === false || CFG.ativa === false) return indisponivel(CFG.nome || "Loja", "Loja temporariamente indisponível. Volte em breve.");
     PRODS = (await getDocs(collection(fs, BASE + "/produtos"))).docs.map(d => ({ id: d.id, ...d.data() }));
     CART = CART.filter(x => prod(x.pid));
+    /* carrinho vindo de uma página do cliente feita com o Kit Upe: ?add=<produto>:<qtd>,… */
+    const qs = new URLSearchParams(location.search), add = qs.get("add");
+    if (add) {
+      add.split(",").forEach(par => { const [pid, q] = par.split(":"), n = Math.min(99, Math.max(1, parseInt(q) || 1)); if (!prod(pid)) return; const x = CART.find(i => i.pid === pid); if (x) x.qtd = n; else CART.push({ pid, qtd: n }); });
+      salvarCart(); history.replaceState(null, "", "/" + SLUG); ST.tela = "carrinho"; render(); return;
+    }
+    /* página inicial personalizada (landing page do Painel Upe Serviços ligada a esta loja); ?vitrine=1 abre a vitrine padrão */
+    const kVit = `loja:${SLUG}:vitrine`;
+    if (qs.has("vitrine")) { try { sessionStorage.setItem(kVit, "1"); } catch {} history.replaceState(null, "", "/" + SLUG); }
+    if (!partes[1] && !qs.has("vitrine") && !(() => { try { return sessionStorage.getItem(kVit); } catch { return null; } })()) {
+      const capa = await getDoc(doc(fs, BASE + "/publico/capa")).catch(() => null);
+      const lp = capa?.exists() ? capa.data().lp : "";
+      if (lp) {
+        const pg = await getDoc(doc(fs, "lp_paginas/" + lp)).catch(() => null);
+        if (pg?.exists() && pg.data().html) {
+          const { montar } = await import("https://upe-criativo-lp.web.app/lp-render.js");
+          const d = pg.data(); document.open(); document.write(montar(d.html, { ...d, vinculos: { ...(d.vinculos || {}), loja: SLUG } }, lp)); document.close(); return;
+        }
+      }
+    }
     if (partes[1] === "p" && partes[2]) { history.replaceState(null, "", "/" + SLUG); render(); setTimeout(() => verProduto(partes[2]), 50); return; }
     if (partes[1] === "pedido" && partes[2]) {
       const id = partes[2]; ST.tela = "pedido";

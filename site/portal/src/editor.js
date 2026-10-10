@@ -5,6 +5,19 @@ const FRENTE_PILAR = { erp: "Upe ERP", tv: "Upe TV", loja: "Loja Upe", landing: 
 const PILAR_FRENTE = { "Upe ERP": "erp", "Upe TV": "tv", "Loja Upe": "loja" };
 async function renderModelo(cv, m) { await UpeModelos.render(cv, m, { base: MBASE() }); return cv; }
 // imagem final de um slide: arquivo no Storage (ou no navegador, no modo demonstração) ou JPEG embutido
+/* grava os slides animados (entrada dos elementos, 3 s por slide) num vídeo, no próprio navegador */
+async function gravarReel(slides, progresso) {
+  const tipos = ["video/mp4;codecs=avc1", "video/mp4", "video/webm;codecs=vp9", "video/webm"], tipo = window.MediaRecorder && tipos.find(t => MediaRecorder.isTypeSupported(t));
+  if (!tipo) throw new Error("sem MediaRecorder");
+  const cv = document.createElement("canvas"); await UpeModelos.render(cv, slides[0], { base: MBASE(), t: 0 });
+  const fps = 30, rec = new MediaRecorder(cv.captureStream(fps), { mimeType: tipo, videoBitsPerSecond: 8e6 }), partes = [];
+  rec.ondataavailable = e => e.data.size && partes.push(e.data); const fim = new Promise(ok => rec.onstop = ok); rec.start(250);
+  for (const [k, m] of slides.entries()) { progresso(k + 1); const t0 = performance.now();
+    for (;;) { const dt = (performance.now() - t0) / 1000; if (dt >= 3) break; await UpeModelos.render(cv, m, { base: MBASE(), t: Math.min(1, dt / 1.65) }); await new Promise(r => requestAnimationFrame(r)); } }
+  rec.stop(); await fim;
+  const blob = new Blob(partes, { type: tipo.split(";")[0] }), a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `upe-${slides[0].frente}-reel.${tipo.includes("mp4") ? "mp4" : "webm"}`; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  if (!tipo.includes("mp4")) toast("Vídeo salvo em .webm. Para o Instagram, converta para .mp4 (ex.: CapCut) ou use o Safari/Chrome mais novo.");
+}
 async function exportarSlide(m, nome) {
   const cv = document.createElement("canvas"); await renderModelo(cv, m);
   if (S.mode !== "firebase" || S.st) {
@@ -35,7 +48,7 @@ function aModelos(body, x0 = null) {
         <div class="mprev"><canvas id="mCv"></canvas></div>
         <div class="row" id="mSlides"></div>
         <div class="row"><button class="btn sec sm" id="mAdd">+ Slide</button><button class="btn sec sm" id="mDup">Duplicar slide</button><button class="btn sec sm" id="mDel">Remover slide</button></div>
-        <div class="row"><button class="btn sec" id="mDl">Baixar ${ed.slides.length > 1 ? "imagens" : "imagem"}</button>${x0 ? `<button class="btn" id="mSave">Salvar no post</button>` : `<button class="btn" id="mCron">Adicionar ao cronograma</button>`}</div>
+        <div class="row"><button class="btn sec" id="mDl">Baixar ${ed.slides.length > 1 ? "imagens" : "imagem"}</button><button class="btn sec" id="mVid" title="Grava os slides animados (3 s cada) em vídeo, sem trilha: escolha a música no próprio Instagram">Baixar vídeo (reel)</button>${x0 ? `<button class="btn" id="mSave">Salvar no post</button>` : `<button class="btn" id="mCron">Adicionar ao cronograma</button>`}</div>
       </div>
     </section>`;
   const fill = () => { const m = cur(); $("#mFr").value = m.frente; $("#mFm").value = m.formato; $("#mLy").value = m.layout; $("#mTe").value = m.tema; $("#mEy").value = m.eyebrow || ""; $("#mSl").value = m.slide || ""; $("#mTi").value = m.titulo || ""; $("#mTx").value = m.texto || ""; $("#mIt").value = (m.itens || []).join("\n"); $("#mCt").value = m.cta || ""; $("#mHa").value = m.handle || "";
@@ -57,6 +70,7 @@ function aModelos(body, x0 = null) {
   $("#mDup").onclick = () => { read(); ed.slides.splice(ed.i + 1, 0, clone(cur())); ed.i++; fill(); draw(); };
   $("#mDel").onclick = () => { if (ed.slides.length < 2) return toast("O post precisa de pelo menos um slide"); ed.slides.splice(ed.i, 1); ed.i = Math.max(0, ed.i - 1); fill(); draw(); };
   $("#mDl").onclick = async () => { read(); for (const [k, m] of ed.slides.entries()) { const cv = document.createElement("canvas"); await renderModelo(cv, m); const a = document.createElement("a"); a.href = cv.toDataURL("image/png"); a.download = `upe-${m.frente}-${String(k + 1).padStart(2, "0")}.png`; document.body.append(a); a.click(); a.remove(); } };
+  $("#mVid").onclick = async () => { read(); const b = $("#mVid"), t0 = b.textContent; b.disabled = true; try { await gravarReel(ed.slides, k => b.textContent = `Gravando ${k}/${ed.slides.length}…`); } catch (e) { toast("Este navegador não grava vídeo. Use o Chrome ou o Safari atualizados."); } b.disabled = false; b.textContent = t0; };
   const gerar = async (btn, id) => { btn.disabled = true; const out = []; for (const [k, m] of ed.slides.entries()) { btn.textContent = `Gerando ${k + 1}/${ed.slides.length}…`; out.push(await exportarSlide(m, `${id}-${k + 1}`)); } return out; };
   if ($("#mSave")) $("#mSave").onclick = async () => { read(); const midias = await gerar($("#mSave"), x0.id); const x = state.cache.crono.find(y => y.id === x0.id) || x0;
     Object.assign(x, { modelo: clone(ed.slides), midias: x.formato === "reels" ? x.midias : midias, capa: x.formato === "reels" ? midias[0] : x.capa }); await S.set(`cronograma/${x.id}`, x); toast("Post atualizado"); reAdmin(); };

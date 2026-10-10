@@ -1,0 +1,22 @@
+// Testa a agenda no banco real: reserva com profissional, horário duplicado, cancelamento com código errado e certo (pelo próprio cliente) e limpeza.
+const admin=require('firebase-admin');const db=admin.initializeApp({credential:admin.credential.cert(require(process.env.GOOGLE_APPLICATION_CREDENTIALS))}).firestore();
+const K='AIzaSyDJqqSMLWZLKSt9K1jPzvvQgyikZy4q9vw',BASE='projects/upecriativo-cc472/databases/(default)/documents';
+const enc=v=>Array.isArray(v)?{arrayValue:{values:v.map(enc)}}:typeof v==='number'?{integerValue:String(v)}:{stringValue:String(v)};
+const campos=d=>Object.fromEntries(Object.entries(d).map(([k,x])=>[k,enc(x)]));
+const commit=async ws=>(await fetch(`https://firestore.googleapis.com/v1/${BASE}:commit?key=${K}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({writes:ws})})).status;
+const cria=(c,d)=>({update:{name:`${BASE}/${c}`,fields:campos(d)},currentDocument:{exists:false}});
+const masc=(c,d)=>({update:{name:`${BASE}/${c}`,fields:campos(d)},updateMask:{fieldPaths:Object.keys(d)},currentDocument:{exists:true}});
+const apaga=c=>({delete:`${BASE}/${c}`});
+(async()=>{const A='agenda_paginas/teste-regras';await db.doc(A).set({cid:'upe-criativo',ativo:true,nome:'Teste'});
+const ids=['ana_2030-01-07_0900','ana_2030-01-07_0930'],tk='abcdefgh23456789';
+const r={servico:'X',data:'2030-01-07',hora:'09:00',dur:60,nome:'Teste',telefone:'',email:'',obs:'',status:'nova',t:Date.now(),slots:ids,prof:'ana',profNome:'Ana',token:tk};
+const w=[...ids.map(id=>cria(`${A}/slots/${id}`,{data:'2030-01-07',hora:id.slice(-4),r:ids[0],prof:'ana'})),cria(`${A}/reservas/${ids[0]}`,r)];
+console.log('reserva com profissional (200):',await commit(w));
+console.log('mesmo horário, mesmo profissional (409):',await commit(w));
+const w2=['bruno_2030-01-07_0900'];console.log('mesmo horário, outro profissional (200):',await commit([cria(`${A}/slots/${w2[0]}`,{data:'2030-01-07',hora:'0900',r:w2[0],prof:'bruno'}),cria(`${A}/reservas/${w2[0]}`,{...r,slots:w2,prof:'bruno',profNome:'Bruno'})]));
+console.log('slot com id falso (403):',await commit([cria(`${A}/slots/x_2030-01-07_1000`,{data:'2030-01-07',hora:'1000',r:'x',prof:'ana'})]));
+console.log('apagar slot sem cancelar (403):',await commit([apaga(`${A}/slots/${ids[0]}`)]));
+console.log('cancelar com código errado (403):',await commit([masc(`${A}/reservas/${ids[0]}`,{status:'cancelada',canceladoEm:Date.now(),tokenConf:'errado'}),...ids.map(i=>apaga(`${A}/slots/${i}`))]));
+console.log('cancelar com código certo (200):',await commit([masc(`${A}/reservas/${ids[0]}`,{status:'cancelada',canceladoEm:Date.now(),tokenConf:tk}),...ids.map(i=>apaga(`${A}/slots/${i}`))]));
+console.log('horário livre de novo (200):',await commit([cria(`${A}/slots/${ids[0]}`,{data:'2030-01-07',hora:'0900',r:ids[0],prof:'ana'})]));
+await db.recursiveDelete(db.doc(A));console.log('limpo');process.exit(0)})();

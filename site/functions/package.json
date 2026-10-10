@@ -1,0 +1,12 @@
+{
+  "name": "upe-functions",
+  "private": true,
+  "description": "Funções do projeto upecriativo-cc472 (ligam com o plano Blaze): avisos, lembretes, resumos, cobranças, pagamentos, prévia das landing pages, domínios e planilhas privadas",
+  "main": "index.js",
+  "engines": { "node": "20" },
+  "dependencies": {
+    "firebase-admin": "12.6.0",
+    "firebase-functions": "5.1.1",
+    "google-auth-library": "9.14.1"
+  }
+}

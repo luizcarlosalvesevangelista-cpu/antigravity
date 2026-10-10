@@ -1,0 +1,9 @@
+{
+  "name": "upe-conteudo",
+  "private": true,
+  "description": "Gerador das artes, reels e v\u00eddeos do cronograma (usa site/portal/modelos.js)",
+  "dependencies": {
+    "playwright": "1.56.1",
+    "@fontsource/lato": "^5.0.0"
+  }
+}

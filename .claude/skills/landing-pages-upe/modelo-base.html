@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="pt-BR" data-upe-whatsapp="5511999999999">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nome da marca · Promessa principal</title>
+<meta name="description" content="Uma frase de até 160 letras com a oferta e para quem ela é.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;900&display=swap" rel="stylesheet">
+<style>
+/* Modelo base Upe: troque as variáveis pela identidade do cliente. --upe-cor colore os botões que o Kit Upe gera (produtos, carrinho, serviços). */
+:root { --cor: #1f6f5c; --cor-2: #e8f3ef; --tinta: #10231e; --suave: #5b6f69; --fundo: #fbfaf6; --linha: #dfe7e3; --upe-cor: var(--cor); --upe-raio: 14px; }
+* { box-sizing: border-box; margin: 0; }
+body { font: 17px/1.6 Lato, system-ui, sans-serif; color: var(--tinta); background: var(--fundo); }
+img { max-width: 100%; height: auto; display: block; }
+.in { width: min(1100px, 100% - 32px); margin: 0 auto; }
+.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 24px; border-radius: 12px; background: var(--cor); color: #fff; font-weight: 900; text-decoration: none; border: 0; font: inherit; font-weight: 900; cursor: pointer; }
+.btn.claro { background: #fff; color: var(--cor); border: 1px solid var(--linha); }
+header { padding: 16px 0; } header .in { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+header nav { display: flex; gap: 18px; align-items: center; } header nav a { color: inherit; text-decoration: none; font-weight: 700; }
+.hero { padding: 40px 0 64px; } .hero .in { display: grid; grid-template-columns: 1.1fr .9fr; gap: 40px; align-items: center; }
+h1 { font-size: clamp(32px, 5vw, 52px); line-height: 1.08; margin: 12px 0; font-weight: 900; }
+h2 { font-size: clamp(26px, 4vw, 38px); line-height: 1.15; margin-bottom: 12px; font-weight: 900; }
+.sub { color: var(--suave); max-width: 60ch; margin-bottom: 28px; }
+.acoes { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px; }
+section { padding: 64px 0; }
+.grade { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 18px; }
+.card { background: #fff; border: 1px solid var(--linha); border-radius: 18px; padding: 24px; }
+form { background: #fff; border: 1px solid var(--linha); border-radius: 18px; padding: 24px; display: grid; gap: 14px; max-width: 520px; }
+label { display: grid; gap: 6px; font-weight: 700; font-size: 15px; }
+input, select, textarea { font: inherit; min-height: 46px; padding: 10px 14px; border: 1px solid var(--linha); border-radius: 10px; background: var(--fundo); }
+details { background: #fff; border: 1px solid var(--linha); border-radius: 14px; padding: 16px 20px; margin-bottom: 10px; } summary { font-weight: 900; cursor: pointer; }
+footer { padding: 32px 0; color: var(--suave); font-size: 14px; border-top: 1px solid var(--linha); }
+@media (max-width: 820px) { .hero .in { grid-template-columns: 1fr; } header nav .ocultar { display: none; } }
+</style>
+</head>
+<body>
+<header><div class="in">
+  <a data-upe-link="inicio" style="font-weight:900;font-size:20px;color:inherit;text-decoration:none">Nome da marca</a>
+  <nav aria-label="Principal"><a class="ocultar" href="#beneficios">Benefícios</a><a class="ocultar" href="#oferta">Oferta</a><a class="btn" href="#contato">Quero agora</a></nav>
+</div></header>
+
+<section class="hero"><div class="in">
+  <div>
+    <h1>Promessa principal em uma frase.</h1>
+    <p class="sub">Explique em duas frases o que a pessoa ganha e por que agora.</p>
+    <div class="acoes"><a class="btn" href="#contato">Chamada principal</a><a class="btn claro" data-upe-link="whatsapp" data-mensagem="Olá! Vim pela página e quero saber mais.">Falar no WhatsApp</a></div>
+  </div>
+  <img src="https://images.unsplash.com/photo-1521791136064-7986c2920216?w=900&q=70" alt="Descreva a imagem" width="900" height="600">
+</div></section>
+
+<section id="beneficios"><div class="in">
+  <h2>Por que escolher</h2>
+  <div class="grade">
+    <div class="card"><b>Benefício 1</b><p>Explique em uma frase.</p></div>
+    <div class="card"><b>Benefício 2</b><p>Explique em uma frase.</p></div>
+    <div class="card"><b>Benefício 3</b><p>Explique em uma frase.</p></div>
+  </div>
+</div></section>
+
+<!-- OFERTA: escolha um dos blocos (apague os outros) -->
+<section id="oferta"><div class="in">
+  <h2>Oferta</h2>
+  <!-- Produtos da loja do Upe ERP (ligue a loja em SEO e integrações › Ligações) -->
+  <div data-upe-produtos data-limite="6"></div>
+  <p style="margin-top:16px"><a data-upe-link="loja">Ver todos os produtos</a></p>
+  <!-- OU serviços da agenda online: <div data-upe-servicos></div> -->
+  <!-- OU agendamento embutido: <div data-upe-agenda></div> -->
+</div></section>
+<div data-upe-carrinho data-flutuante></div>
+
+<section id="contato"><div class="in">
+  <h2>Fale com a gente</h2>
+  <p class="sub">Deixe o seu contato: respondemos pelo WhatsApp no mesmo dia.</p>
+  <form data-mensagem="Recebemos os seus dados. Em breve entraremos em contato.">
+    <label>Nome<input name="nome" required autocomplete="name"></label>
+    <label>WhatsApp<input name="whatsapp" required inputmode="tel" autocomplete="tel"></label>
+    <label>Mensagem<textarea name="mensagem" rows="3"></textarea></label>
+    <button class="btn" type="submit">Enviar</button>
+  </form>
+</div></section>
+
+<section id="duvidas"><div class="in">
+  <h2>Perguntas frequentes</h2>
+  <details><summary>Pergunta 1?</summary><p>Resposta curta.</p></details>
+  <details><summary>Pergunta 2?</summary><p>Resposta curta.</p></details>
+</div></section>
+
+<footer><div class="in">Nome da marca · Cidade/UF · <a data-upe-link="whatsapp">WhatsApp</a></div></footer>
+</body>
+</html>

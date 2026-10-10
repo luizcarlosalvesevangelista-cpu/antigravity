@@ -1,11 +1,11 @@
 /* Dashboards: painéis de indicadores montados pela Upe para o cliente. Fontes: agenda (atendimentos), landing pages (eventos)
    ou uma planilha publicada como CSV (Google Planilhas › Arquivo › Compartilhar › Publicar na Web › CSV). */
 import { db, S, $, $$, toast, dialogo, botoesDlg, vazio, topo, paginasDoCliente, eventosDe, agendaDoCliente, DIA, ctx } from "./nucleo.js";
-import { esc, brl, uid } from "./srv.js";
+import { esc, brl, uid, chamar } from "./srv.js";
 import { grafBarras, grafRanking } from "./v-analise.js";
 
 export const views = {};
-const FONTES = { agenda: "Agenda online (agendamentos)", lp: "Landing pages (visitas, cliques e leads)", csv: "Planilha (link CSV)" };
+const FONTES = { agenda: "Agenda online (agendamentos)", lp: "Landing pages (visitas, cliques e leads)", csv: "Planilha publicada (link CSV)", planilha: "Planilha privada do Google (servidor)" };
 const AGG = { contar: "Quantidade de linhas", soma: "Soma", media: "Média", ultimo: "Último valor" };
 const TIPOS = { kpi: "Número grande", serie: "Barras por dia ou mês", ranking: "Ranking", tabela: "Tabela" };
 
@@ -23,6 +23,7 @@ export function lerCSV(txt) {
 const num = v => { if (typeof v === "number") return v; const s = String(v ?? "").replace(/[R$\s%]/g, ""); const n = s.includes(",") ? +s.replace(/\./g, "").replace(",", ".") : +s; return isFinite(n) ? n : NaN; };
 const data = v => { const s = String(v ?? ""); let m = s.match(/^(\d{4})-(\d{2})-(\d{2})/); if (m) return `${m[1]}-${m[2]}-${m[3]}`; m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})/); if (m) return `${m[3].length === 2 ? "20" + m[3] : m[3]}-${m[2].padStart(2, "0")}-${m[1].padStart(2, "0")}`; return ""; };
 async function linhasDe(p) {
+  if (p.fonte === "planilha") return (await chamar("planilha", { dash: p.id })).linhas || [];
   if (p.fonte === "csv") { if (!p.csv) return []; const r = await fetch(p.csv); if (!r.ok) throw new Error("Não foi possível ler a planilha. Confira se ela está publicada como CSV."); return lerCSV(await r.text()); }
   if (p.fonte === "agenda") { const ag = await agendaDoCliente(); if (!ag) return []; const pr = Object.fromEntries((ag.servicos || []).map(s => [s.nome, +s.preco || 0]));
     return (await db.list(`agenda_paginas/${ag.id}/reservas`)).map(r => ({ data: r.data, hora: r.hora, servico: r.servico, situacao: r.status, valor: r.status === "cancelada" ? 0 : pr[r.servico] || 0, cliente: r.nome })); }
@@ -75,16 +76,18 @@ function editar(p) {
     <div class="linha"><label class="chk"><input type="checkbox" data-k="moeda" ${w.moeda ? "checked" : ""}> Valor em reais</label><label class="chk"><input type="checkbox" data-k="periodo" ${w.periodo === "mes" ? "checked" : ""}> Agrupar por mês</label><button class="btn sm perigo" type="button" data-rmw="${i}">Remover</button></div></div>`;
   dialogo(`<h3>${p ? "Editar" : "Novo"} dashboard</h3>
     <label class="f">Título<input name="titulo" required value="${esc(D.titulo)}"></label>
-    <label class="f">Fonte dos dados<select name="fonte">${Object.entries(FONTES).map(([k, t]) => `<option value="${k}" ${D.fonte === k ? "selected" : ""}>${t}</option>`).join("")}</select></label>
+    <label class="f">Fonte dos dados<select name="fonte">${Object.entries(FONTES).map(([k, t]) => `<option value="${k}" ${D.fonte === k ? "selected" : ""} ${k === "planilha" && !S.recursos?.functions ? "disabled" : ""}>${t}${k === "planilha" && !S.recursos?.functions ? " (liga com o plano Blaze)" : ""}</option>`).join("")}</select></label>
     <label class="f" id="lCsv">Link CSV da planilha publicada<input name="csv" type="url" value="${esc(D.csv || "")}" placeholder="https://docs.google.com/spreadsheets/d/e/…/pub?output=csv"></label>
+    <div id="lSheet" class="grid2"><label class="f">ID da planilha (o trecho entre /d/ e /edit no link)<input name="sheetId" value="${esc(D.sheetId || "")}"></label><label class="f">Aba e intervalo<input name="aba" value="${esc(D.aba || "A1:Z5000")}" placeholder="Vendas!A1:H5000"></label></div>
+    <p class="muted" style="font-size:12.5px" id="lSheetDica">A planilha continua privada: compartilhe com a conta de serviço do projeto como leitor (o e-mail aparece na primeira tentativa de leitura).</p>
     <p class="muted" style="font-size:12.5px">Colunas da agenda: data, hora, servico, situacao, valor, cliente. Das landing pages: data, tipo (visita, lead, clique, whatsapp, rolagem), pagina, aparelho, origem, visitante.</p>
     <div class="linha"><b>Indicadores</b><button class="btn sm" type="button" id="wAdd">+ Indicador</button><button class="btn sm" type="button" id="wSug">Sugerir para a fonte</button></div><div id="wLista" style="display:grid;gap:8px"></div>
     <div class="linha" style="justify-content:space-between">${p ? `<button class="btn perigo" value="apagar">Apagar dashboard</button>` : "<span></span>"}<span class="linha"><button class="btn" value="cancelar" formnovalidate>Cancelar</button><button class="btn azul" value="ok">Salvar</button></span></div>`, async (fd, f, b) => {
     if (b?.value === "apagar") { if (!confirm("Apagar este dashboard?")) return false; await db.del("dash_paineis/" + p.id); toast("Dashboard apagado."); location.hash = "#/dash"; ctx.rota(); return; }
-    const doc = { cid: S.cid, titulo: String(fd.get("titulo")).trim(), fonte: fd.get("fonte"), csv: String(fd.get("csv") || "").trim(), widgets: D.widgets, ordem: D.ordem || Date.now(), atualizadoEm: Date.now() };
+    const doc = { cid: S.cid, titulo: String(fd.get("titulo")).trim(), fonte: fd.get("fonte"), csv: String(fd.get("csv") || "").trim(), sheetId: String(fd.get("sheetId") || "").trim(), aba: String(fd.get("aba") || "").trim(), widgets: D.widgets, ordem: D.ordem || Date.now(), atualizadoEm: Date.now() };
     const id = p?.id || uid(12); await db.set("dash_paineis/" + id, doc); toast("Dashboard salvo."); location.hash = "#/dash/" + id; ctx.rota();
   }, f => {
-    const pinta = () => { $("#wLista").innerHTML = D.widgets.map(linhaW).join(""); $("#lCsv").hidden = f.fonte.value !== "csv";
+    const pinta = () => { $("#wLista").innerHTML = D.widgets.map(linhaW).join(""); $("#lCsv").hidden = f.fonte.value !== "csv"; $("#lSheet").hidden = $("#lSheetDica").hidden = f.fonte.value !== "planilha";
       $$("[data-w]", f).forEach(c => { const w = D.widgets[c.dataset.w]; $$("[data-k]", c).forEach(i => i.addEventListener("input", () => { const k = i.dataset.k; if (k === "moeda") w.moeda = i.checked; else if (k === "periodo") w.periodo = i.checked ? "mes" : "dia"; else w[k] = i.value; if (k === "tipo") pinta(); })); });
       $$("[data-rmw]", f).forEach(b => b.onclick = () => { D.widgets.splice(+b.dataset.rmw, 1); pinta(); }); };
     pinta(); f.fonte.onchange = pinta;

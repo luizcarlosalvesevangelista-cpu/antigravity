@@ -83,6 +83,16 @@ function realDb() {
     },
   };
 }
+/* recursos do plano Blaze: envio de arquivos (Storage), funções e token do usuário */
+export async function enviarArquivo(caminho, arquivo) {
+  if (DEMO) return await new Promise(ok => { const r = new FileReader(); r.onload = () => ok(r.result); r.readAsDataURL(arquivo); });
+  const { app } = await fb(), st = await import(G + "firebase-storage.js"), ref = st.ref(st.getStorage(app), caminho);
+  await st.uploadBytes(ref, arquivo, { contentType: arquivo.type, cacheControl: "public, max-age=31536000" }); return st.getDownloadURL(ref);
+}
+export async function chamar(nome, dados) { if (DEMO) throw new Error("Indisponível no modo demonstração."); const { app } = await fb(), fn = await import(G + "firebase-functions.js"); return (await fn.httpsCallable(fn.getFunctions(app, "southamerica-east1"), nome)(dados)).data; }
+export async function tokenUsuario() { if (DEMO) return ""; const { auth } = await fb(); return auth.currentUser ? auth.currentUser.getIdToken() : ""; }
+export const API = "https://upe-criativo-lp.web.app/api";
+
 export function banco(seed) { return DEMO ? demoDb(seed) : realDb(); }
 
 /* ---------- login ---------- */

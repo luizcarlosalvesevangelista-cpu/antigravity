@@ -257,6 +257,24 @@
               "value": "public, max-age=86400"
             }
           ]
+        },
+        {
+          "source": "kit/**",
+          "headers": [
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            }
+          ]
+        },
+        {
+          "source": "lp-render.js",
+          "headers": [
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            }
+          ]
         }
       ],
       "rewrites": [

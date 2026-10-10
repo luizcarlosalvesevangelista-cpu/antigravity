@@ -8,7 +8,7 @@ import { semente } from "./demo.js";
 
 const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
 export const db = banco(semente), auth = login();
-export const S = { user: null, admin: false, cid: null, cliente: null, clientes: [], view: "", cfg: {}, sujo: false };
+export const S = { user: null, admin: false, cid: null, cliente: null, clientes: [], view: "", cfg: {}, recursos: {}, sujo: false };
 const DIA = 864e5;
 const fmtData = d => d ? new Date(d.length === 10 ? d + "T12:00" : d).toLocaleDateString("pt-BR") : "—";
 const fmtDH = t => t ? new Date(t).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) : "—";

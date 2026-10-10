@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="pt-BR" data-upe-agenda="endereco-da-agenda" data-upe-whatsapp="5511999999999">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nome do negócio · Agende online</title>
+<meta name="description" content="Agende o seu horário online no Nome do negócio: escolha o serviço, o profissional e o horário em poucos toques.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;900&display=swap" rel="stylesheet">
+<style>
+/* Página de negócio com agenda online (Upe Sistemas). Serviços e agendamento vêm da agenda pelo Kit Upe. */
+:root { --cor: #1f6f5c; --cor-2: #e8f3ef; --tinta: #10231e; --suave: #5b6f69; --fundo: #fbfaf6; --linha: #dfe7e3; --upe-cor: var(--cor); --upe-raio: 16px; }
+* { box-sizing: border-box; margin: 0; }
+body { font: 17px/1.6 Lato, system-ui, sans-serif; color: var(--tinta); background: var(--fundo); }
+img { max-width: 100%; height: auto; display: block; }
+a { color: inherit; }
+.in { width: min(1100px, 100% - 32px); margin: 0 auto; }
+.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 24px; border-radius: 12px; background: var(--cor); color: #fff; font-weight: 900; text-decoration: none; }
+.btn.claro { background: #fff; color: var(--cor); border: 1px solid var(--linha); }
+header { padding: 16px 0; } header .in { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.hero { padding: 40px 0 56px; } .hero .in { display: grid; grid-template-columns: 1.1fr .9fr; gap: 40px; align-items: center; }
+h1 { font-size: clamp(32px, 5vw, 50px); line-height: 1.08; margin: 12px 0; font-weight: 900; }
+h2 { font-size: clamp(26px, 4vw, 36px); line-height: 1.15; margin-bottom: 14px; font-weight: 900; }
+.sub { color: var(--suave); max-width: 58ch; }
+.acoes { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 24px; }
+section { padding: 56px 0; }
+.equipe { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; }
+.equipe div { background: #fff; border: 1px solid var(--linha); border-radius: 18px; padding: 20px; }
+/* serviço no visual da marca (template) */
+.serv { display: flex; justify-content: space-between; align-items: center; gap: 12px; background: #fff; border: 1px solid var(--linha); border-radius: 16px; padding: 16px 18px; }
+.serv span { color: var(--suave); font-size: 15px; } .serv a { flex: none; }
+.agendar { background: var(--cor-2); border-radius: 24px; padding: clamp(18px, 4vw, 36px); }
+details { background: #fff; border: 1px solid var(--linha); border-radius: 14px; padding: 16px 20px; margin-bottom: 10px; } summary { font-weight: 900; cursor: pointer; }
+footer { padding: 32px 0; color: var(--suave); font-size: 14px; border-top: 1px solid var(--linha); }
+@media (max-width: 820px) { .hero .in { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header><div class="in"><a data-upe-link="inicio" style="font-weight:900;font-size:20px;text-decoration:none">Nome do negócio</a><a class="btn" data-upe-link="agenda">Agendar</a></div></header>
+
+<section class="hero"><div class="in">
+  <div>
+    <h1>Promessa do atendimento em uma frase.</h1>
+    <p class="sub">Diga para quem é, o diferencial e como agendar: escolha o serviço, o profissional e o horário, tudo online.</p>
+    <div class="acoes"><a class="btn" href="#agendar">Agendar agora</a><a class="btn claro" data-upe-link="whatsapp" data-mensagem="Olá! Quero tirar uma dúvida antes de agendar.">Tirar dúvida no WhatsApp</a></div>
+  </div>
+  <img src="https://images.unsplash.com/photo-1519823551278-64ac92734fb1?w=900&q=70" alt="Descreva o ambiente" width="900" height="600">
+</div></section>
+
+<section id="servicos"><div class="in">
+  <h2>Serviços</h2>
+  <div data-upe-servicos data-classe="servicos" style="display:grid;gap:10px">
+    <template>
+      <div class="serv"><div><b data-campo="nome"></b><br><span><span data-campo="duracao"></span> · <span data-campo="preco"></span></span></div><a class="btn" data-upe-acao="agendar">Agendar</a></div>
+    </template>
+  </div>
+</div></section>
+
+<section><div class="in">
+  <h2>Equipe</h2>
+  <div class="equipe"><div><b>Nome do profissional</b><p class="sub">Especialidade e formação.</p></div><div><b>Nome do profissional</b><p class="sub">Especialidade e formação.</p></div></div>
+</div></section>
+
+<section id="agendar"><div class="in agendar">
+  <h2>Agende o seu horário</h2>
+  <div data-upe-agenda></div>
+</div></section>
+
+<section><div class="in">
+  <h2>Perguntas frequentes</h2>
+  <details><summary>Como remarco ou cancelo?</summary><p>Pelo link que você recebe ao agendar, ou pelo WhatsApp.</p></details>
+  <details><summary>Quais formas de pagamento?</summary><p>Diga aqui (PIX, cartão, dinheiro).</p></details>
+</div></section>
+
+<footer><div class="in">Nome do negócio · Endereço · <a data-upe-link="whatsapp">WhatsApp</a></div></footer>
+</body>
+</html>

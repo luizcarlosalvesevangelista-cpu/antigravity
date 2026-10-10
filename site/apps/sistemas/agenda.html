@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<script>/* registro de erros (Upe): até 5 por visita, sem dados pessoais */(function(){var n=0,v={};function e(m,o){try{m=String(m||"").slice(0,300);if(n>=5||v[m]||/ResizeObserver|Script error/i.test(m))return;v[m]=1;n++;fetch("https://firestore.googleapis.com/v1/projects/upecriativo-cc472/databases/(default)/documents/erros?key=AIzaSyDJqqSMLWZLKSt9K1jPzvvQgyikZy4q9vw",{method:"POST",keepalive:true,headers:{"Content-Type":"application/json"},body:JSON.stringify({fields:{app:{stringValue:"agenda"},msg:{stringValue:m},onde:{stringValue:String(o||"").slice(0,200)},url:{stringValue:(location.host+location.pathname).slice(0,200)},ua:{stringValue:navigator.userAgent.slice(0,160)},t:{integerValue:String(Date.now())}}})})}catch(_){}}addEventListener("error",function(x){e(x.message,(x.filename||"")+":"+(x.lineno||""))});addEventListener("unhandledrejection",function(x){var r=x.reason;e(r&&(r.message||r.code)||r,"promise")})})();</script>
 <title>Agendar horário</title>
 <meta name="description" content="Agende o seu horário online.">
 <link rel="icon" type="image/png" href="/icone.png">
@@ -24,6 +25,7 @@ body { background: var(--bg); color: var(--fg); font: 16px/1.55 Lato, system-ui,
 main { margin-top: -46px; padding: 0 16px 60px; }
 .caixa { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 22px; box-shadow: 0 16px 40px rgba(20,23,28,.08); display: grid; gap: 22px; }
 .caixa > *, .passo { min-width: 0; }
+body.embed { background: transparent; min-height: 0; } body.embed .topo, body.embed footer { display: none; } body.embed main { margin-top: 0; padding: 0; } body.embed .caixa { box-shadow: none; }
 .passo h2 { font-size: 15px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
 .passo h2 b { color: var(--cor); }
 .opcoes { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
@@ -55,67 +57,100 @@ footer { text-align: center; color: var(--muted); font-size: 13px; margin-top: 2
 <body>
 <header class="topo"><div class="in"><h1 id="nome">Agendar horário</h1><p id="bv"></p><small id="end"></small></div></header>
 <main><div class="in"><div class="caixa" id="app"><p class="vazio">Carregando horários…</p></div>
-<footer>Agenda online criada pela <a href="https://upe-criativo-sistemas.web.app" target="_blank" rel="noopener">Upe Criativo</a></footer></div></main>
+<footer>Agenda online criada pela <a href="https://upe-criativo-sistemas.web.app" target="_blank" rel="noopener">Upe Criativo</a> · <a href="https://upe-criativo.web.app/privacidade.html" target="_blank" rel="noopener">Privacidade</a></footer></div></main>
 <script type="module">
 import { ler, consultar, gravarJuntos, esc, brl } from "./pub.js";
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const DIAS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"], DIAS_L = ["domingo", "segunda", "terça", "quarta", "quinta", "sexta", "sábado"];
 const min = h => { const [a, b] = String(h).split(":").map(Number); return a * 60 + (b || 0); }, hhmm = m => String(Math.floor(m / 60)).padStart(2, "0") + ":" + String(m % 60).padStart(2, "0");
 const iso = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-const slug = (location.pathname.split("/").filter(Boolean)[0] || "").toLowerCase(), demo = new URLSearchParams(location.search).has("demo");
+const qs = new URLSearchParams(location.search), slug = (location.pathname.split("/").filter(Boolean)[0] || "").toLowerCase(), demo = qs.has("demo"), embed = qs.has("embed");
+if (embed) document.body.classList.add("embed");
 const DEMO_AG = { nome: "Studio Bem Estar", ativo: true, cor: "#1f6f5c", boasVindas: "Escolha o serviço, o dia e o horário. Você recebe a confirmação pelo WhatsApp.", endereco: "Rua Exemplo, 123 · São Paulo/SP", whatsapp: "5511999990001", intervalo: 30, antecedenciaH: 2, diasFrente: 21,
   servicos: [{ id: "s1", nome: "Avaliação gratuita", dur: 30, preco: 0 }, { id: "s2", nome: "Treino funcional", dur: 60, preco: 90 }, { id: "s3", nome: "Pilates", dur: 60, preco: 120 }, { id: "s4", nome: "Fisioterapia", dur: 60, preco: 150 }],
-  horarios: { 0: [], 1: [["07:00", "20:00"]], 2: [["07:00", "20:00"]], 3: [["07:00", "20:00"]], 4: [["07:00", "20:00"]], 5: [["07:00", "18:00"]], 6: [["08:00", "12:00"]] }, folgas: [] };
-const S = { sv: null, dia: null, hora: null };
+  horarios: { 0: [], 1: [["07:00", "12:00"], ["13:00", "20:00"]], 2: [["07:00", "12:00"], ["13:00", "20:00"]], 3: [["07:00", "12:00"], ["13:00", "20:00"]], 4: [["07:00", "12:00"], ["13:00", "20:00"]], 5: [["07:00", "12:00"], ["13:00", "18:00"]], 6: [["08:00", "12:00"]] }, folgas: [],
+  profissionais: [{ id: "ana", nome: "Ana (fisioterapeuta)", servicos: ["s1", "s4"] }, { id: "bruno", nome: "Bruno (educador físico)", servicos: ["s1", "s2", "s3"] }] };
+const S = { sv: null, prof: null, dia: null, hora: null };
 let ag, ocupados = new Set();
+/* id de cada espaço de agenda: [profissional_]AAAA-MM-DD_HHMM */
+const idSlot = (prof, data, m) => (prof ? prof + "_" : "") + data + "_" + hhmm(m).replace(":", "");
+const profsDe = sv => (ag.profissionais || []).filter(p => !p.servicos?.length || p.servicos.includes(sv?.id));
+const enviaAltura = () => { if (embed && parent !== window) parent.postMessage({ upeAgendaAltura: document.documentElement.scrollHeight }, "*"); };
 (async () => {
   ag = demo ? DEMO_AG : slug ? await ler("agenda_paginas/" + encodeURIComponent(slug)) : null;
   if (!ag) { $("#nome").textContent = "Agenda não encontrada"; $("#app").innerHTML = `<p class="vazio">Confira o endereço que você recebeu.</p>`; return; }
   document.title = "Agendar · " + ag.nome; document.documentElement.style.setProperty("--cor", /^#[0-9a-f]{6}$/i.test(ag.cor || "") ? ag.cor : "#1f6f5c");
   $("#nome").textContent = ag.nome; $("#bv").textContent = ag.boasVindas || ""; $("#end").textContent = ag.endereco || "";
+  if (qs.get("cancelar")) return telaCancelar();
   if (!ag.ativo) { $("#app").innerHTML = `<p class="vazio">Os agendamentos online estão pausados no momento.${ag.whatsapp ? ` <a href="https://wa.me/${esc(ag.whatsapp)}">Fale pelo WhatsApp</a>.` : ""}</p>`; return; }
-  if (demo) { const h = new Date(); for (let i = 0; i < 40; i++) { const d = new Date(h.getTime() + (i % 7) * 864e5); ocupados.add(iso(d) + "_" + ["0900", "0930", "1000", "1400", "1430", "1700", "1800"][i % 7]); } }
+  if (demo) { const h = new Date(); for (let i = 0; i < 40; i++) { const d = new Date(h.getTime() + (i % 7) * 864e5); ocupados.add((i % 2 ? "ana_" : "bruno_") + iso(d) + "_" + ["0900", "0930", "1000", "1400", "1430", "1700", "1800"][i % 7]); } }
   else (await consultar("agenda_paginas/" + slug, "slots", [["data", "GREATER_THAN_OR_EQUAL", iso(new Date())]])).forEach(s => ocupados.add(s.id));
+  const pre = qs.get("servico"); if (pre) S.sv = ag.servicos.find(s => s.id === pre) || null;
+  if (S.sv && profsDe(S.sv).length === 1) S.prof = profsDe(S.sv)[0].id;
   pinta();
 })();
+/* horários livres do dia para o serviço; com profissionais, um horário vale se algum profissional escolhido (ou qualquer um) estiver livre */
 function livres(dataISO) {
-  const d = new Date(dataISO + "T12:00"), faixas = (ag.horarios || {})[d.getDay()] || [], sv = S.sv, step = ag.intervalo || 30, limite = Date.now() + (ag.antecedenciaH || 0) * 36e5, out = [];
-  if ((ag.folgas || []).includes(dataISO) || !sv) return out;
-  for (const [a, b] of faixas) for (let m = min(a); m + sv.dur <= min(b); m += step) {
-    if (new Date(`${dataISO}T${hhmm(m)}`).getTime() < limite) continue;
-    let ok = true; for (let x = m; x < m + Math.max(sv.dur, step); x += step) if (ocupados.has(dataISO + "_" + hhmm(x).replace(":", ""))) { ok = false; break; }
-    if (ok) out.push(hhmm(m));
+  const d = new Date(dataISO + "T12:00"), sv = S.sv, step = ag.intervalo || 30, limite = Date.now() + (ag.antecedenciaH || 0) * 36e5, out = new Map();
+  if ((ag.folgas || []).includes(dataISO) || !sv) return [];
+  const ps = (ag.profissionais || []).length ? profsDe(sv).filter(p => !S.prof || p.id === S.prof) : [{ id: "" }];
+  for (const p of ps) {
+    const faixas = ((p.horarios && Object.keys(p.horarios).length ? p.horarios : ag.horarios) || {})[d.getDay()] || [];
+    for (const [a, b] of faixas) for (let m = min(a); m + sv.dur <= min(b); m += step) {
+      if (new Date(`${dataISO}T${hhmm(m)}`).getTime() < limite || out.has(hhmm(m))) continue;
+      let ok = true; for (let x = m; x < m + Math.max(sv.dur, step); x += step) if (ocupados.has(idSlot(p.id, dataISO, x))) { ok = false; break; }
+      if (ok) out.set(hhmm(m), p.id);
+    }
   }
-  return out;
+  return [...out].sort((x, y) => x[0].localeCompare(y[0]));
 }
 function pinta() {
   const dias = []; for (let i = 0; i < (ag.diasFrente || 30); i++) { const d = new Date(); d.setDate(d.getDate() + i); dias.push(iso(d)); }
-  const hs = S.dia ? livres(S.dia) : [];
+  const hs = S.dia ? livres(S.dia) : [], temProf = (ag.profissionais || []).length > 0, ps = S.sv ? profsDe(S.sv) : [];
   $("#app").innerHTML = `
     <section class="passo"><h2><b>1</b> · Serviço</h2><div class="opcoes">${ag.servicos.map(s => `<button type="button" class="op" data-sv="${esc(s.id)}" aria-pressed="${S.sv?.id === s.id}"><b>${esc(s.nome)}</b><span>${s.dur} min · ${+s.preco ? brl(s.preco) : "a combinar"}</span></button>`).join("")}</div></section>
-    ${S.sv ? `<section class="passo"><h2><b>2</b> · Dia</h2><div class="dias">${dias.map(d => { const x = new Date(d + "T12:00"), n = livres(d).length; return `<button type="button" class="dia" data-dia="${d}" aria-pressed="${S.dia === d}" ${n ? "" : "disabled"} aria-label="${DIAS_L[x.getDay()]}, ${x.getDate()}${n ? "" : ", sem horários"}"><small>${DIAS[x.getDay()]}</small><b>${x.getDate()}</b><small>${x.toLocaleDateString("pt-BR", { month: "short" }).replace(".", "")}</small></button>`; }).join("")}</div></section>` : ""}
-    ${S.dia ? `<section class="passo"><h2><b>3</b> · Horário</h2>${hs.length ? `<div class="horas">${hs.map(h => `<button type="button" class="hora" data-hora="${h}" aria-pressed="${S.hora === h}">${h}</button>`).join("")}</div>` : `<p class="vazio">Sem horários livres neste dia.</p>`}</section>` : ""}
-    ${S.hora ? `<section class="passo"><h2><b>4</b> · Seus dados</h2><form id="f"><div class="resumo"><b>${esc(S.sv.nome)}</b> · ${new Date(S.dia + "T12:00").toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })} às <b>${S.hora}</b></div>
+    ${S.sv && temProf ? `<section class="passo"><h2><b>2</b> · Profissional</h2><div class="opcoes">${ps.length > 1 ? `<button type="button" class="op" data-prof="" aria-pressed="${!S.prof}"><b>Sem preferência</b><span>O primeiro horário livre</span></button>` : ""}${ps.map(p => `<button type="button" class="op" data-prof="${esc(p.id)}" aria-pressed="${S.prof === p.id}"><b>${esc(p.nome)}</b></button>`).join("")}</div></section>` : ""}
+    ${S.sv ? `<section class="passo"><h2><b>${temProf ? 3 : 2}</b> · Dia</h2><div class="dias">${dias.map(d => { const x = new Date(d + "T12:00"), n = livres(d).length; return `<button type="button" class="dia" data-dia="${d}" aria-pressed="${S.dia === d}" ${n ? "" : "disabled"} aria-label="${DIAS_L[x.getDay()]}, ${x.getDate()}${n ? "" : ", sem horários"}"><small>${DIAS[x.getDay()]}</small><b>${x.getDate()}</b><small>${x.toLocaleDateString("pt-BR", { month: "short" }).replace(".", "")}</small></button>`; }).join("")}</div></section>` : ""}
+    ${S.dia ? `<section class="passo"><h2><b>${temProf ? 4 : 3}</b> · Horário</h2>${hs.length ? `<div class="horas">${hs.map(([h]) => `<button type="button" class="hora" data-hora="${h}" aria-pressed="${S.hora === h}">${h}</button>`).join("")}</div>` : `<p class="vazio">Sem horários livres neste dia.</p>`}</section>` : ""}
+    ${S.hora ? `<section class="passo"><h2><b>${temProf ? 5 : 4}</b> · Seus dados</h2><form id="f"><div class="resumo"><b>${esc(S.sv.nome)}</b>${temProf ? ` com ${esc((ag.profissionais.find(p => p.id === (S.prof || S.profHora)) || {}).nome || "")}` : ""} · ${new Date(S.dia + "T12:00").toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" })} às <b>${S.hora}</b></div>
       <label>Nome<input name="nome" required maxlength="120" autocomplete="name"></label><label>WhatsApp<input name="telefone" required inputmode="tel" maxlength="40" autocomplete="tel"></label>
       <label>Observação (opcional)<textarea name="obs" rows="2" maxlength="300"></textarea></label><p class="erro" id="err"></p><button class="btn" id="bOk">Confirmar agendamento</button></form></section>` : ""}`;
-  $$("[data-sv]").forEach(b => b.onclick = () => { S.sv = ag.servicos.find(s => s.id === b.dataset.sv); S.dia = S.hora = null; pinta(); });
+  $$("[data-sv]").forEach(b => b.onclick = () => { S.sv = ag.servicos.find(s => s.id === b.dataset.sv); S.dia = S.hora = null; const p = profsDe(S.sv); S.prof = p.length === 1 ? p[0].id : null; pinta(); });
+  $$("[data-prof]").forEach(b => b.onclick = () => { S.prof = b.dataset.prof || null; S.dia = S.hora = null; pinta(); });
   $$("[data-dia]").forEach(b => b.onclick = () => { S.dia = b.dataset.dia; S.hora = null; pinta(); document.querySelector(".horas")?.scrollIntoView({ behavior: "smooth", block: "nearest" }); });
-  $$("[data-hora]").forEach(b => b.onclick = () => { S.hora = b.dataset.hora; pinta(); $("#f").scrollIntoView({ behavior: "smooth", block: "center" }); });
+  $$("[data-hora]").forEach(b => b.onclick = () => { S.hora = b.dataset.hora; S.profHora = (hs.find(x => x[0] === S.hora) || [])[1] || ""; pinta(); $("#f").scrollIntoView({ behavior: "smooth", block: "center" }); });
   $("#f")?.addEventListener("submit", reservar);
+  enviaAltura();
 }
+const token = () => { const a = "abcdefghjkmnpqrstuvwxyz23456789", r = crypto.getRandomValues(new Uint8Array(16)); return [...r].map(x => a[x % a.length]).join(""); };
 async function reservar(e) {
   e.preventDefault(); const f = new FormData(e.target), b = $("#bOk"); b.disabled = true; $("#err").textContent = "";
-  const step = ag.intervalo || 30, ids = []; for (let x = min(S.hora); x < min(S.hora) + Math.max(S.sv.dur, step); x += step) ids.push(S.dia + "_" + hhmm(x).replace(":", ""));
-  const r = { servico: S.sv.nome, data: S.dia, hora: S.hora, dur: S.sv.dur, nome: String(f.get("nome")).trim(), telefone: String(f.get("telefone")).trim(), email: "", obs: String(f.get("obs") || "").trim(), status: "nova", t: Date.now(), slots: ids };
+  const step = ag.intervalo || 30, prof = S.prof || S.profHora || "", ids = []; for (let x = min(S.hora); x < min(S.hora) + Math.max(S.sv.dur, step); x += step) ids.push(idSlot(prof, S.dia, x));
+  const pNome = prof ? (ag.profissionais.find(p => p.id === prof) || {}).nome || "" : "", tk = token();
+  const r = { servico: S.sv.nome, data: S.dia, hora: S.hora, dur: S.sv.dur, nome: String(f.get("nome")).trim(), telefone: String(f.get("telefone")).trim(), email: "", obs: String(f.get("obs") || "").trim(), status: "nova", t: Date.now(), slots: ids, prof, profNome: pNome, token: tk };
   try {
-    if (!demo) await gravarJuntos([...ids.map(id => ({ caminho: `agenda_paginas/${slug}/slots/${id}`, dados: { data: S.dia, hora: id.slice(11), r: ids[0] }, novo: true })), { caminho: `agenda_paginas/${slug}/reservas/${ids[0]}`, dados: r, novo: true }]);
+    if (!demo) await gravarJuntos([...ids.map(id => ({ caminho: `agenda_paginas/${slug}/slots/${id}`, dados: { data: S.dia, hora: id.slice(-4), r: ids[0], ...(prof ? { prof } : {}) }, novo: true })), { caminho: `agenda_paginas/${slug}/reservas/${ids[0]}`, dados: r, novo: true }]);
   } catch (er) { $("#err").textContent = "Esse horário acabou de ser ocupado. Escolha outro, por favor."; ids.forEach(i => ocupados.add(i)); S.hora = null; setTimeout(pinta, 1500); b.disabled = false; return; }
   const quando = new Date(S.dia + "T12:00").toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
-  const msg = encodeURIComponent(`Olá! Acabei de agendar ${S.sv.nome} para ${quando} às ${S.hora}. Meu nome é ${r.nome}.`);
-  const ics = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nDTSTART:${S.dia.replace(/-/g, "")}T${S.hora.replace(":", "")}00\nDURATION:PT${S.sv.dur}M\nSUMMARY:${S.sv.nome} · ${ag.nome}\nLOCATION:${(ag.endereco || "").replace(/[,;]/g, " ")}\nEND:VEVENT\nEND:VCALENDAR`;
-  $("#app").innerHTML = `<div class="ok"><div class="sel" aria-hidden="true">✓</div><h2 style="font-size:24px">Horário reservado!</h2><p><b>${esc(S.sv.nome)}</b><br>${quando} às <b>${S.hora}</b></p>
+  const cancelar = `${location.origin}/${slug || "exemplo"}?cancelar=${encodeURIComponent(ids[0])}&t=${tk}&s=${encodeURIComponent(ids.join(","))}`;
+  const msg = encodeURIComponent(`Olá! Acabei de agendar ${S.sv.nome}${pNome ? " com " + pNome : ""} para ${quando} às ${S.hora}. Meu nome é ${r.nome}.`);
+  const ics = `BEGIN:VCALENDAR\nVERSION:2.0\nBEGIN:VEVENT\nDTSTART:${S.dia.replace(/-/g, "")}T${S.hora.replace(":", "")}00\nDURATION:PT${S.sv.dur}M\nSUMMARY:${S.sv.nome} · ${ag.nome}\nLOCATION:${(ag.endereco || "").replace(/[,;]/g, " ")}\nDESCRIPTION:Para cancelar: ${cancelar}\nEND:VEVENT\nEND:VCALENDAR`;
+  $("#app").innerHTML = `<div class="ok"><div class="sel" aria-hidden="true">✓</div><h2 style="font-size:24px">Horário reservado!</h2><p><b>${esc(S.sv.nome)}</b>${pNome ? ` com ${esc(pNome)}` : ""}<br>${quando} às <b>${S.hora}</b></p>
     <p class="vazio">${esc(ag.nome)} vai confirmar pelo WhatsApp. Se quiser, avise agora:</p>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">${ag.whatsapp ? `<a class="btn" href="https://wa.me/${esc(ag.whatsapp)}?text=${msg}" target="_blank" rel="noopener">Avisar no WhatsApp</a>` : ""}<a class="btn linha" download="agendamento.ics" href="data:text/calendar;charset=utf-8,${encodeURIComponent(ics)}">Salvar na minha agenda</a></div></div>`;
+    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">${ag.whatsapp ? `<a class="btn" href="https://wa.me/${esc(ag.whatsapp)}?text=${msg}" target="_blank" rel="noopener">Avisar no WhatsApp</a>` : ""}<a class="btn linha" download="agendamento.ics" href="data:text/calendar;charset=utf-8,${encodeURIComponent(ics)}">Salvar na minha agenda</a></div>
+    <p class="vazio" style="font-size:13px">Não vai poder ir? <a href="${esc(cancelar)}">Cancelar este horário</a> (guarde este link; ele também fica no evento salvo na agenda).</p></div>`;
+  enviaAltura();
+}
+/* cancelamento pelo próprio cliente: o link traz o código secreto da reserva; as regras só aceitam com o código certo */
+async function telaCancelar() {
+  const id = qs.get("cancelar"), tk = qs.get("t") || "", ss = (qs.get("s") || id).split(",").filter(Boolean);
+  const [pf, dt, hm] = id.split("_").length === 3 ? id.split("_") : ["", ...id.split("_")];
+  $("#app").innerHTML = `<div class="ok"><h2 style="font-size:22px">Cancelar agendamento</h2><p>${dt ? new Date(dt + "T12:00").toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" }) + " às <b>" + (hm || "").replace(/(\d\d)(\d\d)/, "$1:$2") + "</b>" : ""}</p>
+    <p class="vazio">O horário volta a ficar livre para outra pessoa.</p><p class="erro" id="err"></p><div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center"><button class="btn" id="bC">Cancelar o horário</button><a class="btn linha" href="${location.pathname}">Voltar</a></div></div>`;
+  $("#bC").onclick = async () => { $("#bC").disabled = true;
+    try { if (!demo) await gravarJuntos([{ caminho: `agenda_paginas/${slug}/reservas/${id}`, dados: { status: "cancelada", canceladoEm: Date.now(), tokenConf: tk }, mascara: ["status", "canceladoEm", "tokenConf"] }, ...ss.map(s => ({ caminho: `agenda_paginas/${slug}/slots/${s}`, apagar: true }))]);
+      $("#app").innerHTML = `<div class="ok"><div class="sel" aria-hidden="true">✓</div><h2 style="font-size:22px">Agendamento cancelado</h2><p class="vazio">Obrigado por avisar. Quando quiser, marque outro horário.</p><a class="btn" href="${location.pathname}">Agendar outro horário</a></div>`; }
+    catch { $("#err").textContent = "Não foi possível cancelar por aqui (o link pode ter expirado ou o horário já foi cancelado). Fale com o estabelecimento pelo WhatsApp."; $("#bC").disabled = false; } };
 }
 </script>
 </body>

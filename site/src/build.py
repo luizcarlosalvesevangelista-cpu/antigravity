@@ -21,7 +21,7 @@ fav = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="784 2597 40 52"><rect x=
 open(os.path.join(root, 'favicon.svg'), 'w').write(fav)
 full = ('<!doctype html>\n<html lang="pt-BR">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n'
         '<link rel="icon" href="favicon.svg" type="image/svg+xml">\n<meta property="og:title" content="Upe Criativo">\n'
-        '<meta property="og:description" content="Branding e Redesign, Upe ERP, Upe TV, landing pages e sistemas.">\n<meta property="og:image" content="assets/img/filme-h.jpg">\n'
+        '<meta property="og:description" content="Branding e Redesign, Upe ERP, Upe TV, landing pages e sistemas.">\n<meta property="og:image" content="https://upe-criativo.web.app/assets/img/filme-h.jpg">\n<meta property="og:url" content="https://upe-criativo.web.app/">\n<meta property="og:type" content="website">\n<meta name="twitter:card" content="summary_large_image">\n'
         + head + '\n</head>\n<body>\n' + body + '\n</body>\n</html>\n')
 open(os.path.join(root, 'index.html'), 'w').write(full)
 if '--artifact' in sys.argv:

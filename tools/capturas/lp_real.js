@@ -1,0 +1,10 @@
+const __R=require('path').resolve(__dirname,'../..'), __T=process.env.UPE_TRABALHO||__R+'/tools/.trabalho';
+const {chromium}=require('playwright');const path=require('path'),fs=require('fs');const R=__R+'/site/apps/lp/';
+(async()=>{const b=await chromium.launch();const ctx=await b.newContext({viewport:{width:1280,height:800}});const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
+await ctx.route(/^https?:\/\/(?!srv\.test)/,async r=>{const u=r.request().url();if(!u.includes('firestore.googleapis.com'))return r.abort();const q=r.request();const res=await fetch(u,{method:q.method(),headers:{'Content-Type':'application/json'},body:q.method()==='POST'?q.postData():undefined});r.fulfill({status:res.status,body:await res.text(),headers:{'Content-Type':'application/json','Access-Control-Allow-Origin':'*'}})});
+await ctx.route(/firestore\.googleapis\.com/,async r=>{const q=r.request();if(q.method()==='OPTIONS')return r.fulfill({status:204,headers:{'Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'content-type','Access-Control-Allow-Methods':'GET,POST'}});const res=await fetch(q.url(),{method:q.method(),headers:{'Content-Type':'application/json'},body:q.method()==='POST'?q.postData():undefined});r.fulfill({status:res.status,body:await res.text(),headers:{'Content-Type':'application/json','Access-Control-Allow-Origin':'*'}})});
+await ctx.route(/^http:\/\/srv\.test\//,r=>{let u=new URL(r.request().url()).pathname;let f=path.join(R,u);if(!fs.existsSync(f)||u==='/')f=R+(u==='/'?'index.html':'pagina.html');r.fulfill({path:f,contentType:f.endsWith('.js')?'application/javascript':f.endsWith('.css')?'text/css':'text/html'})});
+await p.goto('http://srv.test/exemplo');await p.waitForTimeout(4000);console.log('título:',await p.title());
+await p.click('text=Como funciona').catch(()=>{});await p.waitForTimeout(800);
+await p.goto('http://srv.test/nao-existe-xyz');await p.waitForTimeout(3000);console.log('inexistente:',(await p.textContent('body')).trim().slice(0,60));
+console.log('erros',errs);await b.close()})();

@@ -1,0 +1,36 @@
+# Publica no Firebase (projeto upecriativo-cc472) quando algo entra na main.
+# Precisa do segredo FIREBASE_SA no GitHub (Settings › Secrets and variables › Actions): o conteúdo do JSON da chave de serviço.
+name: Publicar
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+concurrency: publicar
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    if: ${{ github.repository_owner != '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Confere o segredo
+        env:
+          SA: ${{ secrets.FIREBASE_SA }}
+        run: |
+          if [ -z "$SA" ]; then echo "::warning::Segredo FIREBASE_SA não configurado: publicação pulada."; echo "PULAR=1" >> $GITHUB_ENV; fi
+      - name: Chave de serviço
+        if: env.PULAR != '1'
+        env:
+          SA: ${{ secrets.FIREBASE_SA }}
+        run: echo "$SA" > "$RUNNER_TEMP/sa.json" && echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/sa.json" >> $GITHUB_ENV
+      - name: Regras do Firestore
+        if: env.PULAR != '1'
+        run: cd tools/firebase && npm install --no-audit --no-fund && node publicar_regras.js
+      - name: Sites (hosting)
+        if: env.PULAR != '1'
+        run: cd site && npx -y firebase-tools@13 deploy --only hosting --project upecriativo-cc472 --non-interactive
+      - name: Funções (só depois do plano Blaze; ative criando a variável BLAZE=1 no repositório)
+        if: env.PULAR != '1' && vars.BLAZE == '1'
+        run: cd site/functions && npm install --no-audit --no-fund && cd .. && npx -y firebase-tools@13 deploy --only functions --project upecriativo-cc472 --non-interactive

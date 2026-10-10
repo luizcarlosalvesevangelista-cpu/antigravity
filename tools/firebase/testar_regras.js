@@ -1,0 +1,28 @@
+const __R=require('path').resolve(__dirname,'../..'), __T=process.env.UPE_TRABALHO||__R+'/tools/.trabalho';
+const K='AIzaSyDJqqSMLWZLKSt9K1jPzvvQgyikZy4q9vw',B='https://firestore.googleapis.com/v1/projects/upecriativo-cc472/databases/(default)/documents';
+const enc=v=>typeof v==='number'?{integerValue:String(v)}:typeof v==='boolean'?{booleanValue:v}:typeof v==='object'?{mapValue:{fields:Object.fromEntries(Object.entries(v).map(([k,x])=>[k,enc(x)]))}}:{stringValue:String(v)};
+const post=async(c,d)=>(await fetch(`${B}/${c}?key=${K}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fields:Object.fromEntries(Object.entries(d).map(([k,x])=>[k,enc(x)]))})})).status;
+const get=async c=>(await fetch(`${B}/${c}?key=${K}`)).status;
+(async()=>{const t=Date.now();
+console.log('evento visita (200):',await post('lp_paginas/exemplo/eventos',{tipo:'visita',t,vid:'teste-regras',ref:'',utm:'',disp:'computador'}));
+console.log('evento tipo inválido (403):',await post('lp_paginas/exemplo/eventos',{tipo:'hack',t,vid:'x'}));
+console.log('lead (200):',await post('lp_paginas/exemplo/leads',{campos:{nome:'Teste regras'},t,vid:'teste-regras',utm:'',status:'novo'}));
+console.log('ler leads (403):',await get('lp_paginas/exemplo/leads'));
+console.log('ler rascunho (403):',await get('lp_paginas/exemplo/privado/rascunho'));
+console.log('página inexistente (404):',await get('lp_paginas/nao-existe-xyz'));
+console.log('interessado (200):',await post('srv_interessados',{nome:'Teste regras',whatsapp:'',email:'',frente:'lp',plano:'',mensagem:'teste automático',origem:'teste',status:'novo',criadoEm:t}));
+console.log('interessado status errado (403):',await post('srv_interessados',{nome:'x',status:'cliente'}));
+console.log('ler interessados (403):',await get('srv_interessados'));
+console.log('planos (200):',await get('srv_planos'));
+console.log('slot sem agenda (403):',await post('agenda_paginas/nao-existe/slots',{data:'2026-10-10',hora:'0900',r:'x'}));
+})();
+// testes das coleções novas (erros, resumos, credenciais das lojas)
+(async()=>{await new Promise(r=>setTimeout(r,4000));const t=Date.now();
+console.log('erro de JS (200):',await post('erros',{app:'teste',msg:'teste automático',onde:'x',url:'x',ua:'x',t}));
+console.log('erro com campo a mais (403):',await post('erros',{app:'teste',msg:'x',t,extra:'y'}));
+console.log('ler erros (403):',await get('erros'));
+console.log('ler resumos (403):',await get('lp_paginas/exemplo/resumos'));
+console.log('ler credencial da loja (403):',await get('lojas/qualquer/privado/gateway'));
+console.log('ler recursos (200):',await get('srv_config/recursos'));
+console.log('evento no site principal (200):',await post('lp_paginas/upe-site/eventos',{tipo:'visita',t,vid:'teste-regras',ref:'',utm:'',disp:'computador'}));
+})();

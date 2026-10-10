@@ -45,7 +45,7 @@ export function semente() {
   // agenda
   const sv = [{ id: "s1", nome: "Avaliação gratuita", dur: 30, preco: 0 }, { id: "s2", nome: "Treino funcional", dur: 60, preco: 90 }, { id: "s3", nome: "Pilates", dur: 60, preco: 120 }, { id: "s4", nome: "Fisioterapia", dur: 60, preco: 150 }];
   put("agenda_paginas/studio-bem-estar", { cid: "demo-studio", nome: "Studio Bem Estar", ativo: true, cor: "#1f6f5c", boasVindas: "Escolha o serviço, o dia e o horário. Você recebe a confirmação pelo WhatsApp.", endereco: "Rua Exemplo, 123 · São Paulo/SP", whatsapp: "5511999990001",
-    intervalo: 30, antecedenciaH: 2, diasFrente: 30, servicos: sv, horarios: { 0: [], 1: [["07:00", "20:00"]], 2: [["07:00", "20:00"]], 3: [["07:00", "20:00"]], 4: [["07:00", "20:00"]], 5: [["07:00", "18:00"]], 6: [["08:00", "12:00"]] }, folgas: [], criadoEm: agora - 40 * DIA });
+    intervalo: 30, antecedenciaH: 2, diasFrente: 30, servicos: sv, horarios: { 0: [], 1: [["07:00", "12:00"], ["13:00", "20:00"]], 2: [["07:00", "12:00"], ["13:00", "20:00"]], 3: [["07:00", "12:00"], ["13:00", "20:00"]], 4: [["07:00", "12:00"], ["13:00", "20:00"]], 5: [["07:00", "12:00"], ["13:00", "18:00"]], 6: [["08:00", "12:00"]] }, folgas: [], criadoEm: agora - 40 * DIA });
   for (let d = -30; d <= 7; d++) {
     const dia = new Date(agora + d * DIA); if (dia.getDay() === 0) continue; const data = iso(dia.getTime()), usados = new Set();
     const n = Math.round(4 + r() * 6) - (d > 2 ? 3 : 0);

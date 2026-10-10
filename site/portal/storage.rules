@@ -1,16 +1,34 @@
 rules_version = '2';
-// Arquivos dos clientes (manual, posts, artes): leitura pelo link, envio só pelo admin.
+// Arquivos (Storage). Só valem depois que o bucket for criado (plano Blaze; veja docs/ATIVACAO-BLAZE.md).
 service firebase.storage {
   match /b/{bucket}/o {
+    function upe() {
+      return request.auth != null && request.auth.token.email_verified == true
+        && (request.auth.token.email == 'upecriativo@gmail.com' || firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid)));
+    }
+    // portal: manual, posts e artes dos clientes (leitura pelo link, envio só pela Upe)
     match /cronograma/{rest=**} {
       allow read: if true;
-      allow write: if request.auth != null && firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid));
+      allow write: if upe();
     }
     match /clientes/{rest=**} {
       allow read: if true;
-      allow write: if request.auth != null
-        && firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid))
-        && request.resource.size < 200 * 1024 * 1024;
+      allow write: if upe() && request.resource.size < 200 * 1024 * 1024;
+    }
+    // Upe TV: vídeos e imagens das campanhas (todas as TVs leem; a gestão envia)
+    match /media/{arquivo} {
+      allow read: if true;
+      allow write: if upe() && request.resource.size < 500 * 1024 * 1024
+        && request.resource.contentType.matches('(video|image)/.*');
+    }
+    // landing pages: imagens enviadas pelo editor do Painel Upe Serviços (dono da página ou Upe)
+    match /lp/{slug}/{arquivo} {
+      allow read: if true;
+      allow write: if request.resource.size < 8 * 1024 * 1024 && request.resource.contentType.matches('image/.*')
+        && (upe() || (request.auth != null && request.auth.token.email_verified == true
+          && firestore.get(/databases/(default)/documents/srv_acessos/$(request.auth.uid)).data.cid
+             == firestore.get(/databases/(default)/documents/lp_paginas/$(slug)).data.cid));
+      allow delete: if upe();
     }
   }
 }

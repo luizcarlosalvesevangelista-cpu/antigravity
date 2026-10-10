@@ -1,6 +1,7 @@
 /* Landing pages: lista, nova página (modelo, HTML enviado ou em branco), editor (visual, código, configurações, versões), leads e domínio próprio. */
 import { db, S, $, $$, toast, dialogo, botoesDlg, pill, vazio, topo, fmtDH, fmtData, paginasDoCliente, montar, ctx } from "./nucleo.js";
-import { SITES, esc, slugify, uid, msgErro, DEMO } from "./srv.js";
+import { SITES, esc, slugify, uid, msgErro, DEMO, enviarArquivo } from "./srv.js";
+import { BLOCOS, inserirBloco } from "./blocos.js";
 
 const LIM = 880000;
 const urlPagina = s => `${SITES.lp}/${s}`;
@@ -18,9 +19,15 @@ views.paginas = async M => {
         <div class="miniatura"><iframe sandbox title="Miniatura" loading="lazy" data-mini="${esc(p.id)}"></iframe></div>
         <div style="display:grid;gap:4px;min-width:0"><b style="font-size:16px">${esc(p.titulo || p.id)}</b><span>${statusPag(p)} <code class="end">${esc(urlPagina(p.id).replace(/^https:\/\//, ""))}</code></span>
           <span class="muted" style="font-size:12.5px">Atualizada ${fmtDH(p.atualizadoEm)}${p.dominio ? " · domínio " + esc(p.dominio) : ""}</span></div>
-        <div class="linha"><a class="btn azul sm" href="#/pagina/${esc(p.id)}/editar">Editar</a>${p.publicada && !p.suspensa ? `<a class="btn sm" href="${esc(urlPagina(p.id))}" target="_blank" rel="noopener">Ver no ar ↗</a>` : ""}<a class="btn sm" href="#/analise/${esc(p.id)}">Análise</a></div>
+        <div class="linha"><a class="btn azul sm" href="#/pagina/${esc(p.id)}/editar">Editar</a>${p.publicada && !p.suspensa ? `<a class="btn sm" href="${esc(urlPagina(p.id))}" target="_blank" rel="noopener">Ver no ar ↗</a>` : ""}<a class="btn sm" href="#/analise/${esc(p.id)}">Análise</a><button class="btn sm" type="button" data-dup="${esc(p.id)}">Duplicar</button></div>
       </div>`).join('<hr style="border:0;border-top:1px solid var(--line);width:100%">') : vazio("Nenhuma página ainda.", `<button class="btn azul" type="button" data-nova>Criar a primeira página</button>`)}</section>`;
   for (const p of pg) { const f = $(`[data-mini="${CSS.escape(p.id)}"]`); if (f) f.srcdoc = montar(p.html || "", { seo: p.seo }, null).replace(/<script[\s\S]*?<\/script>/gi, ""); }
+  $$("[data-dup]").forEach(b => b.onclick = () => { const o = pg.find(x => x.id === b.dataset.dup);
+    dialogo(`<h3>Duplicar página</h3><label class="f">Nome da cópia<input name="titulo" required value="${esc((o.titulo || o.id) + " (cópia)")}"></label><label class="f">Endereço<input name="slug" required pattern="[a-z0-9][a-z0-9-]{1,47}" value="${esc(o.id + "-2")}"></label>${botoesDlg("Duplicar")}`, async fd => {
+      const ns = slugify(fd.get("slug")); if (await db.get("lp_paginas/" + ns).catch(() => ({ x: 1 }))) { toast("Esse endereço já está em uso."); return false; }
+      const r = await db.get(`lp_paginas/${o.id}/privado/rascunho`), { id, _path, dominio, publicadoEm, ...d } = o, agora = Date.now();
+      await db.set("lp_paginas/" + ns, { ...d, titulo: String(fd.get("titulo")).trim(), publicada: false, suspensa: false, criadoEm: agora, atualizadoEm: agora });
+      await db.set(`lp_paginas/${ns}/privado/rascunho`, { html: r?.html || o.html || "", em: agora }); toast("Cópia criada como rascunho."); location.hash = `#/pagina/${ns}/editar`; }); });
   $("#novaPag").onclick = novaPagina; $("[data-nova]")?.addEventListener("click", novaPagina);
 };
 function novaPagina() {
@@ -67,12 +74,22 @@ addEventListener("message",function(e){var d=e.data||{};if(d.upe==="troca-img"){
 })();<\/script>`;
 const comEditor = h => /<\/body>/i.test(h) ? h.replace(/<\/body>(?![\s\S]*<\/body>)/i, EDITOR + "</body>") : h + EDITOR;
 
+/* troca de imagem no editor: link https sempre; envio do computador quando o Storage estiver ligado (plano Blaze) */
+function trocarImagem(d, aplicar) {
+  const podeEnviar = S.recursos?.storage || DEMO;
+  dialogo(`<h3>Trocar imagem</h3>${podeEnviar ? `<label class="f">Enviar do computador (JPG, PNG ou WebP até 8 MB)<input type="file" name="arq" accept="image/jpeg,image/png,image/webp"></label><div class="lg-sep">ou</div>` : `<p class="muted" style="font-size:12.5px">O envio direto do computador liga junto com o plano Blaze. Por enquanto, cole o link da imagem (site, Imgur, CDN ou Google Drive com link direto).</p>`}
+    <label class="f">Link da imagem (https://…)<input name="url" type="url" value="${esc(/^https?:/.test(d.src || "") ? d.src : "")}" placeholder="https://"></label>${botoesDlg("Usar imagem")}`, async (fd, f) => {
+    const arq = f.arq?.files?.[0];
+    if (arq) { if (arq.size > 8 * 1024 * 1024) { toast("Imagem acima de 8 MB."); return false; } toast("Enviando…"); const ext = (arq.type.split("/")[1] || "jpg").replace("jpeg", "jpg"); aplicar(await enviarArquivo(`lp/${ctx.slugAtual}/${Date.now().toString(36)}-${uid(6)}.${ext}`, arq)); return; }
+    const u = String(fd.get("url") || "").trim(); if (!/^https:\/\//.test(u)) { toast("Use um link que comece com https://"); return false; } aplicar(u);
+  });
+}
 views.pagina = async (M, slug, aba = "editar") => {
-  const p = await db.get("lp_paginas/" + slug);
+  const p = await db.get("lp_paginas/" + slug); ctx.slugAtual = slug;
   if (!p) { M.innerHTML = topo("Página") + `<section class="card">${vazio("Página não encontrada.")}</section>`; return; }
   const r = await db.get(`lp_paginas/${slug}/privado/rascunho`);
-  const E = { html: r?.html ?? p.html ?? "", cfg: { titulo: p.titulo || "", seo: { ...(p.seo || {}) }, whatsapp: { ...(p.whatsapp || {}) }, pixel: { ...(p.pixel || {}) } }, modo: "editar", tela: "pc" };
-  const publicadoIgual = () => E.html === (p.html || "") && JSON.stringify(E.cfg) === JSON.stringify({ titulo: p.titulo || "", seo: p.seo || {}, whatsapp: p.whatsapp || {}, pixel: p.pixel || {} });
+  const E = { html: r?.html ?? p.html ?? "", cfg: { titulo: p.titulo || "", seo: { ...(p.seo || {}) }, whatsapp: { ...(p.whatsapp || {}) }, pixel: { ...(p.pixel || {}) }, vinculos: { ...(p.vinculos || {}) } }, modo: "editar", tela: "pc" };
+  const publicadoIgual = () => E.html === (p.html || "") && JSON.stringify(E.cfg) === JSON.stringify({ titulo: p.titulo || "", seo: p.seo || {}, whatsapp: p.whatsapp || {}, pixel: p.pixel || {}, vinculos: p.vinculos || {} });
   M.innerHTML = topo(p.titulo || slug, `${statusPag(p)}${p.publicada && !p.suspensa ? `<a class="btn sm" href="${esc(urlPagina(slug))}" target="_blank" rel="noopener">Ver no ar ↗</a>` : ""}<a class="btn sm" href="#/paginas">← Páginas</a>`) +
     `<div class="abas" role="tablist">${[["editar", "Editar"], ["codigo", "Código HTML"], ["config", "SEO e integrações"], ["versoes", "Versões"]].map(([k, t]) => `<button role="tab" type="button" aria-selected="${k === aba}" data-ir="#/pagina/${esc(slug)}/${k}">${t}</button>`).join("")}</div><div id="corpo"></div>`;
   const corpo = $("#corpo");
@@ -99,10 +116,10 @@ views.pagina = async (M, slug, aba = "editar") => {
     const agora = Date.now();
     await db.set(`lp_paginas/${slug}/privado/rascunho`, { html: E.html, em: agora });
     const { id: _i, ...base } = p;
-    await db.set("lp_paginas/" + slug, { ...base, html: E.html, titulo: E.cfg.titulo, seo: E.cfg.seo, whatsapp: E.cfg.whatsapp, pixel: E.cfg.pixel, publicada: true, atualizadoEm: agora, publicadoEm: agora, cid: p.cid, suspensa: !!p.suspensa });
+    await db.set("lp_paginas/" + slug, { ...base, html: E.html, titulo: E.cfg.titulo, seo: E.cfg.seo, whatsapp: E.cfg.whatsapp, pixel: E.cfg.pixel, vinculos: E.cfg.vinculos, publicada: true, atualizadoEm: agora, publicadoEm: agora, cid: p.cid, suspensa: !!p.suspensa });
     await db.add(`lp_paginas/${slug}/versoes`, { html: E.html, em: agora, autor: S.user?.email || "", titulo: E.cfg.titulo });
     const vs = (await db.list(`lp_paginas/${slug}/versoes`)).sort((a, b) => b.em - a.em); for (const v of vs.slice(20)) await db.del(`lp_paginas/${slug}/versoes/${v.id}`);
-    Object.assign(p, { html: E.html, titulo: E.cfg.titulo, seo: E.cfg.seo, whatsapp: E.cfg.whatsapp, pixel: E.cfg.pixel, publicada: true });
+    Object.assign(p, { html: E.html, titulo: E.cfg.titulo, seo: E.cfg.seo, whatsapp: E.cfg.whatsapp, pixel: E.cfg.pixel, vinculos: E.cfg.vinculos, publicada: true });
     S.sujo = false; toast("Página publicada."); pintaBarra();
   }
   pintaBarra();
@@ -110,7 +127,7 @@ views.pagina = async (M, slug, aba = "editar") => {
   if (aba === "editar") {
     corpo.innerHTML = `<div class="editor"><div class="palco"><div class="palco-barra">
         <div class="seg" role="group" aria-label="Modo"><button type="button" data-modo="editar" aria-pressed="true">Editar textos</button><button type="button" data-modo="ver" aria-pressed="false">Prévia</button></div>
-        <div class="seg" role="group" aria-label="Tela"><button type="button" data-tela="pc" aria-pressed="true">Computador</button><button type="button" data-tela="cel" aria-pressed="false">Celular</button></div></div>
+        <select class="in-txt" id="insBlocoEd" style="width:auto;padding:6px 8px"><option value="">+ Inserir seção pronta…</option>${["Loja","Agenda","Contato","Conteúdo"].map(g => `<optgroup label="${g}">${BLOCOS.filter(b => b.grupo === g).map(b => `<option value="${b.id}">${esc(b.nome)}</option>`).join("")}</optgroup>`).join("")}</select><div class="seg" role="group" aria-label="Tela"><button type="button" data-tela="pc" aria-pressed="true">Computador</button><button type="button" data-tela="cel" aria-pressed="false">Celular</button></div></div>
       <div class="tela" id="tela"><iframe id="fr" sandbox="allow-scripts allow-popups" title="Prévia da página"></iframe></div></div>
       <aside class="card"><h3>Como editar</h3><p class="muted">Clique em qualquer texto da prévia e digite. Clique numa imagem para trocar o link dela. As mudanças vão para o rascunho; o público só vê depois de <b>Publicar</b>.</p>
         <p class="muted">Precisa mudar cores, seções ou colocar código? Use a aba <b>Código HTML</b> ou peça na seção <a href="#/chamados">Pedidos de ajuste</a>.</p>
@@ -121,26 +138,30 @@ views.pagina = async (M, slug, aba = "editar") => {
     carrega();
     $$("[data-modo]").forEach(b => b.onclick = () => { E.modo = b.dataset.modo; $$("[data-modo]").forEach(x => x.setAttribute("aria-pressed", x === b)); carrega(); });
     $$("[data-tela]").forEach(b => b.onclick = () => { $("#tela").classList.toggle("cel", b.dataset.tela === "cel"); $$("[data-tela]").forEach(x => x.setAttribute("aria-pressed", x === b)); });
+    $("#insBlocoEd").onchange = e => { const b = BLOCOS.find(x => x.id === e.target.value); e.target.value = ""; if (!b) return; E.html = inserirBloco(E.html, b); marca(); carrega(); toast(`Seção “${b.nome}” inserida antes do rodapé.`); };
     $("#edTitulo").oninput = e => { E.cfg.titulo = e.target.value; marca(); };
     const onMsg = e => {
       if (e.source !== fr.contentWindow) return; const d = e.data || {};
       if (d.upe === "html" && typeof d.html === "string") { E.html = d.html; $("#edTam").textContent = Math.ceil(E.html.length / 1024) + " KB"; marca(); }
-      if (d.upe === "img") { const src = prompt("Link da nova imagem (https://…). Dica: envie a foto ao Google Drive, Imgur ou ao seu site e cole o link da imagem.", d.src); if (src && /^https?:\/\//.test(src)) fr.contentWindow.postMessage({ upe: "troca-img", i: d.i, src }, "*"); }
+      if (d.upe === "img") trocarImagem(d, src => fr.contentWindow.postMessage({ upe: "troca-img", i: d.i, src }, "*"));
     };
     addEventListener("message", onMsg); addEventListener("hashchange", () => removeEventListener("message", onMsg), { once: true });
   }
   if (aba === "codigo") {
-    corpo.innerHTML = `<section class="card"><div class="card-h"><h3>Código HTML</h3><div class="linha"><label class="btn sm">Importar .html<input type="file" id="imp" accept=".html,.htm,text/html" hidden></label><button class="btn sm" type="button" id="baixar">Baixar .html</button></div></div>
+    corpo.innerHTML = `<section class="card"><div class="card-h"><h3>Código HTML</h3><div class="linha"><select class="in-txt" id="insBloco" style="width:auto;padding:6px 8px"><option value="">+ Inserir seção pronta…</option>${["Loja","Agenda","Contato","Conteúdo"].map(g => `<optgroup label="${g}">${BLOCOS.filter(b => b.grupo === g).map(b => `<option value="${b.id}">${esc(b.nome)}</option>`).join("")}</optgroup>`).join("")}</select><label class="btn sm">Importar .html<input type="file" id="imp" accept=".html,.htm,text/html" hidden></label><button class="btn sm" type="button" id="baixar">Baixar .html</button></div></div>
       <p class="muted">Cole aqui o HTML completo da página (com &lt;html&gt;, &lt;head&gt; e &lt;body&gt;). Imagens devem estar em links (https://…); arquivos embutidos deixam a página pesada.</p>
       <textarea class="codigo" id="cod" spellcheck="false" aria-label="Código HTML"></textarea></section>`;
     const t = $("#cod"); t.value = E.html;
     t.oninput = () => { E.html = t.value; marca(); };
     t.onkeydown = e => { if (e.key === "Tab") { e.preventDefault(); const s = t.selectionStart; t.setRangeText("  ", s, t.selectionEnd, "end"); E.html = t.value; marca(); } };
+    $("#insBloco").onchange = e => { const b = BLOCOS.find(x => x.id === e.target.value); e.target.value = ""; if (!b) return;
+      const pos = t.selectionStart; if (document.activeElement === t || pos > 0 && pos < t.value.length) { t.setRangeText("\n" + b.html + "\n", pos, t.selectionEnd, "end"); E.html = t.value; } else { t.value = E.html = inserirBloco(E.html, b); }
+      marca(); toast(`Seção “${b.nome}” inserida. ${/data-upe-(produtos|carrinho)/.test(b.html) ? "Ligue a loja em SEO e integrações." : /data-upe-(servicos|agenda)/.test(b.html) ? "Ligue a agenda em SEO e integrações." : ""}`); };
     $("#imp").onchange = async e => { const a = e.target.files[0]; if (!a) return; const h = await a.text(); if (h.length > LIM) return toast("Arquivo acima de 880 KB."); t.value = E.html = h; marca(); toast("Arquivo importado. Confira e publique."); };
     $("#baixar").onclick = () => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([E.html], { type: "text/html" })); a.download = slug + ".html"; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 3000); };
   }
   if (aba === "config") {
-    const c = E.cfg;
+    const c = E.cfg, agendas = await db.list("agenda_paginas", { where: [["cid", "==", p.cid]] }).catch(() => []);
     corpo.innerHTML = `<div class="grid2">
       <section class="card form"><h3>Google e redes sociais (SEO)</h3>
         <label class="f">Título na aba e no Google<input data-k="seo.titulo" value="${esc(c.seo.titulo || "")}" maxlength="70"></label>
@@ -154,10 +175,20 @@ views.pagina = async (M, slug, aba = "editar") => {
         <h3 style="margin-top:8px">Anúncios e métricas</h3>
         <label class="f">Meta Pixel (Facebook e Instagram): ID<input data-k="pixel.meta" value="${esc(c.pixel.meta || "")}" inputmode="numeric" placeholder="123456789012345"></label>
         <label class="f">Google Analytics 4: ID de medição<input data-k="pixel.ga4" value="${esc(c.pixel.ga4 || "")}" placeholder="G-XXXXXXX"></label>
-        <p class="muted" style="font-size:12.5px">O painel já mede visitas, cliques, rolagem e leads sozinho. Pixel e Analytics são para quem anuncia.</p></section></div>`;
+        <p class="muted" style="font-size:12.5px">O painel já mede visitas, cliques, rolagem e leads sozinho. Pixel e Analytics só carregam depois que o visitante aceita os cookies.</p></section>
+      <section class="card form" style="grid-column:1/-1"><h3>Ligações (Kit Upe)</h3>
+        <p class="muted">Liga a página aos produtos da loja do Upe ERP, à agenda online e ao WhatsApp. Os elementos marcados com <code>data-upe-*</code> (ou as seções prontas da aba Código HTML) passam a mostrar produtos, carrinho, serviços e agendamento.</p>
+        <div class="grid3"><label class="f">Loja do Upe ERP (endereço)<input data-k="vinculos.loja" value="${esc(c.vinculos.loja || "")}" placeholder="nome-da-loja"><span class="muted" style="font-weight:400" id="vLojaOk"></span></label>
+          <label class="f">Agenda online<select data-k="vinculos.agenda"><option value="">Nenhuma</option>${agendas.map(a => `<option value="${esc(a.id)}" ${c.vinculos.agenda === a.id ? "selected" : ""}>${esc(a.nome || a.id)}</option>`).join("")}</select></label>
+          <label class="f">Como o cliente compra<select data-k="vinculos.compra"><option value="loja" ${(c.vinculos.compra || "loja") === "loja" ? "selected" : ""}>Finaliza na loja (PIX, cartão e frete da loja)</option><option value="whatsapp" ${c.vinculos.compra === "whatsapp" ? "selected" : ""}>Pedido pronto no WhatsApp</option><option value="gateway" ${c.vinculos.compra === "gateway" ? "selected" : ""} ${S.recursos?.gateway ? "" : "disabled"}>Pagamento direto na página${S.recursos?.gateway ? "" : " (ativa com o plano Blaze)"}</option></select></label></div>
+        <label class="f">WhatsApp do Kit (pedidos e botões data-upe-whatsapp; vazio = o do botão flutuante)<input data-k="vinculos.whatsapp" value="${esc(c.vinculos.whatsapp || "")}" inputmode="numeric" placeholder="5511999999999"></label>
+        ${S.admin ? `<div class="linha"><button class="btn sm" type="button" id="vCapa">Usar esta página como página inicial da loja</button><span class="muted">Só a Upe. Quem abrir a loja vê esta página; a vitrine continua em “Ver todos os produtos”.</span></div>` : ""}</section></div>`;
     const prev = () => { $("#gT").textContent = c.seo.titulo || c.titulo || slug; $("#gD").textContent = c.seo.descricao || "Escreva uma descrição para aparecer aqui."; };
     prev();
-    $$("[data-k]", corpo).forEach(i => i.addEventListener("input", () => { const [a, b] = i.dataset.k.split("."); c[a][b] = i.type === "checkbox" ? i.checked : i.value.trim(); if (a === "whatsapp" && b === "numero") c.whatsapp.numero = i.value.replace(/\D/g, ""); prev(); marca(); }));
+    let tLoja; const confereLoja = () => { clearTimeout(tLoja); const el = $("#vLojaOk"); if (!c.vinculos.loja) { el.textContent = ""; return; } tLoja = setTimeout(async () => { const l = await db.get("lojas/" + c.vinculos.loja).catch(() => null); el.textContent = l ? "✓ Loja encontrada" : "Loja não encontrada"; el.style.color = l ? "var(--ok)" : "var(--crit)"; }, 400); };
+    confereLoja();
+    $("#vCapa")?.addEventListener("click", async () => { if (!c.vinculos.loja) return toast("Informe a loja primeiro."); if (!confirm(`A loja ${c.vinculos.loja} passa a abrir com esta página. Publique a página antes. Continuar?`)) return; await db.set(`lojas/${c.vinculos.loja}/publico/capa`, { lp: slug, em: Date.now() }); toast("Pronto: a loja abre com esta página."); });
+    $$("[data-k]", corpo).forEach(i => i.addEventListener(i.tagName === "SELECT" ? "change" : "input", () => { const [a, b] = i.dataset.k.split("."); c[a][b] = i.type === "checkbox" ? i.checked : i.value.trim(); if (a === "vinculos" && b === "loja") { c.vinculos.loja = slugify(i.value); confereLoja(); } if (a === "vinculos" && b === "whatsapp") c.vinculos.whatsapp = i.value.replace(/\D/g, ""); if (a === "whatsapp" && b === "numero") c.whatsapp.numero = i.value.replace(/\D/g, ""); prev(); marca(); }));
   }
   if (aba === "versoes") {
     const vs = (await db.list(`lp_paginas/${slug}/versoes`)).sort((a, b) => b.em - a.em);

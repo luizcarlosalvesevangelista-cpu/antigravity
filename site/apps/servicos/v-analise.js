@@ -1,5 +1,5 @@
 /* Análise das landing pages (visitas, visitantes, cliques, WhatsApp, leads, origens, aparelhos, rolagem) e os gráficos usados também nos dashboards. */
-import { S, $, $$, topo, vazio, paginasDoCliente, eventosDe, DIA } from "./nucleo.js";
+import { S, db, $, $$, topo, vazio, paginasDoCliente, eventosDe, DIA } from "./nucleo.js";
 import { esc } from "./srv.js";
 
 export const views = {};
@@ -51,23 +51,47 @@ views.analise = async (M, slugSel, per) => {
   if (!pg.length) { M.insertAdjacentHTML("beforeend", `<section class="card">${vazio("Crie e publique uma página para ver as visitas aqui.")}</section>`); return; }
   const ir = (s, d) => location.hash = `#/analise/${s}/${d}`;
   $("#aPg").onchange = e => ir(e.target.value, dias); $$("[data-per]").forEach(b => b.onclick = () => ir(slug, b.dataset.per));
-  const ev = await eventosDe(slug === "todas" ? pg.map(p => p.id) : [slug], Date.now() - dias * DIA);
-  const vis = ev.filter(e => e.tipo === "visita"), uni = new Set(vis.map(e => e.vid)).size, leads = ev.filter(e => e.tipo === "lead"), wa = ev.filter(e => e.tipo === "whatsapp"), cli = ev.filter(e => e.tipo === "clique");
+  const A = await agregar(slug === "todas" ? pg.map(p => p.id) : [slug], dias);
+  const vis = { length: A.visitas }, uni = A.unicos, leads = { length: A.leads }, wa = { length: A.whatsapp }, cli = { length: A.cliques };
   const conv = uni ? leads.length / uni * 100 : 0;
-  const rol = [25, 50, 75, 100].map(n => ({ r: `Chegou a ${n}% da página`, v: new Set(ev.filter(e => e.tipo === "rolagem" && e.prof >= n).map(e => e.vid)).size }));
+  const rol = [25, 50, 75, 100].map(n => ({ r: `Chegou a ${n}% da página`, v: A.rolagem[n] || 0 }));
+  const top = (m, n = 6) => Object.entries(m).sort((a, b) => b[1] - a[1]).slice(0, n).map(([r, v]) => ({ r, v }));
   M.insertAdjacentHTML("beforeend", `<div class="kpis">
       <div class="kpi"><b class="num">${nf(vis.length)}</b><span>visitas</span></div>
-      <div class="kpi"><b class="num">${nf(uni)}</b><span>visitantes únicos</span></div>
+      <div class="kpi"><b class="num">${nf(uni)}</b><span>visitantes únicos${A.resumido ? " (somados por dia)" : ""}</span></div>
       <div class="kpi"><b class="num">${nf(leads.length)}</b><span>leads (formulários enviados)</span></div>
       <div class="kpi"><b class="num">${conv.toFixed(1).replace(".", ",")}%</b><span>conversão (leads ÷ visitantes)</span></div>
       <div class="kpi"><b class="num">${nf(wa.length)}</b><span>cliques no WhatsApp</span></div>
       <div class="kpi"><b class="num">${nf(cli.length)}</b><span>outros cliques em botões e links</span></div></div>
-    <section class="card"><div class="card-h"><h3>Visitas por dia</h3><span class="muted">últimos ${dias} dias</span></div>${grafBarras(porDia(vis, dias), { rotulo: "visitas" })}</section>
-    <section class="card"><div class="card-h"><h3>Leads por dia</h3><span class="muted">últimos ${dias} dias</span></div>${grafBarras(porDia(leads, dias), { rotulo: "leads" })}</section>
+    <section class="card"><div class="card-h"><h3>Visitas por dia</h3><span class="muted">últimos ${dias} dias</span></div>${grafBarras(A.porDia.map(d => ({ r: d.r, v: d.visitas })), { rotulo: "visitas" })}</section>
+    <section class="card"><div class="card-h"><h3>Leads por dia</h3><span class="muted">últimos ${dias} dias</span></div>${grafBarras(A.porDia.map(d => ({ r: d.r, v: d.leads })), { rotulo: "leads" })}</section>
     <div class="grid2">
-      <section class="card"><h3>De onde vieram</h3>${grafRanking(conta(vis, e => (e.utm || "").split("|")[0] || e.ref || "Direto ou desconhecido"))}<p class="muted" style="font-size:12.5px">Use links com <code>?utm_source=instagram</code> nos anúncios e na bio para separar cada origem.</p></section>
-      <section class="card"><h3>Aparelhos</h3>${grafRanking(conta(vis, e => e.disp || "desconhecido"))}</section>
-      <section class="card"><h3>Botões mais clicados</h3>${grafRanking(conta([...cli, ...wa], e => e.tipo === "whatsapp" ? "WhatsApp: " + (e.alvo || "botão") : e.alvo, 8))}</section>
+      <section class="card"><h3>De onde vieram</h3>${grafRanking(top(A.origens))}<p class="muted" style="font-size:12.5px">Use links com <code>?utm_source=instagram</code> nos anúncios e na bio para separar cada origem.</p></section>
+      <section class="card"><h3>Aparelhos</h3>${grafRanking(top(A.disp))}</section>
+      <section class="card"><h3>Botões mais clicados</h3>${grafRanking(top(A.alvos, 8))}</section>
       <section class="card"><h3>Até onde leram</h3>${grafRanking(rol)}<p class="muted" style="font-size:12.5px">Visitantes únicos que rolaram a página até cada ponto. Se poucos chegam ao formulário, suba a chamada principal.</p></section>
     </div>`);
 };
+
+/* junta os números do período: usa os resumos diários (gerados pelo servidor) quando existem e os eventos crus só do que falta */
+async function agregar(slugs, dias) {
+  const fim = Date.now(), ini = fim - dias * DIA, hojeIni = new Date(new Date().toDateString()).getTime(), A = { visitas: 0, unicos: 0, leads: 0, whatsapp: 0, cliques: 0, origens: {}, disp: {}, alvos: {}, rolagem: { 25: 0, 50: 0, 75: 0, 100: 0 }, resumido: false };
+  const dmap = new Map(); for (let i = dias - 1; i >= 0; i--) dmap.set(diaISO(fim - i * DIA), { visitas: 0, leads: 0 });
+  const soma = (m, k, n = 1) => { k = k || "(vazio)"; m[k] = (m[k] || 0) + n; };
+  for (const sl of slugs) {
+    const rs = await db.list(`lp_paginas/${sl}/resumos`, { where: [["dia", ">=", diaISO(ini)]] }).catch(() => []);
+    let desde = ini;
+    if (rs.length) { A.resumido = true; desde = hojeIni;
+      for (const r of rs) { if (r.dia >= diaISO(hojeIni)) continue; A.visitas += r.visitas || 0; A.unicos += r.unicos || 0; A.leads += r.leads || 0; A.whatsapp += r.whatsapp || 0; A.cliques += r.cliques || 0;
+        for (const [k, v] of Object.entries(r.origens || {})) soma(A.origens, k, v); for (const [k, v] of Object.entries(r.disp || {})) soma(A.disp, k, v); for (const [k, v] of Object.entries(r.alvos || {})) soma(A.alvos, k, v);
+        [25, 50, 75, 100].forEach(n => A.rolagem[n] += (r.rolagem || {})[n] || 0); const d = dmap.get(r.dia); if (d) { d.visitas += r.visitas || 0; d.leads += r.leads || 0; } } }
+    const ev = await eventosDe([sl], desde), vids = new Set(), rol = { 25: new Set(), 50: new Set(), 75: new Set(), 100: new Set() };
+    for (const e of ev) { const d = dmap.get(diaISO(e.t));
+      if (e.tipo === "visita") { A.visitas++; vids.add(e.vid); soma(A.origens, (e.utm || "").split("|")[0] || e.ref || "Direto ou desconhecido"); soma(A.disp, e.disp || "desconhecido"); if (d) d.visitas++; }
+      else if (e.tipo === "lead") { A.leads++; if (d) d.leads++; } else if (e.tipo === "whatsapp") { A.whatsapp++; soma(A.alvos, "WhatsApp: " + (e.alvo || "botão")); } else if (e.tipo === "clique") { A.cliques++; soma(A.alvos, e.alvo); }
+      else if (e.tipo === "rolagem") [25, 50, 75, 100].forEach(n => { if (e.prof >= n) rol[n].add(e.vid); }); }
+    A.unicos += vids.size; [25, 50, 75, 100].forEach(n => A.rolagem[n] += rol[n].size);
+  }
+  A.porDia = [...dmap].map(([d, v]) => ({ r: rotDia(d), ...v }));
+  return A;
+}

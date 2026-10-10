@@ -339,7 +339,7 @@ function cronoModal(x0) {
         <ol class="beats">${(H.beats || []).map(b => `<li><b>${esc(b.rotulo)}</b><span>${esc(b.texto)}</span></li>`).join("")}</ol>
         <p class="muted small">Motion com áudio e efeitos feito só com material próprio da Upe (marca, telas dos apps e textos). Sem trechos de vídeos ou prints de terceiros: sem risco de strike de direitos autorais.</p></section>` : ""}
       ${outras.length ? `<div class="grid" style="grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px">${outras.map(u => `<div class="media-box" style="min-height:120px">${mediaHTML(u, x.formato === "reels" || x.formato === "shorts" || x.formato === "youtube" ? "video" : "")}</div>`).join("")}</div>` : v.capa && !H ? `<div class="media-box">${imgTag(v.capa)}</div>` : ""}
-      <div class="row">${outras.map((u, i) => dlBtn(u, outras.length > 1 ? `Baixar ${i + 1}` : "Baixar arquivo")).join("")}${v.capa ? dlBtn(v.capa, yt ? "Baixar thumbnail" : "Baixar capa") : ""}${v.legenda ? `<button class="btn sm" id="xCp">Copiar ${yt ? "descrição" : "legenda"}</button>` : ""}</div>` : ""}
+      <div class="row">${outras.map((u, i) => dlBtn(u, outras.length > 1 ? `Baixar ${i + 1}` : "Baixar arquivo")).join("")}${v.capa ? dlBtn(v.capa, yt ? "Baixar thumbnail" : "Baixar capa") : ""}${v.legenda ? `<button class="btn sm" id="xCp">Copiar ${yt ? "descrição" : "legenda"}</button>` : ""}<button class="btn sm" id="xZip" title="Arquivos, legenda e dados do post num .zip">Baixar pacote (.zip)</button></div>` : ""}
     <div class="g3"><label class="f" for="xD">Data<input id="xD" type="date" value="${esc(x.data)}"></label><label class="f" for="xH">Hora<input id="xH" type="time" value="${esc(x.hora)}"></label><label class="f" for="xSt">Status<select id="xSt">${Object.entries(CST).map(([s, l]) => `<option value="${s}" ${x.status === s ? "selected" : ""}>${l}</option>`).join("")}</select></label></div>
     <div class="g3"><label class="f" for="xC">Canal<select id="xC"><option value="instagram" ${!yt ? "selected" : ""}>Instagram</option><option value="youtube" ${yt ? "selected" : ""}>YouTube</option></select></label><label class="f" for="xF">Formato<select id="xF">${["feed", "carrossel", "reels", "story", "youtube", "shorts"].map(f => `<option value="${f}" ${x.formato === f ? "selected" : ""}>${FMT_LBL[f]}</option>`).join("")}</select></label><label class="f" for="xP">Pilar<select id="xP">${PILARES.map(p => `<option ${x.pilar === p ? "selected" : ""}>${p}</option>`).join("")}</select></label></div>
     <label class="f" for="xT">Título<input id="xT" value="${esc(x.titulo)}"></label>
@@ -350,6 +350,7 @@ function cronoModal(x0) {
     `${!n ? `<button class="btn bad" id="xX">Excluir</button>` : ""}${!n && x.canal !== "youtube" ? `<button class="btn sec" id="xMod">${x.modelo ? "Editar no modelo" : "Criar arte no modelo"}</button>` : ""}<button class="btn sec" data-close>Fechar</button><button class="btn" id="xOk">Salvar</button>`, true);
   if ($("#xMod")) $("#xMod").onclick = () => { dlg.close(); go(`#/admin/cronograma/modelos/${x.id}`); };
   if ($("#xCp")) $("#xCp").onclick = () => copy(v.legenda, "Copiado");
+  if ($("#xZip")) $("#xZip").onclick = () => pacotePost(v, $("#xZip"));
   $("#xOk").onclick = async () => {
     const t = $("#xT").value.trim(); if (!t) return $("#xT").focus();
     const rp = $("#xRp").value;
@@ -517,4 +518,22 @@ function postsDoDossie(D, base, doc) {
     out.push({ id: uid(8), kitId: "dossie", data: p.data || addDays(todayIso(), 2 + ((+p.semana || 1) - 1) * 7 + out.length * 2), hora: p.hora || (p.tipo === "reels" ? "19:00" : "12:00"), tipo: p.tipo, titulo: p.titulo, midias: p.midias, capa: p.capa, legenda: p.legenda, versao: 1, status: "pendente", statusEm: Date.now(), origem: "Dossiê" });
   });
   return out;
+}
+
+/* pacote do post: imagens/vídeo, capa, legenda e dados num .zip, pronto para publicar no Instagram ou no YouTube */
+async function pacotePost(v, bt) {
+  bt.disabled = true; const t0 = bt.textContent; bt.textContent = "Montando…";
+  try {
+    if (!window.JSZip) await new Promise((ok, no) => { const sc = document.createElement("script"); sc.src = "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"; sc.onload = ok; sc.onerror = no; document.head.append(sc); });
+    const z = new window.JSZip(), nome = `${v.data || "sem-data"}-${String(v.titulo || "post").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").slice(0, 40)}`;
+    const arqs = [...(v.midias || []), v.capa].filter(Boolean); let i = 0, falhas = 0;
+    for (const u of arqs) { const url = resolveMedia(u); if (!url) continue; try { const r = await fetch(url); if (!r.ok) throw 0; i++; z.file(`${String(i).padStart(2, "0")}-${fileName(u)}`, await r.blob()); } catch { falhas++; } }
+    const tags = (String(v.legenda || "").match(/#[\p{L}\d_]+/gu) || []).join(" ");
+    z.file("legenda.txt", String(v.legenda || ""));
+    if (tags) z.file("hashtags.txt", tags);
+    z.file("post.txt", [`Título: ${v.titulo || ""}`, `Canal: ${v.canal || ""} · Formato: ${FMT_LBL[v.formato] || v.formato || ""} · Pilar: ${v.pilar || ""}`, `Data: ${v.data || ""} ${v.hora || ""}`, v.roteiro ? `\nRoteiro:\n${v.roteiro}` : ""].join("\n"));
+    const blob = await z.generateAsync({ type: "blob" }), a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = nome + ".zip"; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    toast(falhas ? `Pacote baixado (${falhas} arquivo(s) não puderam ser incluídos).` : "Pacote baixado.");
+  } catch (e) { toast("Não foi possível montar o pacote agora."); }
+  bt.disabled = false; bt.textContent = t0;
 }

@@ -116,6 +116,8 @@ service cloud.firestore {
       allow update: if membro(resource.data.empresa) && request.resource.data.empresa == resource.data.empresa;
       allow delete: if membro(resource.data.empresa);
       match /publico/{d} { allow read: if true; allow write: if dona(); }
+      // credenciais de pagamento online (Mercado Pago) do lojista: só a Upe grava; o servidor lê
+      match /privado/{d} { allow read, write: if ehUpe(); }
       match /produtos/{id} { allow read: if true; allow write: if dona(); }
       match /cupons/{cod} { allow get: if true; allow list, write: if dona(); }
       match /pedidos/{id} {
@@ -190,6 +192,7 @@ service cloud.firestore {
       allow delete: if srvMembro(resource.data.cid);
       match /privado/{d} { allow read, write: if lpDono(); }
       match /versoes/{id} { allow read, create, delete: if lpDono(); }
+      match /resumos/{dia} { allow read: if lpDono(); }
       match /eventos/{id} {
         allow create: if request.resource.data.keys().hasOnly(['tipo', 't', 'vid', 'ref', 'utm', 'disp', 'alvo', 'prof'])
           && request.resource.data.tipo in ['visita', 'clique', 'lead', 'rolagem', 'whatsapp']
@@ -220,18 +223,33 @@ service cloud.firestore {
       allow delete: if srvMembro(resource.data.cid);
       match /slots/{id} {
         allow read: if true;
-        allow create: if request.resource.data.keys().hasOnly(['data', 'hora', 'r'])
-          && id == request.resource.data.data + '_' + request.resource.data.hora
+        // id = [profissional_]AAAA-MM-DD_HHMM, sem dados pessoais
+        allow create: if request.resource.data.keys().hasOnly(['data', 'hora', 'r', 'prof'])
+          && id == (request.resource.data.get('prof', '') == '' ? '' : request.resource.data.prof + '_') + request.resource.data.data + '_' + request.resource.data.hora
           && get(/databases/$(database)/documents/agenda_paginas/$(slug)).data.ativo == true;
-        allow delete: if agDono();
+        // o dono libera; o cliente final libera ao cancelar a própria reserva (na mesma gravação)
+        allow delete: if agDono()
+          || getAfter(/databases/$(database)/documents/agenda_paginas/$(slug)/reservas/$(resource.data.r)).data.status == 'cancelada';
       }
       match /reservas/{id} {
         allow create: if existsAfter(/databases/$(database)/documents/agenda_paginas/$(slug)/slots/$(id))
-          && request.resource.data.keys().hasOnly(['servico', 'data', 'hora', 'dur', 'nome', 'telefone', 'email', 'obs', 'status', 't', 'slots'])
+          && request.resource.data.keys().hasOnly(['servico', 'data', 'hora', 'dur', 'nome', 'telefone', 'email', 'obs', 'status', 't', 'slots', 'prof', 'profNome', 'token'])
           && request.resource.data.status == 'nova' && request.resource.data.nome is string && request.resource.data.nome.size() <= 120
-          && curto(request.resource.data, 'telefone', 40) && curto(request.resource.data, 'email', 120) && curto(request.resource.data, 'obs', 500);
-        allow read, update, delete: if agDono();
+          && curto(request.resource.data, 'telefone', 40) && curto(request.resource.data, 'email', 120) && curto(request.resource.data, 'obs', 500)
+          && curto(request.resource.data, 'token', 40) && curto(request.resource.data, 'profNome', 80);
+        allow read, delete: if agDono();
+        // dono altera tudo; o cliente final só cancela, com o código secreto do link
+        allow update: if agDono() || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'canceladoEm', 'tokenConf'])
+          && request.resource.data.status == 'cancelada' && resource.data.status in ['nova', 'confirmada']
+          && resource.data.get('token', '') != '' && request.resource.data.tokenConf == resource.data.token);
       }
+    }
+    // erros de JavaScript enviados pelos sites (sem dados pessoais); só a Upe lê
+    match /erros/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['app', 'msg', 'onde', 'url', 'ua', 't'])
+        && request.resource.data.app is string && request.resource.data.app.size() <= 30 && curto(request.resource.data, 'msg', 300)
+        && curto(request.resource.data, 'onde', 200) && curto(request.resource.data, 'url', 200) && curto(request.resource.data, 'ua', 160) && request.resource.data.t is int;
+      allow read, delete: if ehUpe();
     }
     // dashboards montados pela Upe para o cliente
     match /dash_paineis/{id} {

@@ -1,0 +1,11 @@
+{
+  "name": "upe-capturas",
+  "private": true,
+  "description": "Capturas de tela e testes dos pain\u00e9is em modo demonstra\u00e7\u00e3o",
+  "dependencies": {
+    "playwright": "1.56.1",
+    "@fontsource/figtree": "^5.0.0",
+    "@fontsource/barlow-condensed": "^5.0.0",
+    "qrcodejs2": "0.0.2"
+  }
+}

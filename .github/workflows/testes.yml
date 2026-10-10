@@ -1,0 +1,41 @@
+# Testes automáticos: monta o site e o portal e percorre os painéis no navegador (modo demonstração, sem banco).
+name: Testes
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Monta o site e o portal
+        run: |
+          python3 site/src/build.py
+          python3 site/portal/src/build.py
+          git diff --stat --exit-code -- site/index.html site/portal/index.html site/portal/app.js || (echo "::error::Rode site/src/build.py e site/portal/src/build.py e faça commit do resultado" && exit 1)
+      - name: Confere a sintaxe dos scripts
+        run: |
+          for f in site/apps/servicos/*.js site/apps/lp/*.js site/apps/lp/kit/*.js site/apps/sistemas/*.js; do node --check "$f" 2>/dev/null || node --input-type=module --check < "$f"; done
+      - name: Instala as ferramentas de teste
+        run: |
+          cd tools/capturas && npm install --no-audit --no-fund && cd ../conteudo && npm install --no-audit --no-fund
+          npx playwright install --with-deps chromium
+      - name: Painel Upe Serviços (cliente e Upe)
+        run: node tools/capturas/rotas.js
+      - name: Kit Upe (produtos, carrinho, agenda)
+        run: node tools/capturas/kit.js
+      - name: Agenda online (profissionais, cancelamento, embutida)
+        run: node tools/capturas/agenda.js
+      - name: Páginas de vendas (computador e celular)
+        run: node tools/capturas/vendas.js
+      - name: Valida os modelos de landing page
+        run: node tools/validar-html.js site/apps/servicos/modelos/*.html

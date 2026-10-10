@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<script>/* registro de erros (Upe): até 5 por visita, sem dados pessoais */(function(){var n=0,v={};function e(m,o){try{m=String(m||"").slice(0,300);if(n>=5||v[m]||/ResizeObserver|Script error/i.test(m))return;v[m]=1;n++;fetch("https://firestore.googleapis.com/v1/projects/upecriativo-cc472/databases/(default)/documents/erros?key=AIzaSyDJqqSMLWZLKSt9K1jPzvvQgyikZy4q9vw",{method:"POST",keepalive:true,headers:{"Content-Type":"application/json"},body:JSON.stringify({fields:{app:{stringValue:"sistemas-vendas"},msg:{stringValue:m},onde:{stringValue:String(o||"").slice(0,200)},url:{stringValue:(location.host+location.pathname).slice(0,200)},ua:{stringValue:navigator.userAgent.slice(0,160)},t:{integerValue:String(Date.now())}}})})}catch(_){}}addEventListener("error",function(x){e(x.message,(x.filename||"")+":"+(x.lineno||""))});addEventListener("unhandledrejection",function(x){var r=x.reason;e(r&&(r.message||r.code)||r,"promise")})})();</script>
 <title>Upe Sistemas · Agenda online e dashboards sob medida</title>
 <meta name="description" content="Agenda online para o seu cliente marcar horário sozinho e dashboards com os números do seu negócio num painel só. Criados pela Upe Criativo.">
 <meta property="og:title" content="Upe Sistemas"><meta property="og:description" content="Agenda online e dashboards sob medida."><meta property="og:image" content="https://upe-criativo-sistemas.web.app/img/dashboard.jpg">
@@ -58,7 +59,7 @@
     <p style="margin-top:18px"><a class="btn linha" href="https://wa.me/5511934393249?text=Ol%C3%A1!%20Quero%20saber%20da%20agenda%20online%20e%20dos%20dashboards." target="_blank" rel="noopener">Prefiro chamar no WhatsApp</a></p></div>
   <form class="f" id="fContato"><label>Nome<input name="nome" required maxlength="120" autocomplete="name"></label><label>WhatsApp<input name="whatsapp" required inputmode="tel" maxlength="40" autocomplete="tel"></label>
     <label>Interesse<select name="frente"><option value="agenda">Agenda online</option><option value="dash">Dashboard</option></select></label><label>Plano<select name="plano"></select></label>
-    <label>Conte um pouco do seu negócio<textarea name="mensagem" rows="3" maxlength="1000"></textarea></label><button class="btn azul">Enviar</button></form>
+    <label>Conte um pouco do seu negócio<textarea name="mensagem" rows="3" maxlength="1000"></textarea></label><p style="font-size:13px;color:var(--muted)">Ao enviar, você concorda com a <a href="https://upe-criativo.web.app/privacidade.html" target="_blank" rel="noopener">Política de privacidade</a>.</p><button class="btn azul">Enviar</button></form>
 </div></section>
 <section class="alt"><div class="in" style="max-width:820px">
   <div class="sec-head"><span class="eyebrow">Dúvidas</span><h2>Perguntas frequentes</h2></div>
@@ -68,7 +69,7 @@
   <details><summary>Posso pedir mudanças depois?</summary><p>Sim, pelo próprio painel, em Pedidos de ajuste.</p></details>
 </div></section>
 <section class="final"><div class="in"><h2>Menos tempo no WhatsApp. Mais clareza no negócio.</h2><p>Agenda online e dashboards feitos pela Upe Criativo.</p><a class="btn creme" href="#contato">Quero conversar</a></div></section>
-<footer><div class="in"><span>© Upe Criativo · <a href="https://upe-criativo.web.app">upe-criativo.web.app</a></span><span><a href="https://upe-criativo-lp.web.app">Landing pages</a> · <a href="https://upe-criativo-erp.web.app">Upe ERP</a> · <a href="https://upe-criativo-tv.web.app">Upe TV</a></span></div></footer>
+<footer><div class="in"><span>© Upe Criativo · <a href="https://upe-criativo.web.app">upe-criativo.web.app</a> · <a href="https://upe-criativo.web.app/privacidade.html">Privacidade</a> · <a href="https://upe-criativo.web.app/termos.html">Termos</a></span><span><a href="https://upe-criativo-lp.web.app">Landing pages</a> · <a href="https://upe-criativo-erp.web.app">Upe ERP</a> · <a href="https://upe-criativo-tv.web.app">Upe TV</a></span></div></footer>
 <script type="module">
 import { planos, contato } from "/vendas.js";
 planos(["agenda", "dash"], document.getElementById("listaPlanos")); contato("agenda", "upe-criativo-sistemas");

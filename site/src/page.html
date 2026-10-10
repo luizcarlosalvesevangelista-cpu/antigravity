@@ -1,5 +1,8 @@
+<script>/* registro de erros (Upe): até 5 por visita, sem dados pessoais */(function(){var n=0,v={};function e(m,o){try{m=String(m||"").slice(0,300);if(n>=5||v[m]||/ResizeObserver|Script error/i.test(m))return;v[m]=1;n++;fetch("https://firestore.googleapis.com/v1/projects/upecriativo-cc472/databases/(default)/documents/erros?key=AIzaSyDJqqSMLWZLKSt9K1jPzvvQgyikZy4q9vw",{method:"POST",keepalive:true,headers:{"Content-Type":"application/json"},body:JSON.stringify({fields:{app:{stringValue:"site"},msg:{stringValue:m},onde:{stringValue:String(o||"").slice(0,200)},url:{stringValue:(location.host+location.pathname).slice(0,200)},ua:{stringValue:navigator.userAgent.slice(0,160)},t:{integerValue:String(Date.now())}}})})}catch(_){}}addEventListener("error",function(x){e(x.message,(x.filename||"")+":"+(x.lineno||""))});addEventListener("unhandledrejection",function(x){var r=x.reason;e(r&&(r.message||r.code)||r,"promise")})})();</script>
 <title>Upe Criativo</title>
 <meta name="description" content="Upe Criativo: Branding e Redesign, Upe ERP, Upe TV, landing pages, agenda online e dashboards.">
+<link rel="canonical" href="https://upe-criativo.web.app/">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"ProfessionalService","name":"Upe Criativo","url":"https://upe-criativo.web.app/","logo":"https://upe-criativo.web.app/favicon.svg","image":"https://upe-criativo.web.app/assets/img/filme-h.jpg","description":"Branding e Redesign, Upe ERP (loja online, PDV e pedidos), Upe TV (mídia em telas), landing pages, agenda online e dashboards.","telephone":"+55 11 93439-3249","areaServed":"BR","sameAs":["https://www.instagram.com/upecriativo/"],"makesOffer":[{"@type":"Offer","itemOffered":{"@type":"Service","name":"Branding e Redesign"}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"Upe ERP","applicationCategory":"BusinessApplication"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Upe TV"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Upe Landing pages"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Agenda online e dashboards"}}]}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,400&display=swap">
@@ -490,7 +493,7 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
 <footer>
   <div class="wrap">
     <a href="#inicio" class="brand" aria-label="Upe Criativo"><svg class="wm" viewBox="786 2599 350 48" aria-hidden="true">__WM__</svg></a>
-    <nav aria-label="Rodapé"><a href="#branding">Branding e Redesign</a><a href="https://upe-criativo-erp.web.app/" target="_blank" rel="noopener">Upe ERP</a><a href="https://upe-criativo-tv.web.app/" target="_blank" rel="noopener">Upe TV</a><a href="https://upe-criativo-lp.web.app/" target="_blank" rel="noopener">Landing pages</a><a href="https://upe-criativo-sistemas.web.app/" target="_blank" rel="noopener">Agenda e dashboards</a><a href="#portfolio">Portfólio</a><a href="#sobre">Sobre mim</a><a href="portal/">Área do cliente</a></nav>
+    <nav aria-label="Rodapé"><a href="#branding">Branding e Redesign</a><a href="https://upe-criativo-erp.web.app/" target="_blank" rel="noopener">Upe ERP</a><a href="https://upe-criativo-tv.web.app/" target="_blank" rel="noopener">Upe TV</a><a href="https://upe-criativo-lp.web.app/" target="_blank" rel="noopener">Landing pages</a><a href="https://upe-criativo-sistemas.web.app/" target="_blank" rel="noopener">Agenda e dashboards</a><a href="#portfolio">Portfólio</a><a href="#sobre">Sobre mim</a><a href="portal/">Área do cliente</a><a href="privacidade.html">Privacidade</a><a href="termos.html">Termos de uso</a></nav>
     <span>© <span id="ano">2026</span> Upe Criativo</span>
   </div>
 </footer>
@@ -713,3 +716,13 @@ function route() {
 addEventListener("hashchange", route);
 route();
 </script>
+<script>/* medição do site principal (sem cookies): visitas, origem, aparelho e cliques aparecem no Painel Upe Serviços › cliente Upe Criativo › Análise (página "upe-site") */
+(function(){var A="https://firestore.googleapis.com/v1/projects/upecriativo-cc472/databases/(default)/documents/lp_paginas/upe-site/eventos?key=AIzaSyDJqqSMLWZLKSt9K1jPzvvQgyikZy4q9vw";
+if(/localhost|\.test$|127\./.test(location.hostname))return;
+function s(v){return typeof v==="number"?{integerValue:String(v)}:{stringValue:String(v==null?"":v).slice(0,200)}}
+var vid;try{vid=localStorage.getItem("upe-lp-vid");if(!vid){vid=Math.random().toString(36).slice(2)+Date.now().toString(36);localStorage.setItem("upe-lp-vid",vid)}}catch(_){vid="anon"}
+function ev(t,x){var f={tipo:s(t),t:s(Date.now()),vid:s(vid)};for(var k in x||{})f[k]=s(x[k]);try{fetch(A,{method:"POST",keepalive:true,headers:{"Content-Type":"application/json"},body:JSON.stringify({fields:f})})}catch(_){}}
+var q=new URLSearchParams(location.search),utm=["utm_source","utm_medium","utm_campaign"].map(function(k){return q.get(k)||""}).join("|").replace(/^\|+$/,""),ref="";try{ref=document.referrer?new URL(document.referrer).hostname:""}catch(_){}if(ref===location.hostname)ref="";
+var w=Math.min(screen.width,innerWidth);ev("visita",{ref:ref,utm:utm,disp:w<700?"celular":w<1100?"tablet":"computador"});
+document.addEventListener("click",function(z){var a=z.target.closest&&z.target.closest("a,button");if(!a||a.type==="submit")return;var h=a.getAttribute("href")||"",t=(a.textContent||"").replace(/\s+/g," ").trim().slice(0,60);if(!t&&!h)return;ev(/wa\.me|whatsapp/.test(h)?"whatsapp":"clique",{alvo:(t||h)})},true);
+document.addEventListener("submit",function(){ev("lead")},true);})();</script>

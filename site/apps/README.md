@@ -17,6 +17,9 @@ Os apps que antes ficavam nos projetos `upe-erp` e `upe-tv` agora rodam no mesmo
 - Administração: entra no gerenciador, no painel (como Upe) e no TV quem usa `upecriativo@gmail.com` **ou** é administrador do portal (`admins/{uid}`).
 - Regras de segurança: `site/portal/firestore.rules` (portal + ERP + TV + Upe Serviços).
 - Upe Serviços: o painel testa sem banco com `?demo=1` (dados fictícios no navegador). `lp/lp-render.js` tem uma cópia em `servicos/` e `sistemas/pub.js`, `vendas.js` e `vendas.css` têm cópias em `lp/`: ao mudar um, copie para o outro.
+- Kit Upe (`lp/kit/upe-kit.js`): liga qualquer HTML aos produtos da loja do ERP, carrinho, agenda e WhatsApp pelos atributos `data-upe-*`. Contrato em `docs/KIT-UPE.md`; habilidades em `.claude/skills/` (landing-pages-upe, loja-erp-upe, sistema-upe); validador `tools/validar-html.js`. A loja (`lojas/loja.html`) aceita carrinho vindo do kit (`?add=`) e pode abrir com uma landing page como capa (`lojas/<loja>/publico/capa`).
+- Erros de JavaScript de todos os sites vão para a coleção `erros` (Gestão Upe › Erros dos sites).
+- Recursos do plano Blaze (funções em `site/functions`, Storage, e-mails, PIX automático): `docs/ATIVACAO-BLAZE.md` e `tools/blaze/ativar.sh`.
 - Domínio próprio de landing page: o cliente pede no painel; a Upe adiciona o domínio no Hosting do site `upe-criativo-lp` e marca o pedido como ativo em Gestão Upe › Domínios.
 - Postagens: ficam só no painel principal (Cronograma Upe). A aba "Redes sociais" do gerenciador foi retirada.
 - Publicar: `cd site && firebase deploy --only hosting` (publica o site, o portal e os 8 apps).

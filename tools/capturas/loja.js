@@ -1,0 +1,17 @@
+const __R=require('path').resolve(__dirname,'../..'), __T=process.env.UPE_TRABALHO||__R+'/tools/.trabalho';
+const {chromium}=require('playwright');const S=process.argv[2]||__T;const SITE=__R+'/site/apps/lojas/';const FS=__dirname+'/node_modules/@fontsource/';
+const CSS=['figtree:400','figtree:500','figtree:600','figtree:700','barlow-condensed:600','barlow-condensed:700'].map(x=>{const [f,w]=x.split(':');const fam=f==='figtree'?'Figtree':'Barlow Condensed';return `@font-face{font-family:'${fam}';font-weight:${w};src:url(http://upe-criativo-lojas.web.app/__f/${f}/files/${f}-latin-${w}-normal.woff2)}`}).join('\n');
+const H='http://upe-criativo-lojas.web.app';
+(async()=>{const b=await chromium.launch();
+const shot=async(vp,path,out,act)=>{const ctx=await b.newContext({viewport:vp,deviceScaleFactor:2,colorScheme:'light'});
+ await ctx.route(/fonts\.googleapis\.com/,r=>r.fulfill({body:CSS,contentType:'text/css'}));
+ await ctx.route(/cdnjs\.cloudflare\.com/,r=>r.fulfill({path:__dirname+'/node_modules/qrcodejs2/qrcode.min.js',contentType:'application/javascript'}));
+ await ctx.route(/^http:\/\/upe-criativo-lojas\.web\.app\//,r=>{const u=new URL(r.request().url()).pathname;if(u.startsWith('/__f/'))return r.fulfill({path:FS+u.slice(5)});if(u==='/upe-firebase.js')return r.fulfill({path:__dirname+'/loja-stub.mjs',contentType:'application/javascript'});if(u.startsWith('/img/'))return r.fulfill({path:SITE+u});return r.fulfill({path:SITE+'loja.html',contentType:'text/html'});});
+ const p=await ctx.newPage();p.on('pageerror',e=>console.log('ERR',e.message));await p.goto(H+path);await p.waitForTimeout(2500);if(act)await act(p);await p.waitForTimeout(800);await p.screenshot({path:out,type:'jpeg',quality:92});await ctx.close();console.log('ok',out)};
+const M={width:420,height:860};
+await shot(M,'/doce-encanto',S+'/loja/vitrine-m.jpg',async p=>{await p.evaluate(()=>{document.querySelectorAll('header,.topo,[class*=top]').forEach(e=>e.style.position='static');window.scrollTo(0,300)})});
+await shot({width:1280,height:800},'/doce-encanto',S+'/loja/vitrine-d.jpg');
+await shot(M,'/doce-encanto/pedido/abc123xyz',S+'/loja/pedido-m.jpg');
+await shot(M,'/doce-encanto/pedido/pix77xyz',S+'/loja/pix-m.jpg',async p=>{await p.evaluate(()=>{const e=[...document.querySelectorAll('h2')].find(h=>/pagamento/i.test(h.textContent));document.querySelectorAll('header,.topo,[class*=top]').forEach(x=>x.style.position='static');e&&e.scrollIntoView()})});
+await shot(M,'/doce-encanto/p/brigadeiros',S+'/loja/produto-m.jpg');
+await b.close()})();

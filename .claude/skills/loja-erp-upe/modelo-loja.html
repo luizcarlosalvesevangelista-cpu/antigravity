@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="pt-BR" data-upe-loja="nome-da-loja" data-upe-compra="loja" data-upe-whatsapp="5511999999999">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nome da loja · Loja online</title>
+<meta name="description" content="Compre online na Nome da loja: entrega na sua casa ou retirada, pagamento no PIX.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;900&display=swap" rel="stylesheet">
+<style>
+/* Capa de loja do Upe ERP: os produtos vêm do painel do lojista pelo Kit Upe. Troque as variáveis pela identidade da marca. */
+:root { --cor: #8b3a62; --cor-2: #fbeef4; --tinta: #1c1218; --suave: #6b5a63; --fundo: #fffaf7; --linha: #efe2e8; --upe-cor: var(--cor); --upe-raio: 16px; --upe-card-min: 200px; }
+* { box-sizing: border-box; margin: 0; }
+body { font: 16px/1.55 Lato, system-ui, sans-serif; color: var(--tinta); background: var(--fundo); }
+img { max-width: 100%; height: auto; display: block; }
+a { color: inherit; }
+.in { width: min(1180px, 100% - 32px); margin: 0 auto; }
+header { position: sticky; top: 0; z-index: 20; background: var(--fundo); border-bottom: 1px solid var(--linha); }
+header .in { display: flex; align-items: center; justify-content: space-between; gap: 14px; min-height: 64px; }
+.marca { font-weight: 900; font-size: 22px; text-decoration: none; }
+header nav { display: flex; gap: 16px; align-items: center; } header nav a { text-decoration: none; font-weight: 700; }
+.carrinho-bt { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border-radius: 99px; background: var(--cor); color: #fff; text-decoration: none; font-weight: 900; }
+.carrinho-bt [data-upe-contador] { background: #fff; color: var(--cor); border-radius: 99px; min-width: 22px; height: 22px; display: inline-grid; place-items: center; font-size: 12px; padding: 0 6px; }
+.banner { margin: 20px auto; border-radius: 24px; padding: clamp(28px, 6vw, 64px); background: linear-gradient(120deg, var(--cor), #c2185b); color: #fff; }
+.banner h1 { font-size: clamp(30px, 5vw, 50px); line-height: 1.08; max-width: 16ch; }
+.banner p { margin: 12px 0 22px; max-width: 46ch; opacity: .92; }
+.btn { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 22px; border-radius: 12px; background: #fff; color: var(--cor); font-weight: 900; text-decoration: none; }
+section { padding: 36px 0; }
+h2 { font-size: clamp(22px, 3.4vw, 32px); margin-bottom: 16px; font-weight: 900; }
+.topo-sec { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+/* card próprio (template) */
+.produto { background: #fff; border: 1px solid var(--linha); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; }
+.produto img { aspect-ratio: 1; object-fit: cover; width: 100%; background: var(--cor-2); }
+.produto .corpo { padding: 12px 14px 14px; display: grid; gap: 6px; flex: 1; align-content: start; }
+.produto small { color: var(--suave); text-transform: uppercase; letter-spacing: .08em; font-weight: 700; font-size: 11px; }
+.produto h3 { font-size: 16px; line-height: 1.25; }
+.produto .preco { font-weight: 900; font-size: 18px; } .produto s { color: var(--suave); font-weight: 400; font-size: 14px; margin-right: 6px; }
+.produto button { min-height: 44px; border: 0; border-radius: 10px; background: var(--cor); color: #fff; font: inherit; font-weight: 900; cursor: pointer; margin-top: auto; }
+.produto button[disabled] { opacity: .5; cursor: default; }
+.difs { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; }
+.difs div { background: var(--cor-2); border-radius: 16px; padding: 18px; } .difs b { display: block; margin-bottom: 4px; }
+footer { border-top: 1px solid var(--linha); padding: 28px 0; color: var(--suave); font-size: 14px; margin-top: 30px; }
+footer .in { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+@media (max-width: 720px) { header nav .ocultar { display: none; } }
+</style>
+</head>
+<body>
+<header><div class="in">
+  <a class="marca" data-upe-link="inicio">Nome da loja</a>
+  <nav aria-label="Principal"><a class="ocultar" href="#ofertas">Ofertas</a><a class="ocultar" data-upe-link="loja">Todos os produtos</a>
+    <a class="carrinho-bt" data-upe-link="carrinho" href="#carrinho">Carrinho <span data-upe-contador hidden>0</span></a></nav>
+</div></header>
+
+<div class="in"><div class="banner">
+  <h1>Chamada da coleção ou da promoção.</h1>
+  <p>Frase curta com o benefício: entrega no mesmo dia, desconto no PIX, frete grátis acima de um valor.</p>
+  <a class="btn" href="#ofertas">Ver ofertas</a>
+</div></div>
+
+<section id="ofertas"><div class="in">
+  <div class="topo-sec"><h2>Ofertas da semana</h2><a data-upe-link="loja">Ver tudo →</a></div>
+  <div data-upe-produtos data-destaque data-limite="8">
+    <template>
+      <article class="produto">
+        <img data-campo="imagem" alt="" loading="lazy">
+        <div class="corpo">
+          <small data-campo="categoria"></small>
+          <h3 data-campo="nome"></h3>
+          <span class="preco"><s data-campo="preco-de"></s><span data-campo="preco"></span></span>
+          <button type="button" data-upe-acao="carrinho">Adicionar ao carrinho</button>
+        </div>
+      </article>
+    </template>
+  </div>
+</div></section>
+
+<!-- Uma seção por categoria do painel do ERP (data-categoria = nome da categoria) -->
+<section id="categoria-1"><div class="in">
+  <div class="topo-sec"><h2>Categoria 1</h2></div>
+  <div data-upe-produtos data-categoria="Categoria 1" data-limite="8" data-modelo="#card"></div>
+</div></section>
+
+<template id="card">
+  <article class="produto">
+    <img data-campo="imagem" alt="" loading="lazy">
+    <div class="corpo"><h3 data-campo="nome"></h3><span class="preco"><s data-campo="preco-de"></s><span data-campo="preco"></span></span>
+      <button type="button" data-upe-acao="carrinho">Adicionar ao carrinho</button></div>
+  </article>
+</template>
+
+<section><div class="in difs">
+  <div><b>Entrega ou retirada</b>Escolha na finalização.</div>
+  <div><b>PIX com desconto</b>QR Code no valor certo.</div>
+  <div><b>Acompanhe o pedido</b>Status e rastreio pelo link.</div>
+</div></section>
+
+<div data-upe-carrinho data-flutuante></div>
+<footer><div class="in"><span>Nome da loja · Cidade/UF</span><span><a data-upe-link="loja">Todos os produtos</a> · <a data-upe-link="whatsapp" data-mensagem="Olá! Vim pela loja online.">WhatsApp</a></span></div></footer>
+</body>
+</html>

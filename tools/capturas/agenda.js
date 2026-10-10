@@ -1,0 +1,21 @@
+// Testa a página pública da agenda (modo demonstração): profissionais, faixas com pausa, modo embutido e cancelamento; e as abas novas do painel.
+const __R=require('path').resolve(__dirname,'../..'), __T=process.env.UPE_TRABALHO||__R+'/tools/.trabalho';
+const {chromium}=require('playwright');const {rotas}=require('./rotas.js');
+(async()=>{const b=await chromium.launch();const c=await b.newContext({viewport:{width:390,height:900},deviceScaleFactor:2});await rotas(c,'sistemas');const p=await c.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
+await p.goto('http://srv.test/exemplo?demo=1');await p.waitForSelector('[data-sv]');await p.click('[data-sv="s4"]');await p.waitForTimeout(200);
+console.log('profissionais p/ fisioterapia:',await p.$$eval('[data-prof]',x=>x.map(e=>e.textContent)));
+await p.click('[data-sv="s3"]');console.log('profissionais p/ pilates:',await p.$$eval('[data-prof]',x=>x.map(e=>e.textContent)));
+await p.click('.dia:not([disabled]) >> nth=1');await p.waitForTimeout(200);const hs=await p.$$eval('.hora',x=>x.map(e=>e.textContent));console.log('horários:',hs.length,'tem 12:00?',hs.includes('12:00'),'tem 12:30?',hs.includes('12:30'),'tem 13:00?',hs.includes('13:00'));
+await p.click('.hora >> nth=2');await p.fill('[name=nome]','Teste');await p.fill('[name=telefone]','11999999999');await p.click('#bOk');await p.waitForTimeout(400);
+const canc=await p.getAttribute('a[href*="cancelar="]','href');console.log('link de cancelar:',canc);await p.screenshot({path:__T+'/agenda-ok.png'});
+await p.goto('http://srv.test/exemplo?demo=1&cancelar=ana_2026-10-12_0900&t=abc&s=ana_2026-10-12_0900');await p.waitForSelector('#bC');await p.click('#bC');await p.waitForTimeout(300);console.log('cancelou:',(await p.textContent('#app')).includes('cancelado'));
+await p.goto('http://srv.test/exemplo?demo=1&embed=1&servico=s2');await p.waitForTimeout(500);console.log('embutido sem topo:',await p.$eval('.topo',e=>getComputedStyle(e).display),'serviço pré-escolhido:',await p.getAttribute('[data-sv="s2"]','aria-pressed'));
+await c.close();
+const c2=await b.newContext({viewport:{width:1440,height:1000}});await rotas(c2,'servicos');const q=await c2.newPage();q.on('pageerror',e=>errs.push('painel '+e.message));q.on('dialog',d=>d.accept());
+await q.goto('http://srv.test/?demo=1');await q.evaluate(()=>{localStorage.removeItem('srv-demo-db-v1')});await q.goto('http://srv.test/?demo=1');await q.click('[data-demo="cliente"]');await q.waitForSelector('#nav button');
+await q.evaluate(()=>location.hash='#/agenda/horarios');await q.waitForTimeout(1000);await q.click('[data-addfx="0"]');await q.click('#hSalvar');await q.waitForTimeout(500);await q.screenshot({path:__T+'/painel-horarios.png'});
+await q.evaluate(()=>location.hash='#/agenda/profissionais');await q.waitForTimeout(800);await q.click('#addPf');await q.fill('[data-pf="0"] [data-k=nome]','Ana Souza');await q.click('#pfSalvar');await q.waitForTimeout(500);
+console.log('profissionais salvos:',await q.evaluate(()=>JSON.parse(localStorage.getItem('srv-demo-db-v1'))['agenda_paginas/studio-bem-estar'].profissionais));await q.screenshot({path:__T+'/painel-prof.png'});
+await q.evaluate(()=>location.hash='#/pagina/studio-bem-estar/config');await q.waitForTimeout(1000);await q.screenshot({path:__T+'/painel-ligacoes.png',fullPage:true});
+await q.evaluate(()=>location.hash='#/pagina/studio-bem-estar/codigo');await q.waitForTimeout(800);await q.selectOption('#insBloco','servicos');await q.waitForTimeout(300);console.log('bloco inserido:',(await q.inputValue('#cod')).includes('data-upe-servicos'));
+console.log('erros',errs);await b.close();process.exit(errs.length?1:0)})();

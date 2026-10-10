@@ -3,6 +3,7 @@
    em lp_paginas/<endereço>/eventos e /leads. As regras só liberam a leitura de página publicada e não suspensa. */
 const P = "upecriativo-cc472", KEY = "AIzaSyDJqqSMLWZLKSt9K1jPzvvQgyikZy4q9vw";
 const API = `https://firestore.googleapis.com/v1/projects/${P}/databases/(default)/documents/`;
+export const KIT_URL = "https://upe-criativo-lp.web.app/kit/upe-kit.js";
 export const HOSTS_UPE = /(^|\.)(web\.app|firebaseapp\.com)$|^localhost$|^127\.|\.test$/;
 
 const dec = v => v == null ? null : "stringValue" in v ? v.stringValue : "integerValue" in v ? +v.integerValue : "doubleValue" in v ? v.doubleValue : "booleanValue" in v ? v.booleanValue
@@ -48,18 +49,32 @@ function extras(p) {
   if (seo.descricao) head += `<meta name="description" content="${escA(seo.descricao)}"><meta property="og:description" content="${escA(seo.descricao)}">`;
   if (seo.titulo) head += `<meta property="og:title" content="${escA(seo.titulo)}">`;
   if (seo.imagem) head += `<meta property="og:image" content="${escA(seo.imagem)}">`;
-  const px = p.pixel || {};
-  if (/^\d{6,20}$/.test(px.meta || "")) head += `<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${px.meta}');fbq('track','PageView');<\/script>`;
-  if (/^G-[A-Z0-9]{4,20}$/.test(px.ga4 || "")) head += `<script async src="https://www.googletagmanager.com/gtag/js?id=${px.ga4}"><\/script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${px.ga4}');<\/script>`;
+  const px = p.pixel || {}, meta = /^\d{6,20}$/.test(px.meta || "") ? px.meta : "", ga = /^G-[A-Z0-9]{4,20}$/.test(px.ga4 || "") ? px.ga4 : "";
+  /* Pixel e Analytics só carregam depois que o visitante aceita os cookies (LGPD) */
+  if (meta || ga) body += `<script>(function(){var K="upe-lp-cookies",M=${JSON.stringify(meta)},G=${JSON.stringify(ga)};
+function carrega(){if(M){!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version="2.0";n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,"script","https://connect.facebook.net/en_US/fbevents.js");fbq("init",M);fbq("track","PageView");
+document.addEventListener("submit",function(){try{fbq("track","Lead")}catch(_){}} ,true)}
+if(G){var s=document.createElement("script");s.async=1;s.src="https://www.googletagmanager.com/gtag/js?id="+G;document.head.appendChild(s);window.dataLayer=window.dataLayer||[];window.gtag=function(){dataLayer.push(arguments)};gtag("js",new Date());gtag("config",G);
+document.addEventListener("submit",function(){try{gtag("event","generate_lead")}catch(_){}} ,true)}}
+var v;try{v=localStorage.getItem(K)}catch(_){}if(v==="sim")return carrega();if(v==="nao")return;
+var d=document.createElement("div");d.setAttribute("role","dialog");d.setAttribute("aria-label","Aviso de cookies");
+d.style.cssText="position:fixed;left:16px;right:16px;bottom:16px;z-index:2147483001;max-width:560px;margin:0 auto;background:#0b1d3a;color:#f2f0e2;border-radius:14px;padding:14px 16px;font:14px/1.45 system-ui,sans-serif;box-shadow:0 12px 40px rgba(0,0,0,.35);display:flex;gap:10px;align-items:center;flex-wrap:wrap";
+d.innerHTML='<span style="flex:1;min-width:220px">Usamos cookies de medição e anúncios para melhorar esta página. <a href="https://upe-criativo.web.app/privacidade.html" target="_blank" rel="noopener" style="color:#ff9a7a">Saiba mais</a></span>';
+function bt(t,val,cor){var b=document.createElement("button");b.type="button";b.textContent=t;b.style.cssText="border:0;border-radius:10px;padding:9px 14px;font:700 14px system-ui,sans-serif;cursor:pointer;"+cor;b.onclick=function(){try{localStorage.setItem(K,val)}catch(_){}d.remove();if(val==="sim")carrega()};d.appendChild(b)}
+bt("Recusar","nao","background:transparent;color:#f2f0e2;border:1px solid rgba(242,240,226,.4)");bt("Aceitar","sim","background:#ff7a59;color:#1b0f0a");
+(document.body||document.documentElement).appendChild(d)})();<\/script>`;
   const wa = p.whatsapp || {};
   if (wa.ativo && /^\d{10,15}$/.test(wa.numero || "")) {
     const href = `https://wa.me/${wa.numero}${wa.mensagem ? "?text=" + encodeURIComponent(wa.mensagem) : ""}`;
     body += `<a href="${escA(href)}" target="_blank" rel="noopener" aria-label="Falar no WhatsApp" style="position:fixed;right:18px;bottom:18px;z-index:2147483000;width:58px;height:58px;border-radius:50%;background:#25d366;display:grid;place-items:center;box-shadow:0 8px 24px rgba(0,0,0,.25)"><svg viewBox="0 0 32 32" width="30" height="30" fill="#fff" aria-hidden="true"><path d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3zm0 23.6c-2 0-3.9-.5-5.6-1.5l-.4-.2-3.9 1 1-3.8-.3-.4A10.6 10.6 0 1 1 16 26.6zm5.8-7.9c-.3-.2-1.9-.9-2.2-1-.3-.1-.5-.2-.7.2l-1 1.2c-.2.2-.4.2-.7.1a8.7 8.7 0 0 1-4.3-3.8c-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5l-1-2.4c-.3-.6-.5-.5-.7-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.2 1.1-1.2 2.8s1.2 3.3 1.4 3.5c.2.2 2.4 3.7 5.8 5.1 2.2.9 3 1 4.1.8.7-.1 1.9-.8 2.2-1.5.3-.8.3-1.4.2-1.5l-.5-.3z"/></svg></a>`;
   }
+  /* Kit Upe: liga os elementos data-upe-* à loja do ERP, à agenda, ao WhatsApp e ao pagamento (vínculos do painel) */
+  const v = p.vinculos || {}, temKit = v.loja || v.agenda || /data-upe-/.test(p.__html || "");
+  if (temKit) body += `<script>window.UPE_KIT=${JSON.stringify({ loja: v.loja || "", agenda: v.agenda || "", whatsapp: v.whatsapp || (p.whatsapp || {}).numero || "", compra: v.compra || (v.loja ? "loja" : "whatsapp"), gateway: v.compra === "gateway", pagina: p.__slug || "" }).replace(/</g, "\\u003c")}<\/script><script src="${KIT_URL}" defer><\/script>`;
   return { head, body };
 }
 export function montar(html, p, slug) {
-  const x = extras(p);
+  const x = extras({ ...p, __html: html, __slug: slug || p.__slug || "" });
   let h = String(html || "");
   if (!/<html[\s>]/i.test(h)) h = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>${h}</body></html>`;
   if (p.seo?.titulo) h = /<title>[\s\S]*?<\/title>/i.test(h) ? h.replace(/<title>[\s\S]*?<\/title>/i, `<title>${escA(p.seo.titulo)}</title>`) : h.replace(/<head[^>]*>/i, m => m + `<title>${escA(p.seo.titulo)}</title>`);
