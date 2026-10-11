@@ -1,7 +1,7 @@
 import json,sys
 S=sys.argv[1]; P=os.path.join(os.path.dirname(os.path.abspath(__file__)),'../..')+'/site/portal/cronograma/upe-cronograma.json'
 d=json.load(open(P)); novos=json.load(open(f'{S}/apps_spec.out.json'))
-URL=[('upe-erp-painel.web.app','painel.upecriativo.com.br'),('upe-erp-lojas.web.app','loja.upecriativo.com.br'),('upe-erp.web.app','erp.upecriativo.com.br'),('upe-tv.web.app','tv.upecriativo.com.br')]
+URL=[('painel.upecriativo.com.br','painel.upecriativo.com.br'),('loja.upecriativo.com.br','loja.upecriativo.com.br'),('erp.upecriativo.com.br','erp.upecriativo.com.br'),('tv.upecriativo.com.br','tv.upecriativo.com.br')]
 def fix(s):
     for a,b in URL: s=s.replace(a,b)
     return s

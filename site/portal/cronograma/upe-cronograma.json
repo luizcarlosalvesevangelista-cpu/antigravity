@@ -1,5 +1,5 @@
 {
- "versao": 5,
+ "versao": 4,
  "gerado": "2026-10-04",
  "extras": [
   {
@@ -15,7 +15,7 @@
   {
    "kit": "Upe TV",
    "rotulo": "sugestão de bio",
-   "texto": "Sua marca na TV dos estabelecimentos parceiros 📺\nVídeo · QR code · cardápio com pedido · relatório\nAnuncie ou seja um ponto parceiro 👇\nupe-criativo-tv.web.app"
+   "texto": "Sua marca na TV dos estabelecimentos parceiros 📺\nVídeo · QR code · cardápio com pedido · relatório\nAnuncie ou seja um ponto parceiro 👇\ntv.upecriativo.com.br"
   },
   {
    "kit": "Upe TV",
@@ -30,7 +30,7 @@
   {
    "kit": "Upe ERP",
    "rotulo": "sugestão de bio",
-   "texto": "Loja online, PDV e pedidos num só painel 🛍️\nPIX com QR Code · estoque · frete · suporte\n14 dias grátis 👇\nupe-criativo-erp.web.app/video"
+   "texto": "Loja online, PDV e pedidos num só painel 🛍️\nPIX com QR Code · estoque · frete · suporte\n14 dias grátis 👇\nerp.upecriativo.com.br/video"
   },
   {
    "kit": "Branding Upe",
@@ -801,7 +801,7 @@
    "formato": "youtube",
    "canal": "youtube",
    "titulo": "Upe TV: como anunciar nas telas dos estabelecimentos do bairro",
-   "legenda": "Como funciona o Upe TV: campanhas em TVs e totens de cafés, academias, clínicas e lojas, com QR code para o seu WhatsApp e relatório do tempo de tela.\nupe-criativo-tv.web.app\n\nCapítulos:\n0:00 Abertura\n0:04 Na tela\n0:14 QR code e pedido\n0:26 Resultados\n0:34 Como anunciar",
+   "legenda": "Como funciona o Upe TV: campanhas em TVs e totens de cafés, academias, clínicas e lojas, com QR code para o seu WhatsApp e relatório do tempo de tela.\ntv.upecriativo.com.br\n\nCapítulos:\n0:00 Abertura\n0:04 Na tela\n0:14 QR code e pedido\n0:26 Resultados\n0:34 Como anunciar",
    "roteiro": "Versão história: A tela que todo mundo olha\nA história: Uma padaria queria ser lembrada por quem passa no bairro.\nContexto: Panfleto vai para o lixo. Anúncio online some no feed.\nNarrativa: Enquanto isso, na fila do café ao lado, todo mundo olhava para a TV.\nClímax: E ninguém estava falando com essas pessoas.\nA pergunta: E se a sua marca estivesse nessa tela, com um jeito de chamar você na hora?\nA solução: Upe TV: campanha nas TVs parceiras, com QR code para o seu WhatsApp.\nPor que funciona: Público local todos os dias, e cada leitura do QR aparece no relatório.\nPróximo passo: Anuncie ou seja um ponto parceiro: tv.upecriativo.com.br.\n\nGravação:\n• Vídeo pronto (lançamento Upe TV).",
    "historia": {
     "titulo": "A tela que todo mundo olha",

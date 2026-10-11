@@ -222,7 +222,10 @@ views.leads = async (M, slugSel) => {
 };
 
 /* ---------- domínio próprio ---------- */
-export const DNS_PADRAO = "Tipo A · Nome @ · Valor 199.36.158.100\nTipo TXT · Nome @ · Valor hosting-site=upe-criativo-lp";
+/* registros padrão: raiz do domínio (marca.com.br) usa A + TXT; subdomínio (www.marca.com.br) usa CNAME para o site das páginas */
+const SLD = /^(com|net|org|art|blog|eco|edu|gov|ind|inf|med|adv|arq|eng|nom|tur|tv|app|dev|log|srv|tec|esp|far|fot|imb|jor|mus|psi|rec|seg|vet|wiki|co|ac|or|ne|go)$/;
+export const raizDe = h => { const p = String(h).split("."); return p.length > 2 && p[p.length - 1].length === 2 && SLD.test(p[p.length - 2]) ? p.slice(-3).join(".") : p.slice(-2).join("."); };
+export const DNS_PADRAO = (host = "", site = "upe-criativo-lp") => { const r = raizDe(host); return !host || host === r ? `Tipo A · Nome @ · Valor 199.36.158.100\nTipo TXT · Nome @ · Valor hosting-site=${site}` : `Tipo CNAME · Nome ${host.slice(0, -(r.length + 1))} · Valor ${site}.web.app` + (host === "www." + r ? `\nTipo A · Nome @ · Valor 199.36.158.100 (para ${r} abrir também)` : ""); };
 views.dominios = async M => {
   const [pg, ds] = await Promise.all([paginasDoCliente(), db.list("lp_dominios", { where: [["cid", "==", S.cid]] })]);
   M.innerHTML = topo("Domínio próprio", `<button class="btn azul" type="button" id="novoDom" ${pg.length ? "" : "disabled"}>+ Conectar domínio</button>`) +
@@ -234,7 +237,7 @@ views.dominios = async M => {
     <section class="card"><h3>Seus domínios</h3>${ds.length ? ds.map(d => `<div class="card" style="box-shadow:none">
       <div class="card-h"><b style="font-size:16px">${esc(d.id)}</b>${d.status === "ativo" ? pill("ok", "Conectado") : d.status === "dns" ? pill("info", "Falta criar o DNS") : pill("warn", "Aguardando a Upe")}</div>
       <span class="muted">Abre a página <b>${esc(pg.find(p => p.id === d.slug)?.titulo || d.slug)}</b></span>
-      ${d.status !== "pendente" ? `<div><span class="eyebrow">Registros de DNS</span><pre style="white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px;margin:6px 0 0;font-size:13px">${esc(d.dns || DNS_PADRAO)}</pre></div>` : `<p class="muted">A Upe recebeu o pedido e responde em até 1 dia útil com os registros de DNS.</p>`}
+      ${d.status !== "pendente" ? `<div><span class="eyebrow">Registros de DNS</span><pre style="white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px;margin:6px 0 0;font-size:13px">${esc(d.dns || DNS_PADRAO(d.id))}</pre></div>` : `<p class="muted">A Upe recebeu o pedido e responde em até 1 dia útil com os registros de DNS.</p>`}
       <div class="linha">${d.status === "ativo" ? `<a class="btn sm" href="https://${esc(d.id)}" target="_blank" rel="noopener">Abrir ↗</a>` : ""}<button class="btn sm perigo" type="button" data-rm="${esc(d.id)}">Remover</button></div></div>`).join("") : vazio("Nenhum domínio conectado. Sua página funciona no endereço da Upe enquanto isso.")}</section>`;
   $("#novoDom").onclick = () => dialogo(`<h3>Conectar domínio</h3>
     <label class="f">Domínio<input name="host" required placeholder="www.suamarca.com.br" pattern="[A-Za-z0-9.-]{4,120}"></label>

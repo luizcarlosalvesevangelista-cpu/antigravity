@@ -143,6 +143,13 @@ const hue = s => { let h = 0; for (const ch of String(s || "")) h = (h * 31 + ch
 const toast = m => { const t = $("#toast"); t.textContent = m; t.hidden = false; clearTimeout(t._t); t._t = setTimeout(() => t.hidden = true, 2800); };
 const ls = { get: (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } }, set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} } };
 const partes = location.pathname.split("/").filter(Boolean).map(decodeURIComponent);
+/* domínio próprio do lojista (lojas_dominios/{host}, conectado pela Upe no painel central): abre a loja direto na raiz */
+if (!/(^|\.)(web\.app|firebaseapp\.com|upecriativo\.com\.br)$|^localhost$|^127\.|\.test$/.test(location.hostname)) {
+  const h = location.hostname.toLowerCase();
+  for (const x of [h, h.replace(/^www\./, ""), "www." + h]) {
+    try { const s = await getDoc(doc(fs, "lojas_dominios/" + x)); if (s.exists() && s.data().status === "ativo") { if (partes[0] !== s.data().slug) partes.unshift(s.data().slug); break; } } catch {}
+  }
+}
 const SLUG = (partes[0] || "").toLowerCase(), BASE = "lojas/" + SLUG;
 const K = { cart: `loja:${SLUG}:carrinho`, peds: `loja:${SLUG}:pedidos`, comp: `loja:${SLUG}:comprador` };
 let CFG = null, PRODS = [], ST = { tela: "vitrine", classe: "", q: "", ordem: "nome", cupom: "", cupOk: null, pag: "", parc: 1, pedido: null, bn: 0 };

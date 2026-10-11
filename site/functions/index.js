@@ -11,7 +11,7 @@
      dominioConectar    lp_dominios status "conectar"      → cria o domínio no Hosting e grava os registros de DNS
      dominiosVerificar  de hora em hora                    → marca o domínio como ativo quando o Firebase conecta
      planilha           chamada do painel                  → lê planilha do Google privada (compartilhada com a conta de serviço) */
-const { onDocumentCreated, onDocumentUpdated } = require("firebase-functions/v2/firestore");
+const { onDocumentCreated, onDocumentUpdated, onDocumentWritten } = require("firebase-functions/v2/firestore");
 const { onSchedule } = require("firebase-functions/v2/scheduler");
 const { onRequest, onCall, HttpsError } = require("firebase-functions/v2/https");
 const { defineSecret, defineString } = require("firebase-functions/params");
@@ -197,23 +197,41 @@ exports.lpRender = onRequest({ memory: "256MiB" }, async (req, res) => {
 
 /* ---------- domínios próprios automáticos (Firebase Hosting API) ---------- */
 const hostingApi = async (caminho, metodo = "GET", corpo) => { const c = await new GoogleAuth({ scopes: ["https://www.googleapis.com/auth/cloud-platform"] }).getClient(); const r = await c.request({ url: "https://firebasehosting.googleapis.com/v1beta1/" + caminho, method: metodo, data: corpo }).catch(e => e.response); return r; };
-const dnsTexto = d => { const linhas = []; for (const u of d?.requiredDnsUpdates?.desired || []) for (const r of u.records || []) linhas.push(`Tipo ${r.type} · Nome ${u.domainName === d.name?.split("/").pop() ? "@" : u.domainName} · Valor ${r.rdata}`); return linhas.join("\n"); };
-exports.dominioConectar = onDocumentUpdated("lp_dominios/{host}", async ev => {
-  const antes = ev.data.before.data(), d = ev.data.after.data(); if (d.status !== "conectar" || antes.status === "conectar") return;
-  const host = ev.params.host, proj = process.env.GCLOUD_PROJECT;
-  let r = await hostingApi(`projects/${proj}/sites/upe-criativo-lp/customDomains?customDomainId=${encodeURIComponent(host)}`, "POST", {});
-  if (r.status >= 400 && r.status !== 409) { await ev.data.after.ref.set({ status: "pendente", erro: JSON.stringify(r.data).slice(0, 300) }, { merge: true }); return; }
+// raiz do domínio (ex.: marca.com.br, marca.com): o Registro.br e outros pedem só o "Nome" relativo (www, loja, @)
+const SLD = /^(com|net|org|art|blog|eco|edu|gov|ind|inf|med|adv|arq|eng|nom|tur|tv|app|dev|log|srv|tec|esp|far|fot|imb|jor|mus|psi|rec|seg|vet|wiki|co|ac|or|ne|go)$/;
+const raizDe = h => { const p = h.split("."); return p.length > 2 && p[p.length - 1].length === 2 && SLD.test(p[p.length - 2]) ? p.slice(-3).join(".") : p.slice(-2).join("."); };
+const nomeRel = (dom, raiz) => dom === raiz ? "@" : dom.slice(0, -(raiz.length + 1));
+const dnsTexto = d => { const linhas = []; for (const u of d?.requiredDnsUpdates?.desired || []) { const raiz = raizDe(u.domainName); for (const r of u.records || []) if (r.requiredAction !== "NONE") linhas.push(`Tipo ${r.type} · Nome ${nomeRel(u.domainName, raiz)} · Valor ${r.rdata}`); } return linhas.join("\n"); };
+// landing pages abrem no site upe-criativo-lp; lojas no upe-criativo-lojas
+const SITE_DOM = { lp_dominios: "upe-criativo-lp", lojas_dominios: "upe-criativo-lojas" };
+async function conectarDominio(col, host, ref) {
+  const proj = process.env.GCLOUD_PROJECT, site = SITE_DOM[col], raiz = raizDe(host);
+  let r = await hostingApi(`projects/${proj}/sites/${site}/customDomains?customDomainId=${encodeURIComponent(host)}`, "POST", {});
+  if (r.status >= 400 && r.status !== 409) { await ref.set({ status: "pendente", erro: JSON.stringify(r.data).slice(0, 300) }, { merge: true }); return; }
+  // www.marca.com.br: a raiz (marca.com.br) também abre e redireciona para o www
+  if (host === "www." + raiz) await hostingApi(`projects/${proj}/sites/${site}/customDomains?customDomainId=${encodeURIComponent(raiz)}`, "POST", { redirectTarget: host });
   await new Promise(ok => setTimeout(ok, 8000));
-  r = await hostingApi(`projects/${proj}/sites/upe-criativo-lp/customDomains/${encodeURIComponent(host)}`);
-  await ev.data.after.ref.set({ status: "dns", dns: dnsTexto(r.data) || "Tipo A · Nome @ · Valor 199.36.158.100", conectadoEm: Date.now() }, { merge: true });
+  const linhas = [];
+  for (const h of host === "www." + raiz ? [host, raiz] : [host]) { const x = await hostingApi(`projects/${proj}/sites/${site}/customDomains/${encodeURIComponent(h)}`); if (x.status === 200) linhas.push(dnsTexto(x.data)); }
+  const padrao = host === raiz ? `Tipo A · Nome @ · Valor 199.36.158.100\nTipo TXT · Nome @ · Valor hosting-site=${site}` : `Tipo CNAME · Nome ${nomeRel(host, raiz)} · Valor ${site}.web.app`;
+  await ref.set({ status: "dns", dns: linhas.filter(Boolean).join("\n") || padrao, conectadoEm: Date.now() }, { merge: true });
+}
+const aoPedirConexao = col => onDocumentWritten(`${col}/{host}`, async ev => {
+  const antes = ev.data.before.exists ? ev.data.before.data() : null, d = ev.data.after.exists ? ev.data.after.data() : null;
+  if (!d || d.status !== "conectar" || (antes && antes.status === "conectar")) return;
+  await conectarDominio(col, ev.params.host, ev.data.after.ref);
 });
+exports.dominioConectar = aoPedirConexao("lp_dominios");
+exports.dominioLojaConectar = aoPedirConexao("lojas_dominios");
 exports.dominiosVerificar = onSchedule({ schedule: "every 60 minutes", timeZone: TZ }, async () => {
   const proj = process.env.GCLOUD_PROJECT;
-  for (const d of (await db.collection("lp_dominios").where("status", "==", "dns").get()).docs) {
-    const r = await hostingApi(`projects/${proj}/sites/upe-criativo-lp/customDomains/${encodeURIComponent(d.id)}`); if (r.status !== 200) continue;
+  for (const col of Object.keys(SITE_DOM)) for (const d of (await db.collection(col).where("status", "==", "dns").get()).docs) {
+    const r = await hostingApi(`projects/${proj}/sites/${SITE_DOM[col]}/customDomains/${encodeURIComponent(d.id)}`); if (r.status !== 200) continue;
     const ok = r.data.hostState === "HOST_ACTIVE" && r.data.ownershipState === "OWNERSHIP_ACTIVE";
     await d.ref.set(ok ? { status: "ativo", ativoEm: Date.now() } : { dns: dnsTexto(r.data) || d.data().dns, verificadoEm: Date.now() }, { merge: true });
-    if (ok) { const { emails } = await emailsDoCliente(d.data().cid); await mail(emails, `Domínio ${d.id} conectado`, caixa("Seu domínio está no ar", `<p><b>${esc(d.id)}</b> já abre a sua página, com cadeado (HTTPS).</p>`, "Abrir", "https://" + d.id)); }
+    if (!ok) continue;
+    const emails = col === "lp_dominios" ? (await emailsDoCliente(d.data().cid)).emails : (d.data().email ? [d.data().email] : []);
+    await mail(emails, `Domínio ${d.id} conectado`, caixa("Seu domínio está no ar", `<p><b>${esc(d.id)}</b> já abre a sua ${col === "lp_dominios" ? "página" : "loja"}, com cadeado (HTTPS).</p>`, "Abrir", "https://" + d.id));
   }
 });
 

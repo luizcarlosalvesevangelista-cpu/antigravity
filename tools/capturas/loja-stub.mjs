@@ -18,7 +18,7 @@ const CFG={nome:'Doce Encanto',ativa:true,tema:{base:'#4a1f35',destaque:'#c2185b
 const PED={nome:'Ana Souza',pedidoNumero:'#1042',status:'enviado',pagamento:'PIX',pagStatus:'pago',total:139.9,rastreio:'AB123456789BR',transportadora:'Correios',itens:[{nome:'Caixa com 12 brigadeiros',qtd:2,unit:42},{nome:'Bolo de cenoura com cobertura',qtd:1,unit:49.9}],endereco:'Rua das Flores',numero:'120',bairro:'Centro',cidade:'São Paulo',uf:'SP'};
 export const fs={};
 export const doc=(f,p)=>({p});export const collection=(f,p)=>({p});
-const val=p=>{const s=p.split('/');if(s.length===2)return{nome:'Doce Encanto',ativa:true};if(p.endsWith('publico/config'))return CFG;if(s[2]==='pedidos')return s[3].includes('pix')?{...PED,status:'novo',pagStatus:'pendente',rastreio:'',pedidoNumero:'#1043',nome:'Carlos Lima'}:PED;return null};
+const val=p=>{const s=p.split('/');if(s[0]==='lojas_dominios')return s[1]==='www.doceencanto.com.br'?{status:'ativo',slug:'doce-encanto',empresa:'doce'}:null;if(s.length===2)return{nome:'Doce Encanto',ativa:true};if(p.endsWith('publico/config'))return CFG;if(s[2]==='pedidos')return s[3].includes('pix')?{...PED,status:'novo',pagStatus:'pendente',rastreio:'',pedidoNumero:'#1043',nome:'Carlos Lima'}:PED;return null};
 export const getDoc=async r=>{const v=val(r.p);return{exists:()=>!!v,data:()=>v,id:r.p.split('/').pop()}};
 export const getDocs=async r=>({docs:r.p.endsWith('produtos')?Object.entries(P).map(([id,d])=>({id,data:()=>d})):[]});
 export const setDoc=async()=>{};export const onSnapshot=(r,ok)=>{getDoc(r).then(ok);return()=>{}};

@@ -134,6 +134,13 @@ service cloud.firestore {
       }
     }
   
+    // domínio próprio da loja: a Upe conecta (painel central) e a loja lê o endereço para abrir na raiz
+    match /lojas_dominios/{host} {
+      allow get: if resource == null || resource.data.status == 'ativo' || membro(resource.data.empresa);
+      allow list: if ehUpe();
+      allow write: if ehUpe();
+    }
+
     /* ================= Upe Serviços: Landing pages, Agenda online e Dashboards (painel, páginas públicas, planos e cobranças) ================= */
     function srvAcesso() { return /databases/$(database)/documents/srv_acessos/$(request.auth.uid); }
     function srvMembro(cid) { return ehUpe() || (verificado() && exists(srvAcesso()) && get(srvAcesso()).data.cid == cid); }

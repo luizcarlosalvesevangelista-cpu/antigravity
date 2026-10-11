@@ -19,7 +19,7 @@ S=[
  ("E se tudo chegasse organizado, com pagamento e rastreio?","erp-painel.jpg"),
  ("Upe ERP: loja virtual, PDV, PIX com QR Code e gestão de pedidos.","erp-pdv.jpg"),
  ("Cada venda baixa o estoque. Cada pedido tem status e link de acompanhamento.","erp-pdv.jpg"),
- ("Teste 14 dias grátis em upe-erp.web.app.","erp-painel.jpg")]),
+ ("Teste 14 dias grátis em erp.upecriativo.com.br.","erp-painel.jpg")]),
 ("yt-03-upe-tv","A tela que todo mundo olha",[
  ("Uma padaria queria ser lembrada por quem passa no bairro.","tv-tela.jpg"),
  ("Panfleto vai para o lixo. Anúncio online some no feed.","tv-tela.jpg"),
@@ -28,7 +28,7 @@ S=[
  ("E se a sua marca estivesse nessa tela, com um jeito de chamar você na hora?","tv-qr.jpg"),
  ("Upe TV: campanha nas TVs parceiras, com QR code para o seu WhatsApp.","tv-tela.jpg"),
  ("Público local todos os dias, e cada leitura do QR aparece no relatório.","tv-portal.jpg"),
- ("Anuncie ou seja um ponto parceiro: upe-tv.web.app.","tv-tela.jpg")]),
+ ("Anuncie ou seja um ponto parceiro: tv.upecriativo.com.br.","tv-tela.jpg")]),
 ("yt-04-branding-x-logo","Eu só queria um logo novo",[
  ("Um cliente chegou pedindo: quero um logo novo.","redesign.jpg"),
  ("O logo era bom. O problema era todo o resto.","redesign.jpg"),
@@ -73,7 +73,7 @@ S=[
  ("Dá para saber de qual TV veio o pedido?","tv-portal.jpg"),
  ("Sim: o pedido mostra em qual tela o cliente viu a marca.","tv-qr.jpg"),
  ("Do olhar à conversa, com cada leitura medida no portal.","tv-portal.jpg"),
- ("Anuncie no Upe TV: upe-tv.web.app.","tv-tela.jpg")]),
+ ("Anuncie no Upe TV: tv.upecriativo.com.br.","tv-tela.jpg")]),
 ("yt-09-manual-de-marca","A marca que se desfez aos poucos",[
  ("A marca nova ficou linda no lançamento.","brand.jpg"),
  ("Seis meses depois, cada fornecedor usava uma versão diferente.","redesign.jpg"),

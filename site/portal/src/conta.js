@@ -57,6 +57,13 @@ async function aClienteApps(ct, { id, doc, priv, acoes, save }) {
   await carregarFontes();
   const cat = appsCat(state.cache.pub), peds = appPedidos(doc, acoes), advs = (state.fontes.tvCfg || {}).advertisers || [];
   doc.apps = doc.apps || {}; doc.paineis = doc.paineis || {};
+  // domínios próprios: loja (lojas_dominios, conectado aqui) e landing pages (lp_dominios, pedidos pelo cliente no painel)
+  const erp0 = doc.apps.erp || {}, [lojas, lpDoms, lojaDom] = await Promise.all([
+    S.list("lojas").then(l => l.filter(x => x.empresa && x.empresa === erp0.empresa)).catch(() => []),
+    S.list("lp_dominios").then(l => l.filter(x => x.cid === id)).catch(() => []),
+    erp0.dominio ? S.get(`lojas_dominios/${erp0.dominio}`).catch(() => null) : null]);
+  const stDom = d => !d ? "" : d.status === "ativo" ? '<span class="pill ok">Conectado</span>' : d.status === "dns" ? '<span class="pill info">Falta o DNS do cliente</span>' : d.status === "conectar" ? '<span class="pill info">Conectando…</span>' : '<span class="pill warn">Pendente</span>';
+  const dnsBox = d => d && d.dns && d.status !== "ativo" ? `<pre class="dnsbox">${esc(d.dns)}</pre>` : d && d.erro ? `<span class="muted small">Erro: ${esc(d.erro)}</span>` : "";
   const precoTxt = e => +e.preco ? brl(e.preco) + (e.unico ? " único" : "/mês") : "sob consulta";
   const painelBox = k => { const p = doc.paineis[k] || {}; return `<div class="grid painel-op" style="gap:6px"><span class="eb">Painel do cliente</span>
       <div class="row small" style="gap:12px"><label class="row" style="gap:6px"><input type="radio" name="pm-${k}" value="padrao" ${p.modo !== "personalizado" ? "checked" : ""}>${k === "branding" ? "Portal padrão" : "Painel padrão do app"}</label><label class="row" style="gap:6px"><input type="radio" name="pm-${k}" value="personalizado" ${p.modo === "personalizado" ? "checked" : ""}>Painel em branco (HTML próprio)</label></div>
@@ -64,7 +71,11 @@ async function aClienteApps(ct, { id, doc, priv, acoes, save }) {
       <span class="muted small" data-pp="${k}" ${p.modo === "personalizado" ? "" : "hidden"}>O HTML abre isolado no painel do cliente, ao lado da aba Pagamentos desta frente. Ele pode pedir os dados do cliente e abrir os pagamentos com <code>parent.postMessage({ upe: "pagamentos" }, "*")</code>.</span></div>`; };
   const linkCampos = k => {
     const a = doc.apps[k] || {};
-    if (k === "erp") return `<label class="f">Endereço da empresa no ERP<input data-k="empresa" value="${esc(a.empresa || "")}" placeholder="${esc(slugEmp(doc.marca || doc.empresa || doc.nome))}"></label>`;
+    if (k === "erp") return `<label class="f">Endereço da empresa no ERP<input data-k="empresa" value="${esc(a.empresa || "")}" placeholder="${esc(slugEmp(doc.marca || doc.empresa || doc.nome))}"></label>
+      <div class="g2"><label class="f">Domínio próprio da loja<input data-k="dominio" value="${esc(a.dominio || "")}" placeholder="www.lojadocliente.com.br"></label>
+      <label class="f">Loja que ele abre<select data-k="loja">${lojas.length ? lojas.map(l => `<option value="${esc(l.id)}" ${a.loja === l.id ? "selected" : ""}>${esc(l.nome || l.id)} · loja.upecriativo.com.br/${esc(l.id)}</option>`).join("") : `<option value="${esc(a.loja || "")}">${a.loja ? esc(a.loja) : "a loja aparece quando o cliente publicar"}</option>`}</select></label></div>
+      ${a.dominio ? `<div class="row small">${stDom(lojaDom)}<span class="muted">${esc(a.dominio)}</span>${lojaDom && lojaDom.status === "ativo" ? `<a class="btn sec sm" href="https://${esc(a.dominio)}" target="_blank" rel="noopener">Abrir</a>` : ""}</div>${dnsBox(lojaDom)}` : `<span class="muted small">Com domínio, ao salvar a Upe conecta sozinha e os registros de DNS aparecem aqui e no painel do cliente.</span>`}`;
+    if (k === "landing") return lpDoms.length ? `<div class="grid" style="gap:6px"><span class="eb">Domínios das páginas</span>${lpDoms.map(d => `<div class="grid" style="gap:4px"><div class="row small">${stDom(d)}<b>${esc(d.id)}</b><span class="muted">→ /${esc(d.slug || "")}</span>${d.status === "pendente" ? `<button class="btn sec sm" data-lpcon="${esc(d.id)}">Conectar agora</button>` : ""}</div>${dnsBox(d)}</div>`).join("")}</div>` : `<span class="muted small">O cliente pede o domínio das páginas no painel (Landing pages › Domínio próprio); ele aparece aqui para conectar.</span>`;
     if (k === "tv") return `<label class="f">Anunciante no Upe TV<select data-k="codigo"><option value="">— escolha —</option>${a.codigo && !advs.some(v => v.code === a.codigo) ? `<option value="${esc(a.codigo)}" selected>${esc(a.codigo)}</option>` : ""}${advs.map(v => `<option value="${esc(v.code)}" ${a.codigo === v.code ? "selected" : ""}>${esc(v.name)} · ${esc(v.code)}</option>`).join("")}</select></label>${advs.length ? "" : `<span class="muted small">Cadastre o anunciante no Upe TV para ligar aqui.</span>`}`;
     if (k === "sistemas") { const mo = a.modulos && a.modulos.length ? a.modulos : ["agenda", "dash"]; return `<div class="row small" style="gap:12px"><label class="row" style="gap:6px"><input type="checkbox" data-mod="agenda" ${mo.includes("agenda") ? "checked" : ""}>Agenda online</label><label class="row" style="gap:6px"><input type="checkbox" data-mod="dash" ${mo.includes("dash") ? "checked" : ""}>Dashboards</label></div>`; }
     return "";
@@ -100,7 +111,7 @@ async function aClienteApps(ct, { id, doc, priv, acoes, save }) {
       const st = v("status"); if (!st) { if (doc.apps[k]) doc.apps[k] = { ...doc.apps[k], status: "cancelado" }; return; }
       const mods = $$("[data-mod]", box).filter(i => i.checked).map(i => i.dataset.mod);
       doc.apps[k] = { ...(doc.apps[k] || {}), status: st, plano: v("plano"), extras: $$("[data-ex]", box).filter(i => i.checked).map(i => i.dataset.ex), dia: +v("dia") || 10, ajuste: +v("ajuste") || 0, inicio: v("inicio"), fimTeste: v("fimTeste"), obs: v("obs").trim(),
-        ...(k === "erp" ? { empresa: slugEmp(v("empresa") || doc.apps[k]?.empresa || doc.marca || doc.empresa || doc.nome) } : {}), ...(k === "tv" ? { codigo: v("codigo") } : {}), ...(k === "sistemas" ? { modulos: mods.length ? mods : ["agenda", "dash"] } : {}) }; });
+        ...(k === "erp" ? { empresa: slugEmp(v("empresa") || doc.apps[k]?.empresa || doc.marca || doc.empresa || doc.nome), dominio: lower(v("dominio")).replace(/^https?:\/\//, "").replace(/\/.*$/, ""), loja: v("loja") } : {}), ...(k === "tv" ? { codigo: v("codigo") } : {}), ...(k === "sistemas" ? { modulos: mods.length ? mods : ["agenda", "dash"] } : {}) }; });
     ["branding", ...APP_IDS].forEach(k => { const r = $(`input[name="pm-${k}"]:checked`, ct); if (!r) return; doc.paineis[k] = { ...(doc.paineis[k] || {}), modo: r.value }; });
     priv.email = lower($("#svEmail").value);
   };
@@ -112,6 +123,7 @@ async function aClienteApps(ct, { id, doc, priv, acoes, save }) {
     modal("Painel personalizado · " + FRENTES_UPE[b.dataset.pv], `<iframe class="pp-frame" sandbox="allow-scripts allow-forms allow-popups" title="Prévia do painel"></iframe>`, `<button class="btn" data-close>Fechar</button>`, true); $(".pp-frame").srcdoc = d.html; });
   if ($("#svMsg")) $("#svMsg").onclick = () => copy(msgAcesso(doc, priv), "Mensagem copiada");
   $$("[data-ver]", ct).forEach(b => b.onclick = () => { ss.set("upe-cliente", id); ss.set("upe-voltar", `#/admin/cliente/${id}/apps`); go(`#/c/s-${b.dataset.ver}`); });
+  $$("[data-lpcon]", ct).forEach(b => b.onclick = async () => { await S.set(`lp_dominios/${b.dataset.lpcon}`, { status: "conectar", pedidoConexaoEm: Date.now() }, true); toast("Conectando… os registros de DNS aparecem em instantes"); setTimeout(reAdmin, 12000); });
   $$("[data-pok]", ct).forEach(b => b.onclick = async () => { doc.pedidosAdm = doc.pedidosAdm || {}; doc.pedidosAdm[b.dataset.pok] = { ...(doc.pedidosAdm[b.dataset.pok] || {}), status: "entregue" }; collect(); await save("Pedido marcado como atendido"); });
   $$("[data-cob]", ct).forEach(b => b.onclick = async () => { collect(); const cob = cobrancaApp(cat, doc, b.dataset.cob, doc.apps[b.dataset.cob]); if (!cob) return toast("A cobrança deste mês já existe"); doc.acesso = { ...(doc.acesso || {}), pagamentos: true }; await save(`Cobrança de ${brl(cob.valor)} liberada no painel (vence ${fdate(cob.vencimento)})`); });
   $("#caSv").onclick = async () => {
@@ -121,6 +133,15 @@ async function aClienteApps(ct, { id, doc, priv, acoes, save }) {
       const unicas = APP_IDS.flatMap(k => ativoApp(doc.apps[k]) ? cobrancasUnicas(cat, doc, k, doc.apps[k]) : []);
       if (FRENTES_DO_CLIENTE(doc).length > 0) doc.acesso = { ...(doc.acesso || {}), pagamentos: true };
       const msgs = await provisionar(id, doc, priv);
+      // domínio próprio da loja
+      const e = doc.apps.erp || {};
+      if (erp0.dominio && erp0.dominio !== e.dominio) await S.del(`lojas_dominios/${erp0.dominio}`).catch(() => {});
+      if (ativoApp(e) && e.dominio) {
+        if (!/^[a-z0-9.-]{4,120}$/.test(e.dominio) || !e.dominio.includes(".")) throw new Error("domínio da loja inválido: " + e.dominio);
+        const atual = await S.get(`lojas_dominios/${e.dominio}`).catch(() => null), slug = e.loja || (lojas[0] || {}).id || e.empresa;
+        if (!atual) { await S.set(`lojas_dominios/${e.dominio}`, { empresa: e.empresa, slug, cliente: id, email: lower(priv.email), status: "conectar", criadoEm: Date.now() }); msgs.push("Domínio da loja: conectando " + e.dominio); }
+        else if (atual.slug !== slug || atual.empresa !== e.empresa) await S.set(`lojas_dominios/${e.dominio}`, { slug, empresa: e.empresa }, true);
+      }
       doc.atualizadoEm = Date.now(); await S.set(`clientes/${id}`, doc);
       toast([...msgs, unicas.length ? `${unicas.length} cobrança(s) de criação liberada(s)` : ""].filter(Boolean).join(" · ") || "Serviços salvos"); reAdmin();
     } catch (e) { console.error(e); toast("Não foi possível salvar tudo: " + (e.message || e)); b.disabled = false; }
@@ -208,6 +229,11 @@ async function cServico(m, c, frente, sub) {
   if (frente === "branding") return go("#/c/inicio");
   const precisaLogin = frente !== "tv" && S.mode === "firebase" && !S.contaAtual();
   if (precisaLogin) { box.innerHTML = `<div class="empty"><b>Entre com o seu e-mail para abrir este painel.</b><span>O código de acesso vale só para o portal de branding. Os apps usam o login com e-mail (o mesmo para todos).</span><button class="btn" id="kLogin">Entrar com e-mail</button></div>`; $("#kLogin").onclick = () => { ss.set("upe-cliente", null); gateConta(); }; return; }
+  if (frente === "erp" && a.dominio) {
+    const d = await S.get(`lojas_dominios/${a.dominio}`).catch(() => null);
+    if (d && d.status === "dns") box.insertAdjacentHTML("beforebegin", `<section class="card grid prio"><b>Falta um passo para ${esc(a.dominio)} abrir a sua loja</b><p class="small">No painel de onde o domínio foi registrado (Registro.br, GoDaddy, Hostinger…), crie estes registros de DNS. Em até 24 horas a loja abre com cadeado (HTTPS).</p><pre class="dnsbox">${esc(d.dns || "")}</pre></section>`);
+    else if (d && d.status === "ativo") box.insertAdjacentHTML("beforebegin", `<p class="small">Sua loja: <a href="https://${esc(a.dominio)}" target="_blank" rel="noopener">${esc(a.dominio)}</a></p>`);
+  }
   if (frente === "tv" && !a.codigo) { box.innerHTML = `<div class="empty"><b>Upe TV em preparação.</b><span>Assim que a sua campanha for cadastrada, os relatórios das telas aparecem aqui.</span></div>`; return; }
   const adm = state.admin && ss.get("upe-voltar");
   const q = new URLSearchParams({ embed: "1" });

@@ -569,7 +569,7 @@ SCENES.redesign = () => ({
 
 /* ERP: painel */
 const sideNav = (on) => `<aside class="side"><div class="co">DOCE ENCANTO<small>Doces artesanais</small></div>${["Início", "Pedidos", "Gestão de pedidos", "PDV", "Produtos", "Clientes", "Cupons", "Relatórios", "Configurações"].map(n => `<div class="it ${n === on ? "on" : ""}">${n}</div>`).join("")}</aside>`;
-const browser = (on, main) => `<div class="browser"><div class="bbar"><i></i><i></i><i></i><span class="url">upe-erp.web.app</span></div><div class="app">${sideNav(on)}<main class="main">${main}</main></div></div>`;
+const browser = (on, main) => `<div class="browser"><div class="bbar"><i></i><i></i><i></i><span class="url">erp.upecriativo.com.br</span></div><div class="app">${sideNav(on)}<main class="main">${main}</main></div></div>`;
 SCENES.erpPanel = () => ({
   dur: 10, bg: "azul",
   cues: [[.3, "swell"], [1.0, "whoosh-soft"], [2.0, "count"], [3.4, "rise"], ...[0, 1, 2, 3, 4, 5].map(i => [5.0 + i * .22, "tick"]), [7.4, "chime"]],
@@ -816,7 +816,7 @@ SCENES.tvQR = () => ({
         </div>
       </div>
       <div class="vis"><div class="fit" style="--k:${FMT === "v" ? 1.2 : 1.08}"><div class="phone"><div class="notch"></div><div class="scr">
-        <div class="ps cam"><div class="view"></div><div class="qrbig">${qr(21, 140, 3)}</div><div class="scanbox"></div><div class="line"></div><div class="link">Abrir cardápio<small>upe-tv.web.app · Hamburgueria Brasa 81</small></div></div>
+        <div class="ps cam"><div class="view"></div><div class="qrbig">${qr(21, 140, 3)}</div><div class="scanbox"></div><div class="line"></div><div class="link">Abrir cardápio<small>tv.upecriativo.com.br · Hamburgueria Brasa 81</small></div></div>
         <div class="ps menu" style="background:#fff"><div class="menu-h"><small>HAMBURGUERIA BRASA 81</small><b>Cardápio da semana</b></div>
           ${item("Smash duplo", "+ Bacon extra", "36,00", "42,00", "#B8562B", '<span class="tag of">OFERTA</span>')}
           ${item("Veggie da casa", "Grão-de-bico e queijo", "30,00", "", "#7E9A4E", '<span class="tag nv">NOVIDADE</span>')}
@@ -971,7 +971,7 @@ SCENES.end = (opt = {}) => ({
   dur: opt.dur || 8, bg: "azul",
   cues: [[.2, "swell"], ...LETTERS.map((_, i) => [.5 + i * .06, "tick"]), [1.6, "sparkle"], [3.0, "whoosh"], [3.5, "final"]],
   build(root) {
-    const content = `<div class="end">${opt.prod ? `<div class="prod">${opt.prod}</div>` : ""}<div class="wmw">${wordmark()}</div><div class="tag2">${opt.tag || "Branding, sistemas e mídia para a sua marca decolar."}</div><div class="urls">${(opt.urls || ["upe-erp.web.app", "upe-tv.web.app"]).map(u => `<span>${u}</span>`).join("")}</div></div>`;
+    const content = `<div class="end">${opt.prod ? `<div class="prod">${opt.prod}</div>` : ""}<div class="wmw">${wordmark()}</div><div class="tag2">${opt.tag || "Branding, sistemas e mídia para a sua marca decolar."}</div><div class="urls">${(opt.urls || ["erp.upecriativo.com.br", "tv.upecriativo.com.br"]).map(u => `<span>${u}</span>`).join("")}</div></div>`;
     root.innerHTML = `<div class="wipeA"><div class="pat"></div>${content}</div><div class="wipeB">${content}</div>`;
     root.querySelector(".pat").style.backgroundImage = patURL;
     const B = root.querySelector(".wipeB");
@@ -1027,6 +1027,8 @@ const PIECES = {
     ...st.beats.map((b, i) => SCENES.beat({ ...b, i, n: st.beats.length, img: IMG + b.img, dur: 5, nota: /exemplo|ilustrativ/i.test(st.titulo + b.texto) || st.id === "yt-06-rebranding-5-sinais" || st.id === "yt-01-filme-upe" ? "Exemplo ilustrativo" : "" })),
     SCENES.end({ dur: 6, prod: "UPE CRIATIVO · YOUTUBE", tag: st.beats[7].texto, urls: ["@upecriativo", "WhatsApp (11) 93439-3249"] })]; },
   logo: () => [SCENES.logo({ dur: 10 })],
+  // só o cartão final (para trocar o fim de vídeos já prontos, como os reels do kit de branding)
+  fim: () => [SCENES.end({ dur: +(qs.get("dur") || 8) })],
   film: () => [
     SCENES.logo({ dur: 8, wipe: false }),
     SCENES.brand(), SCENES.redesign(),
@@ -1038,12 +1040,12 @@ const PIECES = {
   erp: () => [
     SCENES.title({ dur: 4, eb: "Lançamento Upe Criativo", title: "Upe ERP", xl: true, sub: "Loja virtual, PDV, PIX, pedidos e relatórios num só painel." }),
     SCENES.erpPanel(), SCENES.erpOrders(), SCENES.erpPdv(),
-    SCENES.end({ dur: 6, prod: "UPE ERP", tag: "Sua loja online, PDV e pedidos num só painel.", urls: ["upe-erp.web.app"] })
+    SCENES.end({ dur: 6, prod: "UPE ERP", tag: "Sua loja online, PDV e pedidos num só painel.", urls: ["erp.upecriativo.com.br"] })
   ],
   tv: () => [
     SCENES.title({ dur: 4, eb: "Lançamento Upe Criativo", title: "Upe TV", xl: true, sub: "Mídia em telas de estabelecimentos parceiros." }),
     SCENES.tvScreen(), SCENES.tvQR(), SCENES.tvMetrics(),
-    SCENES.end({ dur: 6, prod: "UPE TV", tag: "Sua marca na tela certa.", urls: ["upe-tv.web.app"] })
+    SCENES.end({ dur: 6, prod: "UPE TV", tag: "Sua marca na tela certa.", urls: ["tv.upecriativo.com.br"] })
   ]
 };
 
