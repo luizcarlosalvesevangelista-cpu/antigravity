@@ -12,7 +12,7 @@ window.PORTAL_CONFIG = {
     apiKey: "AIzaSyDJqqSMLWZLKSt9K1jPzvvQgyikZy4q9vw",
     authDomain: "upecriativo-cc472.firebaseapp.com",
     projectId: "upecriativo-cc472",
-    // storageBucket: "upecriativo-cc472.firebasestorage.app",   // descomente depois de ativar o Storage (plano Blaze) para enviar arquivos pelo painel
+    storageBucket: "upecriativo-cc472.firebasestorage.app",
     messagingSenderId: "574926941318",
     appId: "1:574926941318:web:effa37317480bde29fb507"
   },

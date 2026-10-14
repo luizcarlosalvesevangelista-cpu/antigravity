@@ -812,14 +812,15 @@ function apresFromDossie(D, baseUrl) {
 }
 function aApres(ct, { id, doc, priv, save }) {
   const A = doc.apresentacao || { slides: [], instagram: [], motions: [] };
-  const hasDossie = !!priv.dossie;
+  const hasDossie = !!(priv.dossie || priv.dossieUrl);
   ct.innerHTML = `
     <div class="g2">
       <section class="card grid"><h3>Dossiê do cliente</h3>
         <p class="muted small">Importe o dossiê preenchido (arquivo do modelo Upe). O dossiê completo fica salvo só para você. O cliente vê apenas a <b>aba 05 · Apresentação</b>. As postagens do dossiê (<code>postagens</code> e o feed da aba 05) entram no calendário de aprovação, e a ficha “Canais” gera a timeline por app.</p>
         <div class="row">${hasDossie ? `<span class="pill ok">Dossiê salvo${priv.dossieNome ? ` · ${esc(priv.dossieNome)}` : ""}</span>` : '<span class="pill">Nenhum dossiê salvo</span>'}<span class="muted small">${priv.dossieEm ? fdt(priv.dossieEm) : ""}</span></div>
-        <label class="f" for="dBase">Endereço da pasta do dossiê (para achar imagens e vídeos)<input id="dBase" value="${esc(A.baseUrl || "")}" placeholder="https://seusite.web.app/clientes/marca/dossie/"></label>
-        <div class="row"><label class="btn sm">Importar dossiê (.html)<input type="file" id="dFile" accept=".html,text/html" hidden></label>${hasDossie ? `<button class="btn sec sm" id="dOpen">Abrir dossiê completo</button>` : ""}<a class="btn sec sm" href="modelos/Modelo_Dossie_Upe.html" target="_blank" rel="noopener">Modelo em branco</a></div>
+        <p class="muted small"><b>Pasta do dossiê:</b> escolha a pasta do cliente inteira (com o .html e as pastas de imagens, vídeos e PDF). As imagens e os vídeos sobem para o Storage e os endereços são ajustados sozinhos. Funciona com o modelo novo (objeto DADOS) e com dossiês antigos.</p>
+        <label class="f" for="dBase">Ou: endereço da pasta já publicada (se enviar só o .html)<input id="dBase" value="${esc(A.baseUrl || "")}" placeholder="https://seusite.web.app/clientes/marca/dossie/"></label>
+        <div class="row"><label class="btn sm">Importar pasta do dossiê<input type="file" id="dDir" webkitdirectory multiple hidden></label><label class="btn sec sm">Só o arquivo .html<input type="file" id="dFile" accept=".html,text/html" hidden></label>${hasDossie ? `<button class="btn sec sm" id="dOpen">Abrir dossiê completo</button>` : ""}<a class="btn sec sm" href="modelos/Modelo_Dossie_Upe.html" target="_blank" rel="noopener">Modelo em branco</a></div>
       </section>
       <section class="card grid"><h3>O que o cliente vê</h3>
         <div class="row"><span class="pill ${doc.acesso?.apresentacao ? "ok" : ""}">${doc.acesso?.apresentacao ? "Apresentação liberada" : "Apresentação oculta"}</span><a class="small" href="#/admin/cliente/${id}/projeto">Mudar em Projeto e acessos</a></div>
@@ -841,20 +842,63 @@ function aApres(ct, { id, doc, priv, save }) {
   $("#sAdd").onclick = () => { collect(); doc.apresentacao.slides.push({ nome: "Nova tela", tipo: "img", img: "" }); aApres(ct, { id, doc, priv, save }); };
   $$("[data-sd]", ct).forEach(b => b.onclick = () => { collect(); doc.apresentacao.slides.splice(+b.dataset.sd, 1); aApres(ct, { id, doc, priv, save }); });
   $("#aSv").onclick = async () => { collect(); await save("Apresentação salva"); };
-  $("#dFile").onchange = async e => {
-    const f = e.target.files[0]; if (!f) return;
-    try {
-      const html = await f.text(), D = parseDossie(html), base = $("#dBase").value.trim();
+  // importa o dossiê: modelo novo (DADOS) ou antigo; com a pasta, sobe imagens/vídeos/PDF e troca os caminhos pelos endereços do Storage
+  const importar = async (html, nome, arquivos = null) => {
+    const btn = $("#aSv"); let base = $("#dBase").value.trim(), feitos = 0;
+    if (arquivos && arquivos.size) {
+      if (S.mode === "firebase" && !S.st) return toast("O Storage não está ligado no painel (config.js). Envie só o .html com o endereço da pasta publicada.");
+      const usados = [...arquivos.entries()].filter(([rel]) => !/\.html?$/i.test(rel) && (html.includes(rel) || /(^|\/)(slides?|apresentacao)\/[^/]+\.(jpe?g|png|webp|pdf)$/i.test(rel)));
+      for (const [rel, f] of usados) {
+        toast(`Enviando arquivos do dossiê ${++feitos}/${usados.length}…`);
+        const url = await S.upload(f, `clientes/${id}/dossie`); if (!url) continue;
+        const variantes = [rel, "./" + rel];
+        for (const v of variantes) html = html.split(`"${v}"`).join(`"${url}"`).split(`'${v}'`).join(`'${url}'`).split(`(${v})`).join(`(${url})`);
+      }
+      base = "";
+    }
+    let D = null; try { D = parseDossie(html); } catch (e) { D = null; }
+    if (D) {
       doc.apresentacao = apresFromDossie(D, base);
       doc.perfil = perfilDoDossie(D, doc);
       const novos = postsDoDossie(D, base, doc);
       if (novos.length) { doc.posts = [...(doc.posts || []), ...novos]; doc.kits = [...(doc.kits || []).filter(k => k.id !== "dossie"), { id: "dossie", nome: "Posts do dossiê", importadoEm: Date.now(), total: (doc.posts || []).filter(p => p.kitId === "dossie").length }]; }
-      Object.assign(priv, { dossie: html, dossieNome: f.name, dossieEm: Date.now() });
-      if (html.length > 900000) toast("Dossiê grande: guarde as imagens fora do arquivo");
-      await S.set(`privado/${id}`, priv); await save(`Dossiê importado. A aba 05 virou a apresentação${novos.length ? ` e ${novos.length} post(s) entraram no calendário de aprovação` : ""}. Timeline por app atualizada.`);
-    } catch (er) { toast(er.message); }
+      var msg = `Dossiê importado. A aba 05 virou a apresentação${novos.length ? ` e ${novos.length} post(s) entraram no calendário de aprovação` : ""}.`;
+    } else {
+      // dossiê antigo (sem o objeto DADOS): guarda o dossiê e monta a apresentação com os slides e o PDF da pasta
+      const tit = (html.match(/<title>([^<]*)<\/title>/i) || [])[1] || "", A0 = doc.apresentacao || {};
+      const imgs = arquivos ? [...(arquivos.__urls || [])] : [];
+      doc.apresentacao = { ...A0, marca: A0.marca || tit.replace(/^\s*Dossi[êe]\s*(de marca)?\s*[·\-–:]?\s*/i, "").trim() || doc.marca || "", baseUrl: base,
+        slides: (A0.slides || []).length ? A0.slides : imgs.filter(x => /(^|\/)(slides?|apresentacao)\//i.test(x.rel) && /\.(jpe?g|png|webp)$/i.test(x.rel)).sort((a, b) => a.rel.localeCompare(b.rel, "pt", { numeric: true })).map((x, k) => ({ nome: `Tela ${k + 1}`, tipo: "img", img: x.url })),
+        pdf: A0.pdf || (imgs.find(x => /apresenta.*\.pdf$/i.test(x.rel)) || imgs.find(x => /\.pdf$/i.test(x.rel)) || {}).url || "" };
+      var msg = `Dossiê salvo (formato antigo, sem o objeto DADOS). ${doc.apresentacao.slides.length ? `${doc.apresentacao.slides.length} tela(s) da apresentação montadas a partir da pasta.` : "Monte as telas da apresentação abaixo."}`;
+    }
+    // o dossiê completo fica no Storage (sem limite de tamanho) e, se for pequeno, também no banco
+    let url = "";
+    if (S.mode === "firebase" && S.st) url = await S.upload(new File([html], (nome || "dossie.html").replace(/[^\w.\-]/g, "_"), { type: "text/html" }), `clientes/${id}/dossie`).catch(() => "");
+    if (!url && html.length > 900000) return toast("Dossiê grande demais para o banco. Ligue o Storage ou tire as imagens de dentro do arquivo.");
+    Object.assign(priv, { dossie: html.length <= 900000 ? html : "", dossieUrl: url || "", dossieNome: nome, dossieEm: Date.now() });
+    await S.set(`privado/${id}`, priv); await save(msg);
   };
-  if ($("#dOpen")) $("#dOpen").onclick = () => { modal(`Dossiê · ${esc(priv.dossieNome || doc.marca || "")}`, `<iframe id="dosF" title="Dossiê completo" style="width:100%;height:75vh;border:0;border-radius:10px;background:#fff"></iframe>`, "", true); $("#dosF").srcdoc = priv.dossie; };
+  $("#dFile").onchange = async e => { const f = e.target.files[0]; if (!f) return; try { await importar(await f.text(), f.name); } catch (er) { console.error(er); toast(er.message); } };
+  $("#dDir").onchange = async e => {
+    try {
+      const todos = [...e.target.files].map(f => ({ f, rel: f.webkitRelativePath.split("/").slice(1).join("/") }));
+      const htmls = todos.filter(x => /\.html?$/i.test(x.rel));
+      if (!htmls.length) return toast("Não encontrei o arquivo .html do dossiê na pasta");
+      const pontua = x => (/dossi/i.test(x.rel) ? 4 : 0) + (/index\.html$/i.test(x.rel) ? 1 : 0) - x.rel.split("/").length;
+      const ini = htmls.sort((a, b) => pontua(b) - pontua(a))[0], dir = ini.rel.includes("/") ? ini.rel.slice(0, ini.rel.lastIndexOf("/") + 1) : "";
+      let html = await ini.f.text(); if (htmls.length > 1 && !/const DADOS/.test(html)) { for (const h of htmls) { const t = await h.f.text(); if (/const DADOS/.test(t)) { html = t; break; } } }
+      // caminho de cada arquivo visto a partir do .html (inclui ../ quando a pasta escolhida é a de cima)
+      const relDe = alvo => { const a = dir.split("/").filter(Boolean), b = alvo.split("/"); let k = 0; while (k < a.length && a[k] === b[k]) k++; return "../".repeat(a.length - k) + b.slice(k).join("/"); };
+      const mapa = new Map(); todos.forEach(x => mapa.set(relDe(x.rel), x.f));
+      mapa.__urls = [];
+      // registra os endereços enviados para montar a apresentação do formato antigo
+      const orig = S.upload; S.upload = async (f, p) => { const u = await orig.call(S, f, p); const rel = [...mapa.entries()].find(([, v]) => v === f)?.[0] || f.name; mapa.__urls.push({ rel, url: u }); return u; };
+      try { await importar(html, ini.f.name, mapa); } finally { S.upload = orig; }
+    } catch (er) { console.error(er); toast(er.message); }
+  };
+  if ($("#dOpen")) $("#dOpen").onclick = async () => { modal(`Dossiê · ${esc(priv.dossieNome || doc.marca || "")}`, `<iframe id="dosF" title="Dossiê completo" style="width:100%;height:75vh;border:0;border-radius:10px;background:#fff"></iframe>`, "", true);
+    if (priv.dossie) $("#dosF").srcdoc = priv.dossie; else if (priv.dossieUrl) { try { $("#dosF").srcdoc = await (await fetch(priv.dossieUrl)).text(); } catch (e) { $("#dosF").src = priv.dossieUrl; } } };
 }
 
 /* ---------- conteúdo (posts) ---------- */
