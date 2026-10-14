@@ -1,0 +1,2 @@
+@font-face { font-family: "Exemplo"; src: url("../fonts/exemplo.woff2") format("woff2"); }
+body { font-family: "Exemplo", system-ui, sans-serif; background: #f6f5ee url(../img/fundo.svg) repeat; margin: 0; padding: 24px; }

@@ -125,6 +125,7 @@ class LocalStore {
   async add(c, data) { const id = uid(); await this.set(`${c}/${id}`, data); return id; }
   async del(path) { const [c, id] = this.sp(path); if (this.d.cols[c]) delete this.d.cols[c][id]; this.save(); }
   async list(c) { return Object.entries(this.d.cols[c] || {}).map(([id, v]) => ({ id, ...clone(v) })); }
+  async query(c, campo, valor) { return (await this.list(c)).filter(x => x[campo] === valor); }
   async login(email, pass) { if (email.trim().toLowerCase() === "admin@upe.demo" && pass === "upe-demo") { ss.set("upe-adm", "1"); return true; } throw new Error("E-mail ou senha incorretos."); }
   async currentAdmin() { return ss.get("upe-adm") === "1"; }
   async logout() { ss.set("upe-adm", null); }
@@ -146,13 +147,14 @@ class FireStore {
     for (const f of ["firebase-app-compat.js", "firebase-auth-compat.js", "firebase-firestore-compat.js", "firebase-storage-compat.js"]) await new Promise((ok, no) => { const s = document.createElement("script"); s.src = base + f; s.onload = ok; s.onerror = () => no(new Error("Não foi possível carregar o Firebase.")); document.head.appendChild(s); });
     firebase.initializeApp(this.cfg); this.db = firebase.firestore(); this.auth = firebase.auth(); try { this.st = this.cfg.storageBucket ? firebase.storage() : null; } catch (e) { this.st = null; }
     if (CFG.emulador) { const h = location.hostname; this.auth.useEmulator(`http://${h}:9099`); this.db.useEmulator(h, 8080); if (this.st) this.st.useEmulator(h, 9199); } // testes locais (firebase emulators:start)
-    this.ready = new Promise(r => { const off = this.auth.onAuthStateChanged(u => { off(); r(u); }); });
+    this.ready = new Promise(r => { const off = this.auth.onAuthStateChanged(u => { off(); if (u) u.getIdToken(true).catch(() => {}).then(() => r(u)); else r(u); }); });
   }
   async get(p) { const s = await this.db.doc(p).get(); return s.exists ? s.data() : null; }
   async set(p, d, merge = false) { await this.db.doc(p).set(d, { merge }); }
   async add(c, d) { return (await this.db.collection(c).add(d)).id; }
   async del(p) { await this.db.doc(p).delete(); }
   async list(c) { const s = await this.db.collection(c).get(); return s.docs.map(d => ({ id: d.id, ...d.data() })); }
+  async query(c, campo, valor) { const s = await this.db.collection(c).where(campo, "==", valor).get(); return s.docs.map(d => ({ id: d.id, ...d.data() })); }
   async login(email, pass) {
     const r = await this.auth.signInWithEmailAndPassword(email.trim(), pass).catch(e => { throw new Error({ "auth/too-many-requests": "Muitas tentativas. Aguarde alguns minutos ou redefina a senha.", "auth/network-request-failed": "Sem conexão com o Firebase. Verifique a internet.", "auth/user-disabled": "Este usuário está desativado." }[e.code] || "E-mail ou senha incorretos."); });
     if (!(await this.get(`admins/${r.user.uid}`))) { await this.auth.signOut(); throw new Error("Este usuário não está liberado como administrador."); }
@@ -170,7 +172,7 @@ class FireStore {
   async contaSair() { await this.auth.signOut(); }
   contaAtual() { return this.auth && this.auth.currentUser; }
   // sufixo aleatório: envios em paralelo com o mesmo nome não se sobrescrevem
-  async upload(file, path) { if (!this.st) return null; const ref = this.st.ref(`${path}/${Date.now()}-${uid(5)}-${file.name.replace(/[^\w.\-]/g, "_")}`); await ref.put(file); return await ref.getDownloadURL(); }
+  async upload(file, path) { if (!this.st) throw new Error("o Storage não está ligado no painel (config.js sem storageBucket)"); const ref = this.st.ref(`${path}/${Date.now()}-${uid(5)}-${file.name.replace(/[^\w.\-]/g, "_")}`); await ref.put(file); return await ref.getDownloadURL(); }
 }
 const S = CFG.firebase ? new FireStore(CFG.firebase) : new LocalStore();
 
@@ -235,8 +237,7 @@ async function seedDemo(st) {
       motions: [], semanas: ["Semana 1 · lançamento"],
       instagram: [{ img: A + "img/brand.jpg", titulo: "Nova identidade", data: "", semana: 1, legenda: "" }, { img: A + "img/redesign.jpg", titulo: "Antes e depois", data: "", semana: 1, legenda: "" }, { img: A + "img/filme-h.jpg", titulo: "Assinatura", data: "", semana: 1, legenda: "" }]
     },
-    apps: { erp: { status: "teste", plano: "upe", extras: ["E"], dia: 10, ajuste: 0, inicio: day(-12), fimTeste: day(2), obs: "Loja em cafeaurora.upe (exemplo)" }, tv: { status: "ativo", plano: "p_vitrine", extras: [], dia: 15, ajuste: 0, inicio: day(-40), fimTeste: "", obs: "2 telas parceiras no bairro", codigo: "UPE-PD7K" },
-      landing: { status: "ativo", plano: "lp-hospedagem", extras: [], dia: 10, ajuste: 0, inicio: day(-30), fimTeste: "", obs: "" },
+    apps: { erp: { status: "teste", plano: "upe", extras: ["E"], dia: 10, ajuste: 0, inicio: day(-12), fimTeste: day(2), obs: "Loja em cafeaurora.upe (exemplo)" },       landing: { status: "ativo", plano: "lp-hospedagem", extras: [], dia: 10, ajuste: 0, inicio: day(-30), fimTeste: "", obs: "" },
       sistemas: { status: "teste", plano: "ag-mensal", extras: [], dia: 10, ajuste: 0, inicio: day(-5), fimTeste: day(9), obs: "", modulos: ["agenda", "dash"] } },
     paineis: { erp: { modo: "personalizado", nome: "painel-erp-exemplo.html", em: now - 20 * H } },
     perfil: { nome: "Café Aurora", canais: ["instagram", "whatsapp", "google", "loja"], negocio: "Cafeteria de bairro com delivery", regiao: "São Paulo · zona oeste", publicos: ["Vizinhos que tomam café todo dia", "Quem trabalha perto e pede delivery"], atributos: ["Café coado", "Pão na chapa", "Bolos caseiros"],
@@ -256,7 +257,7 @@ async function seedDemo(st) {
     cobrancas: [
       { id: uid(8), descricao: "Mídias digitais · " + MESES[new Date().getMonth()], valor: 890, vencimento: day(5), liberada: true, status: "aberta", pix: true, cartao: true, linkCartao: "" },
       { id: uid(8), descricao: "Cartões de visita (1.000 un.)", valor: 189, vencimento: day(-20), liberada: true, status: "paga", pix: true, cartao: false, linkCartao: "" },
-      { id: uid(8), app: "tv", ref: "app-tv-exemplo", descricao: "Upe TV · Combo Vitrine · " + MESES[new Date().getMonth()], valor: 349, vencimento: day(8), liberada: true, status: "aberta", pix: true, cartao: true, linkCartao: "" }
+      { id: uid(8), app: "landing", ref: "app-landing-exemplo", descricao: "Landing pages · Hospedagem · " + MESES[new Date().getMonth()], valor: 29.9, vencimento: day(8), liberada: true, status: "aberta", pix: true, cartao: true, linkCartao: "" }
     ],
     mensagens: [{ id: uid(8), texto: "Oi, Marina! Os posts da semana já estão no calendário para você aprovar.", em: now - 6 * H }]
   });
@@ -396,13 +397,15 @@ async function clientRoute(tab, arg) {
     ["conteudo", "Conteúdo", pend.posts.length, pl.midias && ac.calendario],
     ["graficos", "Materiais gráficos", pend.artes.length, pl.grafica && ac.graficos],
     ["produtos", "Comprar de novo", 0, pl.grafica && ac.recompra && recItems.length],
-    ...FRENTES_DO_CLIENTE(doc).filter(k => k !== "branding" || temPainelProprio(doc, "branding")).map(k => [`s-${k}`, k === "branding" ? "Painel da marca" : appsCat(state.cfg)[k].curto || appsCat(state.cfg)[k].nome, pend.cobsFrente?.[k] || 0, true, true]),
-    ["apps", "Contratar serviços", 0, APP_IDS.some(k => !appsCat(state.cfg)[k].breve) || adesoes(doc).length],
-    ["pagamentos", "Pagamentos", pend.cobs.length, ac.pagamentos],
-    ["mensagens", "Mensagens", tab === "mensagens" ? 0 : pend.msgs.length, true]
+    ["servicos", "Meus serviços", 0, true],
+    ["pagamentos", "Pagamentos", pend.cobs.length, ac.pagamentos || FRENTES_DO_CLIENTE(doc).length > 0],
+    ["mensagens", "Falar com a Upe", tab === "mensagens" ? 0 : pend.msgs.length, true]
   ].filter(t => t[3]);
   const kitView = tab === "kit" && pl.midias && ac.calendario;
-  const servico = /^s-/.test(tab) && tabs.some(t => t[0] === tab) ? tab.slice(2) : "";
+  // painel de um serviço (s-erp, s-landing…) ou de um sistema próprio (app/<endereço>): abre a partir de Meus serviços
+  const servico = /^s-/.test(tab) && (FRENTES_DO_CLIENTE(doc).includes(tab.slice(2)) || temPainelProprio(doc, tab.slice(2))) ? tab.slice(2) : "", appProprio = tab === "app" && arg ? arg : "";
+  if (servico || appProprio) tab = "servicos";
+  if (tab === "apps") tab = "servicos";
   if (kitView) tab = "conteudo"; else if (!tabs.some(t => t[0] === tab)) tab = "inicio";
   if (tab === "pagamentos" && !ac.pagamentos && FRENTES_DO_CLIENTE(doc).length) tab = "inicio";
   if (tab === "mensagens") ls.set(seenKey, String(Date.now()));
@@ -421,11 +424,13 @@ async function clientRoute(tab, arg) {
   const m = $("#cmain");
   if (kitView) return cKit(m, c, arg);
   if (servico) return cServico(m, c, servico, arg);
-  ({ inicio: cInicio, agenda: cAgenda, apresentacao: cApres, conteudo: cConteudo, graficos: cGraficos, produtos: cProdutos, pagamentos: cPagamentos, mensagens: cMensagens, apps: cApps })[tab](m, c, { pend, recItems, tabs, arg });
+  if (appProprio) return cAppProprio(m, c, decodeURIComponent(appProprio));
+  ({ inicio: cInicio, agenda: cAgenda, apresentacao: cApres, conteudo: cConteudo, graficos: cGraficos, produtos: cProdutos, pagamentos: cPagamentos, mensagens: cMensagens, servicos: cMeusServicos })[tab](m, c, { pend, recItems, tabs, arg });
 }
 const refreshClient = () => clientRoute((location.hash.split("/")[2]) || "inicio");
 
-function cInicio(m, { doc }, { pend, tabs }) {
+function cInicio(m, c, { pend, tabs }) {
+  const { doc } = c;
   const has = k => tabs.some(t => t[0] === k);
   const inc = doc.incluso || [], done = inc.filter(i => i.feito).length;
   const cards = [
@@ -437,6 +442,7 @@ function cInicio(m, { doc }, { pend, tabs }) {
   m.innerHTML = `
     <div class="grid" style="gap:6px"><span class="eb">Seu projeto</span><h1>Olá, ${esc((doc.nome || "").split(" ")[0] || "tudo bem")}!</h1>
       <div class="row">${doc.plano?.branding ? '<span class="pill info">Branding</span>' : ""}${doc.plano?.midias ? '<span class="pill info">Mídias digitais</span>' : ""}${doc.plano?.grafica ? '<span class="pill info">Papelaria gráfica</span>' : ""}</div></div>
+    <section class="grid" style="gap:10px"><div class="spread"><h3>Seus serviços</h3><a class="small" href="#/c/servicos">Ver todos</a></div><div id="iniSv"><div class="muted small">Carregando…</div></div></section>
     <div class="g4">${cards.map(([n, l, h]) => `<a class="card stat" href="${h}" style="text-decoration:none;color:inherit"><b>${n}</b><span>${l}</span></a>`).join("")}</div>
     <div class="g2">
       <section class="card grid"><div class="spread"><h3>O que está incluso</h3><span class="muted small num">${done} de ${inc.length}</span></div>
@@ -449,6 +455,7 @@ function cInicio(m, { doc }, { pend, tabs }) {
         <section class="card grid"><span class="eb">Precisa de algo?</span><p class="muted small">Escreva para a Upe por aqui ou pelo WhatsApp.</p><div class="row"><a class="btn sec" href="#/c/mensagens">Enviar mensagem</a>${state.cfg.whatsapp || CFG.whatsappUpe ? `<a class="btn sec" href="${esc(waLink(state.cfg.whatsapp || CFG.whatsappUpe, `Olá! Sou ${doc.nome} (${doc.marca || doc.empresa}).`))}" target="_blank" rel="noopener">WhatsApp</a>` : ""}</div></section>
       </div>
     </div>`;
+  servicosDoCliente(c).then(svs => { const el = $("#iniSv", m); if (el) el.innerHTML = cardsServicos(svs); }).catch(() => { const el = $("#iniSv", m); if (el) el.innerHTML = ""; });
 }
 
 /* ---------- apresentação (aba 05 do dossiê) ---------- */
@@ -717,7 +724,15 @@ async function aCliente(w, id, tab, alvo) {
   const doc = clone(c.doc), priv = clone(c.priv), acoes = c.acoes;
   const p = pendencias(doc, acoes), unread = acoes.filter(a => a.tipo === "mensagem" && a.em > (doc.lidoAdmEm || 0)).length, pedNovos = pedidosOf(doc, acoes).filter(x => x.status === "novo").length;
   const ajustes = [...(doc.posts || []), ...(doc.graficos || [])].filter(x => statusOf(x, acoes).status === "ajustes");
-  const tabs = [["projeto", "Projeto e acessos", 0], ["apresentacao", "Apresentação e dossiê", 0], ["conteudo", "Conteúdo", p.posts.length + (doc.posts || []).filter(x => ajustes.includes(x)).length], ["graficos", "Gráficos e recompra", pedNovos], ["pagamentos", "Pagamentos", (doc.cobrancas || []).filter(x => cobStatus(x, acoes) === "informado").length], ["apps", "Serviços", appPedidos(doc, acoes).filter(x => x.status === "novo").length], ["mensagens", "Inbox", unread]];
+  // as abas acompanham os serviços do cliente (Branding → apresentação, conteúdo e gráficos; páginas e sistemas → envio dos arquivos)
+  const pl = doc.plano || {}, temPg = ativoApp((doc.apps || {}).landing) || ativoApp((doc.apps || {}).sistemas) || doc.temPaginas;
+  const tabs = [["projeto", "Projeto e acessos", 0, true], ["apps", "Serviços", appPedidos(doc, acoes).filter(x => x.status === "novo").length, true],
+    ["apresentacao", "Apresentação e dossiê", 0, pl.branding || doc.apresentacao || priv.dossie || priv.dossieUrl],
+    ["conteudo", "Conteúdo", p.posts.length + (doc.posts || []).filter(x => ajustes.includes(x)).length, pl.midias || (doc.posts || []).length],
+    ["graficos", "Gráficos e recompra", pedNovos, pl.grafica || (doc.graficos || []).length],
+    ["paginas", "Páginas e sistemas", 0, temPg],
+    ["pagamentos", "Pagamentos", (doc.cobrancas || []).filter(x => cobStatus(x, acoes) === "informado").length, true], ["mensagens", "Inbox", unread, true]].filter(t => t[3]);
+  if (!tabs.some(t => t[0] === tab)) tab = "projeto";
   w.innerHTML = `<div class="spread"><div class="grid" style="gap:4px"><a href="#/admin/clientes" class="small">← Clientes</a><h1>${esc(doc.marca || doc.empresa || doc.nome)}</h1><span class="muted">${esc(doc.nome)}${priv.email ? ` · ${esc(priv.email)}` : ""}</span></div>
     <div class="row"><button class="btn sec sm" id="vCli">Ver como cliente</button></div></div>
     <nav class="subtabs">${tabs.map(([k, l, n]) => `<a class="tab" href="#/admin/cliente/${id}/${k}" ${k === tab ? 'aria-current="page"' : ""}>${l}${n ? `<span class="cnt">${n}</span>` : ""}</a>`).join("")}</nav>
@@ -725,7 +740,7 @@ async function aCliente(w, id, tab, alvo) {
   $("#vCli").onclick = () => { ss.set("upe-cliente", id); ss.set("upe-voltar", `#/admin/cliente/${id}/projeto`); go("#/c/inicio"); };
   const save = async (msg = "Salvo") => { doc.atualizadoEm = Date.now(); await S.set(`clientes/${id}`, doc); toast(msg); reAdmin(); };
   const ct = $("#ct");
-  ({ projeto: aProjeto, apresentacao: aApres, conteudo: aConteudo, graficos: aGraficosA, pagamentos: aPagamentosA, mensagens: aMsgA, apps: aClienteApps })[tab](ct, { id, doc, priv, acoes, save, alvo });
+  ({ projeto: aProjeto, apresentacao: aApres, conteudo: aConteudo, graficos: aGraficosA, pagamentos: aPagamentosA, mensagens: aMsgA, apps: aClienteApps, paginas: aPaginas })[tab](ct, { id, doc, priv, acoes, save, alvo });
 }
 
 function aProjeto(ct, { id, doc, priv, save }) {

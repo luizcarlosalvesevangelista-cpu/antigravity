@@ -949,7 +949,7 @@ SCENES.pillars = () => ({
       <div class="pillars">
         <div class="pill3">${icons.pen}<b>Branding e Redesign</b><span>Identidade visual e manual de marca.</span></div>
         <div class="pill3">${icons.panel}<b>Upe ERP</b><span>Loja online, PDV e pedidos num só painel.</span></div>
-        <div class="pill3">${icons.tv}<b>Upe TV</b><span>Sua marca nas telas de quem espera.</span></div>
+        <div class="pill3">${icons.panel}<b>Páginas e sistemas</b><span>Landing pages, agenda online e dashboards.</span></div>
       </div>
     </div>`;
     root.querySelector(".pat").style.backgroundImage = patURL;
@@ -971,7 +971,7 @@ SCENES.end = (opt = {}) => ({
   dur: opt.dur || 8, bg: "azul",
   cues: [[.2, "swell"], ...LETTERS.map((_, i) => [.5 + i * .06, "tick"]), [1.6, "sparkle"], [3.0, "whoosh"], [3.5, "final"]],
   build(root) {
-    const content = `<div class="end">${opt.prod ? `<div class="prod">${opt.prod}</div>` : ""}<div class="wmw">${wordmark()}</div><div class="tag2">${opt.tag || "Branding, sistemas e mídia para a sua marca decolar."}</div><div class="urls">${(opt.urls || ["erp.upecriativo.com.br", "tv.upecriativo.com.br"]).map(u => `<span>${u}</span>`).join("")}</div></div>`;
+    const content = `<div class="end">${opt.prod ? `<div class="prod">${opt.prod}</div>` : ""}<div class="wmw">${wordmark()}</div><div class="tag2">${opt.tag || "Branding, sistemas e mídia para a sua marca decolar."}</div><div class="urls">${(opt.urls || ["erp.upecriativo.com.br", "lp.upecriativo.com.br"]).map(u => `<span>${u}</span>`).join("")}</div></div>`;
     root.innerHTML = `<div class="wipeA"><div class="pat"></div>${content}</div><div class="wipeB">${content}</div>`;
     root.querySelector(".pat").style.backgroundImage = patURL;
     const B = root.querySelector(".wipeB");
@@ -1032,9 +1032,8 @@ const PIECES = {
   film: () => [
     SCENES.logo({ dur: 8, wipe: false }),
     SCENES.brand(), SCENES.redesign(),
-    SCENES.title({ dur: 4, eb: "Lançamentos Upe", title: "Dois sistemas para o seu negócio.", chips: ["Upe ERP", "Upe TV"] }),
+    SCENES.title({ dur: 4, eb: "Sistemas Upe", title: "Da marca à venda, num painel só.", chips: ["Upe ERP", "Landing pages", "Agenda e dashboards"] }),
     SCENES.erpPanel(), SCENES.erpOrders(), SCENES.erpPdv(),
-    SCENES.tvScreen(), SCENES.tvQR(), SCENES.tvMetrics(),
     SCENES.pillars(), SCENES.end({ dur: 8 })
   ],
   erp: () => [

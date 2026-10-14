@@ -26,7 +26,7 @@ const SITE = __R + '/site';
   await p.goto('http://srv.test/portal/#/admin'); await p.waitForSelector('#aEmail');
   await p.fill('#aEmail', 'admin@upe.demo'); await p.fill('#aPass', 'upe-demo'); await p.click('#fAdm button[type=submit]');
   await p.waitForSelector('tr[data-id]'); await p.screenshot({ path: `${O}/pc-a-clientes.png` });
-  for (const f of ['branding', 'erp', 'tv', 'landing', 'sistemas']) {
+  for (const f of ['branding', 'erp', 'landing', 'sistemas']) {
     await vai('#/admin/apps/' + f, 1500); const t = await p.textContent('#w');
     ok(/Preços ·/.test(t), `Serviços e preços › ${f} mostra o editor de preços`); await p.screenshot({ path: `${O}/pc-a-precos-${f}.png`, fullPage: true });
   }
@@ -56,6 +56,22 @@ const SITE = __R + '/site';
   ok(Object.values(cols['upe/gestao/clientes'] || {}).some(x => x.portalId === cid), 'cliente aparece no Gerenciador do ERP (upe/gestao/clientes)');
   ok((cols['srv_clientes'] || {})[cid]?.frentes?.join(',') === 'lp,agenda,dash' && (cols['srv_convites'] || {})['cliente@upe.demo']?.cid === cid, 'Landing pages e Sistemas liberados com o mesmo id');
   await p.screenshot({ path: `${O}/pc-a-ficha-salva.png`, fullPage: true });
+  // ficha adaptável: aba Páginas e sistemas (serviços de páginas ligados) e envio da pasta inteira
+  const abas = await p.$$eval('.subtabs a', l => l.map(a => a.getAttribute('href').split('/').pop()));
+  ok(abas.includes('paginas') && abas.includes('apresentacao'), 'abas da ficha conforme os serviços: ' + abas.join(' '));
+  ok(!(await p.textContent('#w')).includes('Upe TV'), 'ficha sem o Upe TV');
+  await vai(`#/admin/cliente/${cid}/paginas`, 1500);
+  await p.click('#pgNova'); await p.waitForSelector('#epPasta');
+  await p.selectOption('#epTipo', 'sistema'); await p.fill('#epNome', 'Sistema de pedidos'); await p.fill('#epSlug', 'cafe-aurora-pedidos');
+  await p.setInputFiles('#epPasta', __dirname + '/fixtures/pagina-exemplo'); await p.waitForTimeout(800);
+  ok(/7 arquivo/.test(await p.textContent('#epInfo')), 'pasta lida: ' + (await p.textContent('#epInfo')));
+  await p.click('#epOk'); await p.waitForTimeout(4000);
+  cols = await LS(); const pg = (cols['lp_paginas'] || {})['cafe-aurora-pedidos'] || {};
+  ok(pg.cid === cid && pg.publicada && pg.tipo === 'sistema' && pg.painelCliente && pg.arquivos === 6, 'página/sistema publicado com ' + pg.arquivos + ' arquivo(s) no Storage');
+  ok(pg.html && !/href="css\/estilo\.css"|src="img\/logo\.svg"|\.\/js\/app\.js/.test(pg.html) && (pg.html.match(/idb:/g) || []).length >= 3, 'caminhos do HTML trocados pelos arquivos enviados');
+  const cssOk = await p.evaluate(() => { const u = new Map([['fonts/exemplo.woff2', 'URL-FONTE'], ['img/fundo.svg', 'URL-FUNDO']]); const t = window.__upeTrocarRefs('src: url("../fonts/exemplo.woff2"); background: url(../img/fundo.svg)', 'css/', u); return t.includes('url("URL-FONTE")') && t.includes('url(URL-FUNDO)'); });
+  ok(cssOk, 'caminhos dentro do CSS (fontes e imagens) também são trocados');
+  await p.screenshot({ path: `${O}/pc-a-paginas.png`, fullPage: true });
   // sair do admin
   await vai('#/admin/clientes', 800); await p.click('#logout'); await p.waitForTimeout(800);
 
@@ -64,8 +80,13 @@ const SITE = __R + '/site';
   await p.fill('#kEmail', 'cliente@upe.demo'); await p.fill('#kPass', 'upe-demo'); await p.click('#fConta button[value=entrar]');
   await p.waitForSelector('.cside .nav a'); await p.waitForTimeout(800);
   const nav = await p.$$eval('.cside .nav a', l => l.map(a => a.getAttribute('href')));
-  ok(['#/c/s-erp', '#/c/s-tv', '#/c/s-landing', '#/c/s-sistemas'].every(h => nav.includes(h)), 'menu do cliente com um item por serviço: ' + nav.join(' '));
-  await p.screenshot({ path: `${O}/pc-c-inicio.png` });
+  ok(nav.includes('#/c/servicos') && nav.includes('#/c/mensagens') && nav.includes('#/c/pagamentos') && !nav.some(h => /s-|tv/.test(h)), 'menu simplificado do cliente: ' + nav.join(' '));
+  await p.waitForTimeout(800); await p.screenshot({ path: `${O}/pc-c-inicio.png`, fullPage: true });
+  await vai('#/c/servicos', 1800); await p.screenshot({ path: `${O}/pc-c-servicos.png`, fullPage: true });
+  const botoes = await p.$$eval('.meus a', l => l.map(a => a.textContent.trim()));
+  ok(botoes.some(t => /^Painel – Loja/.test(t)) && botoes.some(t => /^Painel – Páginas/.test(t)) && botoes.some(t => /^Painel – Agenda/.test(t)) && botoes.some(t => t === 'Painel – Sistema de pedidos'), 'Meus serviços com os botões de painel: ' + botoes.join(' | '));
+  await p.click('.meus a:has-text("Painel – Sistema de pedidos")'); await p.waitForTimeout(1200);
+  ok((await p.evaluate(() => location.hash)) === '#/c/app/cafe-aurora-pedidos' && !!(await p.$('iframe.svc-frame')), 'botão abre o sistema do cliente dentro do painel');
   // painel personalizado (ERP): HTML isolado que abre os pagamentos
   await vai('#/c/s-erp', 2000); await p.screenshot({ path: `${O}/pc-c-erp-personalizado.png` });
   const fr = p.frames().find(f => f !== p.mainFrame() && f.url() === 'about:srcdoc');
@@ -82,15 +103,11 @@ const SITE = __R + '/site';
   const fs2 = p.frames().find(f => /frente=sistemas/.test(f.url()));
   if (fs2) { await fs2.waitForSelector('#nav button', { timeout: 15000 }).catch(() => {}); const bts = await fs2.$$eval('#nav button', l => l.map(x => x.dataset.ir)); ok(bts.includes('#/agenda') && bts.includes('#/dash') && !bts.includes('#/paginas'), 'Sistemas embutido: ' + bts.join(' ')); } else ok(false, 'Sistemas embutido');
   await p.screenshot({ path: `${O}/pc-c-sistemas.png` });
-  await vai('#/c/s-tv', 4000);
-  const ft = p.frames().find(f => /apps\/tv\//.test(f.url()));
-  if (ft) { await ft.waitForTimeout(1500); ok(/Padaria Pão Dourado/.test(await ft.textContent('body')), 'Upe TV abre o portal do anunciante ligado'); } else ok(false, 'TV embutida');
-  await p.screenshot({ path: `${O}/pc-c-tv.png` });
   // pagamentos unificados, com filtro por serviço
   await vai('#/c/pagamentos', 1500); await p.screenshot({ path: `${O}/pc-c-pagamentos.png`, fullPage: true });
   const filtros = await p.$$eval('[aria-label="Filtrar por serviço"] a', l => l.map(a => a.textContent));
   ok(filtros.length >= 2, 'filtro por serviço nos pagamentos: ' + filtros.join(', '));
-  await vai('#/c/apps', 1200); await p.screenshot({ path: `${O}/pc-c-contratar.png`, fullPage: true });
+  await vai('#/c/mensagens', 1200); await p.screenshot({ path: `${O}/pc-c-mensagens.png`, fullPage: true });
   // celular
   await p.setViewportSize({ width: 390, height: 844 }); await vai('#/c/s-landing', 3000);
   const largura = await p.evaluate(() => document.documentElement.scrollWidth); ok(largura <= 392, 'sem rolagem lateral no celular (' + largura + 'px)');

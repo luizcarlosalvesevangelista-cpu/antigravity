@@ -10,7 +10,7 @@ Os apps que antes ficavam nos projetos `upe-erp` e `upe-tv` agora rodam no mesmo
 | `painel/` | https://painel.upecriativo.com.br | Painel de pedidos, loja e PDV de cada empresa cliente |
 | `lojas/` | https://loja.upecriativo.com.br | Lojas públicas (`/nome-da-loja`) |
 | `gestao/` | https://gestao.upecriativo.com.br | Gerenciador das plataformas (licenças, cobranças, suporte, páginas) |
-| `tv/` | https://tv.upecriativo.com.br | Upe TV: campanhas, telas e player |
+| `tv/` | https://tv.upecriativo.com.br | Upe TV: app separado (campanhas, telas e player). Não faz parte do painel central |
 | `servicos/` | https://servicos.upecriativo.com.br | Painel Upe Serviços: landing pages, agenda online e dashboards do cliente; Gestão Upe (clientes, planos, cobranças, domínios) |
 | `lp/` | https://lp.upecriativo.com.br | Página de vendas das landing pages e páginas publicadas dos clientes (`/endereco` ou domínio próprio) |
 | `sistemas/` | https://agenda.upecriativo.com.br | Página de vendas da agenda online e dos dashboards, e agendas públicas (`/endereco`) |
@@ -24,5 +24,5 @@ Os apps que antes ficavam nos projetos `upe-erp` e `upe-tv` agora rodam no mesmo
 - Recursos do plano Blaze (funções em `site/functions`, Storage, e-mails, PIX automático): `docs/ATIVACAO-BLAZE.md` e `tools/blaze/ativar.sh`.
 - Domínio próprio de landing page: o cliente pede no painel; a Upe adiciona o domínio no Hosting do site `upe-criativo-lp` e marca o pedido como ativo em Gestão Upe › Domínios.
 - Postagens: ficam só no painel principal (Cronograma Upe). A aba "Redes sociais" do gerenciador foi retirada.
-- `painel/`, `servicos/` e `tv/` também são publicados no site principal (`/apps/...`) para abrir dentro do painel central com o mesmo login. Use caminhos relativos nesses apps.
+- `painel/` e `servicos/` também são publicados no site principal (`/apps/...`) para abrir dentro do painel central com o mesmo login. Use caminhos relativos nesses apps.
 - Publicar: `cd site && firebase deploy --only hosting` (publica o site, o portal e os 8 apps).

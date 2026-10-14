@@ -1,10 +1,11 @@
-/* ===== Serviços da Upe no painel central: Branding, Upe ERP, Upe TV, Landing pages e Upe Sistemas (incluído dentro do app.js) =====
+/* ===== Serviços da Upe no painel central: Branding e mídias, Loja online (Upe ERP), Landing pages e sites, Agenda e dashboards (incluído dentro do app.js) =====
    Cadastro único: a ficha do cliente (clientes/{id}) liga cada frente; ao salvar, o painel cria sozinho o acesso de cada app
-   (ERP: empresas/convites/gestão · Landing pages e Sistemas: srv_clientes/srv_convites, com o mesmo id do cliente · TV: código do anunciante).
+   (ERP: empresas/convites/gestão · Landing pages e Sistemas: srv_clientes/srv_convites, com o mesmo id do cliente).
    Preços: uma tela só (Serviços e preços), que grava direto na fonte de cada frente:
-     ERP → upe/gestao/config/geral + publico/plano · TV → app/config (planos da TV) · Landing pages e Sistemas → srv_planos ·
+     ERP → upe/gestao/config/geral + publico/plano · Landing pages e Sistemas → srv_planos ·
      Branding, mídias e gráfica → config/publico.precos.branding.
-   Adesão de cada cliente em clientes/{id}.apps[app] = { status, plano, extras[], dia, inicio, fimTeste, ajuste, obs, empresa, codigo, modulos[] }.
+   Adesão de cada cliente em clientes/{id}.apps[app] = { status, plano, extras[], dia, inicio, fimTeste, ajuste, obs, empresa, dominio, loja, modulos[] }.
+   O Upe TV é um app separado e não faz parte deste painel.
    Pedidos do cliente: ação "pedido" com alvo "app:<app>[:<extra>]". Extras com unico:true são cobrados uma vez (criação), não todo mês. */
 const APPS_PADRAO = {
   erp: { nome: "Upe ERP", curto: "Loja e pedidos", desc: "Loja online, PDV e pedidos num só painel.", painel: "https://painel.upecriativo.com.br", gestor: "https://gestao.upecriativo.com.br", site: "https://erp.upecriativo.com.br", lojas: "https://loja.upecriativo.com.br", teste: 14,
@@ -16,9 +17,6 @@ const APPS_PADRAO = {
       { k: "E", nome: "Envio de e-mails", desc: "Newsletter real, até 5.000 e-mails por mês.", preco: 14.9 },
       { k: "K", nome: "Backup diário", desc: "Cópia diária guardada por 30 dias.", preco: 4.9 },
       { k: "D", nome: "Domínio próprio da loja", desc: "1 domínio com SSL; o registro é do cliente.", preco: 7.9 }] },
-  tv: { nome: "Upe TV", curto: "Upe TV", desc: "A marca do cliente nas telas de estabelecimentos parceiros, com QR code.", painel: "https://tv.upecriativo.com.br", teste: 0,
-    planos: [{ k: "p_foot", nome: "Rodapé", preco: 149 }, { k: "p_side", nome: "Lateral", preco: 249 }, { k: "p_full", nome: "Tela cheia", preco: 399 }, { k: "p_cta", nome: "Página CTA + QR", preco: 99 }, { k: "p_vitrine", nome: "Combo Vitrine", preco: 349 }, { k: "p_destaque", nome: "Combo Destaque", preco: 449 }, { k: "p_total", nome: "Presença Total", preco: 699 }, { k: "p_rede", nome: "Rede Upe", preco: 1690 }],
-    extras: [{ k: "motion", nome: "Motion do anúncio", desc: "Vídeo animado com a marca para as telas.", preco: 0, unico: true }, { k: "telas", nome: "Tela parceira adicional", desc: "Mais um estabelecimento na campanha.", preco: 0 }] },
   landing: { nome: "Upe Landing pages", curto: "Landing pages", desc: "Páginas de venda com a marca do cliente, editor, domínio próprio e painel de visitas, cliques e leads.", painel: "https://servicos.upecriativo.com.br", site: "https://lp.upecriativo.com.br", teste: 0,
     planos: [{ k: "lp-hospedagem", nome: "Hospedagem", preco: 29.9 }, { k: "lp-hospedagem-ajustes", nome: "Hospedagem + ajustes", preco: 79.9 }],
     extras: [{ k: "lp-essencial", nome: "Criação: Landing page essencial", desc: "Até 5 seções, formulário e WhatsApp.", preco: 497, unico: true }, { k: "lp-completa", nome: "Criação: Landing page completa", desc: "Até 10 seções, copy, SEO e Pixel.", preco: 997, unico: true }] },
@@ -26,9 +24,9 @@ const APPS_PADRAO = {
     planos: [{ k: "ag-mensal", nome: "Agenda no ar", preco: 49.9 }, { k: "dash-mensal", nome: "Dashboard no ar", preco: 59.9 }],
     extras: [{ k: "ag-criacao", nome: "Criação: Agenda online", desc: "Serviços, horários e página.", preco: 697, unico: true }, { k: "dash-criacao", nome: "Criação: Dashboard sob medida", desc: "Até 8 indicadores e 3 gráficos.", preco: 1200, unico: true }] }
 };
-const APP_IDS = ["erp", "tv", "landing", "sistemas"];
+const APP_IDS = ["erp", "landing", "sistemas"];
 // frentes do painel central (Branding é o próprio portal: projeto, conteúdo, artes e recompra)
-const FRENTES_UPE = { branding: "Branding e mídias", erp: "Upe ERP", tv: "Upe TV", landing: "Landing pages", sistemas: "Upe Sistemas" };
+const FRENTES_UPE = { branding: "Branding e mídias", erp: "Loja online (Upe ERP)", landing: "Landing pages e sites", sistemas: "Agenda e dashboards" };
 const BRANDING_PADRAO = [
   { k: "branding", nome: "Branding completo", desc: "Identidade visual, manual da marca e apresentação.", preco: 0, unico: true },
   { k: "midias", nome: "Mídias digitais", desc: "Planejamento e criação de posts com aprovação no portal.", preco: 0 },
@@ -41,22 +39,19 @@ async function carregarFontes() {
   const f = {};
   await Promise.all([
     S.list("srv_planos").then(l => { f.srv = l; }).catch(() => {}),
-    S.get("publico/plano").then(d => { f.erp = d; }).catch(() => {}),
-    S.get("app/config").then(d => { try { f.tvCfg = d && d.json ? JSON.parse(d.json) : null; } catch (e) { f.tvCfg = null; } }).catch(() => {})
+    S.get("publico/plano").then(d => { f.erp = d; }).catch(() => {})
   ]);
-  f.tv = f.tvCfg && Array.isArray(f.tvCfg.plans) ? f.tvCfg.plans : null;
   state.fontes = f; return f;
 }
 const srvDe = (F, fr) => (F.srv || []).filter(p => fr.includes(p.frente) && p.ativo !== false).sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
 function appsCat(pub) {
   const c = clone(APPS_PADRAO), o = (pub || {}).apps || {}, F = state.fontes || {};
-  APP_IDS.forEach(k => { if (o[k]) c[k] = { ...c[k], ...o[k] }; if (/upe-(erp|tv)[.-]/.test(c[k].painel || "")) c[k].painel = APPS_PADRAO[k].painel; });
+  APP_IDS.forEach(k => { if (o[k]) c[k] = { ...c[k], ...o[k] }; if (/upe-erp[.-]/.test(c[k].painel || "")) c[k].painel = APPS_PADRAO[k].painel; });
   if (F.erp && +F.erp.mensal) {
     c.erp.planos = [{ k: "mensal", nome: "Plano mensal", preco: +F.erp.mensal }, { k: "upe", nome: "Cliente Upe (com branding ou mídias)", preco: +F.erp.upe || +F.erp.mensal }];
     if (Array.isArray(F.erp.extras) && F.erp.extras.length) c.erp.extras = F.erp.extras.map(x => ({ k: x.k, nome: x.nome, desc: x.desc || "", preco: +x.preco || 0 }));
     if (F.erp.teste != null) c.erp.teste = +F.erp.teste;
   }
-  if (F.tv && F.tv.length) c.tv.planos = F.tv.map(p => ({ k: p.id, nome: p.name, preco: +p.price || 0, desc: p.desc || "" }));
   const mens = fr => srvDe(F, fr).filter(p => p.tipo === "mensal").map(p => ({ k: p.id, nome: p.nome, preco: +p.valor || 0, desc: p.descricao || "" }));
   const cria = fr => srvDe(F, fr).filter(p => p.tipo === "criacao").map(p => ({ k: p.id, nome: "Criação: " + String(p.nome).replace(/^Criação:\s*/i, ""), preco: +p.valor || 0, desc: p.descricao || "", unico: true }));
   if (mens(["lp"]).length) { c.landing.planos = mens(["lp"]); c.landing.extras = cria(["lp"]); }
@@ -132,7 +127,6 @@ async function aApps(w, app = "branding") {
 const FONTE_PRECOS = {
   branding: "Mostrados na ficha do cliente (Projeto) e no portal.",
   erp: "Gravados no Gerenciador do ERP e no plano público (página das lojas, painéis e páginas de vendas do ERP).",
-  tv: "Gravados nos planos do Upe TV (painel da TV, página de vendas da TV e portal do anunciante).",
   landing: "Gravados no catálogo do Upe Serviços (página de vendas de landing pages e painel do cliente).",
   sistemas: "Gravados no catálogo do Upe Serviços (página de vendas da agenda e dos dashboards)."
 };
@@ -140,7 +134,6 @@ function linhasPrecos(frente, cat) {
   const F = state.fontes || {};
   if (frente === "branding") return precosBranding(state.cache.pub).map(p => ({ ...p, tipo: p.unico ? "unico" : "mensal" }));
   if (frente === "erp") return [...cat.erp.planos.map(p => ({ ...p, tipo: "mensal", fixo: true })), ...cat.erp.extras.map(e => ({ ...e, tipo: "extra" }))];
-  if (frente === "tv") return (F.tv || APPS_PADRAO.tv.planos.map(p => ({ id: p.k, name: p.nome, price: p.preco, desc: "" }))).map(p => ({ k: p.id, nome: p.name, preco: +p.price || 0, desc: p.desc || "", tipo: "mensal" }));
   const fr = frente === "landing" ? ["lp"] : ["agenda", "dash"];
   const l = (F.srv || []).filter(p => fr.includes(p.frente)).sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
   if (!l.length) return [...cat[frente].planos.map(p => ({ ...p, tipo: "mensal" })), ...cat[frente].extras.map(e => ({ ...e, nome: e.nome.replace(/^Criação:\s*/, ""), tipo: "unico" }))].map(r => ({ ...r, sub: frente === "landing" ? "lp" : /^dash/.test(r.k) ? "dash" : "agenda", ativo: true }));
@@ -148,7 +141,7 @@ function linhasPrecos(frente, cat) {
 }
 function editorPrecos(box, frente, cat) {
   let rows = linhasPrecos(frente, cat);
-  const tipos = frente === "erp" ? null : frente === "tv" ? null : [["mensal", "Mensal"], ["unico", "Pagamento único"]];
+  const tipos = frente === "erp" ? null : [["mensal", "Mensal"], ["unico", "Pagamento único"]];
   const subs = frente === "sistemas" ? [["agenda", "Agenda"], ["dash", "Dashboard"]] : null;
   const render = () => {
     box.innerHTML = `<section class="card grid"><div class="spread"><h3>Preços · ${esc(FRENTES_UPE[frente])}</h3><span class="muted small">${esc(FONTE_PRECOS[frente])}</span></div>
@@ -184,14 +177,6 @@ async function salvarPrecos(frente, rows) {
     await S.set("publico/plano", { mensal, upe, extras, atualizadoEm: agora }, true);
     return;
   }
-  if (frente === "tv") {
-    const d = await S.get("app/config"); let cfg = null; try { cfg = d && d.json ? JSON.parse(d.json) : null; } catch (e) {}
-    if (!cfg) throw new Error("abra o Upe TV uma vez para criar a configuração antes de editar os planos aqui");
-    const ant = Object.fromEntries((cfg.plans || []).map(p => [p.id, p]));
-    cfg.plans = rows.map(r => r.k && ant[r.k] ? { ...ant[r.k], name: r.nome, price: r.preco, desc: r.desc } : { id: "p_" + uid(6), name: r.nome, kind: "solo", price: r.preco, inc: {}, screens: 1, desc: r.desc, featured: false });
-    await S.set("app/config", { json: JSON.stringify(cfg), updatedAt: Date.now(), device: "painel-central" });
-    return;
-  }
   const fr = frente === "landing" ? ["lp"] : ["agenda", "dash"], atuais = (F.srv || []).filter(p => fr.includes(p.frente));
   const ids = new Set();
   for (const [i, r] of rows.entries()) {
@@ -205,7 +190,6 @@ async function salvarPrecos(frente, rows) {
 // acesso direto às áreas de administração de cada app (mesmo login do painel: e-mail e senha da Upe)
 const ADM_LINKS = {
   erp: [["Gerenciador do ERP", "Licenças, limites, suporte e páginas de vendas", "https://gestao.upecriativo.com.br/", true], ["Painel das empresas", "Entre como Upe e escolha a empresa", "https://painel.upecriativo.com.br/", true], ["Lojas", "Endereço público das lojas", "https://loja.upecriativo.com.br/"], ["Página de vendas", "Página do Upe ERP", "https://erp.upecriativo.com.br/"]],
-  tv: [["Gestão do Upe TV", "Programação, campanhas, telas e anunciantes", "https://tv.upecriativo.com.br/", true], ["Portal do anunciante", "Como o anunciante vê", "https://tv.upecriativo.com.br/#cliente"]],
   landing: [["Ferramentas do Upe Serviços", "Todas as páginas, domínios, interessados e erros dos sites", "https://servicos.upecriativo.com.br/#/adm/paginas", true], ["Página de vendas", "Upe Landing pages", "https://lp.upecriativo.com.br/"], ["Página de exemplo", "lp.upecriativo.com.br/exemplo", "https://lp.upecriativo.com.br/exemplo"]],
   sistemas: [["Ferramentas do Upe Serviços", "Interessados, domínios e erros dos sites", "https://servicos.upecriativo.com.br/#/adm/interessados", true], ["Página de vendas", "Agenda online e dashboards", "https://agenda.upecriativo.com.br/"], ["Agenda de exemplo", "Como o cliente final agenda", "https://agenda.upecriativo.com.br/exemplo"]]
 };

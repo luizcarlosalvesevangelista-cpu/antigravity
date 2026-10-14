@@ -1,8 +1,8 @@
 <script>/* registro de erros (Upe): até 5 por visita, sem dados pessoais */(function(){var n=0,v={};function e(m,o){try{m=String(m||"").slice(0,300);if(n>=5||v[m]||/ResizeObserver|Script error/i.test(m))return;v[m]=1;n++;fetch("https://firestore.googleapis.com/v1/projects/upecriativo-cc472/databases/(default)/documents/erros?key=AIzaSyDJqqSMLWZLKSt9K1jPzvvQgyikZy4q9vw",{method:"POST",keepalive:true,headers:{"Content-Type":"application/json"},body:JSON.stringify({fields:{app:{stringValue:"site"},msg:{stringValue:m},onde:{stringValue:String(o||"").slice(0,200)},url:{stringValue:(location.host+location.pathname).slice(0,200)},ua:{stringValue:navigator.userAgent.slice(0,160)},t:{integerValue:String(Date.now())}}})})}catch(_){}}addEventListener("error",function(x){e(x.message,(x.filename||"")+":"+(x.lineno||""))});addEventListener("unhandledrejection",function(x){var r=x.reason;e(r&&(r.message||r.code)||r,"promise")})})();</script>
 <title>Upe Criativo</title>
-<meta name="description" content="Upe Criativo: Branding e Redesign, Upe ERP, Upe TV, landing pages, agenda online e dashboards.">
+<meta name="description" content="Upe Criativo: Branding e Redesign, Upe ERP, landing pages, agenda online e dashboards.">
 <link rel="canonical" href="https://www.upecriativo.com.br/">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"ProfessionalService","name":"Upe Criativo","url":"https://www.upecriativo.com.br/","logo":"https://www.upecriativo.com.br/favicon.svg","image":"https://www.upecriativo.com.br/assets/img/filme-h.jpg","description":"Branding e Redesign, Upe ERP (loja online, PDV e pedidos), Upe TV (mídia em telas), landing pages, agenda online e dashboards.","telephone":"+55 11 93439-3249","areaServed":"BR","sameAs":["https://www.instagram.com/upecriativo/"],"makesOffer":[{"@type":"Offer","itemOffered":{"@type":"Service","name":"Branding e Redesign"}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"Upe ERP","applicationCategory":"BusinessApplication"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Upe TV"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Upe Landing pages"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Agenda online e dashboards"}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"ProfessionalService","name":"Upe Criativo","url":"https://www.upecriativo.com.br/","logo":"https://www.upecriativo.com.br/favicon.svg","image":"https://www.upecriativo.com.br/assets/img/filme-h.jpg","description":"Branding e Redesign, Upe ERP (loja online, PDV e pedidos), landing pages, agenda online e dashboards.","telephone":"+55 11 93439-3249","areaServed":"BR","sameAs":["https://www.instagram.com/upecriativo/"],"makesOffer":[{"@type":"Offer","itemOffered":{"@type":"Service","name":"Branding e Redesign"}},{"@type":"Offer","itemOffered":{"@type":"SoftwareApplication","name":"Upe ERP","applicationCategory":"BusinessApplication"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Upe Landing pages"}},{"@type":"Offer","itemOffered":{"@type":"Service","name":"Agenda online e dashboards"}}]}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;0,900;1,400&display=swap">
@@ -221,7 +221,6 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
       <a href="#inicio" data-nav="inicio">Início</a>
       <a href="#branding" data-nav="branding">Branding</a>
       <a href="#erp" data-nav="erp">Upe ERP</a>
-      <a href="#tv" data-nav="tv">Upe TV</a>
       <a href="#lp" data-nav="lp">Landing pages</a>
       <a href="#sistemas" data-nav="sistemas">Sistemas</a>
       <a href="#portfolio" data-nav="portfolio">Portfólio</a>
@@ -243,7 +242,7 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
     <div class="wrap copy">
       <p class="eb" style="color:#A9BBD0">Branding · Redesign · Sistemas · Mídia</p>
       <h1>Branding, sistemas e mídia para a sua marca decolar.</h1>
-      <p class="lead">Crio identidades visuais e redesenho marcas. E levo esse cuidado até a venda, com o Upe ERP, o Upe TV, landing pages e sistemas sob medida.</p>
+      <p class="lead">Crio identidades visuais e redesenho marcas. E levo esse cuidado até a venda, com o Upe ERP, landing pages e sistemas sob medida.</p>
       <div class="ctas"><a class="btn btn-creme" href="#filme">Assistir ao filme</a><a class="btn btn-linha" href="#contato">Falar com a Upe</a></div>
     </div>
   </section>
@@ -253,23 +252,22 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
       <div class="stack reveal">
         <p class="eb">O filme</p>
         <h2>Da identidade à venda.</h2>
-        <p class="lead">Um minuto e meio sobre o que a Upe faz: a marca, a loja e a tela. Com som, ou no mudo, como numa TV de espera.</p>
-        <ul class="ticks"><li>Branding e Redesign</li><li>Upe ERP: loja online, PDV e pedidos</li><li>Upe TV: mídia em telas parceiras</li></ul>
+        <p class="lead">Pouco mais de um minuto sobre o que a Upe faz: a marca, a loja e as páginas que vendem. Com som ou no mudo.</p>
+        <ul class="ticks"><li>Branding e Redesign</li><li>Upe ERP: loja online, PDV e pedidos</li><li>Landing pages, agenda online e dashboards</li></ul>
       </div>
       <div class="reveal">
         <div class="reel" data-reel><video controls playsinline preload="none" data-h="assets/video/filme-h.mp4" data-v="assets/video/filme-v.mp4" data-ph="assets/img/filme-h.jpg" data-pv="assets/img/filme-v.jpg" poster="assets/img/filme-h.jpg"></video></div>
-        <div class="reel-cap"><span>Filme institucional · 1:42</span><span>Também em 9:16 para Reels e totens</span></div>
+        <div class="reel-cap"><span>Filme institucional · 1:12</span><span>Também em 9:16 para Reels e totens</span></div>
       </div>
     </div>
   </section>
 
   <section class="band band-alt" id="frentes">
     <div class="wrap">
-      <div class="head reveal"><p class="eb">Cinco frentes</p><h2>Uma marca forte, do traço até o balcão.</h2></div>
+      <div class="head reveal"><p class="eb">Quatro frentes</p><h2>Uma marca forte, do traço até o balcão.</h2></div>
       <div class="servs">
         <a class="serv reveal" href="#branding">__IC_PEN__<h3>Branding e Redesign</h3><p>Logotipo, paleta, tipografia, ícones, padrões e manual de marca. Ou o redesenho da marca que você já tem.</p><span class="more">Ver como funciona →</span></a>
         <a class="serv reveal" href="#erp">__IC_PANEL__<h3>Upe ERP</h3><p>Loja virtual, PDV, PIX com QR Code, gestão de pedidos, cupons e relatórios num só painel.</p><span class="more">Conhecer o sistema →</span></a>
-        <a class="serv reveal" href="#tv">__IC_TV__<h3>Upe TV</h3><p>A sua marca nas TVs e totens de cafés, academias, clínicas, salões e lojas parceiras.</p><span class="more">Anunciar ou ser parceiro →</span></a>
         <a class="serv reveal" href="#lp">__IC_LP__<h3>Landing pages</h3><p>Páginas de venda com a sua marca, editor fácil, domínio próprio e painel de visitas, cliques e leads.</p><span class="more">Ver as landing pages →</span></a>
         <a class="serv reveal" href="#sistemas">__IC_SIS__<h3>Agenda e dashboards</h3><p>Agenda online para o cliente marcar horário sozinho e dashboards com os números do seu negócio.</p><span class="more">Conhecer os sistemas →</span></a>
       </div>
@@ -319,25 +317,6 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
       <div class="reveal">
         <div class="reel" data-reel><video controls playsinline preload="none" data-h="assets/video/erp-h.mp4" data-v="assets/video/erp-v.mp4" data-ph="assets/img/erp-h.jpg" data-pv="assets/img/erp-v.jpg" poster="assets/img/erp-h.jpg"></video></div>
         <div class="reel-cap"><span>Vídeo de lançamento · 0:38</span><span>Telas com dados de exemplo</span></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="band" id="tv">
-    <div class="wrap split flip">
-      <div class="stack reveal">
-        <p class="eb">Lançamento · Upe TV</p>
-        <h2>Sua marca na tela certa.</h2>
-        <p class="lead">Enquanto as pessoas esperam, olham para a tela. Quem se interessa aponta a câmera para o QR code e fala com a marca na hora. A Upe cria, publica e cuida de tudo pela internet.</p>
-        <div class="aud">
-          <div><h3>Para anunciantes</h3><p>Tela cheia, lateral que expande, letreiro e cardápio com pedido pelo celular. No portal, você vê onde passou, por quanto tempo e quantos leram o QR.</p><a class="mat" href="assets/docs/upe-tv-guia-do-anunciante.pdf" target="_blank" rel="noopener" download>Material do anunciante</a></div>
-          <div><h3>Para estabelecimentos</h3><p>A sua TV com programação profissional, o seu nome no letreiro e espaço para as suas promoções. A Upe instala e cuida da tela.</p><a class="mat" href="assets/docs/upe-tv-guia-do-estabelecimento.pdf" target="_blank" rel="noopener" download>Material do estabelecimento</a></div>
-        </div>
-        <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center"><a class="btn btn-azul" href="https://tv.upecriativo.com.br/" target="_blank" rel="noopener">Conhecer o Upe TV</a><a class="btn btn-linha" href="https://tv.upecriativo.com.br/#cliente" target="_blank" rel="noopener">Portal do assinante</a></div>
-      </div>
-      <div class="reveal">
-        <div class="reel" data-reel><video controls playsinline preload="none" data-h="assets/video/tv-h.mp4" data-v="assets/video/tv-v.mp4" data-ph="assets/img/tv-h.jpg" data-pv="assets/img/tv-v.jpg" poster="assets/img/tv-h.jpg"></video></div>
-        <div class="reel-cap"><span>Vídeo de lançamento · 0:40</span><span>Campanhas de exemplo</span></div>
       </div>
     </div>
   </section>
@@ -434,7 +413,7 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
         <div><p class="eb">Sobre mim</p><h1>__NOME__</h1><p class="role">Criador de Branding e Redesign · Fundador da Upe Criativo</p><p style="margin:4px 0 0;color:var(--fg-2)">Cabreúva, SP</p></div>
         <div class="bio">
           <p>Sou __NOME_CURTO__, criador de Branding e Redesign e fundador da Upe Criativo. Comecei como designer gráfico numa papelaria e gráfica, me formei em Publicidade e Propaganda e me especializei em marketing: MBA em Marketing, Criatividade e Inovação, pós-graduação em Publicidade, Propaganda e Mídias Sociais e formação em Growth Marketing.</p>
-          <p>A Upe Criativo é o meu projeto de agência pessoal desde 2023. Nela, desenho marcas novas e redesenho as que já existem, sempre com um sistema completo: logotipo, cores, tipografia, ícones, padrões e manual. E levo o branding até a venda: estou lançando o Upe ERP, para vender na internet e no balcão num só painel, e o Upe TV, para colocar marcas nas telas de quem espera.</p>
+          <p>A Upe Criativo é o meu projeto de agência pessoal desde 2023. Nela, desenho marcas novas e redesenho as que já existem, sempre com um sistema completo: logotipo, cores, tipografia, ícones, padrões e manual. E levo o branding até a venda: com o Upe ERP, para vender na internet e no balcão num só painel, e com landing pages, agenda online e dashboards sob medida.</p>
           <p>Também tenho experiência como analista de e-commerce e anos de varejo, e isso me faz pensar a marca até o momento da venda.</p>
         </div>
         <div class="cols2">
@@ -450,7 +429,7 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
           </div>
           <div class="stack" style="gap:14px"><h3>Experiência</h3>
             <ul class="tl">
-              <li><span class="when">2023–atual</span><div><b>Upe Criativo</b><span>Fundador · Branding, Redesign, marketing, Upe ERP e Upe TV</span></div></li>
+              <li><span class="when">2023–atual</span><div><b>Upe Criativo</b><span>Fundador · Branding, Redesign, marketing e Upe ERP</span></div></li>
               <li><span class="when">2026–atual</span><div><b>Analista de e-commerce</b></div></li>
               <li><span class="when">2019–2024</span><div><b>Varejo</b><span>Sonda Supermercados</span></div></li>
               <li><span class="when">2017–2019</span><div><b>Designer gráfico</b><span>Papelaria e artes gráficas</span></div></li>
@@ -473,13 +452,13 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
     <div class="stack">
       <p class="eb">Contato</p>
       <h2>Vamos colocar a sua marca no ar?</h2>
-      <p class="lead">Conte o que você precisa: uma identidade nova, o redesign da sua marca, a sua loja no Upe ERP, a sua campanha no Upe TV, uma landing page, uma agenda online ou um dashboard.</p>
+      <p class="lead">Conte o que você precisa: uma identidade nova, o redesign da sua marca, a sua loja no Upe ERP, uma landing page, uma agenda online ou um dashboard.</p>
       <form class="form" id="form" novalidate>
         <div class="row2">
           <label for="f-nome">Nome<input id="f-nome" name="nome" autocomplete="name" required></label>
           <label for="f-contato">E-mail ou WhatsApp<input id="f-contato" name="contato" autocomplete="email" required></label>
         </div>
-        <label for="f-assunto">Assunto<select id="f-assunto" name="assunto"><option>Branding</option><option>Redesign</option><option>Upe ERP</option><option>Upe TV</option><option>Landing page</option><option>Agenda online ou dashboard</option><option>Outro assunto</option></select></label>
+        <label for="f-assunto">Assunto<select id="f-assunto" name="assunto"><option>Branding</option><option>Redesign</option><option>Upe ERP</option><option>Landing page</option><option>Agenda online ou dashboard</option><option>Outro assunto</option></select></label>
         <label for="f-msg">Mensagem<textarea id="f-msg" name="mensagem" rows="4" required></textarea></label>
         <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" class="hp" aria-hidden="true">
         <div class="frow"><button class="btn btn-creme" type="submit" id="f-enviar">Enviar mensagem</button><span class="fmsg" id="f-msg-status" role="status"></span></div>
@@ -493,7 +472,7 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
 <footer>
   <div class="wrap">
     <a href="#inicio" class="brand" aria-label="Upe Criativo"><svg class="wm" viewBox="786 2599 350 48" aria-hidden="true">__WM__</svg></a>
-    <nav aria-label="Rodapé"><a href="#branding">Branding e Redesign</a><a href="https://erp.upecriativo.com.br/" target="_blank" rel="noopener">Upe ERP</a><a href="https://tv.upecriativo.com.br/" target="_blank" rel="noopener">Upe TV</a><a href="https://lp.upecriativo.com.br/" target="_blank" rel="noopener">Landing pages</a><a href="https://agenda.upecriativo.com.br/" target="_blank" rel="noopener">Agenda e dashboards</a><a href="#portfolio">Portfólio</a><a href="#sobre">Sobre mim</a><a href="portal/">Área do cliente</a><a href="privacidade.html">Privacidade</a><a href="termos.html">Termos de uso</a></nav>
+    <nav aria-label="Rodapé"><a href="#branding">Branding e Redesign</a><a href="https://erp.upecriativo.com.br/" target="_blank" rel="noopener">Upe ERP</a><a href="https://lp.upecriativo.com.br/" target="_blank" rel="noopener">Landing pages</a><a href="https://agenda.upecriativo.com.br/" target="_blank" rel="noopener">Agenda e dashboards</a><a href="#portfolio">Portfólio</a><a href="#sobre">Sobre mim</a><a href="portal/">Área do cliente</a><a href="privacidade.html">Privacidade</a><a href="termos.html">Termos de uso</a></nav>
     <span>© <span id="ano">2026</span> Upe Criativo</span>
   </div>
 </footer>
@@ -525,11 +504,6 @@ const PROJETOS = [
     entregas: ["Vídeo de 38 s em 16:9 e 9:16", "Telas do produto animadas", "Trilha e efeitos sonoros"],
     imagens: [["assets/img/erp-pedidos.jpg", "Quadro de pedidos animado"], ["assets/img/erp-pdv.jpg", "PDV com pagamento por PIX"]],
     video: { h: "assets/video/erp-h.mp4", v: "assets/video/erp-v.mp4", ph: "assets/img/erp-h.jpg", pv: "assets/img/erp-v.jpg" } },
-  { id: "upe-tv", titulo: "Upe TV · lançamento", cliente: "Produto Upe", ano: "2026", tipos: ["Motion"], capa: "assets/img/tv-tela.jpg",
-    resumo: "Vídeo para anunciantes e parceiros: a campanha na tela, o caminho do QR até o pedido e o portal de resultados.",
-    entregas: ["Vídeo de 40 s em 16:9 e 9:16", "Versão vertical para totens", "Trilha e efeitos sonoros"],
-    imagens: [["assets/img/tv-qr.jpg", "Do QR code ao pedido no WhatsApp"], ["assets/img/tv-portal.jpg", "Portal do anunciante"]],
-    video: { h: "assets/video/tv-h.mp4", v: "assets/video/tv-v.mp4", ph: "assets/img/tv-h.jpg", pv: "assets/img/tv-v.jpg" } }
 ];
 /* ====================================== */
 
@@ -698,7 +672,7 @@ function renderCase(id) {
 })();
 
 /* rotas: #portfolio, #sobre, #case-xxx são abas; o resto são âncoras da página inicial */
-const homeAnchors = ["inicio", "filme", "frentes", "branding", "erp", "tv", "lp", "sistemas", "portfolio-teaser", "sobre-teaser"];
+const homeAnchors = ["inicio", "filme", "frentes", "branding", "erp", "lp", "sistemas", "portfolio-teaser", "sobre-teaser"];
 function route() {
   const h = location.hash.replace("#", "") || "inicio";
   let view = "home", nav = h;

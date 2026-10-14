@@ -243,7 +243,7 @@ function aCalendario(w) {
 }
 
 /* ---------- cronograma da Upe ---------- */
-const PILARES = ["Branding", "Rebranding", "Marca", "Publicidade e marketing", "E-commerce", "Upe TV", "Upe ERP", "Loja Upe", "Landing pages", "Upe Sistemas", "YouTube"];
+const PILARES = ["Branding", "Rebranding", "Marca", "Publicidade e marketing", "E-commerce", "Upe ERP", "Loja Upe", "Landing pages", "Upe Sistemas", "YouTube"];
 const CST = { planejado: "Planejado", roteiro: "Roteiro", pronto: "Pronto", aprovado: "Aprovado", reprovado: "Reprovado", publicado: "Publicado" };
 const cstPill = s => `<span class="pill ${{ aprovado: "ok", publicado: "info", reprovado: "bad", pronto: "warn" }[s] || ""}">${esc(CST[s] || s)}</span>`;
 async function cronogramaArquivo() {
@@ -263,7 +263,7 @@ function aCronograma(w, aba = "instagram", alvo = "") {
   const vw = ls.get("upe-cvw") || "lista";
   const semanas = {}; rows.forEach(x => { const d = new Date((x.data || todayIso()) + "T12:00"); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); const k = x.data ? isoDay(d) : "sem"; (semanas[k] = semanas[k] || []).push(x); });
   const tabs = [["instagram", "Instagram", cnt("instagram")], ["youtube", "YouTube", cnt("youtube")], ["semdata", "Sem data", cnt("semdata")], ["timeline", "Timeline por app", 0], ["modelos", "Modelos editáveis", 0]];
-  w.innerHTML = `<div class="spread"><div class="grid" style="gap:4px"><span class="eb">@upecriativo · YouTube</span><h1>Cronograma Upe</h1><p class="muted small">Branding, rebranding, marca, publicidade e marketing, e-commerce, Upe TV e Upe ERP.</p></div>
+  w.innerHTML = `<div class="spread"><div class="grid" style="gap:4px"><span class="eb">@upecriativo · YouTube</span><h1>Cronograma Upe</h1><p class="muted small">Branding, rebranding, marca, publicidade e marketing, e-commerce, Upe ERP, landing pages e sistemas.</p></div>
       <div class="row"><button class="btn sec" id="cKit">Importar kit</button><button class="btn sec" id="cDup">Limpar duplicados</button><button class="btn sec" id="cPad">${crono.length ? "Refazer cronograma" : "Carregar cronograma padrão"}</button><button class="btn" id="cNew">Novo item</button></div></div>
     <nav class="subtabs">${tabs.map(([k, l, n]) => `<a class="tab" href="#/admin/cronograma/${k}" ${k === aba ? 'aria-current="page"' : ""}>${l}${k !== "timeline" ? `<span class="cnt" style="background:var(--mute-bg);color:var(--fg-2)">${n}</span>` : ""}</a>`).join("")}</nav>
     ${extrasHTML(state.cache.extras || [], pf)}
@@ -274,7 +274,7 @@ function aCronograma(w, aba = "instagram", alvo = "") {
   $("#cNew").onclick = () => cronoModal(null);
   $("#cKit").onclick = () => kitImport({ alvo: "cronograma" });
   $("#cPad").onclick = () => { if (!crono.length) return refazer();
-    modal("Refazer o cronograma?", `<p>Apaga os ${crono.length} itens atuais (inclusive os importados) e carrega de novo o cronograma padrão da Upe: kit de branding, Upe TV, Upe ERP e YouTube, com as datas organizadas.</p><p class="muted small">Depois, importe as pastas dos kits do Upe TV e do Upe ERP: os arquivos entram nos itens que já estão no cronograma, sem duplicar.</p>`, `<button class="btn sec" data-close>Cancelar</button><button class="btn bad" id="rfOk">Refazer</button>`);
+    modal("Refazer o cronograma?", `<p>Apaga os ${crono.length} itens atuais (inclusive os importados) e carrega de novo o cronograma padrão da Upe: kit de branding, Upe ERP, landing pages, sistemas e YouTube, com as datas organizadas.</p><p class="muted small">Depois, importe as pastas dos kits do Upe ERP: os arquivos entram nos itens que já estão no cronograma, sem duplicar.</p>`, `<button class="btn sec" data-close>Cancelar</button><button class="btn bad" id="rfOk">Refazer</button>`);
     $("#rfOk").onclick = () => { dlg.close(); refazer(); }; };
   const refazer = async () => { try { for (const x of crono) await S.del(`cronograma/${x.id}`); const n = await carregarCronogramaPadrao(); toast(`Cronograma refeito: ${n} itens`); reAdmin(); } catch (e) { toast(e.message); } };
   if (aba === "modelos") { aModelos(body, alvo ? crono.find(x => x.id === alvo) || null : null); return; }
@@ -285,7 +285,7 @@ function aCronograma(w, aba = "instagram", alvo = "") {
       <div class="card pad0 tbl"><table><tbody>${its.map(x => `<tr class="click" data-u="${esc(x.id)}" tabindex="0"><td style="width:92px" class="num small">${x.data ? `<b>${fdate(x.data).slice(0, 5)}</b> ${DOW[new Date(x.data + "T12:00").getDay()].toLowerCase()}<br>${esc(x.hora || "")}` : "—"}</td>
         <td style="width:${x.canal === "youtube" && x.formato === "youtube" ? 116 : 84}px"><div class="lthumb">${tagsHTML(x.status, x)}<div class="thumb" style="width:${x.canal === "youtube" && x.formato === "youtube" ? 104 : 64}px;aspect-ratio:${x.canal === "youtube" && x.formato === "youtube" ? "16/9" : "4/5"};border-radius:8px">${capaDe(x) ? imgTag(capaDe(x)) : `<span class="small">${esc(FMT_LBL[x.formato] || "")}</span>`}</div></div></td>
         <td><b>${esc(x.titulo)}</b><br><span class="muted small">${esc(FMT_LBL[x.formato] || x.formato)} · ${esc(x.pilar || "")} · ${esc(x.origem || "")}${x._orig ? ` · repost de “${esc(x._orig.titulo)}”` : ""}</span></td>
-        <td style="width:150px"><select data-st="${esc(x.id)}" aria-label="Status">${Object.entries(CST).map(([s, l]) => `<option value="${s}" ${x.status === s ? "selected" : ""}>${l}</option>`).join("")}</select></td></tr>`).join("")}</tbody></table></div></section>`).join("") : `<div class="empty">${crono.length ? "Nada aqui com este filtro." : "Carregue o cronograma padrão da Upe (kits do Upe TV, do Upe ERP e o kit de branding) ou importe um kit."}</div>`}`;
+        <td style="width:150px"><select data-st="${esc(x.id)}" aria-label="Status">${Object.entries(CST).map(([s, l]) => `<option value="${s}" ${x.status === s ? "selected" : ""}>${l}</option>`).join("")}</select></td></tr>`).join("")}</tbody></table></div></section>`).join("") : `<div class="empty">${crono.length ? "Nada aqui com este filtro." : "Carregue o cronograma padrão da Upe (kits do Upe ERP, das landing pages, dos sistemas e o kit de branding) ou importe um kit."}</div>`}`;
   $("#pf").onchange = e => { ss.set("upe-pf", e.target.value); aCronograma(w, aba); };
   w.querySelectorAll("[data-vw]").forEach(b => b.onclick = () => { ls.set("upe-cvw", b.dataset.vw); aCronograma(w, aba); });
   w.querySelectorAll("[data-g]").forEach(b => b.onclick = () => cronoModal(crono.find(x => x.id === b.dataset.g)));
@@ -366,7 +366,7 @@ function cronoModal(x0) {
 const fkey = u => String(u || "").split("?")[0].split("/").slice(-2).join("/").toLowerCase();
 const tkey = (f, t) => f + "|" + String(t || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
 const solid = u => /^(idb:|https?:|data:)/.test(u || "") || String(u || "").startsWith("{assets}") || String(u || "").startsWith("kits/");
-function pilarDoKit(nome) { const n = String(nome || "").toLowerCase(); if (/upe tv|\btv\b/.test(n)) return "Upe TV"; if (/erp|plataforma de vendas|loja/.test(n)) return "Upe ERP"; if (/branding|marca/.test(n)) return "Branding"; return ""; }
+function pilarDoKit(nome) { const n = String(nome || "").toLowerCase(); if (/erp|plataforma de vendas|loja/.test(n)) return "Upe ERP"; if (/branding|marca/.test(n)) return "Branding"; return ""; }
 function acharTodos(lista, it, mesmoKit) { return lista.filter(x => acharIgual([x], it, mesmoKit)); }
 function acharIgual(lista, it, mesmoKit = () => true) {
   // mesmo título, ou exatamente o mesmo conjunto de arquivos
@@ -474,9 +474,9 @@ const APPS = {
   email: { nome: "E-mail / newsletter", re: /e-?mail|newsletter/i, freq: "1 envio a cada 15 dias", hora: "Terça ou quinta às 10h", formatos: ["Newsletter", "Oferta", "Convite"],
     fases: ["Boas-vindas e apresentação", "Conteúdo útil + novidade", "Oferta exclusiva para a lista", "Convite para recompra"] }
 };
-const PERFIL_UPE = { nome: "Upe Criativo", canais: ["instagram", "youtube", "linkedin", "tiktok", "whatsapp", "google"], negocio: "Branding e redesign, Upe ERP (loja, PDV e pedidos) e Upe TV (mídia em telas)",
-  publicos: ["Donos de pequenos negócios", "Lojistas e e-commerce", "Estabelecimentos parceiros e anunciantes"], atributos: ["Branding", "Upe ERP", "Upe TV"],
-  jornada: [{ etapa: "Descobrir", texto: "Reels e Shorts com antes e depois de marcas" }, { etapa: "Confiar", texto: "Cases, manual de marca e bastidores" }, { etapa: "Escolher", texto: "Tutoriais do Upe ERP e do Upe TV" }, { etapa: "Comprar", texto: "Conversa no WhatsApp e reunião" }] };
+const PERFIL_UPE = { nome: "Upe Criativo", canais: ["instagram", "youtube", "linkedin", "tiktok", "whatsapp", "google"], negocio: "Branding e redesign, Upe ERP (loja, PDV e pedidos), landing pages e sistemas",
+  publicos: ["Donos de pequenos negócios", "Lojistas e e-commerce", "Negócios que atendem com hora marcada"], atributos: ["Branding", "Upe ERP"],
+  jornada: [{ etapa: "Descobrir", texto: "Reels e Shorts com antes e depois de marcas" }, { etapa: "Confiar", texto: "Cases, manual de marca e bastidores" }, { etapa: "Escolher", texto: "Tutoriais do Upe ERP e das landing pages" }, { etapa: "Comprar", texto: "Conversa no WhatsApp e reunião" }] };
 const semPh = v => (typeof v === "string" && /^\s*\[.*\]\s*$/.test(v)) ? "" : (v || "");
 function perfilDoDossie(D, doc = {}) {
   const fi = Object.fromEntries((D.diagnostico?.ficha || []).map(([k, v]) => [String(k).toLowerCase(), semPh(v)]));

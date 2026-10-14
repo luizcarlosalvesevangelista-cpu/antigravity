@@ -1,4 +1,4 @@
-/* Modelos editáveis de post (estilo Canva) das frentes da Upe: Upe ERP, Upe TV, Loja Upe, Upe Landing pages e Upe Sistemas (agenda e dashboards).
+/* Modelos editáveis de post (estilo Canva) das frentes da Upe: Upe ERP, Loja Upe, Upe Landing pages e Upe Sistemas (agenda e dashboards).
    Desenha no <canvas> com Lato e as imagens do site. Usado pelo editor do painel (Cronograma Upe → Modelos)
    e pelo gerador das artes e reels do cronograma (mesmo arquivo, mesmo resultado).
    UpeModelos.render(canvas, modelo, { base, t }) → Promise. t (0…1) anima a entrada dos elementos (reels). */
@@ -6,8 +6,6 @@
   const FRENTES = {
     erp: { nome: "Upe ERP", chip: "UPE ERP", base: "#234e7b", escuro: "#0b1d3a", destaque: "#5fb3ff", creme: "#f2f0e2", tinta: "#0d1b33", cta: "Teste 14 dias grátis", rodape: "Loja online, PDV e pedidos num só painel",
       imagens: ["assets/img/ui/erp-painel.jpg", "assets/img/ui/erp-pdv.jpg", "assets/img/ui/erp-pedidos.jpg"] },
-    tv: { nome: "Upe TV", chip: "UPE TV", base: "#0C4F7F", escuro: "#061A2B", destaque: "#F2B33D", creme: "#F2F0E1", tinta: "#0b1a26", cta: "Anuncie no Upe TV", rodape: "Sua marca na tela certa",
-      imagens: ["assets/img/ui/tv-tela.jpg", "assets/img/ui/tv-portal.jpg", "assets/img/ui/tv-qr.jpg"] },
     loja: { nome: "Loja Upe", chip: "LOJA UPE", base: "#0b1d3a", escuro: "#060f20", destaque: "#ff7a59", creme: "#f4f1ea", tinta: "#0d1b33", cta: "Monte a sua loja", rodape: "A loja online da sua marca",
       imagens: ["assets/img/ui/loja-vitrine.jpg", "assets/img/ui/loja-produtos.jpg", "assets/img/ui/loja-pix.jpg", "assets/img/ui/loja-pedido.jpg", "assets/img/ui/loja-produto.jpg"] },
     landing: { nome: "Upe Landing pages", chip: "LANDING PAGES", base: "#3a2f6b", escuro: "#1d1738", destaque: "#c9b8ff", creme: "#f3f0fa", tinta: "#1d1738", cta: "Quero a minha página", rodape: "Páginas de venda com painel de resultados",
@@ -372,6 +370,7 @@ class LocalStore {
   async add(c, data) { const id = uid(); await this.set(`${c}/${id}`, data); return id; }
   async del(path) { const [c, id] = this.sp(path); if (this.d.cols[c]) delete this.d.cols[c][id]; this.save(); }
   async list(c) { return Object.entries(this.d.cols[c] || {}).map(([id, v]) => ({ id, ...clone(v) })); }
+  async query(c, campo, valor) { return (await this.list(c)).filter(x => x[campo] === valor); }
   async login(email, pass) { if (email.trim().toLowerCase() === "admin@upe.demo" && pass === "upe-demo") { ss.set("upe-adm", "1"); return true; } throw new Error("E-mail ou senha incorretos."); }
   async currentAdmin() { return ss.get("upe-adm") === "1"; }
   async logout() { ss.set("upe-adm", null); }
@@ -393,13 +392,14 @@ class FireStore {
     for (const f of ["firebase-app-compat.js", "firebase-auth-compat.js", "firebase-firestore-compat.js", "firebase-storage-compat.js"]) await new Promise((ok, no) => { const s = document.createElement("script"); s.src = base + f; s.onload = ok; s.onerror = () => no(new Error("Não foi possível carregar o Firebase.")); document.head.appendChild(s); });
     firebase.initializeApp(this.cfg); this.db = firebase.firestore(); this.auth = firebase.auth(); try { this.st = this.cfg.storageBucket ? firebase.storage() : null; } catch (e) { this.st = null; }
     if (CFG.emulador) { const h = location.hostname; this.auth.useEmulator(`http://${h}:9099`); this.db.useEmulator(h, 8080); if (this.st) this.st.useEmulator(h, 9199); } // testes locais (firebase emulators:start)
-    this.ready = new Promise(r => { const off = this.auth.onAuthStateChanged(u => { off(); r(u); }); });
+    this.ready = new Promise(r => { const off = this.auth.onAuthStateChanged(u => { off(); if (u) u.getIdToken(true).catch(() => {}).then(() => r(u)); else r(u); }); });
   }
   async get(p) { const s = await this.db.doc(p).get(); return s.exists ? s.data() : null; }
   async set(p, d, merge = false) { await this.db.doc(p).set(d, { merge }); }
   async add(c, d) { return (await this.db.collection(c).add(d)).id; }
   async del(p) { await this.db.doc(p).delete(); }
   async list(c) { const s = await this.db.collection(c).get(); return s.docs.map(d => ({ id: d.id, ...d.data() })); }
+  async query(c, campo, valor) { const s = await this.db.collection(c).where(campo, "==", valor).get(); return s.docs.map(d => ({ id: d.id, ...d.data() })); }
   async login(email, pass) {
     const r = await this.auth.signInWithEmailAndPassword(email.trim(), pass).catch(e => { throw new Error({ "auth/too-many-requests": "Muitas tentativas. Aguarde alguns minutos ou redefina a senha.", "auth/network-request-failed": "Sem conexão com o Firebase. Verifique a internet.", "auth/user-disabled": "Este usuário está desativado." }[e.code] || "E-mail ou senha incorretos."); });
     if (!(await this.get(`admins/${r.user.uid}`))) { await this.auth.signOut(); throw new Error("Este usuário não está liberado como administrador."); }
@@ -417,7 +417,7 @@ class FireStore {
   async contaSair() { await this.auth.signOut(); }
   contaAtual() { return this.auth && this.auth.currentUser; }
   // sufixo aleatório: envios em paralelo com o mesmo nome não se sobrescrevem
-  async upload(file, path) { if (!this.st) return null; const ref = this.st.ref(`${path}/${Date.now()}-${uid(5)}-${file.name.replace(/[^\w.\-]/g, "_")}`); await ref.put(file); return await ref.getDownloadURL(); }
+  async upload(file, path) { if (!this.st) throw new Error("o Storage não está ligado no painel (config.js sem storageBucket)"); const ref = this.st.ref(`${path}/${Date.now()}-${uid(5)}-${file.name.replace(/[^\w.\-]/g, "_")}`); await ref.put(file); return await ref.getDownloadURL(); }
 }
 const S = CFG.firebase ? new FireStore(CFG.firebase) : new LocalStore();
 
@@ -482,8 +482,7 @@ async function seedDemo(st) {
       motions: [], semanas: ["Semana 1 · lançamento"],
       instagram: [{ img: A + "img/brand.jpg", titulo: "Nova identidade", data: "", semana: 1, legenda: "" }, { img: A + "img/redesign.jpg", titulo: "Antes e depois", data: "", semana: 1, legenda: "" }, { img: A + "img/filme-h.jpg", titulo: "Assinatura", data: "", semana: 1, legenda: "" }]
     },
-    apps: { erp: { status: "teste", plano: "upe", extras: ["E"], dia: 10, ajuste: 0, inicio: day(-12), fimTeste: day(2), obs: "Loja em cafeaurora.upe (exemplo)" }, tv: { status: "ativo", plano: "p_vitrine", extras: [], dia: 15, ajuste: 0, inicio: day(-40), fimTeste: "", obs: "2 telas parceiras no bairro", codigo: "UPE-PD7K" },
-      landing: { status: "ativo", plano: "lp-hospedagem", extras: [], dia: 10, ajuste: 0, inicio: day(-30), fimTeste: "", obs: "" },
+    apps: { erp: { status: "teste", plano: "upe", extras: ["E"], dia: 10, ajuste: 0, inicio: day(-12), fimTeste: day(2), obs: "Loja em cafeaurora.upe (exemplo)" },       landing: { status: "ativo", plano: "lp-hospedagem", extras: [], dia: 10, ajuste: 0, inicio: day(-30), fimTeste: "", obs: "" },
       sistemas: { status: "teste", plano: "ag-mensal", extras: [], dia: 10, ajuste: 0, inicio: day(-5), fimTeste: day(9), obs: "", modulos: ["agenda", "dash"] } },
     paineis: { erp: { modo: "personalizado", nome: "painel-erp-exemplo.html", em: now - 20 * H } },
     perfil: { nome: "Café Aurora", canais: ["instagram", "whatsapp", "google", "loja"], negocio: "Cafeteria de bairro com delivery", regiao: "São Paulo · zona oeste", publicos: ["Vizinhos que tomam café todo dia", "Quem trabalha perto e pede delivery"], atributos: ["Café coado", "Pão na chapa", "Bolos caseiros"],
@@ -503,7 +502,7 @@ async function seedDemo(st) {
     cobrancas: [
       { id: uid(8), descricao: "Mídias digitais · " + MESES[new Date().getMonth()], valor: 890, vencimento: day(5), liberada: true, status: "aberta", pix: true, cartao: true, linkCartao: "" },
       { id: uid(8), descricao: "Cartões de visita (1.000 un.)", valor: 189, vencimento: day(-20), liberada: true, status: "paga", pix: true, cartao: false, linkCartao: "" },
-      { id: uid(8), app: "tv", ref: "app-tv-exemplo", descricao: "Upe TV · Combo Vitrine · " + MESES[new Date().getMonth()], valor: 349, vencimento: day(8), liberada: true, status: "aberta", pix: true, cartao: true, linkCartao: "" }
+      { id: uid(8), app: "landing", ref: "app-landing-exemplo", descricao: "Landing pages · Hospedagem · " + MESES[new Date().getMonth()], valor: 29.9, vencimento: day(8), liberada: true, status: "aberta", pix: true, cartao: true, linkCartao: "" }
     ],
     mensagens: [{ id: uid(8), texto: "Oi, Marina! Os posts da semana já estão no calendário para você aprovar.", em: now - 6 * H }]
   });
@@ -643,13 +642,15 @@ async function clientRoute(tab, arg) {
     ["conteudo", "Conteúdo", pend.posts.length, pl.midias && ac.calendario],
     ["graficos", "Materiais gráficos", pend.artes.length, pl.grafica && ac.graficos],
     ["produtos", "Comprar de novo", 0, pl.grafica && ac.recompra && recItems.length],
-    ...FRENTES_DO_CLIENTE(doc).filter(k => k !== "branding" || temPainelProprio(doc, "branding")).map(k => [`s-${k}`, k === "branding" ? "Painel da marca" : appsCat(state.cfg)[k].curto || appsCat(state.cfg)[k].nome, pend.cobsFrente?.[k] || 0, true, true]),
-    ["apps", "Contratar serviços", 0, APP_IDS.some(k => !appsCat(state.cfg)[k].breve) || adesoes(doc).length],
-    ["pagamentos", "Pagamentos", pend.cobs.length, ac.pagamentos],
-    ["mensagens", "Mensagens", tab === "mensagens" ? 0 : pend.msgs.length, true]
+    ["servicos", "Meus serviços", 0, true],
+    ["pagamentos", "Pagamentos", pend.cobs.length, ac.pagamentos || FRENTES_DO_CLIENTE(doc).length > 0],
+    ["mensagens", "Falar com a Upe", tab === "mensagens" ? 0 : pend.msgs.length, true]
   ].filter(t => t[3]);
   const kitView = tab === "kit" && pl.midias && ac.calendario;
-  const servico = /^s-/.test(tab) && tabs.some(t => t[0] === tab) ? tab.slice(2) : "";
+  // painel de um serviço (s-erp, s-landing…) ou de um sistema próprio (app/<endereço>): abre a partir de Meus serviços
+  const servico = /^s-/.test(tab) && (FRENTES_DO_CLIENTE(doc).includes(tab.slice(2)) || temPainelProprio(doc, tab.slice(2))) ? tab.slice(2) : "", appProprio = tab === "app" && arg ? arg : "";
+  if (servico || appProprio) tab = "servicos";
+  if (tab === "apps") tab = "servicos";
   if (kitView) tab = "conteudo"; else if (!tabs.some(t => t[0] === tab)) tab = "inicio";
   if (tab === "pagamentos" && !ac.pagamentos && FRENTES_DO_CLIENTE(doc).length) tab = "inicio";
   if (tab === "mensagens") ls.set(seenKey, String(Date.now()));
@@ -668,11 +669,13 @@ async function clientRoute(tab, arg) {
   const m = $("#cmain");
   if (kitView) return cKit(m, c, arg);
   if (servico) return cServico(m, c, servico, arg);
-  ({ inicio: cInicio, agenda: cAgenda, apresentacao: cApres, conteudo: cConteudo, graficos: cGraficos, produtos: cProdutos, pagamentos: cPagamentos, mensagens: cMensagens, apps: cApps })[tab](m, c, { pend, recItems, tabs, arg });
+  if (appProprio) return cAppProprio(m, c, decodeURIComponent(appProprio));
+  ({ inicio: cInicio, agenda: cAgenda, apresentacao: cApres, conteudo: cConteudo, graficos: cGraficos, produtos: cProdutos, pagamentos: cPagamentos, mensagens: cMensagens, servicos: cMeusServicos })[tab](m, c, { pend, recItems, tabs, arg });
 }
 const refreshClient = () => clientRoute((location.hash.split("/")[2]) || "inicio");
 
-function cInicio(m, { doc }, { pend, tabs }) {
+function cInicio(m, c, { pend, tabs }) {
+  const { doc } = c;
   const has = k => tabs.some(t => t[0] === k);
   const inc = doc.incluso || [], done = inc.filter(i => i.feito).length;
   const cards = [
@@ -684,6 +687,7 @@ function cInicio(m, { doc }, { pend, tabs }) {
   m.innerHTML = `
     <div class="grid" style="gap:6px"><span class="eb">Seu projeto</span><h1>Olá, ${esc((doc.nome || "").split(" ")[0] || "tudo bem")}!</h1>
       <div class="row">${doc.plano?.branding ? '<span class="pill info">Branding</span>' : ""}${doc.plano?.midias ? '<span class="pill info">Mídias digitais</span>' : ""}${doc.plano?.grafica ? '<span class="pill info">Papelaria gráfica</span>' : ""}</div></div>
+    <section class="grid" style="gap:10px"><div class="spread"><h3>Seus serviços</h3><a class="small" href="#/c/servicos">Ver todos</a></div><div id="iniSv"><div class="muted small">Carregando…</div></div></section>
     <div class="g4">${cards.map(([n, l, h]) => `<a class="card stat" href="${h}" style="text-decoration:none;color:inherit"><b>${n}</b><span>${l}</span></a>`).join("")}</div>
     <div class="g2">
       <section class="card grid"><div class="spread"><h3>O que está incluso</h3><span class="muted small num">${done} de ${inc.length}</span></div>
@@ -696,6 +700,7 @@ function cInicio(m, { doc }, { pend, tabs }) {
         <section class="card grid"><span class="eb">Precisa de algo?</span><p class="muted small">Escreva para a Upe por aqui ou pelo WhatsApp.</p><div class="row"><a class="btn sec" href="#/c/mensagens">Enviar mensagem</a>${state.cfg.whatsapp || CFG.whatsappUpe ? `<a class="btn sec" href="${esc(waLink(state.cfg.whatsapp || CFG.whatsappUpe, `Olá! Sou ${doc.nome} (${doc.marca || doc.empresa}).`))}" target="_blank" rel="noopener">WhatsApp</a>` : ""}</div></section>
       </div>
     </div>`;
+  servicosDoCliente(c).then(svs => { const el = $("#iniSv", m); if (el) el.innerHTML = cardsServicos(svs); }).catch(() => { const el = $("#iniSv", m); if (el) el.innerHTML = ""; });
 }
 
 /* ---------- apresentação (aba 05 do dossiê) ---------- */
@@ -964,7 +969,15 @@ async function aCliente(w, id, tab, alvo) {
   const doc = clone(c.doc), priv = clone(c.priv), acoes = c.acoes;
   const p = pendencias(doc, acoes), unread = acoes.filter(a => a.tipo === "mensagem" && a.em > (doc.lidoAdmEm || 0)).length, pedNovos = pedidosOf(doc, acoes).filter(x => x.status === "novo").length;
   const ajustes = [...(doc.posts || []), ...(doc.graficos || [])].filter(x => statusOf(x, acoes).status === "ajustes");
-  const tabs = [["projeto", "Projeto e acessos", 0], ["apresentacao", "Apresentação e dossiê", 0], ["conteudo", "Conteúdo", p.posts.length + (doc.posts || []).filter(x => ajustes.includes(x)).length], ["graficos", "Gráficos e recompra", pedNovos], ["pagamentos", "Pagamentos", (doc.cobrancas || []).filter(x => cobStatus(x, acoes) === "informado").length], ["apps", "Serviços", appPedidos(doc, acoes).filter(x => x.status === "novo").length], ["mensagens", "Inbox", unread]];
+  // as abas acompanham os serviços do cliente (Branding → apresentação, conteúdo e gráficos; páginas e sistemas → envio dos arquivos)
+  const pl = doc.plano || {}, temPg = ativoApp((doc.apps || {}).landing) || ativoApp((doc.apps || {}).sistemas) || doc.temPaginas;
+  const tabs = [["projeto", "Projeto e acessos", 0, true], ["apps", "Serviços", appPedidos(doc, acoes).filter(x => x.status === "novo").length, true],
+    ["apresentacao", "Apresentação e dossiê", 0, pl.branding || doc.apresentacao || priv.dossie || priv.dossieUrl],
+    ["conteudo", "Conteúdo", p.posts.length + (doc.posts || []).filter(x => ajustes.includes(x)).length, pl.midias || (doc.posts || []).length],
+    ["graficos", "Gráficos e recompra", pedNovos, pl.grafica || (doc.graficos || []).length],
+    ["paginas", "Páginas e sistemas", 0, temPg],
+    ["pagamentos", "Pagamentos", (doc.cobrancas || []).filter(x => cobStatus(x, acoes) === "informado").length, true], ["mensagens", "Inbox", unread, true]].filter(t => t[3]);
+  if (!tabs.some(t => t[0] === tab)) tab = "projeto";
   w.innerHTML = `<div class="spread"><div class="grid" style="gap:4px"><a href="#/admin/clientes" class="small">← Clientes</a><h1>${esc(doc.marca || doc.empresa || doc.nome)}</h1><span class="muted">${esc(doc.nome)}${priv.email ? ` · ${esc(priv.email)}` : ""}</span></div>
     <div class="row"><button class="btn sec sm" id="vCli">Ver como cliente</button></div></div>
     <nav class="subtabs">${tabs.map(([k, l, n]) => `<a class="tab" href="#/admin/cliente/${id}/${k}" ${k === tab ? 'aria-current="page"' : ""}>${l}${n ? `<span class="cnt">${n}</span>` : ""}</a>`).join("")}</nav>
@@ -972,7 +985,7 @@ async function aCliente(w, id, tab, alvo) {
   $("#vCli").onclick = () => { ss.set("upe-cliente", id); ss.set("upe-voltar", `#/admin/cliente/${id}/projeto`); go("#/c/inicio"); };
   const save = async (msg = "Salvo") => { doc.atualizadoEm = Date.now(); await S.set(`clientes/${id}`, doc); toast(msg); reAdmin(); };
   const ct = $("#ct");
-  ({ projeto: aProjeto, apresentacao: aApres, conteudo: aConteudo, graficos: aGraficosA, pagamentos: aPagamentosA, mensagens: aMsgA, apps: aClienteApps })[tab](ct, { id, doc, priv, acoes, save, alvo });
+  ({ projeto: aProjeto, apresentacao: aApres, conteudo: aConteudo, graficos: aGraficosA, pagamentos: aPagamentosA, mensagens: aMsgA, apps: aClienteApps, paginas: aPaginas })[tab](ct, { id, doc, priv, acoes, save, alvo });
 }
 
 function aProjeto(ct, { id, doc, priv, save }) {
@@ -1713,7 +1726,7 @@ function aCalendario(w) {
 }
 
 /* ---------- cronograma da Upe ---------- */
-const PILARES = ["Branding", "Rebranding", "Marca", "Publicidade e marketing", "E-commerce", "Upe TV", "Upe ERP", "Loja Upe", "Landing pages", "Upe Sistemas", "YouTube"];
+const PILARES = ["Branding", "Rebranding", "Marca", "Publicidade e marketing", "E-commerce", "Upe ERP", "Loja Upe", "Landing pages", "Upe Sistemas", "YouTube"];
 const CST = { planejado: "Planejado", roteiro: "Roteiro", pronto: "Pronto", aprovado: "Aprovado", reprovado: "Reprovado", publicado: "Publicado" };
 const cstPill = s => `<span class="pill ${{ aprovado: "ok", publicado: "info", reprovado: "bad", pronto: "warn" }[s] || ""}">${esc(CST[s] || s)}</span>`;
 async function cronogramaArquivo() {
@@ -1733,7 +1746,7 @@ function aCronograma(w, aba = "instagram", alvo = "") {
   const vw = ls.get("upe-cvw") || "lista";
   const semanas = {}; rows.forEach(x => { const d = new Date((x.data || todayIso()) + "T12:00"); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); const k = x.data ? isoDay(d) : "sem"; (semanas[k] = semanas[k] || []).push(x); });
   const tabs = [["instagram", "Instagram", cnt("instagram")], ["youtube", "YouTube", cnt("youtube")], ["semdata", "Sem data", cnt("semdata")], ["timeline", "Timeline por app", 0], ["modelos", "Modelos editáveis", 0]];
-  w.innerHTML = `<div class="spread"><div class="grid" style="gap:4px"><span class="eb">@upecriativo · YouTube</span><h1>Cronograma Upe</h1><p class="muted small">Branding, rebranding, marca, publicidade e marketing, e-commerce, Upe TV e Upe ERP.</p></div>
+  w.innerHTML = `<div class="spread"><div class="grid" style="gap:4px"><span class="eb">@upecriativo · YouTube</span><h1>Cronograma Upe</h1><p class="muted small">Branding, rebranding, marca, publicidade e marketing, e-commerce, Upe ERP, landing pages e sistemas.</p></div>
       <div class="row"><button class="btn sec" id="cKit">Importar kit</button><button class="btn sec" id="cDup">Limpar duplicados</button><button class="btn sec" id="cPad">${crono.length ? "Refazer cronograma" : "Carregar cronograma padrão"}</button><button class="btn" id="cNew">Novo item</button></div></div>
     <nav class="subtabs">${tabs.map(([k, l, n]) => `<a class="tab" href="#/admin/cronograma/${k}" ${k === aba ? 'aria-current="page"' : ""}>${l}${k !== "timeline" ? `<span class="cnt" style="background:var(--mute-bg);color:var(--fg-2)">${n}</span>` : ""}</a>`).join("")}</nav>
     ${extrasHTML(state.cache.extras || [], pf)}
@@ -1744,7 +1757,7 @@ function aCronograma(w, aba = "instagram", alvo = "") {
   $("#cNew").onclick = () => cronoModal(null);
   $("#cKit").onclick = () => kitImport({ alvo: "cronograma" });
   $("#cPad").onclick = () => { if (!crono.length) return refazer();
-    modal("Refazer o cronograma?", `<p>Apaga os ${crono.length} itens atuais (inclusive os importados) e carrega de novo o cronograma padrão da Upe: kit de branding, Upe TV, Upe ERP e YouTube, com as datas organizadas.</p><p class="muted small">Depois, importe as pastas dos kits do Upe TV e do Upe ERP: os arquivos entram nos itens que já estão no cronograma, sem duplicar.</p>`, `<button class="btn sec" data-close>Cancelar</button><button class="btn bad" id="rfOk">Refazer</button>`);
+    modal("Refazer o cronograma?", `<p>Apaga os ${crono.length} itens atuais (inclusive os importados) e carrega de novo o cronograma padrão da Upe: kit de branding, Upe ERP, landing pages, sistemas e YouTube, com as datas organizadas.</p><p class="muted small">Depois, importe as pastas dos kits do Upe ERP: os arquivos entram nos itens que já estão no cronograma, sem duplicar.</p>`, `<button class="btn sec" data-close>Cancelar</button><button class="btn bad" id="rfOk">Refazer</button>`);
     $("#rfOk").onclick = () => { dlg.close(); refazer(); }; };
   const refazer = async () => { try { for (const x of crono) await S.del(`cronograma/${x.id}`); const n = await carregarCronogramaPadrao(); toast(`Cronograma refeito: ${n} itens`); reAdmin(); } catch (e) { toast(e.message); } };
   if (aba === "modelos") { aModelos(body, alvo ? crono.find(x => x.id === alvo) || null : null); return; }
@@ -1755,7 +1768,7 @@ function aCronograma(w, aba = "instagram", alvo = "") {
       <div class="card pad0 tbl"><table><tbody>${its.map(x => `<tr class="click" data-u="${esc(x.id)}" tabindex="0"><td style="width:92px" class="num small">${x.data ? `<b>${fdate(x.data).slice(0, 5)}</b> ${DOW[new Date(x.data + "T12:00").getDay()].toLowerCase()}<br>${esc(x.hora || "")}` : "—"}</td>
         <td style="width:${x.canal === "youtube" && x.formato === "youtube" ? 116 : 84}px"><div class="lthumb">${tagsHTML(x.status, x)}<div class="thumb" style="width:${x.canal === "youtube" && x.formato === "youtube" ? 104 : 64}px;aspect-ratio:${x.canal === "youtube" && x.formato === "youtube" ? "16/9" : "4/5"};border-radius:8px">${capaDe(x) ? imgTag(capaDe(x)) : `<span class="small">${esc(FMT_LBL[x.formato] || "")}</span>`}</div></div></td>
         <td><b>${esc(x.titulo)}</b><br><span class="muted small">${esc(FMT_LBL[x.formato] || x.formato)} · ${esc(x.pilar || "")} · ${esc(x.origem || "")}${x._orig ? ` · repost de “${esc(x._orig.titulo)}”` : ""}</span></td>
-        <td style="width:150px"><select data-st="${esc(x.id)}" aria-label="Status">${Object.entries(CST).map(([s, l]) => `<option value="${s}" ${x.status === s ? "selected" : ""}>${l}</option>`).join("")}</select></td></tr>`).join("")}</tbody></table></div></section>`).join("") : `<div class="empty">${crono.length ? "Nada aqui com este filtro." : "Carregue o cronograma padrão da Upe (kits do Upe TV, do Upe ERP e o kit de branding) ou importe um kit."}</div>`}`;
+        <td style="width:150px"><select data-st="${esc(x.id)}" aria-label="Status">${Object.entries(CST).map(([s, l]) => `<option value="${s}" ${x.status === s ? "selected" : ""}>${l}</option>`).join("")}</select></td></tr>`).join("")}</tbody></table></div></section>`).join("") : `<div class="empty">${crono.length ? "Nada aqui com este filtro." : "Carregue o cronograma padrão da Upe (kits do Upe ERP, das landing pages, dos sistemas e o kit de branding) ou importe um kit."}</div>`}`;
   $("#pf").onchange = e => { ss.set("upe-pf", e.target.value); aCronograma(w, aba); };
   w.querySelectorAll("[data-vw]").forEach(b => b.onclick = () => { ls.set("upe-cvw", b.dataset.vw); aCronograma(w, aba); });
   w.querySelectorAll("[data-g]").forEach(b => b.onclick = () => cronoModal(crono.find(x => x.id === b.dataset.g)));
@@ -1836,7 +1849,7 @@ function cronoModal(x0) {
 const fkey = u => String(u || "").split("?")[0].split("/").slice(-2).join("/").toLowerCase();
 const tkey = (f, t) => f + "|" + String(t || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, " ").trim();
 const solid = u => /^(idb:|https?:|data:)/.test(u || "") || String(u || "").startsWith("{assets}") || String(u || "").startsWith("kits/");
-function pilarDoKit(nome) { const n = String(nome || "").toLowerCase(); if (/upe tv|\btv\b/.test(n)) return "Upe TV"; if (/erp|plataforma de vendas|loja/.test(n)) return "Upe ERP"; if (/branding|marca/.test(n)) return "Branding"; return ""; }
+function pilarDoKit(nome) { const n = String(nome || "").toLowerCase(); if (/erp|plataforma de vendas|loja/.test(n)) return "Upe ERP"; if (/branding|marca/.test(n)) return "Branding"; return ""; }
 function acharTodos(lista, it, mesmoKit) { return lista.filter(x => acharIgual([x], it, mesmoKit)); }
 function acharIgual(lista, it, mesmoKit = () => true) {
   // mesmo título, ou exatamente o mesmo conjunto de arquivos
@@ -1944,9 +1957,9 @@ const APPS = {
   email: { nome: "E-mail / newsletter", re: /e-?mail|newsletter/i, freq: "1 envio a cada 15 dias", hora: "Terça ou quinta às 10h", formatos: ["Newsletter", "Oferta", "Convite"],
     fases: ["Boas-vindas e apresentação", "Conteúdo útil + novidade", "Oferta exclusiva para a lista", "Convite para recompra"] }
 };
-const PERFIL_UPE = { nome: "Upe Criativo", canais: ["instagram", "youtube", "linkedin", "tiktok", "whatsapp", "google"], negocio: "Branding e redesign, Upe ERP (loja, PDV e pedidos) e Upe TV (mídia em telas)",
-  publicos: ["Donos de pequenos negócios", "Lojistas e e-commerce", "Estabelecimentos parceiros e anunciantes"], atributos: ["Branding", "Upe ERP", "Upe TV"],
-  jornada: [{ etapa: "Descobrir", texto: "Reels e Shorts com antes e depois de marcas" }, { etapa: "Confiar", texto: "Cases, manual de marca e bastidores" }, { etapa: "Escolher", texto: "Tutoriais do Upe ERP e do Upe TV" }, { etapa: "Comprar", texto: "Conversa no WhatsApp e reunião" }] };
+const PERFIL_UPE = { nome: "Upe Criativo", canais: ["instagram", "youtube", "linkedin", "tiktok", "whatsapp", "google"], negocio: "Branding e redesign, Upe ERP (loja, PDV e pedidos), landing pages e sistemas",
+  publicos: ["Donos de pequenos negócios", "Lojistas e e-commerce", "Negócios que atendem com hora marcada"], atributos: ["Branding", "Upe ERP"],
+  jornada: [{ etapa: "Descobrir", texto: "Reels e Shorts com antes e depois de marcas" }, { etapa: "Confiar", texto: "Cases, manual de marca e bastidores" }, { etapa: "Escolher", texto: "Tutoriais do Upe ERP e das landing pages" }, { etapa: "Comprar", texto: "Conversa no WhatsApp e reunião" }] };
 const semPh = v => (typeof v === "string" && /^\s*\[.*\]\s*$/.test(v)) ? "" : (v || "");
 function perfilDoDossie(D, doc = {}) {
   const fi = Object.fromEntries((D.diagnostico?.ficha || []).map(([k, v]) => [String(k).toLowerCase(), semPh(v)]));
@@ -2008,13 +2021,14 @@ async function pacotePost(v, bt) {
   bt.disabled = false; bt.textContent = t0;
 }
 
-/* ===== Serviços da Upe no painel central: Branding, Upe ERP, Upe TV, Landing pages e Upe Sistemas (incluído dentro do app.js) =====
+/* ===== Serviços da Upe no painel central: Branding e mídias, Loja online (Upe ERP), Landing pages e sites, Agenda e dashboards (incluído dentro do app.js) =====
    Cadastro único: a ficha do cliente (clientes/{id}) liga cada frente; ao salvar, o painel cria sozinho o acesso de cada app
-   (ERP: empresas/convites/gestão · Landing pages e Sistemas: srv_clientes/srv_convites, com o mesmo id do cliente · TV: código do anunciante).
+   (ERP: empresas/convites/gestão · Landing pages e Sistemas: srv_clientes/srv_convites, com o mesmo id do cliente).
    Preços: uma tela só (Serviços e preços), que grava direto na fonte de cada frente:
-     ERP → upe/gestao/config/geral + publico/plano · TV → app/config (planos da TV) · Landing pages e Sistemas → srv_planos ·
+     ERP → upe/gestao/config/geral + publico/plano · Landing pages e Sistemas → srv_planos ·
      Branding, mídias e gráfica → config/publico.precos.branding.
-   Adesão de cada cliente em clientes/{id}.apps[app] = { status, plano, extras[], dia, inicio, fimTeste, ajuste, obs, empresa, codigo, modulos[] }.
+   Adesão de cada cliente em clientes/{id}.apps[app] = { status, plano, extras[], dia, inicio, fimTeste, ajuste, obs, empresa, dominio, loja, modulos[] }.
+   O Upe TV é um app separado e não faz parte deste painel.
    Pedidos do cliente: ação "pedido" com alvo "app:<app>[:<extra>]". Extras com unico:true são cobrados uma vez (criação), não todo mês. */
 const APPS_PADRAO = {
   erp: { nome: "Upe ERP", curto: "Loja e pedidos", desc: "Loja online, PDV e pedidos num só painel.", painel: "https://painel.upecriativo.com.br", gestor: "https://gestao.upecriativo.com.br", site: "https://erp.upecriativo.com.br", lojas: "https://loja.upecriativo.com.br", teste: 14,
@@ -2026,9 +2040,6 @@ const APPS_PADRAO = {
       { k: "E", nome: "Envio de e-mails", desc: "Newsletter real, até 5.000 e-mails por mês.", preco: 14.9 },
       { k: "K", nome: "Backup diário", desc: "Cópia diária guardada por 30 dias.", preco: 4.9 },
       { k: "D", nome: "Domínio próprio da loja", desc: "1 domínio com SSL; o registro é do cliente.", preco: 7.9 }] },
-  tv: { nome: "Upe TV", curto: "Upe TV", desc: "A marca do cliente nas telas de estabelecimentos parceiros, com QR code.", painel: "https://tv.upecriativo.com.br", teste: 0,
-    planos: [{ k: "p_foot", nome: "Rodapé", preco: 149 }, { k: "p_side", nome: "Lateral", preco: 249 }, { k: "p_full", nome: "Tela cheia", preco: 399 }, { k: "p_cta", nome: "Página CTA + QR", preco: 99 }, { k: "p_vitrine", nome: "Combo Vitrine", preco: 349 }, { k: "p_destaque", nome: "Combo Destaque", preco: 449 }, { k: "p_total", nome: "Presença Total", preco: 699 }, { k: "p_rede", nome: "Rede Upe", preco: 1690 }],
-    extras: [{ k: "motion", nome: "Motion do anúncio", desc: "Vídeo animado com a marca para as telas.", preco: 0, unico: true }, { k: "telas", nome: "Tela parceira adicional", desc: "Mais um estabelecimento na campanha.", preco: 0 }] },
   landing: { nome: "Upe Landing pages", curto: "Landing pages", desc: "Páginas de venda com a marca do cliente, editor, domínio próprio e painel de visitas, cliques e leads.", painel: "https://servicos.upecriativo.com.br", site: "https://lp.upecriativo.com.br", teste: 0,
     planos: [{ k: "lp-hospedagem", nome: "Hospedagem", preco: 29.9 }, { k: "lp-hospedagem-ajustes", nome: "Hospedagem + ajustes", preco: 79.9 }],
     extras: [{ k: "lp-essencial", nome: "Criação: Landing page essencial", desc: "Até 5 seções, formulário e WhatsApp.", preco: 497, unico: true }, { k: "lp-completa", nome: "Criação: Landing page completa", desc: "Até 10 seções, copy, SEO e Pixel.", preco: 997, unico: true }] },
@@ -2036,9 +2047,9 @@ const APPS_PADRAO = {
     planos: [{ k: "ag-mensal", nome: "Agenda no ar", preco: 49.9 }, { k: "dash-mensal", nome: "Dashboard no ar", preco: 59.9 }],
     extras: [{ k: "ag-criacao", nome: "Criação: Agenda online", desc: "Serviços, horários e página.", preco: 697, unico: true }, { k: "dash-criacao", nome: "Criação: Dashboard sob medida", desc: "Até 8 indicadores e 3 gráficos.", preco: 1200, unico: true }] }
 };
-const APP_IDS = ["erp", "tv", "landing", "sistemas"];
+const APP_IDS = ["erp", "landing", "sistemas"];
 // frentes do painel central (Branding é o próprio portal: projeto, conteúdo, artes e recompra)
-const FRENTES_UPE = { branding: "Branding e mídias", erp: "Upe ERP", tv: "Upe TV", landing: "Landing pages", sistemas: "Upe Sistemas" };
+const FRENTES_UPE = { branding: "Branding e mídias", erp: "Loja online (Upe ERP)", landing: "Landing pages e sites", sistemas: "Agenda e dashboards" };
 const BRANDING_PADRAO = [
   { k: "branding", nome: "Branding completo", desc: "Identidade visual, manual da marca e apresentação.", preco: 0, unico: true },
   { k: "midias", nome: "Mídias digitais", desc: "Planejamento e criação de posts com aprovação no portal.", preco: 0 },
@@ -2051,22 +2062,19 @@ async function carregarFontes() {
   const f = {};
   await Promise.all([
     S.list("srv_planos").then(l => { f.srv = l; }).catch(() => {}),
-    S.get("publico/plano").then(d => { f.erp = d; }).catch(() => {}),
-    S.get("app/config").then(d => { try { f.tvCfg = d && d.json ? JSON.parse(d.json) : null; } catch (e) { f.tvCfg = null; } }).catch(() => {})
+    S.get("publico/plano").then(d => { f.erp = d; }).catch(() => {})
   ]);
-  f.tv = f.tvCfg && Array.isArray(f.tvCfg.plans) ? f.tvCfg.plans : null;
   state.fontes = f; return f;
 }
 const srvDe = (F, fr) => (F.srv || []).filter(p => fr.includes(p.frente) && p.ativo !== false).sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
 function appsCat(pub) {
   const c = clone(APPS_PADRAO), o = (pub || {}).apps || {}, F = state.fontes || {};
-  APP_IDS.forEach(k => { if (o[k]) c[k] = { ...c[k], ...o[k] }; if (/upe-(erp|tv)[.-]/.test(c[k].painel || "")) c[k].painel = APPS_PADRAO[k].painel; });
+  APP_IDS.forEach(k => { if (o[k]) c[k] = { ...c[k], ...o[k] }; if (/upe-erp[.-]/.test(c[k].painel || "")) c[k].painel = APPS_PADRAO[k].painel; });
   if (F.erp && +F.erp.mensal) {
     c.erp.planos = [{ k: "mensal", nome: "Plano mensal", preco: +F.erp.mensal }, { k: "upe", nome: "Cliente Upe (com branding ou mídias)", preco: +F.erp.upe || +F.erp.mensal }];
     if (Array.isArray(F.erp.extras) && F.erp.extras.length) c.erp.extras = F.erp.extras.map(x => ({ k: x.k, nome: x.nome, desc: x.desc || "", preco: +x.preco || 0 }));
     if (F.erp.teste != null) c.erp.teste = +F.erp.teste;
   }
-  if (F.tv && F.tv.length) c.tv.planos = F.tv.map(p => ({ k: p.id, nome: p.name, preco: +p.price || 0, desc: p.desc || "" }));
   const mens = fr => srvDe(F, fr).filter(p => p.tipo === "mensal").map(p => ({ k: p.id, nome: p.nome, preco: +p.valor || 0, desc: p.descricao || "" }));
   const cria = fr => srvDe(F, fr).filter(p => p.tipo === "criacao").map(p => ({ k: p.id, nome: "Criação: " + String(p.nome).replace(/^Criação:\s*/i, ""), preco: +p.valor || 0, desc: p.descricao || "", unico: true }));
   if (mens(["lp"]).length) { c.landing.planos = mens(["lp"]); c.landing.extras = cria(["lp"]); }
@@ -2142,7 +2150,6 @@ async function aApps(w, app = "branding") {
 const FONTE_PRECOS = {
   branding: "Mostrados na ficha do cliente (Projeto) e no portal.",
   erp: "Gravados no Gerenciador do ERP e no plano público (página das lojas, painéis e páginas de vendas do ERP).",
-  tv: "Gravados nos planos do Upe TV (painel da TV, página de vendas da TV e portal do anunciante).",
   landing: "Gravados no catálogo do Upe Serviços (página de vendas de landing pages e painel do cliente).",
   sistemas: "Gravados no catálogo do Upe Serviços (página de vendas da agenda e dos dashboards)."
 };
@@ -2150,7 +2157,6 @@ function linhasPrecos(frente, cat) {
   const F = state.fontes || {};
   if (frente === "branding") return precosBranding(state.cache.pub).map(p => ({ ...p, tipo: p.unico ? "unico" : "mensal" }));
   if (frente === "erp") return [...cat.erp.planos.map(p => ({ ...p, tipo: "mensal", fixo: true })), ...cat.erp.extras.map(e => ({ ...e, tipo: "extra" }))];
-  if (frente === "tv") return (F.tv || APPS_PADRAO.tv.planos.map(p => ({ id: p.k, name: p.nome, price: p.preco, desc: "" }))).map(p => ({ k: p.id, nome: p.name, preco: +p.price || 0, desc: p.desc || "", tipo: "mensal" }));
   const fr = frente === "landing" ? ["lp"] : ["agenda", "dash"];
   const l = (F.srv || []).filter(p => fr.includes(p.frente)).sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
   if (!l.length) return [...cat[frente].planos.map(p => ({ ...p, tipo: "mensal" })), ...cat[frente].extras.map(e => ({ ...e, nome: e.nome.replace(/^Criação:\s*/, ""), tipo: "unico" }))].map(r => ({ ...r, sub: frente === "landing" ? "lp" : /^dash/.test(r.k) ? "dash" : "agenda", ativo: true }));
@@ -2158,7 +2164,7 @@ function linhasPrecos(frente, cat) {
 }
 function editorPrecos(box, frente, cat) {
   let rows = linhasPrecos(frente, cat);
-  const tipos = frente === "erp" ? null : frente === "tv" ? null : [["mensal", "Mensal"], ["unico", "Pagamento único"]];
+  const tipos = frente === "erp" ? null : [["mensal", "Mensal"], ["unico", "Pagamento único"]];
   const subs = frente === "sistemas" ? [["agenda", "Agenda"], ["dash", "Dashboard"]] : null;
   const render = () => {
     box.innerHTML = `<section class="card grid"><div class="spread"><h3>Preços · ${esc(FRENTES_UPE[frente])}</h3><span class="muted small">${esc(FONTE_PRECOS[frente])}</span></div>
@@ -2194,14 +2200,6 @@ async function salvarPrecos(frente, rows) {
     await S.set("publico/plano", { mensal, upe, extras, atualizadoEm: agora }, true);
     return;
   }
-  if (frente === "tv") {
-    const d = await S.get("app/config"); let cfg = null; try { cfg = d && d.json ? JSON.parse(d.json) : null; } catch (e) {}
-    if (!cfg) throw new Error("abra o Upe TV uma vez para criar a configuração antes de editar os planos aqui");
-    const ant = Object.fromEntries((cfg.plans || []).map(p => [p.id, p]));
-    cfg.plans = rows.map(r => r.k && ant[r.k] ? { ...ant[r.k], name: r.nome, price: r.preco, desc: r.desc } : { id: "p_" + uid(6), name: r.nome, kind: "solo", price: r.preco, inc: {}, screens: 1, desc: r.desc, featured: false });
-    await S.set("app/config", { json: JSON.stringify(cfg), updatedAt: Date.now(), device: "painel-central" });
-    return;
-  }
   const fr = frente === "landing" ? ["lp"] : ["agenda", "dash"], atuais = (F.srv || []).filter(p => fr.includes(p.frente));
   const ids = new Set();
   for (const [i, r] of rows.entries()) {
@@ -2215,7 +2213,6 @@ async function salvarPrecos(frente, rows) {
 // acesso direto às áreas de administração de cada app (mesmo login do painel: e-mail e senha da Upe)
 const ADM_LINKS = {
   erp: [["Gerenciador do ERP", "Licenças, limites, suporte e páginas de vendas", "https://gestao.upecriativo.com.br/", true], ["Painel das empresas", "Entre como Upe e escolha a empresa", "https://painel.upecriativo.com.br/", true], ["Lojas", "Endereço público das lojas", "https://loja.upecriativo.com.br/"], ["Página de vendas", "Página do Upe ERP", "https://erp.upecriativo.com.br/"]],
-  tv: [["Gestão do Upe TV", "Programação, campanhas, telas e anunciantes", "https://tv.upecriativo.com.br/", true], ["Portal do anunciante", "Como o anunciante vê", "https://tv.upecriativo.com.br/#cliente"]],
   landing: [["Ferramentas do Upe Serviços", "Todas as páginas, domínios, interessados e erros dos sites", "https://servicos.upecriativo.com.br/#/adm/paginas", true], ["Página de vendas", "Upe Landing pages", "https://lp.upecriativo.com.br/"], ["Página de exemplo", "lp.upecriativo.com.br/exemplo", "https://lp.upecriativo.com.br/exemplo"]],
   sistemas: [["Ferramentas do Upe Serviços", "Interessados, domínios e erros dos sites", "https://servicos.upecriativo.com.br/#/adm/interessados", true], ["Página de vendas", "Agenda online e dashboards", "https://agenda.upecriativo.com.br/"], ["Agenda de exemplo", "Como o cliente final agenda", "https://agenda.upecriativo.com.br/exemplo"]]
 };
@@ -2246,13 +2243,18 @@ function cApps(m, c) {
    Um cadastro (ficha do cliente), um login (e-mail e senha do Firebase) e um painel com todos os serviços contratados.
    - Admin › ficha › Serviços: liga cada frente e, ao salvar, libera o acesso dos apps com o e-mail do cliente:
        portal_convites/{email} (painel central) · ERP: empresas/{empresa} + convites/{email} + upe/gestao/clientes/{Cxxxx} ·
-       Landing pages e Sistemas: srv_clientes/{id do cliente} + srv_convites/{email} · TV: código do anunciante.
+       Landing pages e Sistemas: srv_clientes/{id do cliente} + srv_convites/{email}.
+   - Admin › ficha › Páginas e sistemas: envia o HTML (e a pasta com imagens, fontes, CSS e dados) de uma página, site ou sistema;
+     os arquivos vão para o Storage (lp/{endereço}/…), os caminhos são trocados e a página é publicada em lp_paginas/{endereço}.
    - Cliente: entra com o e-mail; no primeiro login o painel cria portal_acessos/{uid} e, quando houver convite, acessos/{uid} (ERP)
-     e srv_acessos/{uid} (Serviços). Cada serviço abre dentro do painel (mesmo endereço, então o login vale para todos).
+     e srv_acessos/{uid} (Serviços). Em “Meus serviços” cada serviço tem o botão “Painel – Loja X / Página X / Sistema X”,
+     que abre o painel dele dentro do painel central (mesmo endereço, então o login vale para todos).
    - Painel personalizado: para qualquer frente, a Upe pode subir um HTML próprio (paineis_cliente/{id}_{frente}); ele abre isolado
      (sandbox) e só conversa com a subseção de pagamentos daquela frente (postMessage). */
-const APP_URL = { erp: "../apps/painel/", landing: "../apps/servicos/", sistemas: "../apps/servicos/", tv: "../apps/tv/" };
-const FRENTE_COB = { branding: "Branding e mídias", erp: "Upe ERP", tv: "Upe TV", landing: "Landing pages", sistemas: "Upe Sistemas" };
+const APP_URL = { erp: "../apps/painel/", landing: "../apps/servicos/", sistemas: "../apps/servicos/" };
+const FRENTE_COB = { branding: "Branding e mídias", erp: "Loja online", landing: "Landing pages e sites", sistemas: "Agenda e dashboards" };
+const LP_URL = "https://lp.upecriativo.com.br/", LOJA_URL = "https://loja.upecriativo.com.br/", AGENDA_URL = "https://agenda.upecriativo.com.br/";
+const TIPOS_PAG = { landing: "Landing page", site: "Site", sistema: "Sistema" };
 const lower = s => String(s || "").trim().toLowerCase();
 const slugEmp = s => String(s || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 30) || "empresa-" + uid(4).toLowerCase();
 const FRENTES_DO_CLIENTE = doc => [...((doc.plano?.branding || doc.plano?.midias || doc.plano?.grafica) ? ["branding"] : []), ...APP_IDS.filter(k => ativoApp((doc.apps || {})[k]))];
@@ -2291,7 +2293,6 @@ async function provisionar(id, doc, priv) {
     if (frentesSrv.length) { await S.set(`srv_convites/${email}`, { cid: id, criadoEm: Date.now() }); msgs.push(`Landing pages e Sistemas liberados (${frentesSrv.join(", ")})`); }
     else { const cv = await S.get(`srv_convites/${email}`).catch(() => null); if (cv && cv.cid === id) await S.del(`srv_convites/${email}`); }
   }
-  if (ativoApp(apps.tv)) msgs.push(apps.tv.codigo ? `Upe TV ligado ao anunciante ${apps.tv.codigo}` : "Upe TV sem anunciante: escolha o anunciante na ficha");
   return msgs;
 }
 const msgAcesso = (doc, priv) => `Olá, ${(doc.nome || "").split(" ")[0]}! O seu painel da Upe Criativo está pronto.\n\nEndereço: ${portalUrl()}\nE-mail: ${priv.email}\n\nNo primeiro acesso, toque em “Primeiro acesso: criar a minha senha” e confirme o e-mail. Por lá você acompanha todos os seus serviços e faz os pagamentos.`;
@@ -2299,7 +2300,7 @@ const msgAcesso = (doc, priv) => `Olá, ${(doc.nome || "").split(" ")[0]}! O seu
 /* ---------- admin: ficha do cliente › Serviços ---------- */
 async function aClienteApps(ct, { id, doc, priv, acoes, save }) {
   await carregarFontes();
-  const cat = appsCat(state.cache.pub), peds = appPedidos(doc, acoes), advs = (state.fontes.tvCfg || {}).advertisers || [];
+  const cat = appsCat(state.cache.pub), peds = appPedidos(doc, acoes);
   doc.apps = doc.apps || {}; doc.paineis = doc.paineis || {};
   // domínios próprios: loja (lojas_dominios, conectado aqui) e landing pages (lp_dominios, pedidos pelo cliente no painel)
   const erp0 = doc.apps.erp || {}, [lojas, lpDoms, lojaDom] = await Promise.all([
@@ -2320,12 +2321,11 @@ async function aClienteApps(ct, { id, doc, priv, acoes, save }) {
       <label class="f">Loja que ele abre<select data-k="loja">${lojas.length ? lojas.map(l => `<option value="${esc(l.id)}" ${a.loja === l.id ? "selected" : ""}>${esc(l.nome || l.id)} · loja.upecriativo.com.br/${esc(l.id)}</option>`).join("") : `<option value="${esc(a.loja || "")}">${a.loja ? esc(a.loja) : "a loja aparece quando o cliente publicar"}</option>`}</select></label></div>
       ${a.dominio ? `<div class="row small">${stDom(lojaDom)}<span class="muted">${esc(a.dominio)}</span>${lojaDom && lojaDom.status === "ativo" ? `<a class="btn sec sm" href="https://${esc(a.dominio)}" target="_blank" rel="noopener">Abrir</a>` : ""}</div>${dnsBox(lojaDom)}` : `<span class="muted small">Com domínio, ao salvar a Upe conecta sozinha e os registros de DNS aparecem aqui e no painel do cliente.</span>`}`;
     if (k === "landing") return lpDoms.length ? `<div class="grid" style="gap:6px"><span class="eb">Domínios das páginas</span>${lpDoms.map(d => `<div class="grid" style="gap:4px"><div class="row small">${stDom(d)}<b>${esc(d.id)}</b><span class="muted">→ /${esc(d.slug || "")}</span>${d.status === "pendente" ? `<button class="btn sec sm" data-lpcon="${esc(d.id)}">Conectar agora</button>` : ""}</div>${dnsBox(d)}</div>`).join("")}</div>` : `<span class="muted small">O cliente pede o domínio das páginas no painel (Landing pages › Domínio próprio); ele aparece aqui para conectar.</span>`;
-    if (k === "tv") return `<label class="f">Anunciante no Upe TV<select data-k="codigo"><option value="">— escolha —</option>${a.codigo && !advs.some(v => v.code === a.codigo) ? `<option value="${esc(a.codigo)}" selected>${esc(a.codigo)}</option>` : ""}${advs.map(v => `<option value="${esc(v.code)}" ${a.codigo === v.code ? "selected" : ""}>${esc(v.name)} · ${esc(v.code)}</option>`).join("")}</select></label>${advs.length ? "" : `<span class="muted small">Cadastre o anunciante no Upe TV para ligar aqui.</span>`}`;
     if (k === "sistemas") { const mo = a.modulos && a.modulos.length ? a.modulos : ["agenda", "dash"]; return `<div class="row small" style="gap:12px"><label class="row" style="gap:6px"><input type="checkbox" data-mod="agenda" ${mo.includes("agenda") ? "checked" : ""}>Agenda online</label><label class="row" style="gap:6px"><input type="checkbox" data-mod="dash" ${mo.includes("dash") ? "checked" : ""}>Dashboards</label></div>`; }
     return "";
   };
   ct.innerHTML = `${peds.filter(p => p.status === "novo").length ? `<section class="card grid prio"><b>Pedidos do cliente</b>${peds.filter(p => p.status === "novo").map(p => `<div class="row" style="flex-wrap:nowrap"><span style="flex:1">${esc(cat[p.app]?.nome || p.app)}${p.extra ? ` · extra <b>${esc((cat[p.app]?.extras.find(e => e.k === p.extra) || {}).nome || p.extra)}</b>` : " · contratar"} <span class="muted small">${fdt(p.em)}</span></span><button class="btn sec sm" data-pok="${esc(p.id)}">Marcar como atendido</button></div>`).join("")}</section>` : ""}
-    <section class="card grid"><div class="spread"><h3>Acesso do cliente</h3><span class="muted small">Um login para todos os serviços: o painel central abre a loja, a TV, as landing pages e a agenda.</span></div>
+    <section class="card grid"><div class="spread"><h3>Acesso do cliente</h3><span class="muted small">Um login para todos os serviços: o painel do cliente abre a loja, as páginas e os sistemas.</span></div>
       <div class="g2"><label class="f" for="svEmail">E-mail de acesso<input id="svEmail" type="email" value="${esc(priv.email || "")}" placeholder="cliente@empresa.com.br"></label>
         <div class="grid" style="gap:6px;align-content:end">${priv.emailConvite && lower(priv.emailConvite) === lower(priv.email) ? `<span class="pill ok" style="justify-self:start">Acesso liberado para ${esc(priv.emailConvite)}</span>` : `<span class="pill warn" style="justify-self:start">Acesso ainda não liberado</span>`}
         <div class="row">${priv.email ? `<button class="btn sec sm" id="svMsg">Copiar mensagem de acesso</button>${priv.telefone ? `<a class="btn sec sm" target="_blank" rel="noopener" href="${esc(waLink(priv.telefone, msgAcesso(doc, priv)))}">Enviar no WhatsApp</a>` : ""}` : ""}</div></div></div>
@@ -2336,7 +2336,7 @@ async function aClienteApps(ct, { id, doc, priv, acoes, save }) {
         <div class="row">${["branding", "midias", "grafica"].filter(k => doc.plano?.[k]).map(k => `<span class="pill info">${esc((precosBranding(state.cache.pub).find(p => p.k === k) || {}).nome || k)}</span>`).join(" ") || '<span class="muted small">Nenhum plano de branding.</span>'}</div>
         ${painelBox("branding")}</section>
       ${APP_IDS.map(k => { const c = cat[k], a = doc.apps[k] || {};
-      return `<section class="card grid" data-app="${k}" data-frente="${k}"><div class="spread"><h3>${esc(c.nome)}</h3>${ativoApp(a) ? astPill(a.status) : '<span class="pill">Sem adesão</span>'}</div>
+      return `${k === "landing" ? `<h3 class="svgrupo">Páginas e sistemas <span class="muted small">landing pages, sites, agenda online e dashboards · o envio dos arquivos fica na aba “Páginas e sistemas”</span></h3>` : ""}<section class="card grid" data-app="${k}" data-frente="${k}"><div class="spread"><h3>${esc(c.nome)}</h3>${ativoApp(a) ? astPill(a.status) : '<span class="pill">Sem adesão</span>'}</div>
         <p class="muted small">${esc(c.desc)}</p>
         <div class="g2"><label class="f">Status<select data-k="status"><option value="">Sem adesão</option>${Object.entries(AST).map(([s, [l]]) => `<option value="${s}" ${a.status === s ? "selected" : ""}>${l}</option>`).join("")}</select></label>
         <label class="f">Plano<select data-k="plano">${c.planos.map(p => `<option value="${esc(p.k)}" ${a.plano === p.k ? "selected" : ""}>${esc(p.nome)} · ${precoTxt(p)}</option>`).join("")}</select></label></div>
@@ -2355,7 +2355,7 @@ async function aClienteApps(ct, { id, doc, priv, acoes, save }) {
       const st = v("status"); if (!st) { if (doc.apps[k]) doc.apps[k] = { ...doc.apps[k], status: "cancelado" }; return; }
       const mods = $$("[data-mod]", box).filter(i => i.checked).map(i => i.dataset.mod);
       doc.apps[k] = { ...(doc.apps[k] || {}), status: st, plano: v("plano"), extras: $$("[data-ex]", box).filter(i => i.checked).map(i => i.dataset.ex), dia: +v("dia") || 10, ajuste: +v("ajuste") || 0, inicio: v("inicio"), fimTeste: v("fimTeste"), obs: v("obs").trim(),
-        ...(k === "erp" ? { empresa: slugEmp(v("empresa") || doc.apps[k]?.empresa || doc.marca || doc.empresa || doc.nome), dominio: lower(v("dominio")).replace(/^https?:\/\//, "").replace(/\/.*$/, ""), loja: v("loja") } : {}), ...(k === "tv" ? { codigo: v("codigo") } : {}), ...(k === "sistemas" ? { modulos: mods.length ? mods : ["agenda", "dash"] } : {}) }; });
+        ...(k === "erp" ? { empresa: slugEmp(v("empresa") || doc.apps[k]?.empresa || doc.marca || doc.empresa || doc.nome), dominio: lower(v("dominio")).replace(/^https?:\/\//, "").replace(/\/.*$/, ""), loja: v("loja") } : {}), ...(k === "sistemas" ? { modulos: mods.length ? mods : ["agenda", "dash"] } : {}) }; });
     ["branding", ...APP_IDS].forEach(k => { const r = $(`input[name="pm-${k}"]:checked`, ct); if (!r) return; doc.paineis[k] = { ...(doc.paineis[k] || {}), modo: r.value }; });
     priv.email = lower($("#svEmail").value);
   };
@@ -2451,7 +2451,7 @@ function telaConfirmar(user) {
 async function cServico(m, c, frente, sub) {
   const { id, doc } = c, a = (doc.apps || {})[frente] || {}, cat = appsCat(state.cfg), nome = frente === "branding" ? FRENTES_UPE.branding : (cat[frente] || {}).nome || frente;
   const proprio = temPainelProprio(doc, frente), aba = sub === "pagamentos" ? "pagamentos" : "painel";
-  m.innerHTML = `<div class="spread"><div class="grid" style="gap:4px"><span class="eb">Seus serviços</span><h1>${esc(nome)}</h1>${frente !== "branding" && a.status ? `<div class="row">${astPill(a.status)}${a.status === "teste" && a.fimTeste ? `<span class="muted small">teste grátis até ${fdate(a.fimTeste)}</span>` : ""}</div>` : ""}</div>
+  m.innerHTML = `<a href="#/c/servicos" class="small">← Meus serviços</a><div class="spread"><div class="grid" style="gap:4px"><span class="eb">Seus serviços</span><h1>${esc(nome)}</h1>${frente !== "branding" && a.status ? `<div class="row">${astPill(a.status)}${a.status === "teste" && a.fimTeste ? `<span class="muted small">teste grátis até ${fdate(a.fimTeste)}</span>` : ""}</div>` : ""}</div>
       <nav class="subtabs"><a class="tab" href="#/c/s-${frente}" ${aba === "painel" ? 'aria-current="page"' : ""}>Painel</a><a class="tab" href="#/c/s-${frente}/pagamentos" ${aba === "pagamentos" ? 'aria-current="page"' : ""}>Pagamentos</a></nav></div>
     <div id="svc"></div>`;
   const box = $("#svc", m);
@@ -2471,20 +2471,19 @@ async function cServico(m, c, frente, sub) {
     fr.srcdoc = d.html; return;
   }
   if (frente === "branding") return go("#/c/inicio");
-  const precisaLogin = frente !== "tv" && S.mode === "firebase" && !S.contaAtual();
+  const precisaLogin = S.mode === "firebase" && !S.contaAtual();
   if (precisaLogin) { box.innerHTML = `<div class="empty"><b>Entre com o seu e-mail para abrir este painel.</b><span>O código de acesso vale só para o portal de branding. Os apps usam o login com e-mail (o mesmo para todos).</span><button class="btn" id="kLogin">Entrar com e-mail</button></div>`; $("#kLogin").onclick = () => { ss.set("upe-cliente", null); gateConta(); }; return; }
   if (frente === "erp" && a.dominio) {
     const d = await S.get(`lojas_dominios/${a.dominio}`).catch(() => null);
     if (d && d.status === "dns") box.insertAdjacentHTML("beforebegin", `<section class="card grid prio"><b>Falta um passo para ${esc(a.dominio)} abrir a sua loja</b><p class="small">No painel de onde o domínio foi registrado (Registro.br, GoDaddy, Hostinger…), crie estes registros de DNS. Em até 24 horas a loja abre com cadeado (HTTPS).</p><pre class="dnsbox">${esc(d.dns || "")}</pre></section>`);
     else if (d && d.status === "ativo") box.insertAdjacentHTML("beforebegin", `<p class="small">Sua loja: <a href="https://${esc(a.dominio)}" target="_blank" rel="noopener">${esc(a.dominio)}</a></p>`);
   }
-  if (frente === "tv" && !a.codigo) { box.innerHTML = `<div class="empty"><b>Upe TV em preparação.</b><span>Assim que a sua campanha for cadastrada, os relatórios das telas aparecem aqui.</span></div>`; return; }
   const adm = state.admin && ss.get("upe-voltar");
   const q = new URLSearchParams({ embed: "1" });
   if (frente === "landing" || frente === "sistemas") { q.set("frente", frente); if (adm) q.set("cid", id); }
   if (frente === "erp" && adm && a.empresa) q.set("empresa", a.empresa);
   if (S.mode === "demo") q.set("demo", "1");
-  const url = APP_URL[frente] + "?" + q.toString() + (frente === "tv" ? "#cliente-" + encodeURIComponent(a.codigo) : "");
+  const url = APP_URL[frente] + "?" + q.toString();
   box.innerHTML = `<iframe class="svc-frame" src="${esc(url)}" title="${esc(nome)}" allow="clipboard-write; camera; fullscreen"></iframe><p class="muted small" style="margin-top:6px"><a href="${esc(url.replace("embed=1&", "").replace("embed=1", ""))}" target="_blank" rel="noopener">Abrir em tela cheia</a></p>`;
 }
 
@@ -2501,11 +2500,145 @@ async function cobrancasServicos() {
   } catch (e) { return []; }
 }
 
-/* ===== Modelos editáveis (estilo Canva): Upe ERP, Upe TV, Loja Upe, Upe Landing pages e Upe Sistemas =====
+/* ---------- envio de página, site ou sistema com a pasta de arquivos ---------- */
+// caminho de "alvo" visto a partir da pasta "dir" (ambos relativos à pasta escolhida): "img/a.jpg", "../fonts/x.woff2"
+const relEntre = (dir, alvo) => { const a = dir.split("/").filter(Boolean), b = alvo.split("/"); let k = 0; while (k < a.length && k < b.length - 1 && a[k] === b[k]) k++; return "../".repeat(a.length - k) + b.slice(k).join("/"); };
+const dirDe = rel => rel.includes("/") ? rel.slice(0, rel.lastIndexOf("/") + 1) : "";
+// troca no texto as referências (entre aspas, em url() e em srcset) pelos endereços enviados
+function trocarRefs(txt, dir, urls) {
+  const pares = [...urls.entries()].map(([rel, url]) => [relEntre(dir, rel), url]).sort((x, y) => y[0].length - x[0].length);
+  for (const [r, url] of pares) for (const v of [r, "./" + r]) {
+    const esc2 = v.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    txt = txt.replace(new RegExp(`(["'(=\\s,])${esc2}(?=["')\\s,?#])`, "g"), `$1${url}`);
+  }
+  return txt;
+}
+const TEXTO = /\.(css|js|mjs|json|svg|txt|csv|xml|webmanifest)$/i;
+window.__upeTrocarRefs = trocarRefs; // usado pelo teste automático (tools/capturas/painel-central.js)
+async function subirPasta(slug, arquivos, htmlRel, progresso = () => {}) {
+  const urls = new Map(), lista = [...arquivos.entries()].filter(([rel]) => rel !== htmlRel && !/(^|\/)\.|thumbs\.db$|\.ds_store$/i.test(rel));
+  const ordem = r => /\.(json|csv|txt|xml)$/i.test(r) ? 1 : /\.svg$/i.test(r) ? 2 : /\.css$/i.test(r) ? 3 : /\.m?js$/i.test(r) ? 4 : /\.html?$/i.test(r) ? 5 : 0;
+  lista.sort((a, b) => ordem(a[0]) - ordem(b[0]));
+  let n = 0;
+  for (const [rel, f] of lista) {
+    progresso(`Enviando ${++n}/${lista.length}: ${rel}`);
+    let arq = f;
+    if (TEXTO.test(rel) || /\.html?$/i.test(rel)) { const t = trocarRefs(await f.text(), dirDe(rel), urls); arq = new File([t], f.name, { type: f.type || ({ css: "text/css", js: "text/javascript", mjs: "text/javascript", json: "application/json", svg: "image/svg+xml" }[rel.split(".").pop().toLowerCase()] || "text/plain") }); }
+    const url = await S.upload(arq, `lp/${slug}/${dirDe(rel).replace(/\/$/, "")}`.replace(/\/$/, ""));
+    if (!url) throw new Error("o Storage não respondeu. Confira se o Storage está ligado no painel.");
+    urls.set(rel, url);
+  }
+  return urls;
+}
+async function paginasDoClienteAdm(cid) { return (await S.query("lp_paginas", "cid", cid).catch(() => [])).sort((a, b) => (b.atualizadoEm || 0) - (a.atualizadoEm || 0)); }
+
+/* ---------- admin: ficha do cliente › Páginas e sistemas ---------- */
+async function aPaginas(ct, { id, doc, priv, save }) {
+  const pgs = await paginasDoClienteAdm(id);
+  ct.innerHTML = `<div class="spread"><div class="grid" style="gap:4px"><h3>Páginas e sistemas</h3><span class="muted small">Landing pages, sites e sistemas do cliente, publicados em <b>lp.upecriativo.com.br/endereço</b> ou no domínio dele.</span></div><button class="btn" id="pgNova">Adicionar página ou sistema</button></div>
+    ${!ativoApp((doc.apps || {}).landing) && !ativoApp((doc.apps || {}).sistemas) ? `<div class="card" style="background:var(--warn-bg)">Ligue “Landing pages e sites” ou “Agenda e dashboards” em <a href="#/admin/cliente/${id}/apps">Serviços</a> para o cliente ver estas páginas no painel dele.</div>` : ""}
+    <div class="card pad0 tbl">${pgs.length ? `<table><thead><tr><th>Página ou sistema</th><th>Endereço</th><th>Situação</th><th>Atualizada</th><th></th></tr></thead><tbody>${pgs.map(p => `<tr>
+      <td><b>${esc(p.titulo || p.id)}</b><br><span class="muted small">${esc(TIPOS_PAG[p.tipo] || "Landing page")}${p.arquivos ? ` · ${p.arquivos} arquivo(s)` : ""}${p.painelCliente ? " · aparece como painel do cliente" : ""}</span></td>
+      <td class="small"><a href="${esc(LP_URL + p.id)}" target="_blank" rel="noopener">lp.upecriativo.com.br/${esc(p.id)}</a>${p.dominio ? `<br><span class="muted">${esc(p.dominio)}</span>` : ""}</td>
+      <td>${p.suspensa ? '<span class="pill bad">Suspensa</span>' : p.publicada ? '<span class="pill ok">No ar</span>' : '<span class="pill">Rascunho</span>'}</td>
+      <td class="small num muted">${fdt(p.atualizadoEm)}</td>
+      <td><div class="row" style="gap:4px;flex-wrap:nowrap"><button class="btn sec sm" data-sub="${esc(p.id)}">Substituir arquivos</button><button class="btn sec sm" data-pub="${esc(p.id)}">${p.publicada ? "Tirar do ar" : "Publicar"}</button><button class="btn sec sm" data-ed="${esc(p.id)}">Editor e análise</button></div></td></tr>`).join("")}</tbody></table>` : `<div class="empty" style="margin:16px">Nenhuma página ou sistema ainda. Clique em “Adicionar página ou sistema”.</div>`}</div>`;
+  $("#pgNova").onclick = () => enviarPagina(id, doc, null, save);
+  $$("[data-sub]", ct).forEach(b => b.onclick = () => enviarPagina(id, doc, pgs.find(p => p.id === b.dataset.sub), save));
+  $$("[data-pub]", ct).forEach(b => b.onclick = async () => { const p = pgs.find(x => x.id === b.dataset.pub); await S.set(`lp_paginas/${p.id}`, { publicada: !p.publicada, atualizadoEm: Date.now(), ...(p.publicada ? {} : { publicadoEm: Date.now() }) }, true); toast(p.publicada ? "Página tirada do ar" : "Página no ar"); reAdmin(); });
+  $$("[data-ed]", ct).forEach(b => b.onclick = () => window.open(`../apps/servicos/?embed=1&frente=landing&cid=${encodeURIComponent(id)}#/pagina/${encodeURIComponent(b.dataset.ed)}/editar`, "_blank", "noopener"));
+}
+function enviarPagina(id, doc, atual, save) {
+  let pasta = null, htmlArq = null;
+  const slugIni = atual ? atual.id : slugEmp(doc.marca || doc.empresa || doc.nome);
+  modal(atual ? `Substituir arquivos · ${atual.titulo || atual.id}` : "Adicionar página ou sistema", `
+    <div class="g3"><label class="f" for="epTipo">Tipo<select id="epTipo">${Object.entries(TIPOS_PAG).map(([k, l]) => `<option value="${k}" ${(atual?.tipo || "landing") === k ? "selected" : ""}>${l}</option>`).join("")}</select></label>
+      <label class="f" for="epNome">Nome<input id="epNome" value="${esc(atual?.titulo || doc.marca || doc.empresa || "")}"></label>
+      <label class="f" for="epSlug">Endereço<input id="epSlug" value="${esc(slugIni)}" ${atual ? "disabled" : ""} pattern="[a-z0-9][a-z0-9-]{1,47}"></label></div>
+    <p class="muted small">Fica em <b>lp.upecriativo.com.br/<span id="epVer">${esc(slugIni)}</span></b>. O domínio próprio é conectado depois, pelo painel do cliente.</p>
+    <div class="g2"><label class="tg" style="flex-direction:column;align-items:flex-start;gap:8px"><b>Pasta da página ou do sistema</b><small>A pasta inteira: o .html principal e as pastas de imagens, fontes, CSS, scripts e dados. É o jeito recomendado.</small><input type="file" id="epPasta" webkitdirectory multiple></label>
+      <label class="tg" style="flex-direction:column;align-items:flex-start;gap:8px"><b>Ou só o arquivo .html</b><small>Quando tudo está dentro do arquivo ou em links da internet.</small><input type="file" id="epHtml" accept=".html,.htm,text/html"></label></div>
+    <div id="epInfo" class="muted small"></div>
+    <div class="g2"><label class="tg"><input type="checkbox" id="epPub" ${!atual || atual.publicada ? "checked" : ""}><span>Publicar agora<small>Sem marcar, fica como rascunho</small></span></label>
+      <label class="tg"><input type="checkbox" id="epPainel" ${atual?.painelCliente ? "checked" : ""}><span>Mostrar como painel do cliente<small>Vira o botão “Painel – ${esc(atual?.titulo || "Sistema")}” em Meus serviços</small></span></label></div>`,
+    `<button class="btn sec" data-close>Cancelar</button><button class="btn" id="epOk">Enviar e ${atual ? "atualizar" : "criar"}</button>`, true);
+  const info = t => $("#epInfo").innerHTML = t;
+  $("#epSlug").oninput = e => $("#epVer").textContent = slugEmp(e.target.value);
+  $("#epTipo").onchange = e => { if (e.target.value === "sistema") $("#epPainel").checked = true; };
+  $("#epPasta").onchange = e => {
+    pasta = new Map(); for (const f of e.target.files) pasta.set(f.webkitRelativePath.split("/").slice(1).join("/"), f);
+    const htmls = [...pasta.keys()].filter(k => /\.html?$/i.test(k)).sort((a, b) => (/(^|\/)index\.html?$/i.test(b) - /(^|\/)index\.html?$/i.test(a)) || a.split("/").length - b.split("/").length);
+    if (!htmls.length) { pasta = null; return info('<span class="bad">Não encontrei nenhum arquivo .html nesta pasta.</span>'); }
+    pasta.principal = htmls[0];
+    const tam = [...pasta.values()].reduce((s, f) => s + f.size, 0);
+    info(`<b>${pasta.size} arquivo(s)</b> · ${(tam / 1048576).toFixed(1)} MB · página principal: <b>${esc(pasta.principal)}</b>${htmls.length > 1 ? ` <span class="muted">(outros .html também sobem)</span>` : ""}`);
+  };
+  $("#epHtml").onchange = e => { htmlArq = e.target.files[0] || null; if (htmlArq) info(`Arquivo: <b>${esc(htmlArq.name)}</b> · ${(htmlArq.size / 1024).toFixed(0)} KB`); };
+  $("#epOk").onclick = async () => {
+    const slug = atual ? atual.id : slugEmp($("#epSlug").value), titulo = $("#epNome").value.trim() || slug, b = $("#epOk");
+    if (!/^[a-z0-9][a-z0-9-]{1,47}$/.test(slug)) return toast("Endereço inválido: use letras, números e hífen");
+    if (!pasta && !htmlArq) return toast("Escolha a pasta ou o arquivo .html");
+    if (S.mode === "firebase" && pasta && !S.st) return toast("O Storage não está ligado no painel (config.js)");
+    b.disabled = true;
+    try {
+      if (!atual) { const ja = await S.get(`lp_paginas/${slug}`).catch(() => null); if (ja) { b.disabled = false; return toast("Esse endereço já está em uso. Escolha outro."); } }
+      let html = "", n = 0;
+      if (pasta) {
+        const urls = await subirPasta(slug, pasta, pasta.principal, t => { b.textContent = t.length > 48 ? t.slice(0, 48) + "…" : t; });
+        html = trocarRefs(await pasta.get(pasta.principal).text(), dirDe(pasta.principal), urls); n = urls.size;
+      } else html = await htmlArq.text();
+      if (html.length > 900000) throw new Error("o HTML principal passa de 900 KB mesmo sem os arquivos. Tire imagens embutidas (base64) do arquivo.");
+      const agora = Date.now(), tipo = $("#epTipo").value, publicar = $("#epPub").checked;
+      const base = atual ? {} : { cid: id, suspensa: false, seo: { titulo }, whatsapp: { ativo: false, numero: "", mensagem: "Olá! Vim pela página " + titulo }, pixel: {}, criadoEm: agora };
+      await S.set(`lp_paginas/${slug}`, { ...base, cid: id, titulo, tipo, html, publicada: publicar, ...(publicar ? { publicadoEm: agora } : {}), arquivos: n, pasta: n ? `lp/${slug}` : "", painelCliente: $("#epPainel").checked, atualizadoEm: agora, enviadoPor: "upe" }, !!atual);
+      await S.set(`lp_paginas/${slug}/privado/rascunho`, { html, em: agora });
+      doc.temPaginas = true; dlg.close(); await save(`${TIPOS_PAG[tipo]} ${publicar ? "no ar" : "salva como rascunho"}${n ? ` com ${n} arquivo(s) no Storage` : ""}: lp.upecriativo.com.br/${slug}`);
+    } catch (e) { console.error(e); toast("Não foi possível enviar: " + (e.message || e)); b.disabled = false; b.textContent = `Enviar e ${atual ? "atualizar" : "criar"}`; }
+  };
+}
+
+/* ---------- cliente: Meus serviços (o que contratou e os botões “Painel – …”) ---------- */
+async function servicosDoCliente(c) {
+  const { id, doc } = c, apps = doc.apps || {}, out = [], cat = appsCat(state.cfg);
+  const nomeLoja = apps.erp?.loja || apps.erp?.empresa || "";
+  if (ativoApp(apps.erp)) out.push({ frente: "erp", nome: "Loja online", sub: (cat.erp.planos.find(p => p.k === apps.erp.plano) || {}).nome || "", status: apps.erp.status,
+    botoes: [[`Painel – Loja ${doc.marca || nomeLoja}`, `#/c/s-erp`], ...(nomeLoja ? [["Ver a loja ↗", apps.erp.dominio ? "https://" + apps.erp.dominio : LOJA_URL + (apps.erp.loja || nomeLoja), true]] : [])] });
+  let pgs = [];
+  if (ativoApp(apps.landing) || ativoApp(apps.sistemas)) pgs = (await S.query("lp_paginas", "cid", id).catch(() => [])).filter(p => p.publicada || p.painelCliente);
+  if (ativoApp(apps.landing)) out.push({ frente: "landing", nome: "Landing pages e sites", sub: (cat.landing.planos.find(p => p.k === apps.landing.plano) || {}).nome || "", status: apps.landing.status,
+    botoes: [["Painel – Páginas (editar, visitas e leads)", "#/c/s-landing"], ...pgs.filter(p => p.tipo !== "sistema").map(p => [`Ver ${p.titulo || p.id} ↗`, p.dominio ? "https://" + p.dominio : LP_URL + p.id, true])] });
+  if (ativoApp(apps.sistemas)) out.push({ frente: "sistemas", nome: "Agenda e dashboards", sub: (apps.sistemas.modulos || ["agenda", "dash"]).map(m => m === "agenda" ? "Agenda online" : "Dashboards").join(" · "), status: apps.sistemas.status,
+    botoes: [["Painel – Agenda e dashboards", "#/c/s-sistemas"]] });
+  pgs.filter(p => p.tipo === "sistema" || p.painelCliente).forEach(p => out.push({ frente: "app", nome: p.titulo || p.id, sub: TIPOS_PAG[p.tipo] || "Sistema", status: p.publicada ? "ativo" : "pendente",
+    botoes: [[`Painel – ${p.titulo || p.id}`, `#/c/app/${encodeURIComponent(p.id)}`], ["Abrir em outra aba ↗", p.dominio ? "https://" + p.dominio : LP_URL + p.id, true]] }));
+  if (doc.plano?.branding || doc.plano?.midias || doc.plano?.grafica) out.unshift({ frente: "branding", nome: "Branding e mídias", sub: ["branding", "midias", "grafica"].filter(k => doc.plano?.[k]).map(k => ({ branding: "Branding", midias: "Mídias digitais", grafica: "Papelaria gráfica" })[k]).join(" · "), status: "ativo",
+    botoes: [...(doc.acesso?.apresentacao && doc.apresentacao ? [["Apresentação da marca", "#/c/apresentacao"]] : []), ...(doc.plano?.midias && doc.acesso?.calendario ? [["Posts para aprovar", "#/c/conteudo"]] : []), ...(temPainelProprio(doc, "branding") ? [["Painel da marca", "#/c/s-branding"]] : [])] });
+  return out;
+}
+const cardsServicos = svs => svs.length ? `<div class="g2 meus">${svs.map(sv => `<article class="card grid"><div class="spread"><div class="grid" style="gap:2px"><h3>${esc(sv.nome)}</h3>${sv.sub ? `<span class="muted small">${esc(sv.sub)}</span>` : ""}</div>${sv.frente === "branding" ? "" : astPill(sv.status)}</div>
+  <div class="row">${sv.botoes.map(([l, h, fora], k) => `<a class="btn ${k ? "sec" : ""} sm" href="${esc(h)}" ${fora ? 'target="_blank" rel="noopener"' : ""}>${esc(l)}</a>`).join("")}</div></article>`).join("")}</div>` : `<div class="empty">Nenhum serviço ativo ainda. Fale com a Upe para começar.</div>`;
+async function cMeusServicos(m, c) {
+  const svs = await servicosDoCliente(c);
+  m.innerHTML = `<div class="grid" style="gap:6px"><span class="eb">Meus serviços</span><h1>O que você tem com a Upe</h1><p class="muted small">Cada serviço tem o seu painel. Os pagamentos de todos ficam em <a href="#/c/pagamentos">Pagamentos</a> e as conversas com a Upe em <a href="#/c/mensagens">Falar com a Upe</a>.</p></div>
+    ${cardsServicos(svs)}
+    <details class="card"><summary><b>Conhecer outros serviços da Upe</b></summary><div id="outros" style="margin-top:12px"></div></details>`;
+  cApps($("#outros", m), c);
+  const h = $("#outros h1", m); if (h) h.textContent = "Outros serviços";
+}
+// sistema ou página marcada como painel do cliente, aberta dentro do painel central
+async function cAppProprio(m, c, slug) {
+  const p = (await S.query("lp_paginas", "cid", c.id).catch(() => [])).find(x => x.id === slug);
+  if (!p) { m.innerHTML = `<div class="empty"><b>Painel não encontrado.</b><a class="btn sec" href="#/c/servicos">Voltar</a></div>`; return; }
+  const url = p.dominio ? "https://" + p.dominio : LP_URL + p.id;
+  m.innerHTML = `<a href="#/c/servicos" class="small">← Meus serviços</a><div class="spread"><h1>${esc(p.titulo || p.id)}</h1><a class="btn sec sm" href="${esc(url)}" target="_blank" rel="noopener">Abrir em outra aba ↗</a></div>
+    <iframe class="svc-frame" src="${esc(url)}" title="${esc(p.titulo || p.id)}" allow="clipboard-write; fullscreen"></iframe>`;
+}
+
+/* ===== Modelos editáveis (estilo Canva): Upe ERP, Loja Upe, Upe Landing pages e Upe Sistemas =====
    Usa window.UpeModelos (portal/modelos.js). Cada post guarda os slides em x.modelo para poder ser editado de novo. */
 const MBASE = () => (CFG.siteUrl != null ? CFG.siteUrl : "../");
-const FRENTE_PILAR = { erp: "Upe ERP", tv: "Upe TV", loja: "Loja Upe", landing: "Landing pages", sistemas: "Upe Sistemas" };
-const PILAR_FRENTE = { "Upe ERP": "erp", "Upe TV": "tv", "Loja Upe": "loja" };
+const FRENTE_PILAR = { erp: "Upe ERP", loja: "Loja Upe", landing: "Landing pages", sistemas: "Upe Sistemas" };
+const PILAR_FRENTE = { "Upe ERP": "erp", "Loja Upe": "loja" };
 async function renderModelo(cv, m) { await UpeModelos.render(cv, m, { base: MBASE() }); return cv; }
 // imagem final de um slide: arquivo no Storage (ou no navegador, no modo demonstração) ou JPEG embutido
 /* grava os slides animados (entrada dos elementos, 3 s por slide) num vídeo, no próprio navegador */

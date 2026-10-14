@@ -1,6 +1,6 @@
 # Portal Upe
 
-**Painel central** da Upe Criativo: cadastro único de clientes, preços de todas as frentes e o painel do cliente com Branding, Mídias digitais, Papelaria gráfica, Upe ERP, Upe TV, Landing pages e Upe Sistemas num login só. Como funciona: [`docs/PAINEL-CENTRAL.md`](../../docs/PAINEL-CENTRAL.md).
+**Painel central** da Upe Criativo: cadastro único de clientes, preços de todas as frentes e o painel do cliente com Branding, Mídias digitais, Papelaria gráfica, Upe ERP, Landing pages e Upe Sistemas num login só. Como funciona: [`docs/PAINEL-CENTRAL.md`](../../docs/PAINEL-CENTRAL.md).
 
 - **Cliente:** entra com o e-mail cadastrado (um login para todos os serviços) ou, só para o portal de branding, com o código `XXXX-XXXX-XXXX`. Vê só o que você liberar: a apresentação (aba 05 do dossiê), o manual da marca, o calendário de aprovação de posts, a aprovação de artes gráficas, a tela "Comprar de novo", os pagamentos por PIX ou cartão e as mensagens.
 - **Administrador:** entra com e-mail e senha. Cadastra clientes (manualmente ou a partir dos contatos do site), gera e reenvia códigos, escolhe o que está incluso e o que o cliente vê, publica posts e artes para aprovação, libera recompras, cria e libera cobranças, responde mensagens e monta newsletters.
@@ -26,7 +26,7 @@
 
 ### Modelos editáveis (estilo Canva)
 
-Em **Cronograma Upe → Modelos editáveis**: escolha a frente (Upe ERP, Upe TV ou Loja Upe; Landing pages fica "em breve"), o formato (feed 4:5, story 9:16 ou quadrado) e um dos 5 modelos (título forte, imagem + texto, tela do app, lista numerada, chamada final). Edite os textos, troque a imagem (telas dos apps ou uma foto sua), crie vários slides para um carrossel e clique em **Adicionar ao cronograma** ou **Baixar**. Os posts gerados guardam o modelo: na janela do post, **Editar no modelo** abre o editor de novo e refaz as imagens. Os modelos ficam em `portal/modelos.js` (o mesmo arquivo gera as artes e os reels do cronograma).
+Em **Cronograma Upe → Modelos editáveis**: escolha a frente (Upe ERP, Loja Upe, Landing pages ou Upe Sistemas), o formato (feed 4:5, story 9:16 ou quadrado) e um dos 5 modelos (título forte, imagem + texto, tela do app, lista numerada, chamada final). Edite os textos, troque a imagem (telas dos apps ou uma foto sua), crie vários slides para um carrossel e clique em **Adicionar ao cronograma** ou **Baixar**. Os posts gerados guardam o modelo: na janela do post, **Editar no modelo** abre o editor de novo e refaz as imagens. Os modelos ficam em `portal/modelos.js` (o mesmo arquivo gera as artes e os reels do cronograma).
 
 ### Kits da Upe
 
@@ -43,7 +43,7 @@ Sem Firebase configurado, o portal funciona com dados de exemplo guardados só n
 
 ## Colocar no ar com o Firebase
 
-O portal usa o mesmo tipo de projeto Firebase do Upe ERP e do Upe TV. São 10 a 15 minutos:
+O portal usa o mesmo projeto Firebase do Upe ERP e do Upe Serviços. São 10 a 15 minutos:
 
 **No console do Firebase** ([console.firebase.google.com](https://console.firebase.google.com)):
 

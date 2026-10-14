@@ -1,109 +1,113 @@
-# Painel central: cadastro, preços e painel do cliente num lugar só
+# Painel central: um painel só para a Upe e um para cada cliente
 
-O portal (`site/portal`, endereço `www.upecriativo.com.br/portal/`) é o **painel central** de todas as frentes: Branding e mídias, Upe ERP, Upe TV, Landing pages e Upe Sistemas (agenda e dashboards).
+O portal (`site/portal`, endereço `www.upecriativo.com.br/portal/`) é o painel único da Upe Criativo. Ele cobre quatro frentes:
 
-Os outros painéis (Gerenciador do ERP, admin do Upe Serviços, gestão da TV) continuam no ar como **ferramentas de operação**. Você não cadastra clientes nem muda preços por lá.
+- Branding e mídias
+- Loja online (Upe ERP)
+- Landing pages e sites
+- Agenda e dashboards
+
+O Upe TV é um app separado (`tv.upecriativo.com.br`) e não faz parte deste painel.
 
 ## Para a Upe (administrador)
 
-### Cadastro único do cliente
+### A ficha do cliente se adapta aos serviços
 
-1. Em **Clientes › Novo cliente**, preencha nome, empresa, marca, e-mail e WhatsApp.
-2. Na ficha do cliente, abra **Serviços** e ligue cada frente: status, plano, extras, vencimento e observações.
-   - **Upe ERP:** endereço da empresa no painel (ex.: `cafe-aurora`).
-   - **Upe TV:** o anunciante cadastrado na TV.
-   - **Upe Sistemas:** agenda, dashboards ou os dois.
-3. Clique em **Salvar serviços e liberar acessos**. O painel faz sozinho o que antes era feito em cada app:
+Em **Clientes**, abra a ficha. As abas aparecem conforme o que o cliente contratou:
 
-| Frente | O que é criado |
+| Aba | Quando aparece | Para quê |
+|---|---|---|
+| Projeto e acessos | sempre | dados, e-mail de login, código antigo, plano de branding, mensalidade |
+| Serviços | sempre | ligar cada serviço (status, plano, extras, vencimento) e liberar os acessos |
+| Apresentação e dossiê | branding | importar a **pasta do dossiê** (imagens, vídeos e PDF sobem sozinhos) |
+| Conteúdo | mídias digitais | posts para aprovação e kits |
+| Gráficos e recompra | papelaria gráfica | artes para aprovar e recompra |
+| Páginas e sistemas | landing pages, sites, agenda ou dashboards | **enviar a página ou o sistema com a pasta de arquivos** |
+| Pagamentos | sempre | cobranças de todos os serviços, com o serviço de cada uma |
+| Inbox | sempre | conversa com o cliente |
+
+### Serviços e liberação dos acessos
+
+Na aba **Serviços**, ligue o que o cliente contratou e clique em **Salvar serviços e liberar acessos**. O painel cria sozinho:
+
+| Serviço | O que é criado |
 |---|---|
-| Painel central | `portal_convites/{email}` |
-| Upe ERP | `empresas/{empresa}`, `convites/{email}` (papel dono) e a plataforma no Gerenciador do ERP (`upe/gestao/clientes/Cxxxx`) |
-| Landing pages e Sistemas | `srv_clientes/{id do cliente}` (mesmo id da ficha) e `srv_convites/{email}` |
-| Upe TV | ligação com o código do anunciante |
+| Painel do cliente | `portal_convites/{email}` |
+| Loja online (Upe ERP) | `empresas/{empresa}`, `convites/{email}` e a plataforma no Gerenciador do ERP; domínio próprio da loja, se houver |
+| Landing pages e sites / Agenda e dashboards | `srv_clientes/{id do cliente}` e `srv_convites/{email}` |
 
-4. Use **Copiar mensagem de acesso** ou **Enviar no WhatsApp** para mandar o endereço e as instruções ao cliente.
+### Enviar uma página, site ou sistema (com a pasta)
 
-Ao cancelar uma frente, o convite daquela frente é retirado. Ao trocar o e-mail em Projeto e acessos, os convites passam para o e-mail novo.
+Na aba **Páginas e sistemas**, clique em **Adicionar página ou sistema** e preencha:
 
-### Preços: uma tela, separada por frente
+1. **Tipo:** landing page, site ou sistema.
+2. **Nome e endereço:** a página fica em `lp.upecriativo.com.br/endereço`.
+3. **Pasta da página ou do sistema** (recomendado): escolha a pasta inteira, com o `.html` principal (`index.html`) e as pastas de imagens, fontes, CSS, scripts e dados. Se tudo estiver dentro do `.html` ou em links da internet, escolha **só o arquivo .html**.
+4. **Publicar agora:** sem marcar, a página fica como rascunho.
+5. **Mostrar como painel do cliente:** o cliente ganha o botão **“Painel – (nome)”**, que abre o sistema dentro do painel dele.
+
+Os arquivos sobem para o Storage (`lp/{endereço}/…`). Os caminhos são trocados sozinhos no HTML, dentro do CSS (fontes e imagens de fundo) e nos scripts e dados. Isso cobre o caminho escrito por inteiro, como `fetch("dados/itens.json")`. Um caminho montado pelo script enquanto roda não é trocado.
+
+Em cada página da lista:
+
+- **Substituir arquivos:** envia uma versão nova no mesmo endereço.
+- **Tirar do ar / Publicar:** liga ou desliga a página.
+- **Editor e análise:** abre o editor de textos, as visitas, os leads e o domínio próprio.
+
+### Preços num lugar só
 
 Em **Serviços e preços**, cada aba grava direto na fonte que as páginas de vendas e os apps usam:
 
-| Aba | Onde grava | Quem mostra o preço |
-|---|---|---|
-| Branding e mídias | `config/publico.precos.branding` | Ficha do cliente (preço de tabela da mensalidade) |
-| Upe ERP | `upe/gestao/config/geral` e `publico/plano` | Gerenciador do ERP, página das lojas, painéis e páginas de vendas do ERP |
-| Upe TV | `app/config` (planos da TV) | Painel da TV, anúncio da Upe nas telas, portal do anunciante |
-| Landing pages | `srv_planos` (frente `lp`) | Página de vendas de landing pages |
-| Upe Sistemas | `srv_planos` (frentes `agenda` e `dash`) | Página de vendas da agenda e dos dashboards |
-
-Os campos de preço do Gerenciador do ERP e da TV ficaram somente leitura, com link para cá.
-
-Itens com cobrança **Pagamento único** (criação de página, agenda, dashboard) geram uma cobrança só, quando são marcados na ficha. Eles não entram na mensalidade.
-
-### Cobranças
-
-Todas as cobranças ficam na ficha do cliente, em **Pagamentos**. Cada cobrança tem um campo **Serviço** e aparece no painel do cliente, na aba Pagamentos daquele serviço.
-
-Em **Serviços e preços › (frente) › Gerar cobranças do mês**, as mensalidades de todos os clientes daquela frente são geradas de uma vez.
+| Aba | Onde grava |
+|---|---|
+| Branding e mídias | `config/publico.precos.branding` |
+| Loja online | `upe/gestao/config/geral` e `publico/plano` |
+| Landing pages e sites | `srv_planos` (frente `lp`) |
+| Agenda e dashboards | `srv_planos` (frentes `agenda` e `dash`) |
 
 ## Para o cliente
 
-- **Login:** entra em `www.upecriativo.com.br/portal/` com o e-mail cadastrado. No primeiro acesso, toca em “Primeiro acesso: criar a minha senha” e confirma o e-mail. O código antigo (`XXXX-XXXX-XXXX`) continua valendo para o portal de branding.
-- **Menu “Seus serviços”:** um item para cada frente contratada. Cada serviço abre dentro do painel:
-  - Upe ERP: painel de pedidos, loja e PDV.
-  - Landing pages: páginas, análise, leads e domínio.
-  - Upe Sistemas: agenda e dashboards.
-  - Upe TV: relatório do anunciante.
+O painel do cliente é simples:
 
-  Como tudo está no mesmo endereço, o login vale para todos. Cada serviço tem as abas **Painel** e **Pagamentos**.
-- **Pagamentos:** todas as cobranças juntas, com filtro por serviço, PIX, cartão e “Já paguei”. As cobranças antigas do Upe Serviços também aparecem.
-- **Contratar serviços:** catálogo com os preços atuais. O pedido chega na ficha do cliente.
+- **Início:** os serviços contratados, com os botões de cada painel, e o que está pendente.
+- **Meus serviços:** um cartão por serviço. Cada cartão traz o botão do painel do serviço:
+  - **Painel – Loja (marca):** pedidos, produtos e PDV.
+  - **Painel – Páginas:** editar, visitas, leads e domínio.
+  - **Painel – Agenda e dashboards.**
+  - **Painel – (sistema próprio):** quando a Upe marca um sistema como painel do cliente.
 
-## Painel em branco (HTML personalizado)
+  Há também links para ver a loja e as páginas no ar, e um espaço para conhecer outros serviços.
+- **Pagamentos:** todas as cobranças, com filtro por serviço.
+- **Falar com a Upe:** mensagens.
+- **Seções de branding** (apresentação, conteúdo, artes e recompra): só aparecem para quem contratou.
 
-Para qualquer frente, inclusive Branding, a ficha › Serviços tem a opção **Painel em branco (HTML próprio)**.
+O cliente entra com o e-mail (um login para tudo). O código antigo continua valendo para o portal de branding.
 
-1. Escolha a opção e envie o arquivo `.html` (até 900 KB; imagens e vídeos por link).
-2. Salve.
+## Painel em branco (HTML próprio)
 
-O cliente passa a ver o seu HTML no lugar do painel padrão, sempre ao lado da aba **Pagamentos** daquele serviço.
+Para qualquer serviço, a aba **Serviços** tem a opção **Painel em branco (HTML próprio)**:
 
-- **Isolamento:** o HTML roda isolado (`iframe sandbox`, sem acesso ao login nem ao banco).
-- **Comunicação:** a única ligação com o painel é por mensagens, descritas abaixo.
-- **Armazenamento:** o arquivo fica em `paineis_cliente/{cliente}_{frente}`. Só a Upe grava; só o próprio cliente, logado com e-mail, lê.
-
-### Contrato de mensagens (`postMessage`)
+- O HTML roda isolado, sem acesso ao login nem ao banco.
+- A única ligação com o painel é a aba **Pagamentos** daquele serviço, por mensagens.
 
 | Do HTML para o painel | Efeito |
 |---|---|
-| `parent.postMessage({ upe: "dados" }, "*")` | Pede os dados do cliente (o painel também envia sozinho ao carregar) |
-| `parent.postMessage({ upe: "pagamentos" }, "*")` | Abre a aba Pagamentos deste serviço |
-| `parent.postMessage({ upe: "altura", h: 1200 }, "*")` | Ajusta a altura da área do painel (em px) |
+| `parent.postMessage({ upe: "dados" }, "*")` | pede os dados do cliente |
+| `parent.postMessage({ upe: "pagamentos" }, "*")` | abre os pagamentos do serviço |
+| `parent.postMessage({ upe: "altura", h: 1200 }, "*")` | ajusta a altura |
 
 Do painel para o HTML: `{ upe: "cliente", nome, marca, frente, status, emAberto, totalEmAberto }`.
 
-```html
-<script>
-addEventListener("message", e => {
-  if (e.data && e.data.upe === "cliente") document.querySelector("#ola").textContent = "Olá, " + e.data.marca;
-});
-parent.postMessage({ upe: "dados" }, "*");
-document.querySelector("#pagar").onclick = () => parent.postMessage({ upe: "pagamentos" }, "*");
-</script>
-```
-
 ## Técnico
 
-- **Mesmo endereço:** o site principal publica também `apps/painel`, `apps/servicos` e `apps/tv` (veja `site/firebase.json`). O portal abre esses apps em `../apps/<app>/?embed=1`, então o login do Firebase é compartilhado.
-- **Modo embutido:**
-  - Painel do ERP: esconde “Plano e assinatura” e “Sair”.
-  - Upe Serviços: mostra só as seções da frente, como abas no topo, sem “Plano e cobranças”.
-  - TV: esconde a barra de voltar.
-- **Regras:** `portal_convites`, `portal_acessos` e `paineis_cliente` em `site/portal/firestore.rules`. Teste: `node tools/firebase/testar_conta.js` (cria e apaga um usuário de teste).
-- **Teste de ponta a ponta (modo demonstração):** `node tools/capturas/painel-central.js`. O teste faz login do admin, edita preços, libera acessos e entra como cliente.
+- **Mesmo endereço:** o site principal publica também `apps/painel` e `apps/servicos` (ver `site/firebase.json`). O painel abre esses apps em `../apps/<app>/?embed=1`, então o login é o mesmo.
+- **Storage:**
+  - Contas de administrador têm a marca `upe: true` no login, gravada por `tools/firebase/marcar_admins.js`. Rode esse script ao criar um administrador novo.
+  - As regras do Storage (`site/portal/storage.rules`) usam essa marca. Para publicá-las: `node tools/firebase/publicar_regras_storage.js`.
+- **Regras do banco:** `portal_convites`, `portal_acessos`, `paineis_cliente`, `lp_paginas`, `lojas_dominios` em `site/portal/firestore.rules`.
+- **Testes:**
+  - `node tools/capturas/painel-central.js` (modo demonstração; inclui o envio de uma pasta de exemplo de `tools/capturas/fixtures/pagina-exemplo`);
+  - `node tools/firebase/testar_conta.js` (regras de acesso no Firebase).
 - **Demonstração:**
   - Admin: `admin@upe.demo` / `upe-demo`.
-  - Cliente com e-mail: `cliente@upe.demo` / `upe-demo`.
-  - Código: `AURO-RA26-DEMO`.
+  - Cliente: `cliente@upe.demo` / `upe-demo`.

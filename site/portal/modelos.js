@@ -1,4 +1,4 @@
-/* Modelos editáveis de post (estilo Canva) das frentes da Upe: Upe ERP, Upe TV, Loja Upe, Upe Landing pages e Upe Sistemas (agenda e dashboards).
+/* Modelos editáveis de post (estilo Canva) das frentes da Upe: Upe ERP, Loja Upe, Upe Landing pages e Upe Sistemas (agenda e dashboards).
    Desenha no <canvas> com Lato e as imagens do site. Usado pelo editor do painel (Cronograma Upe → Modelos)
    e pelo gerador das artes e reels do cronograma (mesmo arquivo, mesmo resultado).
    UpeModelos.render(canvas, modelo, { base, t }) → Promise. t (0…1) anima a entrada dos elementos (reels). */
@@ -6,8 +6,6 @@
   const FRENTES = {
     erp: { nome: "Upe ERP", chip: "UPE ERP", base: "#234e7b", escuro: "#0b1d3a", destaque: "#5fb3ff", creme: "#f2f0e2", tinta: "#0d1b33", cta: "Teste 14 dias grátis", rodape: "Loja online, PDV e pedidos num só painel",
       imagens: ["assets/img/ui/erp-painel.jpg", "assets/img/ui/erp-pdv.jpg", "assets/img/ui/erp-pedidos.jpg"] },
-    tv: { nome: "Upe TV", chip: "UPE TV", base: "#0C4F7F", escuro: "#061A2B", destaque: "#F2B33D", creme: "#F2F0E1", tinta: "#0b1a26", cta: "Anuncie no Upe TV", rodape: "Sua marca na tela certa",
-      imagens: ["assets/img/ui/tv-tela.jpg", "assets/img/ui/tv-portal.jpg", "assets/img/ui/tv-qr.jpg"] },
     loja: { nome: "Loja Upe", chip: "LOJA UPE", base: "#0b1d3a", escuro: "#060f20", destaque: "#ff7a59", creme: "#f4f1ea", tinta: "#0d1b33", cta: "Monte a sua loja", rodape: "A loja online da sua marca",
       imagens: ["assets/img/ui/loja-vitrine.jpg", "assets/img/ui/loja-produtos.jpg", "assets/img/ui/loja-pix.jpg", "assets/img/ui/loja-pedido.jpg", "assets/img/ui/loja-produto.jpg"] },
     landing: { nome: "Upe Landing pages", chip: "LANDING PAGES", base: "#3a2f6b", escuro: "#1d1738", destaque: "#c9b8ff", creme: "#f3f0fa", tinta: "#1d1738", cta: "Quero a minha página", rodape: "Páginas de venda com painel de resultados",

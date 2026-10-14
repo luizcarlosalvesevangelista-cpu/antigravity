@@ -4,7 +4,8 @@ service firebase.storage {
   match /b/{bucket}/o {
     function upe() {
       return request.auth != null && request.auth.token.email_verified == true
-        && (request.auth.token.email == 'upecriativo@gmail.com' || firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid)));
+        && (request.auth.token.email == 'upecriativo@gmail.com' || request.auth.token.get('upe', false) == true
+            || firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid)));
     }
     // portal: manual, posts e artes dos clientes (leitura pelo link, envio só pela Upe)
     match /cronograma/{rest=**} {
@@ -21,13 +22,14 @@ service firebase.storage {
       allow write: if upe() && request.resource.size < 500 * 1024 * 1024
         && request.resource.contentType.matches('(video|image)/.*');
     }
-    // landing pages: imagens enviadas pelo editor do Painel Upe Serviços (dono da página ou Upe)
-    match /lp/{slug}/{arquivo} {
+    // páginas e sistemas: imagens do editor (dono da página ou Upe) e, pela Upe, a pasta inteira (HTML, CSS, fontes, scripts, dados)
+    match /lp/{slug}/{rest=**} {
       allow read: if true;
-      allow write: if request.resource.size < 8 * 1024 * 1024 && request.resource.contentType.matches('image/.*')
-        && (upe() || (request.auth != null && request.auth.token.email_verified == true
+      allow write: if (upe() && request.resource.size < 100 * 1024 * 1024)
+        || (request.resource.size < 8 * 1024 * 1024 && request.resource.contentType.matches('image/.*')
+          && request.auth != null && request.auth.token.email_verified == true
           && firestore.get(/databases/(default)/documents/srv_acessos/$(request.auth.uid)).data.cid
-             == firestore.get(/databases/(default)/documents/lp_paginas/$(slug)).data.cid));
+             == firestore.get(/databases/(default)/documents/lp_paginas/$(slug)).data.cid);
       allow delete: if upe();
     }
   }
