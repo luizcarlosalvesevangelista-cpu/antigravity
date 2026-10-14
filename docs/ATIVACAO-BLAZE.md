@@ -53,6 +53,9 @@ Sem isso, os avisos vão por e-mail e o painel continua com os botões de WhatsA
 
 ### 5. Rodar o script
 
+> Sem `gcloud` (como no ambiente do Claude), use a versão em Node: `node tools/blaze/ativar.js` (mesmas variáveis; `--so-checar` só confere as permissões). A conta de serviço precisa do papel **Proprietário** enquanto o script roda.
+
+
 Pode pedir para o Claude rodar, enviando a chave de serviço como nas outras vezes. Ou rode no seu computador:
 
 ```bash
