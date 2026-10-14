@@ -256,7 +256,9 @@
       "site": "upe-criativo-lp",
       "public": "apps/lp",
       "ignore": [
-        "**/.*"
+        "**/.*",
+        "index.html",
+        "pagina.html"
       ],
       "headers": [
         {
@@ -298,8 +300,18 @@
       ],
       "rewrites": [
         {
+          "source": "/api/**",
+          "function": {
+            "functionId": "api",
+            "region": "southamerica-east1"
+          }
+        },
+        {
           "source": "**",
-          "destination": "/pagina.html"
+          "function": {
+            "functionId": "lpRender",
+            "region": "southamerica-east1"
+          }
         }
       ]
     },
@@ -382,5 +394,20 @@
   },
   "storage": {
     "rules": "portal/storage.rules"
-  }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "runtime": "nodejs20",
+      "predeploy": [
+        "bash \"$RESOURCE_DIR/preparar.sh\""
+      ],
+      "ignore": [
+        "node_modules",
+        ".git",
+        "*.log"
+      ]
+    }
+  ]
 }

@@ -135,7 +135,7 @@ async function membro(u, cid) {
   if (u.email === "upecriativo@gmail.com" || (await db.doc("admins/" + u.uid).get()).exists) return true;
   const a = (await db.doc("srv_acessos/" + u.uid).get()).data(); return a?.cid === cid;
 }
-exports.api = onRequest({ secrets: [MP_ACCESS_TOKEN], cors: false }, async (req, res) => {
+exports.api = onRequest({ secrets: [MP_ACCESS_TOKEN], cors: false, invoker: "public" }, async (req, res) => {
   cors(res); if (req.method === "OPTIONS") return res.status(204).send("");
   const rota = req.path.replace(/^\/api/, "");
   try {
@@ -179,7 +179,7 @@ exports.api = onRequest({ secrets: [MP_ACCESS_TOKEN], cors: false }, async (req,
 
 /* ---------- landing pages montadas no servidor (prévia certa ao compartilhar) ---------- */
 let MONTAR = null, VENDAS = null;
-exports.lpRender = onRequest({ memory: "256MiB" }, async (req, res) => {
+exports.lpRender = onRequest({ memory: "256MiB", invoker: "public" }, async (req, res) => {
   MONTAR = MONTAR || (await import("./lp-render.mjs")).montar;
   const host = String(req.get("x-forwarded-host") || req.hostname || "").toLowerCase().split(":")[0], deUpe = /(^|\.)(web\.app|firebaseapp\.com|lp\.upecriativo\.com\.br)$/.test(host);
   let slug = "";
@@ -236,7 +236,7 @@ exports.dominiosVerificar = onSchedule({ schedule: "every 60 minutes", timeZone:
 });
 
 /* ---------- planilha privada para os dashboards ---------- */
-exports.planilha = onCall(async req => {
+exports.planilha = onCall({ invoker: "public" }, async req => {
   const u = req.auth?.token, { dash } = req.data || {}; if (!u) throw new HttpsError("unauthenticated", "Entre no painel.");
   const d = (await db.doc("dash_paineis/" + String(dash || "")).get()).data(); if (!d) throw new HttpsError("not-found", "Dashboard não encontrado.");
   if (!(await membro({ ...u, uid: req.auth.uid }, d.cid))) throw new HttpsError("permission-denied", "Sem permissão.");

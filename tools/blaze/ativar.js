@@ -63,9 +63,12 @@ const FB = 'npx -y firebase-tools@13';
   const ext = await api(`https://firebaseextensions.googleapis.com/v1beta/projects/${P}/instances`);
   if ((ext.data.instances || []).some(i => /firestore-send-email/.test(JSON.stringify(i)))) ok('Extensão já instalada');
   else if (process.env.SMTP_URI) {
-    const env = RAIZ + '/tools/.trabalho/email.env'; fs.mkdirSync(path.dirname(env), { recursive: true });
-    fs.writeFileSync(env, [`LOCATION=${REG}`, 'DATABASE=(default)', `DATABASE_REGION=${REG}`, 'MAIL_COLLECTION=mail', `DEFAULT_FROM=${process.env.EMAIL_REMETENTE || 'Upe Criativo <upecriativo@gmail.com>'}`, 'DEFAULT_REPLY_TO=upecriativo@gmail.com', 'TTL_EXPIRE_TYPE=week', 'TTL_EXPIRE_VALUE=4', `SMTP_CONNECTION_URI=${process.env.SMTP_URI}`].join('\n'));
-    try { sh(`${FB} ext:install firebase/firestore-send-email --project ${P} --params=${env} --non-interactive --force`); ok('Extensão instalada'); } catch (e) { aviso('Instale pelo console: Extensions › Trigger Email'); } finally { fs.rmSync(env, { force: true }); }
+    // pela API de extensões (o "ext:install --params" não existe mais no firebase-tools)
+    const ver = (await api('https://firebaseextensions.googleapis.com/v1beta/publishers/firebase/extensions/firestore-send-email')).data.latestVersion;
+    const r = await api(`https://firebaseextensions.googleapis.com/v1beta/projects/${P}/instances?instanceId=firestore-send-email`, 'POST', { name: `projects/${P}/instances/firestore-send-email`, config: { extensionRef: 'firebase/firestore-send-email', extensionVersion: ver,
+      params: { DATABASE: '(default)', DATABASE_REGION: REG, AUTH_TYPE: 'UsernamePassword', SMTP_CONNECTION_URI: process.env.SMTP_URI, MAIL_COLLECTION: 'mail', DEFAULT_FROM: process.env.EMAIL_REMETENTE || 'Upe Criativo <upecriativo@gmail.com>', DEFAULT_REPLY_TO: 'upecriativo@gmail.com', TTL_EXPIRE_TYPE: 'week', TTL_EXPIRE_VALUE: '4' },
+      systemParams: { 'firebaseextensions.v1beta.function/location': REG } } });
+    if (r.status < 300) { await operacao(r, 'https://firebaseextensions.googleapis.com/v1beta/'); ok('Extensão instalada (versão ' + ver + ')'); } else aviso('Instale pelo console: Extensions › Trigger Email · ' + JSON.stringify(r.data).slice(0, 200));
   } else aviso('SMTP_URI não definido: os e-mails ficam para depois (defina e rode de novo).');
 
   info('7/9 Funções e rotas do servidor');
