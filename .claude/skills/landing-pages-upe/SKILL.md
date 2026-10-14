@@ -44,7 +44,7 @@ O contrato completo do HTML com a plataforma está em `docs/KIT-UPE.md`. Leia an
 5. **Não coloque no HTML** o que a plataforma faz sozinha: medição, botão flutuante de WhatsApp, Meta Pixel e Google Analytics (vão em SEO e integrações, com aviso de cookies), nem o `upe-kit.js`.
 6. **Valide**: `node tools/validar-html.js pagina.html [--loja x] [--agenda y]`. Corrija todo ✗. Para cada ⚠, corrija ou justifique.
 7. **Confira no navegador** se puder: celular (390 px) e computador (1440 px), sem rolagem lateral.
-8. **Entrega**: salve como `clientes/<cliente>/landing-<nome>.html` (ou onde o usuário pedir) e informe o passo a passo:
+8. **Entrega**: salve como `upe/adm/clientes/<marca>/paginas/<endereço>/index.html` (com as pastas `css/`, `js/`, `img/`, `fonts/` ao lado) (ou onde o usuário pedir) e informe o passo a passo:
    1. Painel Upe Serviços (https://servicos.upecriativo.com.br) › Páginas › Nova página › Enviar o meu arquivo .html.
    2. SEO e integrações: título, descrição, imagem, WhatsApp, Pixel/GA4.
    3. Ligações: loja, agenda, WhatsApp do Kit e modo de compra.

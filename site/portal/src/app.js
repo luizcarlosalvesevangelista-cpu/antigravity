@@ -140,6 +140,8 @@ class LocalStore {
   async upload(file) { const k = uid(12) + "/" + file.name.replace(/[^\w.\-]/g, "_"); MEDIA.set(k, URL.createObjectURL(file)); if (this.idb) { try { await idb.put(k, file); } catch (e) { this.idb = false; } } return "idb:" + k; }
   // pasta de página, sistema ou dossiê: no modo demonstração só registra o envio (os arquivos não ficam publicados)
   async uploadEm(file, caminho) { ENVIADOS.push(caminho); return caminho; }
+  async listar(prefixo) { return ENVIADOS.filter(c => c.startsWith(prefixo + "/")); }
+  async urlDe(caminho) { return caminho; }
   async reset() { ls.set(DEMO_KEY, null); if (this.idb) await idb.clear(); location.reload(); }
 }
 class FireStore {
@@ -177,6 +179,9 @@ class FireStore {
   async upload(file, path) { if (!this.st) throw new Error("o Storage não está ligado no painel (config.js sem storageBucket)"); const ref = this.st.ref(`${path}/${Date.now()}-${uid(5)}-${file.name.replace(/[^\w.\-]/g, "_")}`); await ref.put(file); return await ref.getDownloadURL(); }
   // grava no caminho exato (pasta de página, sistema ou dossiê): o servidor entrega cada arquivo no mesmo caminho relativo do computador
   async uploadEm(file, caminho) { if (!this.st) throw new Error("o Storage não está ligado no painel (config.js sem storageBucket)"); await this.st.ref(caminho).put(file, { contentType: tipoArq(caminho, file.type) }); return caminho; }
+  // todos os arquivos de uma pasta do Storage (com as subpastas)
+  async listar(prefixo) { if (!this.st) return []; const out = [], ir = async r => { const l = await r.listAll(); out.push(...l.items.map(i => i.fullPath)); for (const p of l.prefixes) await ir(p); }; await ir(this.st.ref(prefixo)); return out; }
+  async urlDe(caminho) { return this.st.ref(caminho).getDownloadURL(); }
 }
 const ENVIADOS = []; window.__upeEnviados = ENVIADOS; // modo demonstração: caminhos "enviados" (usado pelo teste automático)
 const TIPOS_ARQ = { html: "text/html", htm: "text/html", css: "text/css", js: "text/javascript", mjs: "text/javascript", json: "application/json", svg: "image/svg+xml", txt: "text/plain", md: "text/markdown", csv: "text/csv", xml: "application/xml", webmanifest: "application/manifest+json",
@@ -458,13 +463,24 @@ function cInicio(m, c, { pend, tabs }) {
         ${inc.length ? `<div class="bar"><i style="width:${inc.length ? done / inc.length * 100 : 0}%"></i></div><ul style="list-style:none;padding:0;margin:0;display:grid;gap:8px">${inc.map(i => `<li class="row" style="flex-wrap:nowrap"><span class="pill ${i.feito ? "ok" : ""}">${i.feito ? "Feito" : "A fazer"}</span><span>${esc(i.item)}</span></li>`).join("")}</ul>` : `<p class="muted">A Upe vai listar aqui as etapas do seu projeto.</p>`}
       </section>
       <div class="grid">
-        ${doc.acesso?.manual && doc.manual?.url ? `<section class="card grid"><span class="eb">Manual da marca</span><h3>${esc(doc.manual.nome || "Manual da marca")}</h3><p class="muted small">Logotipos, cores, tipografia e regras de uso.</p><div><a class="btn" href="${esc(resolveMedia(doc.manual.url))}" target="_blank" rel="noopener" download>Baixar o manual</a></div></section>` : ""}
+        ${doc.acesso?.manual ? arquivosMarca(doc) : ""}
         ${has("apresentacao") ? `<section class="card grid"><span class="eb">Apresentação</span><h3>${esc(doc.apresentacao.marca || doc.marca || "A sua marca")}</h3><p class="muted small">${esc(doc.apresentacao.lede || "A proposta completa do projeto.")}</p><div><a class="btn sec" href="#/c/apresentacao">Ver a apresentação</a></div></section>` : ""}
         ${doc.recorrente?.ativo ? `<section class="card grid"><span class="eb">Plano recorrente</span><h3>${esc(doc.recorrente.descricao || "Mensalidade")}</h3><p class="muted">${brl(doc.recorrente.valor)} por mês · vence todo dia ${esc(doc.recorrente.dia)}</p></section>` : ""}
         <section class="card grid"><span class="eb">Precisa de algo?</span><p class="muted small">Escreva para a Upe por aqui ou pelo WhatsApp.</p><div class="row"><a class="btn sec" href="#/c/mensagens">Enviar mensagem</a>${state.cfg.whatsapp || CFG.whatsappUpe ? `<a class="btn sec" href="${esc(waLink(state.cfg.whatsapp || CFG.whatsappUpe, `Olá! Sou ${doc.nome} (${doc.marca || doc.empresa}).`))}" target="_blank" rel="noopener">WhatsApp</a>` : ""}</div></section>
       </div>
     </div>`;
   servicosDoCliente(c).then(svs => { const el = $("#iniSv", m); if (el) el.innerHTML = cardsServicos(svs); }).catch(() => { const el = $("#iniSv", m); if (el) el.innerHTML = ""; });
+}
+
+/* ---------- arquivos da marca (cliente): manual em PDF, manual editável e certificado de anterioridade com selo ---------- */
+const SELO_ANT = `<svg class="selo" viewBox="0 0 120 120" role="img" aria-label="Selo: marca com certificado de anterioridade"><defs><path id="seloArco" d="M60 60 m-44 0 a44 44 0 1 1 88 0 a44 44 0 1 1 -88 0"/></defs><circle cx="60" cy="60" r="57" fill="#0d1b33"/><circle cx="60" cy="60" r="51" fill="none" stroke="#e8c15a" stroke-width="2.5"/><text font-family="Lato,Arial,sans-serif" font-size="10.5" font-weight="900" letter-spacing="2.2" fill="#e8c15a"><textPath href="#seloArco" startOffset="2%">ANTERIORIDADE · REGISTRADA ·</textPath></text><circle cx="60" cy="60" r="27" fill="#e8c15a"/><path d="M47 61 l9 9 l18 -20" fill="none" stroke="#0d1b33" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+function arquivosMarca(doc) {
+  const man = doc.manual?.url ? doc.manual : null, ed = doc.manualEditavel?.url ? doc.manualEditavel : null, cert = doc.certificado?.url ? doc.certificado : null;
+  if (!man && !ed && !cert) return "";
+  return `<section class="card grid marca-arq"><span class="eb">Arquivos da marca</span>
+    ${cert ? `<div class="cert"><a href="${esc(resolveMedia(cert.url))}" target="_blank" rel="noopener" title="Abrir o certificado">${SELO_ANT}</a><div class="grid" style="gap:2px"><b>Marca com certificado de anterioridade</b><span class="muted small">Registro ${esc(cert.emissor || "iT'sMine")}${cert.data ? ` · ${fdate(cert.data)}` : ""}. Guarda a prova de que a marca é sua desde essa data.</span><div><a class="btn sec sm" href="${esc(resolveMedia(cert.url))}" target="_blank" rel="noopener" download>Baixar o certificado (PDF)</a></div></div></div>` : ""}
+    ${man || ed ? `<h3>${esc((man || ed).nome || "Manual da marca")}</h3><p class="muted small">Logotipos, cores, tipografia e regras de uso.${ed ? " A versão editável serve para a gráfica e para quem cria as suas peças." : ""}</p>
+    <div class="row">${man ? `<a class="btn" href="${esc(resolveMedia(man.url))}" target="_blank" rel="noopener" download>Baixar o manual (PDF)</a>` : ""}${ed ? `<a class="btn ${man ? "sec" : ""}" href="${esc(resolveMedia(ed.url))}" target="_blank" rel="noopener" download>Baixar o manual editável</a>` : ""}</div>` : ""}</section>`;
 }
 
 /* ---------- apresentação (aba 05 do dossiê) ---------- */
@@ -480,10 +496,14 @@ function cApres(m, { doc }) {
   if (!slides.length) return;
   const stg = $("#stg");
   const show = k => {
-    i = (k + slides.length) % slides.length; const s = slides[i];
+    i = (k + slides.length) % slides.length; const s0 = slides[i];
+    // tela com "filme" no nome abre o filme, mesmo marcada como motions no dossiê
+    const s = s0.tipo !== "img" && /filme/i.test(s0.nome || "") && A.filme?.video ? { ...s0, tipo: "filme" } : s0;
     stg.querySelectorAll("video").forEach(v => v.pause());
+    // filme e imagens no quadro 16:9; motions e posts em grade que se ajusta à tela (vídeos verticais inteiros)
+    stg.classList.toggle("livre", (s.tipo === "motions" && !!A.motions?.length) || (s.tipo === "instagram" && !!A.instagram?.length)); stg.scrollTop = 0;
     if (s.tipo === "filme" && A.filme?.video) stg.innerHTML = `<video src="${esc(R(A.filme.video))}" poster="${esc(R(A.filme.poster))}" controls playsinline></video>`;
-    else if (s.tipo === "motions" && A.motions?.length) stg.innerHTML = `<div class="igg" style="grid-template-columns:repeat(2,1fr)">${A.motions.map(mo => `<video src="${esc(R(mo.video))}" poster="${esc(R(mo.poster))}" controls playsinline style="border-radius:8px"></video>`).join("")}</div>`;
+    else if (s.tipo === "motions" && A.motions?.length) stg.innerHTML = `<div class="mot">${A.motions.map(mo => `<figure><video src="${esc(R(mo.video))}" poster="${esc(R(mo.poster))}" controls playsinline preload="metadata"></video>${mo.titulo ? `<figcaption>${esc(mo.titulo)}${mo.duracao ? ` · ${esc(mo.duracao)}` : ""}</figcaption>` : ""}</figure>`).join("")}</div>`;
     else if (s.tipo === "instagram" && A.instagram?.length) { stg.innerHTML = `<div class="igg">${A.instagram.map((p, k2) => `<button data-ig="${k2}" aria-label="Ampliar ${esc(p.titulo)}"><img src="${esc(R(p.img))}" alt="${esc(p.titulo)}"></button>`).join("")}</div>`; stg.querySelectorAll("[data-ig]").forEach(b => b.onclick = () => { const p = A.instagram[+b.dataset.ig]; modal(esc(p.titulo || "Post"), `<div class="media-box"><img src="${esc(R(p.img))}" alt=""></div>${p.legenda ? `<div class="legenda">${esc(p.legenda)}</div>` : ""}`); }); }
     else stg.innerHTML = s.img ? `<img src="${esc(R(s.img))}" alt="${esc(s.nome)}">` : `<div class="ph">${esc(s.nome)}</div>`;
     $("#pn").textContent = `${i + 1} de ${slides.length} · ${s.nome || ""}`;
@@ -778,12 +798,17 @@ function aProjeto(ct, { id, doc, priv, save }) {
       <section class="card grid"><div class="spread"><h3>Incluso no projeto</h3><button class="btn sec sm" id="incAdd">Adicionar item</button></div>
         <div class="grid" id="incList" style="gap:8px">${(doc.incluso || []).map((it, k) => `<div class="row" style="flex-wrap:nowrap"><input type="checkbox" data-incf="${k}" ${it.feito ? "checked" : ""} aria-label="Feito"><input data-inct="${k}" value="${esc(it.item)}" aria-label="Item"><button class="btn sec sm" data-incd="${k}" aria-label="Remover">×</button></div>`).join("") || '<p class="muted small">Nenhum item. Ex.: “Manual da marca”, “12 posts por mês”.</p>'}</div>
       </section>
-      <section class="card grid"><h3>Recorrência e manual</h3>
+      <section class="card grid"><h3>Recorrência e arquivos da marca</h3>
         <label class="tg"><input type="checkbox" id="rAt" ${doc.recorrente?.ativo ? "checked" : ""}><span>Serviço recorrente<small>Mensalidade de mídias ou manutenção</small></span></label>
         <label class="f" for="rTab">Preço de tabela (Serviços e preços › Branding)<select id="rTab"><option value="">— escolher para preencher —</option>${precosBranding(state.cache.pub).filter(p => !p.unico).map(p => `<option value="${esc(p.k)}">${esc(p.nome)} · ${+p.preco ? brl(p.preco) + "/mês" : "sob consulta"}</option>`).join("")}</select></label>
         <div class="g3"><label class="f" for="rDesc">Descrição<input id="rDesc" value="${esc(doc.recorrente?.descricao || "Mensalidade")}"></label><label class="f" for="rVal">Valor (R$)<input id="rVal" type="number" step="0.01" value="${esc(doc.recorrente?.valor || 0)}"></label><label class="f" for="rDia">Dia do vencimento<input id="rDia" type="number" min="1" max="28" value="${esc(doc.recorrente?.dia || 10)}"></label></div>
         <label class="f" for="mUrl">Manual da marca: link do arquivo (PDF)<input id="mUrl" value="${esc(doc.manual?.url || "")}" placeholder="https://…"></label>
         <div class="row"><label class="f" for="mNome" style="flex:1">Nome do arquivo<input id="mNome" value="${esc(doc.manual?.nome || "")}"></label><label class="btn sec sm" style="align-self:end">Enviar arquivo<input type="file" id="mFile" accept=".pdf,image/*" hidden></label></div>
+        <label class="f" for="meUrl">Manual editável (AI, PDF editável, InDesign ou .zip)<input id="meUrl" value="${esc(doc.manualEditavel?.url || "")}" placeholder="https://…"></label>
+        <div class="row"><label class="f" for="meNome" style="flex:1">Nome do arquivo<input id="meNome" value="${esc(doc.manualEditavel?.nome || "")}"></label><label class="btn sec sm" style="align-self:end">Enviar arquivo<input type="file" id="meFile" hidden></label></div>
+        <label class="f" for="ceUrl">Certificado de anterioridade (PDF · iT'sMine)<input id="ceUrl" value="${esc(doc.certificado?.url || "")}" placeholder="https://…"></label>
+        <div class="row"><label class="f" for="ceNome" style="flex:1">Nome do arquivo<input id="ceNome" value="${esc(doc.certificado?.nome || "")}"></label><label class="f" for="ceData" style="width:150px">Data do registro<input id="ceData" type="date" value="${esc(doc.certificado?.data || "")}"></label><label class="btn sec sm" style="align-self:end">Enviar PDF<input type="file" id="ceFile" accept=".pdf,application/pdf" hidden></label></div>
+        <span class="muted small">Os arquivos ficam na pasta <code>marca/</code> do cliente no Storage. O cliente baixa em “Arquivos da marca” (acesso “Baixar o manual da marca”); o certificado aparece com o selo, ao lado do manual.</span>
       </section>
     </div>
     ${entregasHTML(doc)}
@@ -793,7 +818,10 @@ function aProjeto(ct, { id, doc, priv, save }) {
   ct.querySelectorAll("[data-endel]").forEach(b => b.onclick = () => { collect(); doc.entregas.splice(+b.dataset.endel, 1); aProjeto(ct, { id, doc, priv, save }); });
   $("#incAdd").onclick = () => { collect(); doc.incluso.push({ item: "", feito: false }); aProjeto(ct, { id, doc, priv, save }); $$("[data-inct]", ct).pop().focus(); };
   $$("[data-incd]", ct).forEach(b => b.onclick = () => { collect(); doc.incluso.splice(+b.dataset.incd, 1); aProjeto(ct, { id, doc, priv, save }); });
-  $("#mFile").onchange = async e => { const f = e.target.files[0]; if (!f) return; toast("Enviando…"); const u = await S.upload(f, `clientes/${id}/manual`); if (u) { $("#mUrl").value = u; if (!$("#mNome").value) $("#mNome").value = f.name; toast(S.mode === "demo" && !S.idb ? "Arquivo anexado só até fechar a página (modo demonstração)" : "Arquivo enviado"); } else toast("Ative o Firebase Storage para enviar arquivos"); };
+  $("#mFile").onchange = async e => { const f = e.target.files[0]; if (!f) return; toast("Enviando…"); const u = await S.upload(f, `clientes/${await pastaDoCliente(id, doc)}/marca`); if (u) { $("#mUrl").value = u; if (!$("#mNome").value) $("#mNome").value = f.name; toast(S.mode === "demo" && !S.idb ? "Arquivo anexado só até fechar a página (modo demonstração)" : "Arquivo enviado"); } else toast("Ative o Firebase Storage para enviar arquivos"); };
+  // manual editável e certificado: mesma pasta marca/ do cliente
+  const enviarMarca = (inp, url, nome) => { $(inp).onchange = async e => { const f = e.target.files[0]; if (!f) return; toast("Enviando…"); try { const u = await S.upload(f, `clientes/${await pastaDoCliente(id, doc)}/marca`); $(url).value = u; if (!$(nome).value) $(nome).value = f.name; toast("Arquivo enviado: clique em Salvar alterações"); } catch (er) { toast("Não foi possível enviar: " + er.message); } }; };
+  enviarMarca("#meFile", "#meUrl", "#meNome"); enviarMarca("#ceFile", "#ceUrl", "#ceNome");
   function collect() {
     Object.assign(doc, { nome: $("#dNome").value.trim(), empresa: $("#dEmp").value.trim(), marca: $("#dMarca").value.trim(), ativo: $("#dAtivo").checked });
     $$("[data-acesso]", ct).forEach(i => doc.acesso[i.dataset.acesso] = i.checked);
@@ -801,6 +829,8 @@ function aProjeto(ct, { id, doc, priv, save }) {
     doc.incluso = $$("[data-inct]", ct).map((i, k) => ({ item: i.value.trim(), feito: $(`[data-incf="${k}"]`, ct).checked }));
     doc.recorrente = { ativo: $("#rAt").checked, descricao: $("#rDesc").value.trim(), valor: +$("#rVal").value || 0, dia: +$("#rDia").value || 10 };
     doc.manual = { url: $("#mUrl").value.trim(), nome: $("#mNome").value.trim() };
+    doc.manualEditavel = { url: $("#meUrl").value.trim(), nome: $("#meNome").value.trim() };
+    doc.certificado = { url: $("#ceUrl").value.trim(), nome: $("#ceNome").value.trim(), data: $("#ceData").value, emissor: "iT'sMine" };
     Object.assign(priv, { email: $("#dEmail").value.trim(), telefone: $("#dTel").value.replace(/\D/g, ""), notas: $("#dNotas").value });
     doc.entregas = doc.entregas || []; entregasCollect(ct, doc);
   }
@@ -828,7 +858,7 @@ function apresFromDossie(D, baseUrl) {
   return {
     marca: strip(D.projeto?.marca) || "", lede: strip(A.lede) || "", pdf: A.pdf || "", pdfTamanho: strip(A.pdfTamanho) || "", baseUrl: baseUrl || "",
     cores: (D.marca?.cores || []).filter(c => !/^\[/.test(c.nome)).map(c => ({ nome: c.nome, hex: c.hex })),
-    slides: (A.slides || []).map(s => ({ nome: s.nome, tipo: s.tipo || "img", img: s.img || "" })),
+    slides: (A.slides || []).map(s => ({ nome: s.nome, tipo: (s.tipo || "img") !== "img" && /filme/i.test(s.nome || "") && R.filme?.video ? "filme" : s.tipo || "img", img: s.img || "" })),
     filme: R.filme ? { titulo: strip(R.filme.titulo), texto: strip(R.filme.texto), video: R.filme.video || "", poster: R.filme.poster || "", duracao: strip(R.filme.duracao) } : null,
     motions: (R.motions || []).filter(mo => mo.video).map(mo => ({ video: mo.video, poster: mo.poster || "", titulo: strip(mo.titulo), duracao: strip(mo.duracao) })),
     semanas: (A.semanas || []).map(strip).filter(Boolean),
@@ -890,7 +920,7 @@ function aApres(ct, { id, doc, priv, save }) {
     // dossiê da pasta: abre pelo link (com todos os arquivos); só o .html: fica no Storage e, se for pequeno, também no banco
     if (pub) { Object.assign(priv, { dossie: "", dossieUrl: pub.url, dossieChave: pub.chave, dossieNome: nome, dossieEm: Date.now() }); await S.set(`privado/${id}`, priv); return save(msg); }
     let url = "";
-    if (S.mode === "firebase" && S.st) url = await S.upload(new File([html], (nome || "dossie.html").replace(/[^\w.\-]/g, "_"), { type: "text/html" }), `clientes/${id}/dossie`).catch(() => "");
+    if (S.mode === "firebase" && S.st) url = await S.upload(new File([html], (nome || "dossie.html").replace(/[^\w.\-]/g, "_"), { type: "text/html" }), `clientes/${await pastaDoCliente(id, doc)}/dossie`).catch(() => "");
     if (!url && html.length > 900000) return toast("Dossiê grande demais para o banco. Ligue o Storage ou tire as imagens de dentro do arquivo.");
     Object.assign(priv, { dossie: html.length <= 900000 ? html : "", dossieUrl: url || "", dossieChave: "", dossieNome: nome, dossieEm: Date.now() });
     await S.set(`privado/${id}`, priv); await save(msg);
@@ -904,8 +934,9 @@ function aApres(ct, { id, doc, priv, save }) {
     const pontua = k => (/dossi/i.test(k) ? 4 : 0) + (/index\.html?$/i.test(k) ? 1 : 0) - k.split("/").length;
     let ini = htmls.sort((a, b) => pontua(b) - pontua(a))[0], html = await mapa.get(ini).text();
     if (!/const DADOS/.test(html)) for (const h of htmls) { const t = await mapa.get(h).text(); if (/const DADOS/.test(t)) { ini = h; html = t; break; } }
-    const chave = priv.dossieChave || uid(24), dir = ini.includes("/") ? ini.slice(0, ini.lastIndexOf("/") + 1) : "";
-    const n = await subirPasta(`dossies/${chave}`, mapa, t => toast(`Dossiê: ${t} arquivo(s)…`));
+    const chave = priv.dossieChave || uid(24), dir = ini.includes("/") ? ini.slice(0, ini.lastIndexOf("/") + 1) : "", prefixo = `clientes/${await pastaDoCliente(id, doc)}/dossie`;
+    const n = await subirPasta(prefixo, mapa, t => toast(`Dossiê: ${t} arquivo(s)…`));
+    await S.set(`dossies_idx/${chave}`, { prefixo, cliente: id, em: Date.now() }); // o link /_d/{chave}/… abre esta pasta
     const raiz = `${LP_URL}_d/${chave}/`;
     await importar(html, ini.split("/").pop(), { chave, base: raiz + caminhoUrl(dir), url: raiz + caminhoUrl(ini), arquivos: [...mapa.keys()].filter(k => k.startsWith(dir)).map(k => k.slice(dir.length)) });
     toast(`Dossiê enviado (${n} arquivo(s)).`);
@@ -929,6 +960,9 @@ function aConteudo(ct, { id, doc, priv, acoes, save, alvo }) {
   ct.innerHTML = `${!doc.plano?.midias ? `<div class="card" style="background:var(--warn-bg)">Este cliente não está no plano Mídias digitais. Os posts só aparecem para ele com o plano e o acesso “Calendário de aprovação” ligados.</div>` : ""}
     ${aj.length ? `<section class="card grid prio"><div class="spread"><div><span class="tagx bad">Prioridade</span> <b>${aj.length} ajuste${aj.length > 1 ? "s" : ""} pedido${aj.length > 1 ? "s" : ""} pelo cliente</b></div><span class="muted small">Ajuste e devolva o arquivo corrigido: o cliente é avisado na hora.</span></div>
       ${aj.map(p => `<div class="row" style="flex-wrap:nowrap;align-items:flex-start"><div style="flex:1;min-width:0"><b>${esc(p.titulo)}</b> <span class="muted small">v${p.versao || 1} · ${fdate(p.data)} · ${fdt(p.ef.em)}</span><div class="small">“${esc(p.ef.texto)}”</div></div><button class="btn sm" data-ed="${p.id}">Devolver corrigido</button></div>`).join("")}</section>` : ""}
+    <section class="card grid"><div class="spread"><div class="grid" style="gap:4px"><b>Pasta de criação</b><span class="muted small">${doc.criacao ? `Salva em <code>${esc(doc.criacao.pasta)}/</code> · ${doc.criacao.arquivos} arquivo(s) · ${fdt(doc.criacao.em)}` : "Envie a pasta (ou o .zip) com as artes, vídeos e capas dos posts. Ela fica salva no Storage do cliente e os posts são ligados aos arquivos pelo nome."}</span></div>
+      <div class="row"><label class="btn sec sm">Enviar pasta<input type="file" id="crDir" webkitdirectory multiple hidden></label><label class="btn sec sm">Enviar .zip<input type="file" id="crZip" accept=".zip,application/zip" hidden></label><button class="btn sec sm" id="crVinc">Vincular arquivos já enviados</button></div></div>
+      ${(() => { const k = (doc.posts || []).filter(x => [...(x.midias || []), x.capa].some(soltoU)).length; return k ? `<span class="pill warn" style="justify-self:start">${k} post(s) com arquivo sem vínculo: envie a pasta de criação ou clique em “Vincular arquivos já enviados”.</span>` : ""; })()}</section>
     <div class="spread"><h3>Posts para aprovação</h3><div class="row"><button class="btn sec" id="pKit">Importar kit (HTML + arquivos)</button><button class="btn" id="pNew">Novo post</button></div></div>
     ${(doc.kits || []).length ? `<div class="row small">${doc.kits.map(k => `<span class="pill info">${esc(k.nome)} · ${k.total}</span>`).join("")}</div>` : ""}
     <div class="card pad0 tbl">${posts.length ? `<table><thead><tr><th>Data</th><th>Prévia</th><th>Post</th><th>Status</th><th>Retorno do cliente</th><th></th></tr></thead><tbody>${posts.map(p => { const cp = capaDe(p); return `<tr ${p.ef.status === "ajustes" ? 'class="rowprio"' : ""}><td class="num">${fdate(p.data)}</td><td style="width:84px"><div class="lthumb">${tagsHTML(p.ef.status, p)}<div class="thumb" style="width:56px;aspect-ratio:4/5;border-radius:8px">${cp ? imgTag(cp) : `<span class="small">${esc(TIPOS_POST[p.tipo] || "")}</span>`}</div></div></td><td><b>${esc(p.titulo)}</b>${(p.versao || 1) > 1 ? ` <span class="muted small">v${p.versao}</span>` : ""}<br><span class="muted small">${esc(TIPOS_POST[p.tipo] || p.tipo)}${p.origem ? " · " + esc(p.origem) : ""}${p._orig ? ` · repost de “${esc(p._orig.titulo)}”` : ""}</span></td><td>${pill(p.ef.status)}</td><td class="small">${p.ef.por === "cliente" ? esc(p.ef.texto || (p.ef.status === "aprovado" ? "Aprovou" : "")) + ` <span class="muted">· ${fdt(p.ef.em)}</span>` : '<span class="muted">—</span>'}</td><td><button class="btn ${p.ef.status === "ajustes" ? "" : "sec"} sm" data-ed="${p.id}">${p.ef.status === "ajustes" ? "Devolver corrigido" : "Editar"}</button></td></tr>`; }).join("")}</tbody></table>` : `<div class="empty" style="margin:16px">Nenhum post ainda. Importe um kit ou o dossiê com postagens (aba Apresentação e dossiê).</div>`}</div>
@@ -951,7 +985,7 @@ function aConteudo(ct, { id, doc, priv, acoes, save, alvo }) {
       <label class="f" for="eN">Mensagem para o cliente (opcional)<input id="eN" placeholder="Ex.: troquei a foto e encurtei a legenda"></label>` : ""}`,
       `${!n ? `<button class="btn bad" id="eX">Excluir</button>` : ""}<button class="btn sec" data-close>Cancelar</button><button class="btn" id="eOk">${ajuste ? "Devolver corrigido" : "Salvar"}</button>`, true);
     let trocou = false;
-    $("#eF").onchange = async e => { toast("Enviando…"); const urls = []; for (const f of e.target.files) { const u = await S.upload(f, `clientes/${id}/posts`); if (u) urls.push(u); } if (urls.length) { $("#eM").value = ($("#eRep")?.checked && !trocou ? urls : [$("#eM").value.trim(), ...urls].filter(Boolean)).join("\n"); trocou = true; toast(S.mode === "demo" && !S.idb ? "Arquivos anexados só até fechar a página (modo demonstração)" : "Arquivos enviados"); } else toast("Ative o Firebase Storage para enviar arquivos"); };
+    $("#eF").onchange = async e => { toast("Enviando…"); const urls = []; for (const f of e.target.files) { const u = await S.upload(f, `clientes/${await pastaDoCliente(id, doc)}/posts`); if (u) urls.push(u); } if (urls.length) { $("#eM").value = ($("#eRep")?.checked && !trocou ? urls : [$("#eM").value.trim(), ...urls].filter(Boolean)).join("\n"); trocou = true; toast(S.mode === "demo" && !S.idb ? "Arquivos anexados só até fechar a página (modo demonstração)" : "Arquivos enviados"); } else toast("Ative o Firebase Storage para enviar arquivos"); };
     $("#eOk").onclick = async () => {
       const t = $("#eTi").value.trim(); if (!t) return $("#eTi").focus();
       const base = (doc.posts || []).find(x => x.id === p.id) || {};
@@ -968,6 +1002,29 @@ function aConteudo(ct, { id, doc, priv, acoes, save, alvo }) {
   };
   $("#pNew").onclick = () => edit(null);
   $("#pKit").onclick = () => kitImport({ alvo: "cliente", id, doc, save });
+  // pasta de criação: sobe para clientes/{marca}/criacao/… (mesmos caminhos) e liga os posts aos arquivos
+  const enviarCriacao = async mapa => {
+    if (!mapa.size) return toast("A pasta está vazia");
+    const pref = `clientes/${await pastaDoCliente(id, doc)}/criacao`, n = await subirPasta(pref, mapa, t => toast(`Criação: ${t}…`));
+    doc.criacao = { pasta: pref, arquivos: n, em: Date.now() };
+    const r = await vincularPosts(doc, [...mapa.keys()].map(rel => ({ rel, url: () => S.urlDe(`${pref}/${rel}`) })));
+    await save(`Pasta de criação salva (${n} arquivo(s)). ${r.n} arquivo(s) ligados aos posts${r.faltam ? `, ${r.faltam} sem arquivo com o mesmo nome` : ""}.`);
+  };
+  $("#crDir").onchange = async e => { try { await enviarCriacao(pastaDeArquivos(e.target.files)); } catch (er) { console.error(er); toast("Não foi possível enviar: " + er.message); } };
+  $("#crZip").onchange = async e => { const f = e.target.files[0]; if (!f) return; try { await enviarCriacao(await lerZip(f, t => toast(t))); } catch (er) { console.error(er); toast("Não foi possível enviar: " + er.message); } };
+  $("#crVinc").onclick = async () => {
+    try {
+      toast("Procurando os arquivos do cliente no Storage…");
+      const pasta = await pastaDoCliente(id, doc), arqs = [];
+      for (const pref of [`clientes/${pasta}/criacao`]) for (const c of await S.listar(pref)) arqs.push({ rel: c.slice(pref.length + 1), url: () => S.urlDe(c) });
+      // arquivos do dossiê abrem pelo link dele (/_d/{chave}/…)
+      if (priv.dossieChave) { const ix = await S.get(`dossies_idx/${priv.dossieChave}`).catch(() => null), pref = ix?.prefixo || `dossies/${priv.dossieChave}`;
+        for (const c of await S.listar(pref)) { const rel = c.slice(pref.length + 1); arqs.push({ rel, url: async () => `${LP_URL}_d/${priv.dossieChave}/${caminhoUrl(rel)}` }); } }
+      if (!arqs.length) return toast("Nenhum arquivo enviado ainda: envie a pasta de criação ou o dossiê.");
+      const r = await vincularPosts(doc, arqs);
+      await save(r.n ? `${r.n} arquivo(s) ligados aos posts${r.faltam ? `; ${r.faltam} sem arquivo com o mesmo nome` : ""}.` : `Nada para ligar${r.faltam ? `: ${r.faltam} arquivo(s) não encontrados com o mesmo nome` : ""}.`);
+    } catch (er) { console.error(er); toast("Não foi possível vincular: " + er.message); }
+  };
   $$("[data-ed]", ct).forEach(b => b.onclick = () => edit(posts.find(p => p.id === b.dataset.ed)));
   const a = alvo && posts.find(p => p.id === alvo); if (a) { semAlvo(); edit(a); }
 }
@@ -994,7 +1051,7 @@ function aGraficosA(ct, { id, doc, priv, acoes, save, alvo }) {
       <div class="g2"><label class="tg"><input type="checkbox" id="gR" ${g.recompra ? "checked" : ""}><span>Liberar para comprar de novo<small>Aparece em “Comprar de novo” para o cliente</small></span></label><label class="f" for="gRP">Preço da recompra (R$)<input id="gRP" type="number" step="0.01" value="${esc(g.precoRecompra || "")}" placeholder="igual ao valor"></label></div>
       ${!n ? `<label class="tg"><input type="checkbox" id="gNv" ${ajuste ? "checked" : ""}><span>Enviar como nova versão da arte<small>Volta para “Aguardando aprovação”</small></span></label>` : ""}`,
       `${!n ? `<button class="btn bad" id="gX">Excluir</button>` : ""}<button class="btn sec" data-close>Cancelar</button><button class="btn" id="gOk">Salvar</button>`);
-    $("#gF").onchange = async e => { const f = e.target.files[0]; if (!f) return; const u = await S.upload(f, `clientes/${id}/graficos`); if (u) { $("#gA").value = u; toast("Arte anexada"); } else toast("Ative o Firebase Storage para enviar arquivos"); };
+    $("#gF").onchange = async e => { const f = e.target.files[0]; if (!f) return; const u = await S.upload(f, `clientes/${await pastaDoCliente(id, doc)}/graficos`); if (u) { $("#gA").value = u; toast("Arte anexada"); } else toast("Ative o Firebase Storage para enviar arquivos"); };
     $("#gOk").onclick = async () => {
       const pr = $("#gP").value.trim(); if (!pr) return $("#gP").focus();
       const base = (doc.graficos || []).find(x => x.id === g.id) || {}, nv = $("#gNv")?.checked, st = nv ? "pendente" : $("#gS").value;

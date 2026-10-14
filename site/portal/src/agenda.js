@@ -409,7 +409,7 @@ function kitImport(target) {
     const base = $("#kBase").value.trim(), sh = +$("#kShift").value || 0, nome = $("#kNome").value.trim() || "Kit de conteúdo", kitId = uid(8);
     const btn = $("#kGo"); btn.disabled = true; let done = 0; const total = parsed.itens.filter(i => target.alvo !== "cliente" || i.formato !== "youtube").reduce((s, i) => s + i.midias.length + (i.capa ? 1 : 0), 0);
     const up = async p => { if (!p) return ""; if (/^(https?:|data:|blob:)/.test(p)) return p; const f = files.get(normP(p));
-      if (f) { const u = await S.upload(f, target.alvo === "cliente" ? `clientes/${target.id}/kits/${kitId}` : `cronograma/${kitId}`); done++; btn.textContent = `Enviando ${done}/${total}…`; if (u) return u; }
+      if (f) { const u = await S.upload(f, target.alvo === "cliente" ? `clientes/${await pastaDoCliente(target.id, (state.cache.clients.find(c => c.id === target.id) || {}).doc || {})}/kits/${kitId}` : `cronograma/${kitId}`); done++; btn.textContent = `Enviando ${done}/${total}…`; if (u) return u; }
       return base ? resolveUrl(p, base.endsWith("/") ? base : base + "/") : p; };
     if (S.mode === "firebase" && files.size && !S.st) { toast("Ative o Firebase Storage para enviar os arquivos"); btn.disabled = false; return; }
     const out = [];

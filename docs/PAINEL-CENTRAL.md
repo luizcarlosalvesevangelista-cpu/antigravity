@@ -17,10 +17,10 @@ Em **Clientes**, abra a ficha. As abas aparecem conforme o que o cliente contrat
 
 | Aba | Quando aparece | Para quê |
 |---|---|---|
-| Projeto e acessos | sempre | dados, e-mail de login, código antigo, plano de branding, mensalidade |
+| Projeto e acessos | sempre | dados, e-mail de login, código antigo, plano de branding, mensalidade, **arquivos da marca** (manual, manual editável, certificado de anterioridade) |
 | Serviços | sempre | ligar cada serviço (status, plano, extras, vencimento) e liberar os acessos |
 | Apresentação e dossiê | branding | importar a **pasta ou o .zip do dossiê** (tudo sobe com os mesmos caminhos) |
-| Conteúdo | mídias digitais | posts para aprovação e kits |
+| Conteúdo | mídias digitais | posts para aprovação, kits e a **pasta de criação** (pasta ou .zip) |
 | Gráficos e recompra | papelaria gráfica | artes para aprovar e recompra |
 | Páginas e sistemas | sempre | **enviar página, site, sistema ou painel (pasta ou .zip)** |
 | Pagamentos | sempre | cobranças de todos os serviços, com o serviço de cada uma |
@@ -64,6 +64,39 @@ Em cada página da lista:
 - **Tirar do ar / Publicar:** liga ou desliga a página.
 - **Editor e análise:** abre o editor de textos, as visitas, os leads e o domínio próprio.
 
+### Pasta do cliente no Storage
+
+Cada cliente tem uma pasta com o nome da marca: `clientes/<marca>/`. O nome é criado no primeiro envio e não muda depois.
+
+| Pasta | O que guarda |
+|---|---|
+| `dossie/` | dossiê completo; só a Upe abre, pelo link do dossiê |
+| `criacao/` | pasta de criação dos posts |
+| `paginas/<endereço>/` | páginas, sites e sistemas |
+| `marca/` | manual, manual editável e certificado |
+| `posts/`, `graficos/`, `kits/` | envios avulsos |
+
+O modelo dessa pasta para o HD está em `upe/adm/cliente-modelo/`; veja `upe/adm/README.md`.
+
+### Pasta de criação e vínculo dos posts
+
+Em **Conteúdo › Pasta de criação**:
+
+- **Enviar pasta** ou **Enviar .zip:** sobe para `clientes/<marca>/criacao/` com os mesmos caminhos e liga os posts aos arquivos.
+- **Vincular arquivos já enviados:** procura na pasta de criação e no dossiê já enviados e liga os posts que ainda estão sem arquivo.
+
+O vínculo é feito pelo caminho e, se não achar, pelo nome do arquivo. O aviso “post(s) com arquivo sem vínculo” mostra quantos faltam.
+
+### Arquivos da marca
+
+Em **Projeto e acessos › Recorrência e arquivos da marca**, envie:
+
+- o manual em PDF;
+- o manual editável (AI, InDesign, PDF editável ou .zip);
+- o certificado de anterioridade (PDF da iT'sMine), com a data do registro.
+
+Com o acesso **Baixar o manual da marca** ligado, o cliente vê o card **Arquivos da marca** no Início. O certificado aparece em destaque, com o selo, ao lado do manual.
+
 ### Preços num lugar só
 
 Em **Serviços e preços**, cada aba grava direto na fonte que as páginas de vendas e os apps usam:
@@ -90,6 +123,7 @@ O painel do cliente é simples:
 - **Pagamentos:** todas as cobranças, com filtro por serviço.
 - **Falar com a Upe:** mensagens.
 - **Seções de branding** (apresentação, conteúdo, artes e recompra): só aparecem para quem contratou.
+- **Arquivos da marca:** manual em PDF, manual editável e certificado de anterioridade com selo.
 
 O cliente entra com o e-mail (um login para tudo). O código antigo continua valendo para o portal de branding.
 

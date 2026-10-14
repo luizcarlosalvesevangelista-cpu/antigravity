@@ -12,7 +12,13 @@ service firebase.storage {
       allow read: if true;
       allow write: if upe();
     }
-    match /clientes/{rest=**} {
+    // uma pasta por cliente (nome da marca): dossie (só a Upe) · criacao · paginas/{endereço} · marca · posts · graficos · kits
+    match /clientes/{pasta}/{secao}/{rest=**} {
+      allow read: if secao != 'dossie' || upe();
+      allow write: if upe() && request.resource.size < 200 * 1024 * 1024;
+      allow delete: if upe();
+    }
+    match /clientes/{pasta}/{arquivo} {
       allow read: if true;
       allow write: if upe() && request.resource.size < 200 * 1024 * 1024;
     }

@@ -272,6 +272,34 @@ async function cobrancasServicos() {
   } catch (e) { return []; }
 }
 
+/* ---------- pasta do cliente no Storage: clientes/{marca}/dossie · criacao · paginas/{endereço} · marca · posts · graficos · kits ---------- */
+// O nome sai da marca (ou empresa) na primeira vez e fica fixo, para os links não quebrarem se a marca mudar.
+async function pastaDoCliente(id, doc) {
+  if (doc.pasta) return doc.pasta;
+  const c = state.cache.clients.find(x => x.id === id); if (c && c.doc.pasta) return doc.pasta = c.doc.pasta;
+  const base = slugEmp(doc.marca || doc.empresa || doc.nome || (c && (c.doc.marca || c.doc.empresa || c.doc.nome))), usadas = new Set(state.cache.clients.filter(x => x.id !== id).map(x => x.doc.pasta).filter(Boolean));
+  let p = base, n = 2; while (usadas.has(p)) p = `${base}-${n++}`;
+  doc.pasta = p; if (c) c.doc.pasta = p; await S.set(`clientes/${id}`, { pasta: p }, true);
+  return p;
+}
+
+/* ---------- posts ligados aos arquivos da pasta de criação ou do dossiê ---------- */
+// mídia "solta": caminho relativo ou só o nome (ex.: "../conteudo/posts/s1-01-1.jpg"), sem endereço para abrir
+const soltoU = u => !!u && !/^(https?:|idb:|\{assets\}|blob:|data:)/.test(u);
+// arqs: [{ rel: "conteudo/posts/s1-01-1.jpg", url: async () => endereço }]; liga pelo caminho e, se não achar, pelo nome do arquivo
+async function vincularPosts(doc, arqs) {
+  const norm = u => decodeURIComponent(String(u)).replace(/^(\.\.?\/)+/, "").replace(/^\/+/, "").toLowerCase(), nome = u => norm(u).split("/").pop();
+  const achar = u => { const n = norm(u), b = nome(u); return arqs.find(a => a.rel.toLowerCase() === n) || arqs.find(a => a.rel.toLowerCase().endsWith("/" + n)) || arqs.find(a => a.rel.toLowerCase().split("/").pop() === b); };
+  let n = 0, faltam = 0;
+  for (const p of doc.posts || []) {
+    const novas = [];
+    for (const m of p.midias || []) { if (!soltoU(m)) { novas.push(m); continue; } const a = achar(m); if (a) { novas.push(await a.url()); n++; } else { novas.push(m); faltam++; } }
+    p.midias = novas;
+    if (soltoU(p.capa)) { const a = achar(p.capa); if (a) { p.capa = await a.url(); n++; } else faltam++; }
+  }
+  return { n, faltam };
+}
+
 /* ---------- pastas e .zip: lidos no navegador e enviados com os caminhos originais ---------- */
 // Os arquivos vão para o Storage no mesmo caminho relativo (lp/{endereço}/css/estilo.css…) e o servidor entrega cada um em
 // lp.upecriativo.com.br/{endereço}/css/estilo.css. Nada é reescrito: caminhos relativos, módulos, fetch(), fontes e caminhos montados pelo script funcionam.
@@ -371,8 +399,9 @@ function enviarPagina(id, doc, atual, save, opcoes = {}) {
       if (pasta) {
         const m = recortar(pasta, $("#epRaiz").value), prin = $("#epPrin").value;
         html = await m.get(prin).text();
-        n = await subirPasta(`lp/${slug}`, m, t => b.textContent = t);
-        extra = { raiz: true, principal: prin, htmls: htmlsDe(m).slice(0, 60), pasta: `lp/${slug}` };
+        const pref = `clientes/${await pastaDoCliente(id, doc)}/paginas/${slug}`;
+        n = await subirPasta(pref, m, t => b.textContent = t);
+        extra = { raiz: true, principal: prin, htmls: htmlsDe(m).slice(0, 60), pasta: pref };
       } else html = await htmlArq.text();
       if (html.length > 900000) throw new Error("o HTML principal passa de 900 KB. Tire imagens embutidas (base64) do arquivo e deixe-as na pasta.");
       const agora = Date.now(), tipo = $("#epTipo").value, publicar = $("#epPub").checked, previa = atual?.previa || uid(16);

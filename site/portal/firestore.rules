@@ -215,6 +215,8 @@ service cloud.firestore {
       }
       match /clientes/{id} { allow read, write: if donoLanding(); }
     }
+    // link do dossiê completo (/_d/{chave}/…) → pasta do cliente no Storage; só a Upe grava
+    match /dossies_idx/{chave} { allow read, write: if ehUpe(); }
     // páginas: o documento guarda a versão publicada; o rascunho fica em privado/rascunho
     match /lp_paginas/{slug} {
       function lpDono() { return srvMembro(get(/databases/$(database)/documents/lp_paginas/$(slug)).data.cid); }

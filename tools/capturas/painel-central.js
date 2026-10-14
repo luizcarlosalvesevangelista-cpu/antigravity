@@ -72,7 +72,7 @@ const SITE = __R + '/site';
   cols = await LS(); const pg = (cols['lp_paginas'] || {})['cafe-aurora-pedidos'] || {};
   ok(pg.cid === cid && pg.publicada && pg.tipo === 'sistema' && pg.painelCliente && pg.arquivos === 7 && pg.raiz && pg.principal === 'index.html' && pg.previa, 'página/sistema publicado com ' + pg.arquivos + ' arquivo(s) no caminho original');
   const enviados = await p.evaluate(() => window.__upeEnviados.slice());
-  ok(['css/estilo.css', 'fonts/exemplo.woff2', 'js/app.js', 'dados/itens.json', 'img/logo.svg'].every(r => enviados.includes('lp/cafe-aurora-pedidos/' + r)), 'arquivos enviados com os mesmos caminhos (css, fontes, js, dados, imagens)');
+  ok(pg.pasta === 'clientes/cafe-aurora/paginas/cafe-aurora-pedidos' && ['css/estilo.css', 'fonts/exemplo.woff2', 'js/app.js', 'dados/itens.json', 'img/logo.svg'].every(r => enviados.includes(pg.pasta + '/' + r)), 'arquivos na pasta do cliente (clientes/cafe-aurora/paginas/…) com os mesmos caminhos');
   ok(/href="css\/estilo\.css"/.test(pg.html), 'HTML principal guardado como está (caminhos relativos funcionam no endereço da página)');
   // .zip com a página dentro de uma subpasta: "Pasta a publicar" escolhe a subpasta sozinha
   if (JSZIP) {
@@ -84,12 +84,27 @@ const SITE = __R + '/site';
     ok((await p.inputValue('#epRaiz')) === 'landing/' && (await p.inputValue('#epPrin')) === 'index.html', '.zip aberto no navegador: publica a subpasta landing/ com index.html');
     await p.click('#epOk'); await p.waitForTimeout(3000);
     cols = await LS(); const pz = (cols['lp_paginas'] || {})['cafe-aurora-zip'] || {}, env2 = await p.evaluate(() => window.__upeEnviados.slice());
-    ok(pz.raiz && pz.arquivos === 7 && env2.includes('lp/cafe-aurora-zip/css/estilo.css') && !env2.some(x => /LEIA-ME/.test(x)), '.zip publicado com os caminhos da subpasta');
+    ok(pz.raiz && pz.arquivos === 7 && env2.includes('clientes/cafe-aurora/paginas/cafe-aurora-zip/css/estilo.css') && !env2.some(x => /LEIA-ME/.test(x)), '.zip publicado com os caminhos da subpasta');
   } else console.log('· jszip não encontrado: teste do .zip pulado');
+  // pasta de criação (.zip) no Conteúdo: salva em clientes/{marca}/criacao e liga os posts pelo nome do arquivo
+  if (JSZIP) {
+    await p.evaluate(id => { const d = JSON.parse(localStorage.getItem('upe-portal-demo-v6')), c = d.cols.clientes[id]; c.posts = [...(c.posts || []), { id: 'p-solto', kitId: 'dossie', data: '2026-12-01', tipo: 'imagem', titulo: 'Post com caminho relativo', midias: ['../img/logo.svg'], capa: '', legenda: '', versao: 1, status: 'pendente' }]; localStorage.setItem('upe-portal-demo-v6', JSON.stringify(d)); }, cid);
+    await p.evaluate(h => location.hash = h, `#/admin/cliente/${cid}/conteudo`); await p.reload(); await p.waitForTimeout(2500);
+    ok(/sem vínculo/.test(await p.textContent('#ct')), 'Conteúdo avisa post com arquivo sem vínculo');
+    const JS = require(JSZIP.replace(/dist\/jszip\.min\.js$/, '')), z = new JS(); z.file('Criacao/img/logo.svg', fs.readFileSync(__dirname + '/fixtures/pagina-exemplo/img/logo.svg')); const zc = path.join(O, 'criacao-teste.zip'); fs.writeFileSync(zc, await z.generateAsync({ type: 'nodebuffer' }));
+    await p.setInputFiles('#crZip', zc); await p.waitForTimeout(2500);
+    cols = await LS(); const cdoc = (cols['clientes'] || {})[cid] || {}, ps = (cdoc.posts || []).find(x => x.id === 'p-solto') || {};
+    ok(cdoc.criacao?.pasta === 'clientes/cafe-aurora/criacao' && ps.midias?.[0] === 'clientes/cafe-aurora/criacao/img/logo.svg', 'pasta de criação salva no Storage do cliente e post ligado ao arquivo: ' + (ps.midias || []).join());
+  }
   await vai(`#/admin/cliente/${cid}/apps`, 1500);
   const opsPainel = await p.$$eval('[data-ps="sistemas"] option', l => l.map(o => o.value));
   ok(opsPainel.includes('cafe-aurora-pedidos|index.html'), 'painel personalizado escolhe entre as páginas e sistemas enviados');
   await p.screenshot({ path: `${O}/pc-a-paginas.png`, fullPage: true });
+  // arquivos da marca: manual (PDF), manual editável e certificado de anterioridade (aparece com o selo para o cliente)
+  await vai(`#/admin/cliente/${cid}/projeto`, 1500);
+  await p.fill('#mUrl', 'https://exemplo.test/manual.pdf'); await p.fill('#meUrl', 'https://exemplo.test/manual-editavel.zip'); await p.fill('#ceUrl', 'https://exemplo.test/certificado.pdf'); await p.fill('#ceData', '2026-10-01');
+  await p.evaluate(() => { const i = document.querySelector('[data-acesso="manual"]'); if (i && !i.checked) i.click(); }); await p.click('#sv'); await p.waitForTimeout(1500);
+  cols = await LS(); ok(((cols['clientes'] || {})[cid] || {}).certificado?.url === 'https://exemplo.test/certificado.pdf', 'certificado de anterioridade e manual editável salvos na ficha');
   // sair do admin
   await vai('#/admin/clientes', 800); await p.click('#logout'); await p.waitForTimeout(800);
 
@@ -100,6 +115,7 @@ const SITE = __R + '/site';
   const nav = await p.$$eval('.cside .nav a', l => l.map(a => a.getAttribute('href')));
   ok(nav.includes('#/c/servicos') && nav.includes('#/c/mensagens') && nav.includes('#/c/pagamentos') && !nav.some(h => /s-|tv/.test(h)), 'menu simplificado do cliente: ' + nav.join(' '));
   await p.waitForTimeout(800); await p.screenshot({ path: `${O}/pc-c-inicio.png`, fullPage: true });
+  ok(!!(await p.$('.marca-arq .cert .selo')) && /manual editável/i.test(await p.textContent('.marca-arq')), 'cliente vê os arquivos da marca com o selo do certificado ao lado do manual');
   await vai('#/c/servicos', 1800); await p.screenshot({ path: `${O}/pc-c-servicos.png`, fullPage: true });
   const botoes = await p.$$eval('.meus a', l => l.map(a => a.textContent.trim()));
   ok(botoes.some(t => /^Painel – Loja/.test(t)) && botoes.some(t => /^Painel – Páginas/.test(t)) && botoes.some(t => /^Painel – Agenda/.test(t)) && botoes.some(t => t === 'Painel – Sistema de pedidos'), 'Meus serviços com os botões de painel: ' + botoes.join(' | '));

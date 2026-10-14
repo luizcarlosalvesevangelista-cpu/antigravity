@@ -181,7 +181,9 @@ exports.api = onRequest({ secrets: [MP_ACCESS_TOKEN], cors: false, invoker: "pub
 /* ---------- landing pages montadas no servidor (prévia certa ao compartilhar) ---------- */
 // Páginas e sistemas enviados com a pasta (raiz: true) ficam no Storage em lp/{endereço}/{caminho original} e abrem no caminho de verdade:
 // lp.upecriativo.com.br/{endereço}/css/estilo.css, /fonts/…, /js/…, /dados/… (então caminhos relativos, módulos, fetch e fontes funcionam como no computador).
-// Dossiês: lp.upecriativo.com.br/_d/{chave}/… → Storage dossies/{chave}/… (chave aleatória, só quem tem o link abre).
+// Dossiês: lp.upecriativo.com.br/_d/{chave}/… → pasta do dossiê do cliente (dossies_idx/{chave}.prefixo = clientes/{marca}/dossie;
+// chave aleatória, só quem tem o link abre). Envios antigos ficaram em dossies/{chave}/….
+// Cada cliente tem uma pasta: clientes/{marca}/dossie · criacao · paginas/{endereço} · marca · posts · graficos.
 const BUCKET = () => admin.storage().bucket((process.env.GCLOUD_PROJECT || "upecriativo-cc472") + ".firebasestorage.app");
 const TIPO_TXT = { html: "text/html; charset=utf-8", htm: "text/html; charset=utf-8", css: "text/css; charset=utf-8", js: "text/javascript; charset=utf-8", mjs: "text/javascript; charset=utf-8",
   json: "application/json; charset=utf-8", map: "application/json; charset=utf-8", webmanifest: "application/manifest+json", svg: "image/svg+xml", txt: "text/plain; charset=utf-8", md: "text/plain; charset=utf-8", csv: "text/csv; charset=utf-8", xml: "application/xml; charset=utf-8" };
@@ -210,7 +212,8 @@ exports.lpRender = onRequest({ memory: "256MiB", invoker: "public" }, async (req
     if (!/^[A-Za-z0-9]{16,64}$/.test(chave) || resto === null) return fora("Arquivo não encontrado", "Confira o link.");
     if (!resto && !barra) return res.redirect(301, `/_d/${chave}/${qs}`);
     const alvo = !resto || barra ? (resto ? resto + "/" : "") + "index.html" : resto;
-    if (await servirArquivo(res, `dossies/${chave}/${alvo}`, { "X-Robots-Tag": "noindex" })) return;
+    const ix = (await db.doc("dossies_idx/" + chave).get()).data(), pref = ix && /^clientes\/[a-z0-9-]+\/dossie$/.test(ix.prefixo || "") ? ix.prefixo : `dossies/${chave}`;
+    if (await servirArquivo(res, `${pref}/${alvo}`, { "X-Robots-Tag": "noindex" })) return;
     return fora("Arquivo não encontrado", "Confira o link.");
   }
   let slug = "";
@@ -226,7 +229,9 @@ exports.lpRender = onRequest({ memory: "256MiB", invoker: "public" }, async (req
     // /endereço → /endereço/ (os caminhos relativos da página dependem da barra no fim)
     if (!resto && (deUpe && !barra || prin !== "index.html")) return res.redirect(301, base + (prin === "index.html" ? "" : prin) + qs);
     const alvo = !resto ? "index.html" : barra ? resto + "/index.html" : resto;
-    if (alvo !== prin) { if (await servirArquivo(res, `lp/${slug}/${alvo}`)) return; return fora("Arquivo não encontrado", "Confira o endereço digitado."); }
+    // pasta da página: clientes/{marca}/paginas/{endereço} (ou lp/{endereço} nos envios antigos); nada fora disso
+    const pasta = new RegExp(`^(clientes/[a-z0-9-]+/paginas/${slug}|lp/${slug})$`).test(p.pasta || "") ? p.pasta : `lp/${slug}`;
+    if (alvo !== prin) { if (await servirArquivo(res, `${pasta}/${alvo}`)) return; return fora("Arquivo não encontrado", "Confira o endereço digitado."); }
   }
   const previa = p.previa && req.query.previa === p.previa;
   if ((!p.publicada && !previa) || !p.html) return fora("Página indisponível", "Esta página não está no ar agora. Volte em breve.");
