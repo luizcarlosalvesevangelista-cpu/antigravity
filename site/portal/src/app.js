@@ -138,6 +138,8 @@ class LocalStore {
   async contaSair() { ss.set("upe-conta-demo", null); }
   contaAtual() { return ss.get("upe-conta-demo") === "1" ? { uid: "demo-conta", email: "cliente@upe.demo", emailVerified: true } : null; }
   async upload(file) { const k = uid(12) + "/" + file.name.replace(/[^\w.\-]/g, "_"); MEDIA.set(k, URL.createObjectURL(file)); if (this.idb) { try { await idb.put(k, file); } catch (e) { this.idb = false; } } return "idb:" + k; }
+  // pasta de página, sistema ou dossiê: no modo demonstração só registra o envio (os arquivos não ficam publicados)
+  async uploadEm(file, caminho) { ENVIADOS.push(caminho); return caminho; }
   async reset() { ls.set(DEMO_KEY, null); if (this.idb) await idb.clear(); location.reload(); }
 }
 class FireStore {
@@ -173,7 +175,14 @@ class FireStore {
   contaAtual() { return this.auth && this.auth.currentUser; }
   // sufixo aleatório: envios em paralelo com o mesmo nome não se sobrescrevem
   async upload(file, path) { if (!this.st) throw new Error("o Storage não está ligado no painel (config.js sem storageBucket)"); const ref = this.st.ref(`${path}/${Date.now()}-${uid(5)}-${file.name.replace(/[^\w.\-]/g, "_")}`); await ref.put(file); return await ref.getDownloadURL(); }
+  // grava no caminho exato (pasta de página, sistema ou dossiê): o servidor entrega cada arquivo no mesmo caminho relativo do computador
+  async uploadEm(file, caminho) { if (!this.st) throw new Error("o Storage não está ligado no painel (config.js sem storageBucket)"); await this.st.ref(caminho).put(file, { contentType: tipoArq(caminho, file.type) }); return caminho; }
 }
+const ENVIADOS = []; window.__upeEnviados = ENVIADOS; // modo demonstração: caminhos "enviados" (usado pelo teste automático)
+const TIPOS_ARQ = { html: "text/html", htm: "text/html", css: "text/css", js: "text/javascript", mjs: "text/javascript", json: "application/json", svg: "image/svg+xml", txt: "text/plain", md: "text/markdown", csv: "text/csv", xml: "application/xml", webmanifest: "application/manifest+json",
+  jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", gif: "image/gif", webp: "image/webp", avif: "image/avif", ico: "image/x-icon", mp4: "video/mp4", webm: "video/webm", mov: "video/quicktime", mp3: "audio/mpeg", wav: "audio/wav", ogg: "audio/ogg",
+  woff: "font/woff", woff2: "font/woff2", ttf: "font/ttf", otf: "font/otf", pdf: "application/pdf", zip: "application/zip" };
+const tipoArq = (nome, atual) => TIPOS_ARQ[String(nome).split(".").pop().toLowerCase()] || atual || "application/octet-stream";
 const S = CFG.firebase ? new FireStore(CFG.firebase) : new LocalStore();
 
 /* ---------------- regras de negócio ---------------- */
@@ -725,7 +734,8 @@ async function aCliente(w, id, tab, alvo) {
   const p = pendencias(doc, acoes), unread = acoes.filter(a => a.tipo === "mensagem" && a.em > (doc.lidoAdmEm || 0)).length, pedNovos = pedidosOf(doc, acoes).filter(x => x.status === "novo").length;
   const ajustes = [...(doc.posts || []), ...(doc.graficos || [])].filter(x => statusOf(x, acoes).status === "ajustes");
   // as abas acompanham os serviços do cliente (Branding → apresentação, conteúdo e gráficos; páginas e sistemas → envio dos arquivos)
-  const pl = doc.plano || {}, temPg = ativoApp((doc.apps || {}).landing) || ativoApp((doc.apps || {}).sistemas) || doc.temPaginas;
+  // "Páginas e sistemas" fica sempre à mão: é onde a Upe envia página, site, sistema ou painel (pasta ou .zip) de qualquer cliente
+  const pl = doc.plano || {}, temPg = true;
   const tabs = [["projeto", "Projeto e acessos", 0, true], ["apps", "Serviços", appPedidos(doc, acoes).filter(x => x.status === "novo").length, true],
     ["apresentacao", "Apresentação e dossiê", 0, pl.branding || doc.apresentacao || priv.dossie || priv.dossieUrl],
     ["conteudo", "Conteúdo", p.posts.length + (doc.posts || []).filter(x => ajustes.includes(x)).length, pl.midias || (doc.posts || []).length],
@@ -833,9 +843,9 @@ function aApres(ct, { id, doc, priv, save }) {
       <section class="card grid"><h3>Dossiê do cliente</h3>
         <p class="muted small">Importe o dossiê preenchido (arquivo do modelo Upe). O dossiê completo fica salvo só para você. O cliente vê apenas a <b>aba 05 · Apresentação</b>. As postagens do dossiê (<code>postagens</code> e o feed da aba 05) entram no calendário de aprovação, e a ficha “Canais” gera a timeline por app.</p>
         <div class="row">${hasDossie ? `<span class="pill ok">Dossiê salvo${priv.dossieNome ? ` · ${esc(priv.dossieNome)}` : ""}</span>` : '<span class="pill">Nenhum dossiê salvo</span>'}<span class="muted small">${priv.dossieEm ? fdt(priv.dossieEm) : ""}</span></div>
-        <p class="muted small"><b>Pasta do dossiê:</b> escolha a pasta do cliente inteira (com o .html e as pastas de imagens, vídeos e PDF). As imagens e os vídeos sobem para o Storage e os endereços são ajustados sozinhos. Funciona com o modelo novo (objeto DADOS) e com dossiês antigos.</p>
+        <p class="muted small"><b>Pasta ou .zip do dossiê:</b> escolha a pasta do cliente inteira (ou o .zip dela), com o .html e as pastas de imagens, vídeos, fontes e PDF. Tudo sobe com os mesmos caminhos e o dossiê abre completo por um link só seu. Funciona com o modelo novo (objeto DADOS) e com dossiês antigos.</p>
         <label class="f" for="dBase">Ou: endereço da pasta já publicada (se enviar só o .html)<input id="dBase" value="${esc(A.baseUrl || "")}" placeholder="https://seusite.web.app/clientes/marca/dossie/"></label>
-        <div class="row"><label class="btn sm">Importar pasta do dossiê<input type="file" id="dDir" webkitdirectory multiple hidden></label><label class="btn sec sm">Só o arquivo .html<input type="file" id="dFile" accept=".html,text/html" hidden></label>${hasDossie ? `<button class="btn sec sm" id="dOpen">Abrir dossiê completo</button>` : ""}<a class="btn sec sm" href="modelos/Modelo_Dossie_Upe.html" target="_blank" rel="noopener">Modelo em branco</a></div>
+        <div class="row"><label class="btn sm">Importar pasta do dossiê<input type="file" id="dDir" webkitdirectory multiple hidden></label><label class="btn sm">Importar .zip do dossiê<input type="file" id="dZip" accept=".zip,application/zip" hidden></label><label class="btn sec sm">Só o arquivo .html<input type="file" id="dFile" accept=".html,text/html" hidden></label>${hasDossie ? `<button class="btn sec sm" id="dOpen">Abrir dossiê completo</button>` : ""}<a class="btn sec sm" href="modelos/Modelo_Dossie_Upe.html" target="_blank" rel="noopener">Modelo em branco</a></div>
       </section>
       <section class="card grid"><h3>O que o cliente vê</h3>
         <div class="row"><span class="pill ${doc.acesso?.apresentacao ? "ok" : ""}">${doc.acesso?.apresentacao ? "Apresentação liberada" : "Apresentação oculta"}</span><a class="small" href="#/admin/cliente/${id}/projeto">Mudar em Projeto e acessos</a></div>
@@ -858,19 +868,9 @@ function aApres(ct, { id, doc, priv, save }) {
   $$("[data-sd]", ct).forEach(b => b.onclick = () => { collect(); doc.apresentacao.slides.splice(+b.dataset.sd, 1); aApres(ct, { id, doc, priv, save }); });
   $("#aSv").onclick = async () => { collect(); await save("Apresentação salva"); };
   // importa o dossiê: modelo novo (DADOS) ou antigo; com a pasta, sobe imagens/vídeos/PDF e troca os caminhos pelos endereços do Storage
-  const importar = async (html, nome, arquivos = null) => {
-    const btn = $("#aSv"); let base = $("#dBase").value.trim(), feitos = 0;
-    if (arquivos && arquivos.size) {
-      if (S.mode === "firebase" && !S.st) return toast("O Storage não está ligado no painel (config.js). Envie só o .html com o endereço da pasta publicada.");
-      const usados = [...arquivos.entries()].filter(([rel]) => !/\.html?$/i.test(rel) && (html.includes(rel) || /(^|\/)(slides?|apresentacao)\/[^/]+\.(jpe?g|png|webp|pdf)$/i.test(rel)));
-      for (const [rel, f] of usados) {
-        toast(`Enviando arquivos do dossiê ${++feitos}/${usados.length}…`);
-        const url = await S.upload(f, `clientes/${id}/dossie`); if (!url) continue;
-        const variantes = [rel, "./" + rel];
-        for (const v of variantes) html = html.split(`"${v}"`).join(`"${url}"`).split(`'${v}'`).join(`'${url}'`).split(`(${v})`).join(`(${url})`);
-      }
-      base = "";
-    }
+  // pub (pasta ou .zip já enviados): { base: endereço da pasta do .html, url: endereço do dossiê, chave, arquivos: [caminhos a partir do .html] }
+  const importar = async (html, nome, pub = null) => {
+    let base = pub ? pub.base : $("#dBase").value.trim();
     let D = null; try { D = parseDossie(html); } catch (e) { D = null; }
     if (D) {
       doc.apresentacao = apresFromDossie(D, base);
@@ -881,39 +881,39 @@ function aApres(ct, { id, doc, priv, save }) {
     } else {
       // dossiê antigo (sem o objeto DADOS): guarda o dossiê e monta a apresentação com os slides e o PDF da pasta
       const tit = (html.match(/<title>([^<]*)<\/title>/i) || [])[1] || "", A0 = doc.apresentacao || {};
-      const imgs = arquivos ? [...(arquivos.__urls || [])] : [];
+      const imgs = pub ? pub.arquivos.map(rel => ({ rel, url: base + rel.split("/").map(encodeURIComponent).join("/") })) : [];
       doc.apresentacao = { ...A0, marca: A0.marca || tit.replace(/^\s*Dossi[êe]\s*(de marca)?\s*[·\-–:]?\s*/i, "").trim() || doc.marca || "", baseUrl: base,
         slides: (A0.slides || []).length ? A0.slides : imgs.filter(x => /(^|\/)(slides?|apresentacao)\//i.test(x.rel) && /\.(jpe?g|png|webp)$/i.test(x.rel)).sort((a, b) => a.rel.localeCompare(b.rel, "pt", { numeric: true })).map((x, k) => ({ nome: `Tela ${k + 1}`, tipo: "img", img: x.url })),
         pdf: A0.pdf || (imgs.find(x => /apresenta.*\.pdf$/i.test(x.rel)) || imgs.find(x => /\.pdf$/i.test(x.rel)) || {}).url || "" };
       var msg = `Dossiê salvo (formato antigo, sem o objeto DADOS). ${doc.apresentacao.slides.length ? `${doc.apresentacao.slides.length} tela(s) da apresentação montadas a partir da pasta.` : "Monte as telas da apresentação abaixo."}`;
     }
-    // o dossiê completo fica no Storage (sem limite de tamanho) e, se for pequeno, também no banco
+    // dossiê da pasta: abre pelo link (com todos os arquivos); só o .html: fica no Storage e, se for pequeno, também no banco
+    if (pub) { Object.assign(priv, { dossie: "", dossieUrl: pub.url, dossieChave: pub.chave, dossieNome: nome, dossieEm: Date.now() }); await S.set(`privado/${id}`, priv); return save(msg); }
     let url = "";
     if (S.mode === "firebase" && S.st) url = await S.upload(new File([html], (nome || "dossie.html").replace(/[^\w.\-]/g, "_"), { type: "text/html" }), `clientes/${id}/dossie`).catch(() => "");
     if (!url && html.length > 900000) return toast("Dossiê grande demais para o banco. Ligue o Storage ou tire as imagens de dentro do arquivo.");
-    Object.assign(priv, { dossie: html.length <= 900000 ? html : "", dossieUrl: url || "", dossieNome: nome, dossieEm: Date.now() });
+    Object.assign(priv, { dossie: html.length <= 900000 ? html : "", dossieUrl: url || "", dossieChave: "", dossieNome: nome, dossieEm: Date.now() });
     await S.set(`privado/${id}`, priv); await save(msg);
   };
   $("#dFile").onchange = async e => { const f = e.target.files[0]; if (!f) return; try { await importar(await f.text(), f.name); } catch (er) { console.error(er); toast(er.message); } };
-  $("#dDir").onchange = async e => {
-    try {
-      const todos = [...e.target.files].map(f => ({ f, rel: f.webkitRelativePath.split("/").slice(1).join("/") }));
-      const htmls = todos.filter(x => /\.html?$/i.test(x.rel));
-      if (!htmls.length) return toast("Não encontrei o arquivo .html do dossiê na pasta");
-      const pontua = x => (/dossi/i.test(x.rel) ? 4 : 0) + (/index\.html$/i.test(x.rel) ? 1 : 0) - x.rel.split("/").length;
-      const ini = htmls.sort((a, b) => pontua(b) - pontua(a))[0], dir = ini.rel.includes("/") ? ini.rel.slice(0, ini.rel.lastIndexOf("/") + 1) : "";
-      let html = await ini.f.text(); if (htmls.length > 1 && !/const DADOS/.test(html)) { for (const h of htmls) { const t = await h.f.text(); if (/const DADOS/.test(t)) { html = t; break; } } }
-      // caminho de cada arquivo visto a partir do .html (inclui ../ quando a pasta escolhida é a de cima)
-      const relDe = alvo => { const a = dir.split("/").filter(Boolean), b = alvo.split("/"); let k = 0; while (k < a.length && a[k] === b[k]) k++; return "../".repeat(a.length - k) + b.slice(k).join("/"); };
-      const mapa = new Map(); todos.forEach(x => mapa.set(relDe(x.rel), x.f));
-      mapa.__urls = [];
-      // registra os endereços enviados para montar a apresentação do formato antigo
-      const orig = S.upload; S.upload = async (f, p) => { const u = await orig.call(S, f, p); const rel = [...mapa.entries()].find(([, v]) => v === f)?.[0] || f.name; mapa.__urls.push({ rel, url: u }); return u; };
-      try { await importar(html, ini.f.name, mapa); } finally { S.upload = orig; }
-    } catch (er) { console.error(er); toast(er.message); }
+  // pasta ou .zip: envia tudo para dossies/{chave}/… (mesmos caminhos) e lê o .html principal
+  const importarPasta = async mapa => {
+    const htmls = [...mapa.keys()].filter(k => /\.html?$/i.test(k));
+    if (!htmls.length) return toast("Não encontrei o arquivo .html do dossiê");
+    if (S.mode === "firebase" && !S.st) return toast("O Storage não está ligado no painel (config.js).");
+    const pontua = k => (/dossi/i.test(k) ? 4 : 0) + (/index\.html?$/i.test(k) ? 1 : 0) - k.split("/").length;
+    let ini = htmls.sort((a, b) => pontua(b) - pontua(a))[0], html = await mapa.get(ini).text();
+    if (!/const DADOS/.test(html)) for (const h of htmls) { const t = await mapa.get(h).text(); if (/const DADOS/.test(t)) { ini = h; html = t; break; } }
+    const chave = priv.dossieChave || uid(24), dir = ini.includes("/") ? ini.slice(0, ini.lastIndexOf("/") + 1) : "";
+    const n = await subirPasta(`dossies/${chave}`, mapa, t => toast(`Dossiê: ${t} arquivo(s)…`));
+    const raiz = `${LP_URL}_d/${chave}/`;
+    await importar(html, ini.split("/").pop(), { chave, base: raiz + caminhoUrl(dir), url: raiz + caminhoUrl(ini), arquivos: [...mapa.keys()].filter(k => k.startsWith(dir)).map(k => k.slice(dir.length)) });
+    toast(`Dossiê enviado (${n} arquivo(s)).`);
   };
+  $("#dDir").onchange = async e => { try { await importarPasta(pastaDeArquivos(e.target.files)); } catch (er) { console.error(er); toast("Não foi possível importar: " + er.message); } };
+  $("#dZip").onchange = async e => { const f = e.target.files[0]; if (!f) return; try { await importarPasta(await lerZip(f, t => toast(t))); } catch (er) { console.error(er); toast("Não foi possível importar: " + er.message); } };
   if ($("#dOpen")) $("#dOpen").onclick = async () => { modal(`Dossiê · ${esc(priv.dossieNome || doc.marca || "")}`, `<iframe id="dosF" title="Dossiê completo" style="width:100%;height:75vh;border:0;border-radius:10px;background:#fff"></iframe>`, "", true);
-    if (priv.dossie) $("#dosF").srcdoc = priv.dossie; else if (priv.dossieUrl) { try { $("#dosF").srcdoc = await (await fetch(priv.dossieUrl)).text(); } catch (e) { $("#dosF").src = priv.dossieUrl; } } };
+    if (priv.dossieChave && priv.dossieUrl) $("#dosF").src = priv.dossieUrl; else if (priv.dossie) $("#dosF").srcdoc = priv.dossie; else if (priv.dossieUrl) { try { $("#dosF").srcdoc = await (await fetch(priv.dossieUrl)).text(); } catch (e) { $("#dosF").src = priv.dossieUrl; } } };
 }
 
 /* ---------- conteúdo (posts) ---------- */

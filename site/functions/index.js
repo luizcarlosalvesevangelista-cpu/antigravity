@@ -7,7 +7,8 @@
      resumoDiario       todo dia 3h                        → resumo das landing pages (lp_paginas/{página}/resumos) e limpeza de eventos com mais de 13 meses
      cobrancas          todo dia 8h                        → gera mensalidades, lembra vencimentos, marca atraso e (se ligado) suspende páginas
      api                /api/checkout, /api/mp, /api/pix   → pagamento direto do Kit Upe (Mercado Pago), aviso de pagamento e PIX das cobranças
-     lpRender           todas as páginas de upe-criativo-lp → página montada no servidor (prévia certa no WhatsApp, Facebook e LinkedIn)
+     lpRender           todas as páginas de upe-criativo-lp → página montada no servidor (prévia certa no WhatsApp, Facebook e LinkedIn),
+                        arquivos da pasta da página no caminho real (lp/{endereço}/…) e dossiês (/_d/{chave}/… → dossies/{chave}/…)
      dominioConectar    lp_dominios status "conectar"      → cria o domínio no Hosting e grava os registros de DNS
      dominiosVerificar  de hora em hora                    → marca o domínio como ativo quando o Firebase conecta
      planilha           chamada do painel                  → lê planilha do Google privada (compartilhada com a conta de serviço) */
@@ -178,21 +179,61 @@ exports.api = onRequest({ secrets: [MP_ACCESS_TOKEN], cors: false, invoker: "pub
 });
 
 /* ---------- landing pages montadas no servidor (prévia certa ao compartilhar) ---------- */
+// Páginas e sistemas enviados com a pasta (raiz: true) ficam no Storage em lp/{endereço}/{caminho original} e abrem no caminho de verdade:
+// lp.upecriativo.com.br/{endereço}/css/estilo.css, /fonts/…, /js/…, /dados/… (então caminhos relativos, módulos, fetch e fontes funcionam como no computador).
+// Dossiês: lp.upecriativo.com.br/_d/{chave}/… → Storage dossies/{chave}/… (chave aleatória, só quem tem o link abre).
+const BUCKET = () => admin.storage().bucket((process.env.GCLOUD_PROJECT || "upecriativo-cc472") + ".firebasestorage.app");
+const TIPO_TXT = { html: "text/html; charset=utf-8", htm: "text/html; charset=utf-8", css: "text/css; charset=utf-8", js: "text/javascript; charset=utf-8", mjs: "text/javascript; charset=utf-8",
+  json: "application/json; charset=utf-8", map: "application/json; charset=utf-8", webmanifest: "application/manifest+json", svg: "image/svg+xml", txt: "text/plain; charset=utf-8", md: "text/plain; charset=utf-8", csv: "text/csv; charset=utf-8", xml: "application/xml; charset=utf-8" };
+// texto sai direto daqui; imagens, fontes, vídeos e PDFs vão para o endereço do Storage (sem limite de tamanho, com suporte a vídeo)
+async function servirArquivo(res, caminho, extra = {}) {
+  const f = BUCKET().file(caminho), [md] = await f.getMetadata().catch(() => [null]);
+  if (!md) return false;
+  const ext = caminho.split(".").pop().toLowerCase();
+  res.set({ "Access-Control-Allow-Origin": "*", ...extra });
+  if (TIPO_TXT[ext] && +md.size < 8 * 1048576) { const [buf] = await f.download(); res.set("Content-Type", TIPO_TXT[ext]).set("Cache-Control", "public, max-age=60, s-maxage=120").send(buf); return true; }
+  let tok = String(md.metadata?.firebaseStorageDownloadTokens || "").split(",")[0];
+  if (!tok) { tok = crypto.randomUUID(); await f.setMetadata({ metadata: { firebaseStorageDownloadTokens: tok } }); }
+  res.set("Cache-Control", "public, max-age=600, s-maxage=3600").redirect(302, `https://firebasestorage.googleapis.com/v0/b/${f.bucket.name}/o/${encodeURIComponent(caminho)}?alt=media&token=${tok}`);
+  return true;
+}
+const caminhoSeguro = partes => { try { const p = partes.map(decodeURIComponent); return p.some(x => !x || x === "." || x === ".." || x.includes("\\")) ? null : p.join("/"); } catch { return null; } };
 let MONTAR = null, VENDAS = null;
 exports.lpRender = onRequest({ memory: "256MiB", invoker: "public" }, async (req, res) => {
   MONTAR = MONTAR || (await import("./lp-render.mjs")).montar;
   const host = String(req.get("x-forwarded-host") || req.hostname || "").toLowerCase().split(":")[0], deUpe = /(^|\.)(web\.app|firebaseapp\.com|lp\.upecriativo\.com\.br)$/.test(host);
-  let slug = "";
-  if (deUpe) { slug = (req.path.split("/").filter(Boolean)[0] || "").toLowerCase(); if (!slug) { VENDAS = VENDAS || fs.readFileSync(path.join(__dirname, "vendas-lp.html"), "utf8"); res.set("Cache-Control", "public, max-age=300, s-maxage=600"); return res.send(VENDAS); } }
-  else for (const h of [host, host.replace(/^www\./, ""), "www." + host]) { const d = (await db.doc("lp_dominios/" + h).get()).data(); if (d?.status === "ativo") { slug = d.slug; break; } }
   const fora = (t, m, s = 404) => res.status(s).set("Cache-Control", "public, max-age=60").send(`<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(t)}</title><meta name="robots" content="noindex"></head><body style="font:16px/1.5 system-ui,sans-serif;display:grid;place-items:center;min-height:100vh;margin:0;background:#f4f1ea;color:#0d1b33;text-align:center"><main><h1>${esc(t)}</h1><p>${esc(m)}</p></main></body></html>`);
+  const partes = req.path.split("/").filter(Boolean), barra = req.path.endsWith("/"), qs = req.url.includes("?") ? req.url.slice(req.url.indexOf("?")) : "";
+  // dossiê completo (pasta enviada pela Upe)
+  if (deUpe && partes[0] === "_d") {
+    const chave = partes[1] || "", resto = caminhoSeguro(partes.slice(2));
+    if (!/^[A-Za-z0-9]{16,64}$/.test(chave) || resto === null) return fora("Arquivo não encontrado", "Confira o link.");
+    if (!resto && !barra) return res.redirect(301, `/_d/${chave}/${qs}`);
+    const alvo = !resto || barra ? (resto ? resto + "/" : "") + "index.html" : resto;
+    if (await servirArquivo(res, `dossies/${chave}/${alvo}`, { "X-Robots-Tag": "noindex" })) return;
+    return fora("Arquivo não encontrado", "Confira o link.");
+  }
+  let slug = "";
+  if (deUpe) { slug = (partes[0] || "").toLowerCase(); if (!slug) { VENDAS = VENDAS || fs.readFileSync(path.join(__dirname, "vendas-lp.html"), "utf8"); res.set("Cache-Control", "public, max-age=300, s-maxage=600"); return res.send(VENDAS); } }
+  else for (const h of [host, host.replace(/^www\./, ""), "www." + host]) { const d = (await db.doc("lp_dominios/" + h).get()).data(); if (d?.status === "ativo") { slug = d.slug; break; } }
   if (!/^[a-z0-9][a-z0-9-]{0,47}$/.test(slug)) return fora("Página não encontrada", "Confira o endereço digitado.");
   const p = (await db.doc("lp_paginas/" + slug).get()).data();
-  if (!p || !p.publicada || p.suspensa || !p.html) return fora("Página indisponível", "Esta página não está no ar agora. Volte em breve.");
+  if (!p || p.suspensa) return fora("Página indisponível", "Esta página não está no ar agora. Volte em breve.");
+  const base = deUpe ? `/${slug}/` : "/";
+  if (p.raiz) {
+    const prin = p.principal || "index.html", resto = caminhoSeguro(deUpe ? partes.slice(1) : partes);
+    if (resto === null) return fora("Arquivo não encontrado", "Confira o endereço digitado.");
+    // /endereço → /endereço/ (os caminhos relativos da página dependem da barra no fim)
+    if (!resto && (deUpe && !barra || prin !== "index.html")) return res.redirect(301, base + (prin === "index.html" ? "" : prin) + qs);
+    const alvo = !resto ? "index.html" : barra ? resto + "/index.html" : resto;
+    if (alvo !== prin) { if (await servirArquivo(res, `lp/${slug}/${alvo}`)) return; return fora("Arquivo não encontrado", "Confira o endereço digitado."); }
+  }
+  const previa = p.previa && req.query.previa === p.previa;
+  if ((!p.publicada && !previa) || !p.html) return fora("Página indisponível", "Esta página não está no ar agora. Volte em breve.");
   let html = MONTAR(p.html, p, slug);
-  const og = []; if (!/property=["']og:title/i.test(html)) og.push(`<meta property="og:title" content="${esc(p.seo?.titulo || p.titulo || slug)}">`); og.push(`<meta property="og:url" content="https://${esc(host)}${esc(req.path)}">`, `<meta property="og:type" content="website">`, `<link rel="canonical" href="https://${esc(host)}${deUpe ? "/" + slug : "/"}">`);
+  const og = []; if (!/property=["']og:title/i.test(html)) og.push(`<meta property="og:title" content="${esc(p.seo?.titulo || p.titulo || slug)}">`); og.push(`<meta property="og:url" content="https://${esc(host)}${esc(req.path)}">`, `<meta property="og:type" content="website">`, `<link rel="canonical" href="https://${esc(host)}${deUpe ? "/" + slug + (p.raiz ? "/" : "") : "/"}">`);
   html = html.replace(/<\/head>/i, og.join("") + "</head>");
-  res.set("Cache-Control", "public, max-age=60, s-maxage=300").send(html);
+  res.set("Cache-Control", previa && !p.publicada ? "private, no-store" : "public, max-age=60, s-maxage=120").send(html);
 });
 
 /* ---------- domínios próprios automáticos (Firebase Hosting API) ---------- */

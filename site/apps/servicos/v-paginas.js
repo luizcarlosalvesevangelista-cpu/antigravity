@@ -12,6 +12,8 @@ const BRANCO = `<!doctype html>\n<html lang="pt-BR">\n<head>\n<meta charset="utf
 export const views = {};
 
 /* ---------- lista ---------- */
+// página enviada com a pasta (raiz): a prévia usa o endereço dela como base, para imagens, fontes, CSS e scripts carregarem (o editor tira a marca ao salvar)
+const comBase = (h, p) => { if (!p || !p.raiz) return h; const pr = p.principal || "index.html", b = `<base data-upe-editor href="https://lp.upecriativo.com.br/${p.id}/${pr.includes("/") ? pr.slice(0, pr.lastIndexOf("/") + 1) : ""}">`; return /<head[^>]*>/i.test(h) ? h.replace(/<head[^>]*>/i, m => m + b) : b + h; };
 views.paginas = async M => {
   const pg = (await paginasDoCliente()).sort((a, b) => (b.atualizadoEm || 0) - (a.atualizadoEm || 0));
   M.innerHTML = topo("Páginas", `<button class="btn azul" type="button" id="novaPag">+ Nova página</button>`) +
@@ -21,7 +23,7 @@ views.paginas = async M => {
           <span class="muted" style="font-size:12.5px">Atualizada ${fmtDH(p.atualizadoEm)}${p.dominio ? " · domínio " + esc(p.dominio) : ""}</span></div>
         <div class="linha"><a class="btn azul sm" href="#/pagina/${esc(p.id)}/editar">Editar</a>${p.publicada && !p.suspensa ? `<a class="btn sm" href="${esc(urlPagina(p.id))}" target="_blank" rel="noopener">Ver no ar ↗</a>` : ""}<a class="btn sm" href="#/analise/${esc(p.id)}">Análise</a><button class="btn sm" type="button" data-dup="${esc(p.id)}">Duplicar</button></div>
       </div>`).join('<hr style="border:0;border-top:1px solid var(--line);width:100%">') : vazio("Nenhuma página ainda.", `<button class="btn azul" type="button" data-nova>Criar a primeira página</button>`)}</section>`;
-  for (const p of pg) { const f = $(`[data-mini="${CSS.escape(p.id)}"]`); if (f) f.srcdoc = montar(p.html || "", { seo: p.seo }, null).replace(/<script[\s\S]*?<\/script>/gi, ""); }
+  for (const p of pg) { const f = $(`[data-mini="${CSS.escape(p.id)}"]`); if (f) f.srcdoc = montar(comBase(p.html || "", p), { seo: p.seo }, null).replace(/<script[\s\S]*?<\/script>/gi, ""); }
   $$("[data-dup]").forEach(b => b.onclick = () => { const o = pg.find(x => x.id === b.dataset.dup);
     dialogo(`<h3>Duplicar página</h3><label class="f">Nome da cópia<input name="titulo" required value="${esc((o.titulo || o.id) + " (cópia)")}"></label><label class="f">Endereço<input name="slug" required pattern="[a-z0-9][a-z0-9-]{1,47}" value="${esc(o.id + "-2")}"></label>${botoesDlg("Duplicar")}`, async fd => {
       const ns = slugify(fd.get("slug")); if (await db.get("lp_paginas/" + ns).catch(() => ({ x: 1 }))) { toast("Esse endereço já está em uso."); return false; }
@@ -134,7 +136,7 @@ views.pagina = async (M, slug, aba = "editar") => {
         <label class="f">Nome da página (só no painel)<input id="edTitulo" value="${esc(E.cfg.titulo)}" maxlength="80"></label>
         <div class="linha"><span class="muted">Tamanho: <b class="num" id="edTam"></b> de 880 KB</span></div></aside></div>`;
     const fr = $("#fr");
-    const carrega = () => { $("#edTam").textContent = Math.ceil(E.html.length / 1024) + " KB"; fr.srcdoc = E.modo === "editar" ? comEditor(E.html) : montar(E.html, E.cfg, null); };
+    const carrega = () => { $("#edTam").textContent = Math.ceil(E.html.length / 1024) + " KB"; fr.srcdoc = E.modo === "editar" ? comEditor(comBase(E.html, p)) : montar(comBase(E.html, p), E.cfg, null); };
     carrega();
     $$("[data-modo]").forEach(b => b.onclick = () => { E.modo = b.dataset.modo; $$("[data-modo]").forEach(x => x.setAttribute("aria-pressed", x === b)); carrega(); });
     $$("[data-tela]").forEach(b => b.onclick = () => { $("#tela").classList.toggle("cel", b.dataset.tela === "cel"); $$("[data-tela]").forEach(x => x.setAttribute("aria-pressed", x === b)); });

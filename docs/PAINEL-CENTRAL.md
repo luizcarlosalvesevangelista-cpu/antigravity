@@ -19,10 +19,10 @@ Em **Clientes**, abra a ficha. As abas aparecem conforme o que o cliente contrat
 |---|---|---|
 | Projeto e acessos | sempre | dados, e-mail de login, código antigo, plano de branding, mensalidade |
 | Serviços | sempre | ligar cada serviço (status, plano, extras, vencimento) e liberar os acessos |
-| Apresentação e dossiê | branding | importar a **pasta do dossiê** (imagens, vídeos e PDF sobem sozinhos) |
+| Apresentação e dossiê | branding | importar a **pasta ou o .zip do dossiê** (tudo sobe com os mesmos caminhos) |
 | Conteúdo | mídias digitais | posts para aprovação e kits |
 | Gráficos e recompra | papelaria gráfica | artes para aprovar e recompra |
-| Páginas e sistemas | landing pages, sites, agenda ou dashboards | **enviar a página ou o sistema com a pasta de arquivos** |
+| Páginas e sistemas | sempre | **enviar página, site, sistema ou painel (pasta ou .zip)** |
 | Pagamentos | sempre | cobranças de todos os serviços, com o serviço de cada uma |
 | Inbox | sempre | conversa com o cliente |
 
@@ -36,17 +36,27 @@ Na aba **Serviços**, ligue o que o cliente contratou e clique em **Salvar servi
 | Loja online (Upe ERP) | `empresas/{empresa}`, `convites/{email}` e a plataforma no Gerenciador do ERP; domínio próprio da loja, se houver |
 | Landing pages e sites / Agenda e dashboards | `srv_clientes/{id do cliente}` e `srv_convites/{email}` |
 
-### Enviar uma página, site ou sistema (com a pasta)
+### Enviar uma página, site ou sistema (pasta ou .zip)
 
-Na aba **Páginas e sistemas**, clique em **Adicionar página ou sistema** e preencha:
+Na aba **Páginas e sistemas** (aparece em todo cliente), clique em **Adicionar página ou sistema** e preencha:
 
 1. **Tipo:** landing page, site ou sistema.
-2. **Nome e endereço:** a página fica em `lp.upecriativo.com.br/endereço`.
-3. **Pasta da página ou do sistema** (recomendado): escolha a pasta inteira, com o `.html` principal (`index.html`) e as pastas de imagens, fontes, CSS, scripts e dados. Se tudo estiver dentro do `.html` ou em links da internet, escolha **só o arquivo .html**.
-4. **Publicar agora:** sem marcar, a página fica como rascunho.
-5. **Mostrar como painel do cliente:** o cliente ganha o botão **“Painel – (nome)”**, que abre o sistema dentro do painel dele.
+2. **Nome e endereço:** a página fica em `lp.upecriativo.com.br/endereço/`.
+3. **Arquivos:** escolha a **pasta** inteira, o **.zip** dela ou, se tudo estiver dentro do arquivo, **só o .html**.
+4. **Pasta a publicar:** num .zip com várias pastas (ex.: um dossiê com `landing/` e `site/`), escolha só a que vai ao ar.
+5. **Página principal:** o `.html` que abre no endereço. Os outros `.html` da pasta também abrem pelo caminho deles (ex.: `…/endereço/painel.html`).
+6. **Publicar agora:** sem marcar, fica como rascunho e abre só pelo link de prévia (o link da lista já leva a chave).
+7. **Mostrar como painel do cliente:** o cliente ganha o botão **“Painel – (nome)”**.
 
-Os arquivos sobem para o Storage (`lp/{endereço}/…`). Os caminhos são trocados sozinhos no HTML, dentro do CSS (fontes e imagens de fundo) e nos scripts e dados. Isso cobre o caminho escrito por inteiro, como `fetch("dados/itens.json")`. Um caminho montado pelo script enquanto roda não é trocado.
+**Como os arquivos funcionam:** cada arquivo sobe para o Storage no **mesmo caminho** da pasta (`lp/{endereço}/css/estilo.css`) e o servidor entrega em `lp.upecriativo.com.br/{endereço}/css/estilo.css`. Nada é reescrito, então funcionam como no computador:
+
+- caminhos relativos no HTML e no CSS (imagens, fontes, fundos);
+- scripts e módulos (`<script src="js/app.js">`, `import`);
+- dados lidos pelo script (`fetch("dados/itens.json")`), inclusive caminhos montados enquanto roda.
+
+Textos (HTML, CSS, JS, JSON, SVG) saem direto do servidor; imagens, fontes, vídeos e PDFs vão para o endereço do Storage.
+
+Se o sistema usa banco de dados próprio (ex.: vitrine com reservas), aponte a configuração dele para o projeto `upecriativo-cc472` antes de enviar. As regras de `landings/{id}` (peças, reservas, clientes) já estão no `firestore.rules`; quem administra fica em `landings/{id}.donos` (e-mails).
 
 Em cada página da lista:
 
@@ -83,20 +93,27 @@ O painel do cliente é simples:
 
 O cliente entra com o e-mail (um login para tudo). O código antigo continua valendo para o portal de branding.
 
-## Painel em branco (HTML próprio)
+## Painel personalizado (página ou sistema próprio)
 
-Para qualquer serviço, a aba **Serviços** tem a opção **Painel em branco (HTML próprio)**:
+Para qualquer serviço, a aba **Serviços › Painel do cliente** tem a opção **Painel personalizado**:
 
-- O HTML roda isolado, sem acesso ao login nem ao banco.
+- Escolha uma página ou sistema já enviado (ex.: `hash › painel.html`) ou clique em **Enviar pasta ou .zip**.
+- O sistema abre dentro do painel do cliente, no endereço dele (isolado do painel), com todos os arquivos.
 - A única ligação com o painel é a aba **Pagamentos** daquele serviço, por mensagens.
 
-| Do HTML para o painel | Efeito |
+| Do sistema para o painel | Efeito |
 |---|---|
 | `parent.postMessage({ upe: "dados" }, "*")` | pede os dados do cliente |
 | `parent.postMessage({ upe: "pagamentos" }, "*")` | abre os pagamentos do serviço |
 | `parent.postMessage({ upe: "altura", h: 1200 }, "*")` | ajusta a altura |
 
-Do painel para o HTML: `{ upe: "cliente", nome, marca, frente, status, emAberto, totalEmAberto }`.
+Do painel para o sistema: `{ upe: "cliente", nome, marca, frente, status, emAberto, totalEmAberto }`.
+
+Painéis antigos de um `.html` só continuam abrindo.
+
+## Dossiê
+
+Em **Apresentação e dossiê**, use **Importar pasta do dossiê** ou **Importar .zip do dossiê**. Tudo sobe para `dossies/{chave}/…` com os mesmos caminhos. O dossiê completo abre por um link só da Upe (`lp.upecriativo.com.br/_d/{chave}/…`, chave aleatória). A aba 05 vira a apresentação do cliente, e os posts entram no calendário.
 
 ## Técnico
 
@@ -104,9 +121,10 @@ Do painel para o HTML: `{ upe: "cliente", nome, marca, frente, status, emAberto,
 - **Storage:**
   - Contas de administrador têm a marca `upe: true` no login, gravada por `tools/firebase/marcar_admins.js`. Rode esse script ao criar um administrador novo.
   - As regras do Storage (`site/portal/storage.rules`) usam essa marca. Para publicá-las: `node tools/firebase/publicar_regras_storage.js`.
-- **Regras do banco:** `portal_convites`, `portal_acessos`, `paineis_cliente`, `lp_paginas`, `lojas_dominios` em `site/portal/firestore.rules`.
+- **Regras do banco:** `portal_convites`, `portal_acessos`, `paineis_cliente`, `lp_paginas`, `lojas_dominios`, `landings` em `site/portal/firestore.rules`.
+- **Servidor das páginas:** a função `lpRender` entrega a página principal (montada, com SEO e medição), os arquivos da pasta (`lp/{endereço}/…`) e os dossiês (`/_d/{chave}/…`).
 - **Testes:**
-  - `node tools/capturas/painel-central.js` (modo demonstração; inclui o envio de uma pasta de exemplo de `tools/capturas/fixtures/pagina-exemplo`);
+  - `node tools/capturas/painel-central.js` (modo demonstração; inclui o envio de uma pasta e de um .zip de exemplo de `tools/capturas/fixtures/pagina-exemplo`);
   - `node tools/firebase/testar_conta.js` (regras de acesso no Firebase).
 - **Demonstração:**
   - Admin: `admin@upe.demo` / `upe-demo`.

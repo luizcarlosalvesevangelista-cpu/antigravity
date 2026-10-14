@@ -186,6 +186,35 @@ service cloud.firestore {
     }
     match /{caminho=**}/cobrancas/{id} { allow read: if ehUpe(); }
     match /{caminho=**}/chamados/{id} { allow read: if ehUpe(); }
+    // vitrines e sistemas próprios de clientes (enviados como pasta em Páginas e sistemas), ex.: landings/hash-artigos.
+    // landings/{id}.donos = e-mails (minúsculas) de quem administra; só a Upe grava essa lista. Peças, tags e config: leitura pública.
+    // O visitante só cria reserva (campos fixos) e só passa a peça de "disp" para "reservado" no mesmo lote.
+    match /landings/{lid} {
+      function donoLanding() { return ehUpe() || (verificado() && request.auth.token.email.lower() in get(/databases/$(database)/documents/landings/$(lid)).data.get('donos', [])); }
+      allow read: if donoLanding();
+      allow write: if ehUpe();
+      match /produtos/{id} {
+        allow read: if true;
+        allow create, delete: if donoLanding();
+        allow update: if donoLanding() || (resource.data.status == 'disp' && request.resource.data.status == 'reservado'
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'reserva'])
+          && existsAfter(/databases/$(database)/documents/landings/$(lid)/reservas/$(request.resource.data.reserva)));
+      }
+      match /config/{id} { allow read: if true; allow write: if donoLanding(); }
+      match /reservas/{id} {
+        allow read, update, delete: if donoLanding();
+        allow create: if request.resource.data.keys().hasOnly(['codigo', 'cliente', 'itens', 'total', 'status', 'criadoEm', 'origem'])
+          && request.resource.data.status == 'nova'
+          && request.resource.data.codigo is string && request.resource.data.codigo.size() <= 8
+          && request.resource.data.itens is list && request.resource.data.itens.size() > 0 && request.resource.data.itens.size() <= 20
+          && request.resource.data.total is number
+          && request.resource.data.cliente.nome is string && request.resource.data.cliente.nome.size() >= 3 && request.resource.data.cliente.nome.size() <= 80
+          && request.resource.data.cliente.telefone is string && request.resource.data.cliente.telefone.size() >= 10 && request.resource.data.cliente.telefone.size() <= 13
+          && request.resource.data.cliente.cep is string && request.resource.data.cliente.cep.size() <= 9
+          && request.resource.data.cliente.referencia is string && request.resource.data.cliente.referencia.size() <= 120;
+      }
+      match /clientes/{id} { allow read, write: if donoLanding(); }
+    }
     // páginas: o documento guarda a versão publicada; o rascunho fica em privado/rascunho
     match /lp_paginas/{slug} {
       function lpDono() { return srvMembro(get(/databases/$(database)/documents/lp_paginas/$(slug)).data.cid); }

@@ -4,12 +4,14 @@
        portal_convites/{email} (painel central) · ERP: empresas/{empresa} + convites/{email} + upe/gestao/clientes/{Cxxxx} ·
        Landing pages e Sistemas: srv_clientes/{id do cliente} + srv_convites/{email}.
    - Admin › ficha › Páginas e sistemas: envia o HTML (e a pasta com imagens, fontes, CSS e dados) de uma página, site ou sistema;
-     os arquivos vão para o Storage (lp/{endereço}/…), os caminhos são trocados e a página é publicada em lp_paginas/{endereço}.
+     (pasta ou .zip). Os arquivos vão para o Storage no caminho original (lp/{endereço}/…) e abrem em lp.upecriativo.com.br/{endereço}/…;
+     a página principal fica em lp_paginas/{endereço}.
    - Cliente: entra com o e-mail; no primeiro login o painel cria portal_acessos/{uid} e, quando houver convite, acessos/{uid} (ERP)
      e srv_acessos/{uid} (Serviços). Em “Meus serviços” cada serviço tem o botão “Painel – Loja X / Página X / Sistema X”,
      que abre o painel dele dentro do painel central (mesmo endereço, então o login vale para todos).
-   - Painel personalizado: para qualquer frente, a Upe pode subir um HTML próprio (paineis_cliente/{id}_{frente}); ele abre isolado
-     (sandbox) e só conversa com a subseção de pagamentos daquela frente (postMessage). */
+   - Painel personalizado: para qualquer frente, a Upe escolhe uma página ou sistema enviado (doc.paineis[frente] = { slug, arquivo });
+     ele abre no endereço dele (isolado do painel) e só conversa com a subseção de pagamentos daquela frente (postMessage).
+     HTML antigo de um arquivo só (paineis_cliente/{id}_{frente}) continua abrindo. */
 const APP_URL = { erp: "../apps/painel/", landing: "../apps/servicos/", sistemas: "../apps/servicos/" };
 const FRENTE_COB = { branding: "Branding e mídias", erp: "Loja online", landing: "Landing pages e sites", sistemas: "Agenda e dashboards" };
 const LP_URL = "https://lp.upecriativo.com.br/", LOJA_URL = "https://loja.upecriativo.com.br/", AGENDA_URL = "https://agenda.upecriativo.com.br/";
@@ -62,17 +64,22 @@ async function aClienteApps(ct, { id, doc, priv, acoes, save }) {
   const cat = appsCat(state.cache.pub), peds = appPedidos(doc, acoes);
   doc.apps = doc.apps || {}; doc.paineis = doc.paineis || {};
   // domínios próprios: loja (lojas_dominios, conectado aqui) e landing pages (lp_dominios, pedidos pelo cliente no painel)
-  const erp0 = doc.apps.erp || {}, [lojas, lpDoms, lojaDom] = await Promise.all([
+  const erp0 = doc.apps.erp || {}, [lojas, lpDoms, lojaDom, pgs] = await Promise.all([
     S.list("lojas").then(l => l.filter(x => x.empresa && x.empresa === erp0.empresa)).catch(() => []),
     S.list("lp_dominios").then(l => l.filter(x => x.cid === id)).catch(() => []),
-    erp0.dominio ? S.get(`lojas_dominios/${erp0.dominio}`).catch(() => null) : null]);
+    erp0.dominio ? S.get(`lojas_dominios/${erp0.dominio}`).catch(() => null) : null, paginasDoClienteAdm(id)]);
   const stDom = d => !d ? "" : d.status === "ativo" ? '<span class="pill ok">Conectado</span>' : d.status === "dns" ? '<span class="pill info">Falta o DNS do cliente</span>' : d.status === "conectar" ? '<span class="pill info">Conectando…</span>' : '<span class="pill warn">Pendente</span>';
   const dnsBox = d => d && d.dns && d.status !== "ativo" ? `<pre class="dnsbox">${esc(d.dns)}</pre>` : d && d.erro ? `<span class="muted small">Erro: ${esc(d.erro)}</span>` : "";
   const precoTxt = e => +e.preco ? brl(e.preco) + (e.unico ? " único" : "/mês") : "sob consulta";
-  const painelBox = k => { const p = doc.paineis[k] || {}; return `<div class="grid painel-op" style="gap:6px"><span class="eb">Painel do cliente</span>
-      <div class="row small" style="gap:12px"><label class="row" style="gap:6px"><input type="radio" name="pm-${k}" value="padrao" ${p.modo !== "personalizado" ? "checked" : ""}>${k === "branding" ? "Portal padrão" : "Painel padrão do app"}</label><label class="row" style="gap:6px"><input type="radio" name="pm-${k}" value="personalizado" ${p.modo === "personalizado" ? "checked" : ""}>Painel em branco (HTML próprio)</label></div>
-      <div class="row small" data-pp="${k}" ${p.modo === "personalizado" ? "" : "hidden"}><input type="file" accept=".html,.htm,text/html" data-pf="${k}" aria-label="HTML do painel personalizado"><span class="muted">${p.nome ? `Atual: <b>${esc(p.nome)}</b> · ${fdt(p.em)}` : "Nenhum HTML enviado"}</span>${p.nome ? `<button class="btn sec sm" data-pv="${k}">Ver</button>` : ""}</div>
-      <span class="muted small" data-pp="${k}" ${p.modo === "personalizado" ? "" : "hidden"}>O HTML abre isolado no painel do cliente, ao lado da aba Pagamentos desta frente. Ele pode pedir os dados do cliente e abrir os pagamentos com <code>parent.postMessage({ upe: "pagamentos" }, "*")</code>.</span></div>`; };
+  // painel personalizado: abre uma página ou sistema enviado (pasta ou .zip) dentro do painel do cliente
+  const opcoesPainel = pgs.flatMap(pg => (pg.htmls && pg.htmls.length ? pg.htmls : [""]).map(h => [`${pg.id}|${h}`, `${pg.titulo || pg.id}${h ? " › " + h : ""}`]));
+  const painelBox = k => { const p = doc.paineis[k] || {}, pers = p.modo === "personalizado", atual = p.slug ? `${p.slug}|${p.arquivo || ""}` : "";
+    const pg = pgs.find(x => x.id === p.slug);
+    return `<div class="grid painel-op" style="gap:6px"><span class="eb">Painel do cliente</span>
+      <div class="row small" style="gap:12px"><label class="row" style="gap:6px"><input type="radio" name="pm-${k}" value="padrao" ${!pers ? "checked" : ""}>${k === "branding" ? "Portal padrão" : "Painel padrão do app"}</label><label class="row" style="gap:6px"><input type="radio" name="pm-${k}" value="personalizado" ${pers ? "checked" : ""}>Painel personalizado (página ou sistema próprio)</label></div>
+      <div class="row small" data-pp="${k}" ${pers ? "" : "hidden"}><select data-ps="${k}" aria-label="Página ou sistema do painel" style="max-width:320px"><option value="">${opcoesPainel.length ? "— escolha a página ou o sistema —" : "— nenhum enviado ainda —"}</option>${opcoesPainel.map(([v, l]) => `<option value="${esc(v)}" ${v === atual ? "selected" : ""}>${esc(l)}</option>`).join("")}</select>
+        <button class="btn sec sm" data-pnovo="${k}">Enviar pasta ou .zip</button>${pg ? `<a class="btn sec sm" href="${esc(urlPagina(pg, p.arquivo))}" target="_blank" rel="noopener">Ver</a>` : p.nome && !p.slug ? `<button class="btn sec sm" data-pv="${k}">Ver HTML antigo</button>` : ""}</div>
+      <span class="muted small" data-pp="${k}" ${pers ? "" : "hidden"}>O sistema abre dentro do painel do cliente com todos os arquivos (imagens, fontes, scripts e dados), ao lado da aba Pagamentos desta frente. Para abrir os pagamentos: <code>parent.postMessage({ upe: "pagamentos" }, "*")</code>.</span></div>`; };
   const linkCampos = k => {
     const a = doc.apps[k] || {};
     if (k === "erp") return `<label class="f">Endereço da empresa no ERP<input data-k="empresa" value="${esc(a.empresa || "")}" placeholder="${esc(slugEmp(doc.marca || doc.empresa || doc.nome))}"></label>
@@ -108,20 +115,20 @@ async function aClienteApps(ct, { id, doc, priv, acoes, save }) {
         ${painelBox(k)}
       </section>`; }).join("")}</div>
     <div class="row" style="justify-content:flex-end"><button class="btn" id="caSv">Salvar serviços e liberar acessos</button></div>`;
-  const htmlNovo = {};
   const collect = () => {
     APP_IDS.forEach(k => { const box = $(`[data-app="${k}"]`, ct); const v = n => ($(`[data-k="${n}"]`, box) || {}).value || "";
       const st = v("status"); if (!st) { if (doc.apps[k]) doc.apps[k] = { ...doc.apps[k], status: "cancelado" }; return; }
       const mods = $$("[data-mod]", box).filter(i => i.checked).map(i => i.dataset.mod);
       doc.apps[k] = { ...(doc.apps[k] || {}), status: st, plano: v("plano"), extras: $$("[data-ex]", box).filter(i => i.checked).map(i => i.dataset.ex), dia: +v("dia") || 10, ajuste: +v("ajuste") || 0, inicio: v("inicio"), fimTeste: v("fimTeste"), obs: v("obs").trim(),
         ...(k === "erp" ? { empresa: slugEmp(v("empresa") || doc.apps[k]?.empresa || doc.marca || doc.empresa || doc.nome), dominio: lower(v("dominio")).replace(/^https?:\/\//, "").replace(/\/.*$/, ""), loja: v("loja") } : {}), ...(k === "sistemas" ? { modulos: mods.length ? mods : ["agenda", "dash"] } : {}) }; });
-    ["branding", ...APP_IDS].forEach(k => { const r = $(`input[name="pm-${k}"]:checked`, ct); if (!r) return; doc.paineis[k] = { ...(doc.paineis[k] || {}), modo: r.value }; });
+    ["branding", ...APP_IDS].forEach(k => { const r = $(`input[name="pm-${k}"]:checked`, ct); if (!r) return; doc.paineis[k] = { ...(doc.paineis[k] || {}), modo: r.value };
+      const [slug, arquivo] = (($(`[data-ps="${k}"]`, ct) || {}).value || "").split("|"), pg = pgs.find(x => x.id === slug);
+      if (pg) doc.paineis[k] = { ...doc.paineis[k], slug, arquivo: arquivo || "", nome: pg.titulo || slug, previa: pg.previa || "", em: doc.paineis[k].slug === slug && doc.paineis[k].arquivo === arquivo ? doc.paineis[k].em : Date.now() }; });
     priv.email = lower($("#svEmail").value);
   };
   ct.querySelectorAll("[data-app] input, [data-app] select").forEach(i => i.addEventListener("input", () => { collect(); APP_IDS.forEach(k => { const t = $(`[data-app="${k}"] [data-tot]`, ct); if (t && doc.apps[k]) t.textContent = brl(valorAdesao(cat, k, doc.apps[k])) + "/mês"; }); }));
   $$('input[type=radio][name^="pm-"]', ct).forEach(r => r.onchange = () => { const k = r.name.slice(3); $$(`[data-pp="${k}"]`, ct).forEach(x => x.hidden = r.value !== "personalizado"); });
-  $$("[data-pf]", ct).forEach(inp => inp.onchange = async () => { const f = inp.files[0]; if (!f) return; if (f.size > 900000) { inp.value = ""; return toast("O HTML passa de 900 KB. Coloque imagens e vídeos em links."); }
-    htmlNovo[inp.dataset.pf] = { nome: f.name, html: await f.text() }; toast(`${f.name} pronto: clique em Salvar`); });
+  $$("[data-pnovo]", ct).forEach(b => b.onclick = () => { collect(); enviarPagina(id, doc, null, save, { tipo: "sistema", frente: b.dataset.pnovo }); });
   $$("[data-pv]", ct).forEach(b => b.onclick = async () => { const d = await S.get(`paineis_cliente/${id}_${b.dataset.pv}`); if (!d) return toast("HTML não encontrado");
     modal("Painel personalizado · " + FRENTES_UPE[b.dataset.pv], `<iframe class="pp-frame" sandbox="allow-scripts allow-forms allow-popups" title="Prévia do painel"></iframe>`, `<button class="btn" data-close>Fechar</button>`, true); $(".pp-frame").srcdoc = d.html; });
   if ($("#svMsg")) $("#svMsg").onclick = () => copy(msgAcesso(doc, priv), "Mensagem copiada");
@@ -132,7 +139,6 @@ async function aClienteApps(ct, { id, doc, priv, acoes, save }) {
   $("#caSv").onclick = async () => {
     collect(); const b = $("#caSv"); b.disabled = true;
     try {
-      for (const [k, h] of Object.entries(htmlNovo)) { await S.set(`paineis_cliente/${id}_${k}`, { cliente: id, frente: k, html: h.html, nome: h.nome, em: Date.now() }); doc.paineis[k] = { ...(doc.paineis[k] || {}), modo: "personalizado", nome: h.nome, em: Date.now() }; }
       const unicas = APP_IDS.flatMap(k => ativoApp(doc.apps[k]) ? cobrancasUnicas(cat, doc, k, doc.apps[k]) : []);
       if (FRENTES_DO_CLIENTE(doc).length > 0) doc.acesso = { ...(doc.acesso || {}), pagamentos: true };
       const msgs = await provisionar(id, doc, priv);
@@ -216,18 +222,25 @@ async function cServico(m, c, frente, sub) {
   const box = $("#svc", m);
   if (aba === "pagamentos") return cPagamentos(box, c, { frente, embutido: true });
   if (proprio) {
+    const pp = doc.paineis[frente] || {}, cobs = cobrancasFrente(c, frente);
+    const dados = { upe: "cliente", nome: doc.nome || "", marca: doc.marca || doc.empresa || "", frente, status: a.status || "", emAberto: cobs.filter(x => x.st === "aberta").length, totalEmAberto: cobs.filter(x => x.st === "aberta").reduce((t, x) => t + (+x.valor || 0), 0) };
+    const ligar = fr => { const ouvir = e => { if (e.source !== fr.contentWindow || !e.data || typeof e.data !== "object") return;
+        if (e.data.upe === "pagamentos") go(`#/c/s-${frente}/pagamentos`);
+        else if (e.data.upe === "dados") fr.contentWindow.postMessage(dados, "*");
+        else if (e.data.upe === "altura" && +e.data.h > 200) fr.style.height = Math.min(6000, +e.data.h) + "px"; };
+      window.addEventListener("message", ouvir); const off = () => { window.removeEventListener("message", ouvir); window.removeEventListener("hashchange", off); }; window.addEventListener("hashchange", off);
+      fr.addEventListener("load", () => fr.contentWindow.postMessage(dados, "*")); };
+    // página ou sistema enviado com a pasta: abre no endereço dele (outro domínio, então fica isolado do painel)
+    if (pp.slug) {
+      const url = urlPagina({ id: pp.slug, publicada: false, previa: pp.previa }, pp.arquivo);
+      box.innerHTML = `<iframe class="svc-frame pp" src="${esc(url)}" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-downloads allow-modals" allow="clipboard-write; fullscreen" title="${esc(nome)}"></iframe><p class="muted small" style="margin-top:6px"><a href="${esc(url)}" target="_blank" rel="noopener">Abrir em tela cheia</a></p>`;
+      return ligar($("iframe", box));
+    }
     const d = await S.get(`paineis_cliente/${id}_${frente}`).catch(() => null);
     if (!d) { box.innerHTML = `<div class="empty"><b>Painel em preparação.</b><span>${S.mode === "firebase" && !S.contaAtual() ? "Entre com o seu e-mail para ver este painel." : "A Upe está montando o seu painel. Os pagamentos já estão na aba ao lado."}</span>${S.mode === "firebase" && !S.contaAtual() ? `<button class="btn" id="kLogin">Entrar com e-mail</button>` : ""}</div>`; if ($("#kLogin")) $("#kLogin").onclick = () => { ss.set("upe-cliente", null); gateConta(); }; return; }
+    // HTML antigo (um arquivo só, sem a pasta)
     box.innerHTML = `<iframe class="svc-frame pp" sandbox="allow-scripts allow-forms allow-popups allow-downloads" title="${esc(nome)}"></iframe>`;
-    const fr = $("iframe", box), cobs = cobrancasFrente(c, frente);
-    const dados = { upe: "cliente", nome: doc.nome || "", marca: doc.marca || doc.empresa || "", frente, status: a.status || "", emAberto: cobs.filter(x => x.st === "aberta").length, totalEmAberto: cobs.filter(x => x.st === "aberta").reduce((s, x) => s + (+x.valor || 0), 0) };
-    const ouvir = e => { if (e.source !== fr.contentWindow || !e.data || typeof e.data !== "object") return;
-      if (e.data.upe === "pagamentos") go(`#/c/s-${frente}/pagamentos`);
-      else if (e.data.upe === "dados") fr.contentWindow.postMessage(dados, "*");
-      else if (e.data.upe === "altura" && +e.data.h > 200) fr.style.height = Math.min(6000, +e.data.h) + "px"; };
-    window.addEventListener("message", ouvir); const off = () => { window.removeEventListener("message", ouvir); window.removeEventListener("hashchange", off); }; window.addEventListener("hashchange", off);
-    fr.onload = () => fr.contentWindow.postMessage(dados, "*");
-    fr.srcdoc = d.html; return;
+    const fr = $("iframe", box); ligar(fr); fr.srcdoc = d.html; return;
   }
   if (frente === "branding") return go("#/c/inicio");
   const precisaLogin = S.mode === "firebase" && !S.contaAtual();
@@ -259,36 +272,36 @@ async function cobrancasServicos() {
   } catch (e) { return []; }
 }
 
-/* ---------- envio de página, site ou sistema com a pasta de arquivos ---------- */
-// caminho de "alvo" visto a partir da pasta "dir" (ambos relativos à pasta escolhida): "img/a.jpg", "../fonts/x.woff2"
-const relEntre = (dir, alvo) => { const a = dir.split("/").filter(Boolean), b = alvo.split("/"); let k = 0; while (k < a.length && k < b.length - 1 && a[k] === b[k]) k++; return "../".repeat(a.length - k) + b.slice(k).join("/"); };
-const dirDe = rel => rel.includes("/") ? rel.slice(0, rel.lastIndexOf("/") + 1) : "";
-// troca no texto as referências (entre aspas, em url() e em srcset) pelos endereços enviados
-function trocarRefs(txt, dir, urls) {
-  const pares = [...urls.entries()].map(([rel, url]) => [relEntre(dir, rel), url]).sort((x, y) => y[0].length - x[0].length);
-  for (const [r, url] of pares) for (const v of [r, "./" + r]) {
-    const esc2 = v.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    txt = txt.replace(new RegExp(`(["'(=\\s,])${esc2}(?=["')\\s,?#])`, "g"), `$1${url}`);
-  }
-  return txt;
+/* ---------- pastas e .zip: lidos no navegador e enviados com os caminhos originais ---------- */
+// Os arquivos vão para o Storage no mesmo caminho relativo (lp/{endereço}/css/estilo.css…) e o servidor entrega cada um em
+// lp.upecriativo.com.br/{endereço}/css/estilo.css. Nada é reescrito: caminhos relativos, módulos, fetch(), fontes e caminhos montados pelo script funcionam.
+const LIXO = /(^|\/)(\.|__MACOSX\/)|thumbs\.db$|desktop\.ini$/i;
+// "Escolher pasta": tira o nome da pasta escolhida do começo do caminho
+function pastaDeArquivos(files) { const m = new Map(); for (const f of files) { const rel = (f.webkitRelativePath || f.name).split("/").slice(1).join("/") || f.name; if (!LIXO.test(rel)) m.set(rel, f); } return m; }
+let JSZIP = null;
+async function lerZip(arq, progresso = () => {}) {
+  JSZIP = JSZIP || await new Promise((ok, no) => { if (window.JSZip) return ok(window.JSZip); const sc = document.createElement("script"); sc.src = "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"; sc.onload = () => ok(window.JSZip); sc.onerror = () => no(new Error("não foi possível abrir o leitor de .zip")); document.head.appendChild(sc); });
+  const z = await JSZIP.loadAsync(arq), nomes = Object.keys(z.files).filter(n => !z.files[n].dir && !LIXO.test(n));
+  // pasta única no topo do .zip (ex.: Cliente_Dossie/…) sai do caminho, como na escolha de pasta
+  const topo = nomes.length && nomes.every(n => n.includes("/") && n.split("/")[0] === nomes[0].split("/")[0]) ? nomes[0].split("/")[0] + "/" : "";
+  const m = new Map(); let k = 0;
+  for (const n of nomes) { progresso(`Abrindo o .zip ${++k}/${nomes.length}`); const rel = n.slice(topo.length); m.set(rel, new File([await z.files[n].async("blob")], rel.split("/").pop(), { type: tipoArq(rel) })); }
+  return m;
 }
-const TEXTO = /\.(css|js|mjs|json|svg|txt|csv|xml|webmanifest)$/i;
-window.__upeTrocarRefs = trocarRefs; // usado pelo teste automático (tools/capturas/painel-central.js)
-async function subirPasta(slug, arquivos, htmlRel, progresso = () => {}) {
-  const urls = new Map(), lista = [...arquivos.entries()].filter(([rel]) => rel !== htmlRel && !/(^|\/)\.|thumbs\.db$|\.ds_store$/i.test(rel));
-  const ordem = r => /\.(json|csv|txt|xml)$/i.test(r) ? 1 : /\.svg$/i.test(r) ? 2 : /\.css$/i.test(r) ? 3 : /\.m?js$/i.test(r) ? 4 : /\.html?$/i.test(r) ? 5 : 0;
-  lista.sort((a, b) => ordem(a[0]) - ordem(b[0]));
-  let n = 0;
-  for (const [rel, f] of lista) {
-    progresso(`Enviando ${++n}/${lista.length}: ${rel}`);
-    let arq = f;
-    if (TEXTO.test(rel) || /\.html?$/i.test(rel)) { const t = trocarRefs(await f.text(), dirDe(rel), urls); arq = new File([t], f.name, { type: f.type || ({ css: "text/css", js: "text/javascript", mjs: "text/javascript", json: "application/json", svg: "image/svg+xml" }[rel.split(".").pop().toLowerCase()] || "text/plain") }); }
-    const url = await S.upload(arq, `lp/${slug}/${dirDe(rel).replace(/\/$/, "")}`.replace(/\/$/, ""));
-    if (!url) throw new Error("o Storage não respondeu. Confira se o Storage está ligado no painel.");
-    urls.set(rel, url);
-  }
-  return urls;
+const htmlsDe = m => [...m.keys()].filter(k => /\.html?$/i.test(k)).sort((a, b) => a.split("/").length - b.split("/").length || (/(^|\/)index\.html?$/i.test(b) - /(^|\/)index\.html?$/i.test(a)) || a.localeCompare(b));
+// só uma subpasta (ex.: "landing/") vira a raiz publicada
+const recortar = (m, dir) => { if (!dir) return m; const r = new Map(); for (const [k, f] of m) if (k.startsWith(dir)) r.set(k.slice(dir.length), f); return r; };
+const tamanhoMB = m => ([...m.values()].reduce((t, f) => t + f.size, 0) / 1048576).toFixed(1);
+// envia a pasta para {prefixo}/{caminho}, 6 arquivos por vez
+async function subirPasta(prefixo, arquivos, progresso = () => {}) {
+  const lista = [...arquivos.entries()]; let n = 0, i = 0;
+  const um = async () => { while (i < lista.length) { const [rel, f] = lista[i++]; await S.uploadEm(f, `${prefixo}/${rel}`); progresso(`Enviando ${++n}/${lista.length}`); } };
+  await Promise.all(Array.from({ length: Math.min(6, lista.length) }, um));
+  return n;
 }
+// endereço público de uma página/sistema (rascunho abre com a chave de prévia)
+const caminhoUrl = c => String(c || "").split("/").map(encodeURIComponent).join("/");
+const urlPagina = (p, arquivo = "") => LP_URL + p.id + "/" + (arquivo && arquivo !== "index.html" ? caminhoUrl(arquivo) : "") + (!p.publicada && p.previa ? "?previa=" + p.previa : "");
 async function paginasDoClienteAdm(cid) { return (await S.query("lp_paginas", "cid", cid).catch(() => [])).sort((a, b) => (b.atualizadoEm || 0) - (a.atualizadoEm || 0)); }
 
 /* ---------- admin: ficha do cliente › Páginas e sistemas ---------- */
@@ -297,8 +310,8 @@ async function aPaginas(ct, { id, doc, priv, save }) {
   ct.innerHTML = `<div class="spread"><div class="grid" style="gap:4px"><h3>Páginas e sistemas</h3><span class="muted small">Landing pages, sites e sistemas do cliente, publicados em <b>lp.upecriativo.com.br/endereço</b> ou no domínio dele.</span></div><button class="btn" id="pgNova">Adicionar página ou sistema</button></div>
     ${!ativoApp((doc.apps || {}).landing) && !ativoApp((doc.apps || {}).sistemas) ? `<div class="card" style="background:var(--warn-bg)">Ligue “Landing pages e sites” ou “Agenda e dashboards” em <a href="#/admin/cliente/${id}/apps">Serviços</a> para o cliente ver estas páginas no painel dele.</div>` : ""}
     <div class="card pad0 tbl">${pgs.length ? `<table><thead><tr><th>Página ou sistema</th><th>Endereço</th><th>Situação</th><th>Atualizada</th><th></th></tr></thead><tbody>${pgs.map(p => `<tr>
-      <td><b>${esc(p.titulo || p.id)}</b><br><span class="muted small">${esc(TIPOS_PAG[p.tipo] || "Landing page")}${p.arquivos ? ` · ${p.arquivos} arquivo(s)` : ""}${p.painelCliente ? " · aparece como painel do cliente" : ""}</span></td>
-      <td class="small"><a href="${esc(LP_URL + p.id)}" target="_blank" rel="noopener">lp.upecriativo.com.br/${esc(p.id)}</a>${p.dominio ? `<br><span class="muted">${esc(p.dominio)}</span>` : ""}</td>
+      <td><b>${esc(p.titulo || p.id)}</b><br><span class="muted small">${esc(TIPOS_PAG[p.tipo] || "Landing page")}${p.arquivos ? ` · ${p.arquivos} arquivo(s)` : ""}${(p.htmls || []).length > 1 ? ` · páginas: ${p.htmls.slice(0, 4).map(h => `<a href="${esc(urlPagina(p, h))}" target="_blank" rel="noopener">${esc(h)}</a>`).join(", ")}` : ""}${p.painelCliente ? " · aparece como painel do cliente" : ""}</span></td>
+      <td class="small"><a href="${esc(urlPagina(p))}" target="_blank" rel="noopener">lp.upecriativo.com.br/${esc(p.id)}${p.raiz ? "/" : ""}</a>${p.dominio ? `<br><span class="muted">${esc(p.dominio)}</span>` : ""}</td>
       <td>${p.suspensa ? '<span class="pill bad">Suspensa</span>' : p.publicada ? '<span class="pill ok">No ar</span>' : '<span class="pill">Rascunho</span>'}</td>
       <td class="small num muted">${fdt(p.atualizadoEm)}</td>
       <td><div class="row" style="gap:4px;flex-wrap:nowrap"><button class="btn sec sm" data-sub="${esc(p.id)}">Substituir arquivos</button><button class="btn sec sm" data-pub="${esc(p.id)}">${p.publicada ? "Tirar do ar" : "Publicar"}</button><button class="btn sec sm" data-ed="${esc(p.id)}">Editor e análise</button></div></td></tr>`).join("")}</tbody></table>` : `<div class="empty" style="margin:16px">Nenhuma página ou sistema ainda. Clique em “Adicionar página ou sistema”.</div>`}</div>`;
@@ -307,51 +320,68 @@ async function aPaginas(ct, { id, doc, priv, save }) {
   $$("[data-pub]", ct).forEach(b => b.onclick = async () => { const p = pgs.find(x => x.id === b.dataset.pub); await S.set(`lp_paginas/${p.id}`, { publicada: !p.publicada, atualizadoEm: Date.now(), ...(p.publicada ? {} : { publicadoEm: Date.now() }) }, true); toast(p.publicada ? "Página tirada do ar" : "Página no ar"); reAdmin(); });
   $$("[data-ed]", ct).forEach(b => b.onclick = () => window.open(`../apps/servicos/?embed=1&frente=landing&cid=${encodeURIComponent(id)}#/pagina/${encodeURIComponent(b.dataset.ed)}/editar`, "_blank", "noopener"));
 }
-function enviarPagina(id, doc, atual, save) {
+// opcoes.frente: o envio vira o painel personalizado daquela frente (Serviços › Painel do cliente)
+function enviarPagina(id, doc, atual, save, opcoes = {}) {
   let pasta = null, htmlArq = null;
-  const slugIni = atual ? atual.id : slugEmp(doc.marca || doc.empresa || doc.nome);
-  modal(atual ? `Substituir arquivos · ${atual.titulo || atual.id}` : "Adicionar página ou sistema", `
-    <div class="g3"><label class="f" for="epTipo">Tipo<select id="epTipo">${Object.entries(TIPOS_PAG).map(([k, l]) => `<option value="${k}" ${(atual?.tipo || "landing") === k ? "selected" : ""}>${l}</option>`).join("")}</select></label>
-      <label class="f" for="epNome">Nome<input id="epNome" value="${esc(atual?.titulo || doc.marca || doc.empresa || "")}"></label>
+  const slugIni = atual ? atual.id : slugEmp((doc.marca || doc.empresa || doc.nome) + (opcoes.frente ? "-painel" : ""));
+  modal(atual ? `Substituir arquivos · ${atual.titulo || atual.id}` : opcoes.frente ? `Painel personalizado · ${FRENTES_UPE[opcoes.frente]}` : "Adicionar página ou sistema", `
+    <div class="g3"><label class="f" for="epTipo">Tipo<select id="epTipo">${Object.entries(TIPOS_PAG).map(([k, l]) => `<option value="${k}" ${(atual?.tipo || opcoes.tipo || "landing") === k ? "selected" : ""}>${l}</option>`).join("")}</select></label>
+      <label class="f" for="epNome">Nome<input id="epNome" value="${esc(atual?.titulo || (doc.marca || doc.empresa || "") + (opcoes.frente ? " · painel" : ""))}"></label>
       <label class="f" for="epSlug">Endereço<input id="epSlug" value="${esc(slugIni)}" ${atual ? "disabled" : ""} pattern="[a-z0-9][a-z0-9-]{1,47}"></label></div>
-    <p class="muted small">Fica em <b>lp.upecriativo.com.br/<span id="epVer">${esc(slugIni)}</span></b>. O domínio próprio é conectado depois, pelo painel do cliente.</p>
-    <div class="g2"><label class="tg" style="flex-direction:column;align-items:flex-start;gap:8px"><b>Pasta da página ou do sistema</b><small>A pasta inteira: o .html principal e as pastas de imagens, fontes, CSS, scripts e dados. É o jeito recomendado.</small><input type="file" id="epPasta" webkitdirectory multiple></label>
-      <label class="tg" style="flex-direction:column;align-items:flex-start;gap:8px"><b>Ou só o arquivo .html</b><small>Quando tudo está dentro do arquivo ou em links da internet.</small><input type="file" id="epHtml" accept=".html,.htm,text/html"></label></div>
+    <p class="muted small">Fica em <b>lp.upecriativo.com.br/<span id="epVer">${esc(slugIni)}</span>/</b>. Cada arquivo da pasta abre no mesmo caminho (ex.: <code>…/css/estilo.css</code>), então imagens, fontes, scripts e dados funcionam como no computador.</p>
+    <div class="g3"><label class="tg" style="flex-direction:column;align-items:flex-start;gap:8px"><b>Pasta</b><small>A pasta inteira, com o .html e as pastas de imagens, fontes, CSS, scripts e dados.</small><input type="file" id="epPasta" webkitdirectory multiple></label>
+      <label class="tg" style="flex-direction:column;align-items:flex-start;gap:8px"><b>Ou um .zip</b><small>A mesma pasta compactada. Ele é aberto aqui no navegador.</small><input type="file" id="epZip" accept=".zip,application/zip"></label>
+      <label class="tg" style="flex-direction:column;align-items:flex-start;gap:8px"><b>Ou só o .html</b><small>Quando tudo está dentro do arquivo ou em links da internet.</small><input type="file" id="epHtml" accept=".html,.htm,text/html"></label></div>
+    <div id="epEsc" class="g2" hidden><label class="f" for="epRaiz">Pasta a publicar<select id="epRaiz"></select></label><label class="f" for="epPrin">Página principal<select id="epPrin"></select></label></div>
     <div id="epInfo" class="muted small"></div>
-    <div class="g2"><label class="tg"><input type="checkbox" id="epPub" ${!atual || atual.publicada ? "checked" : ""}><span>Publicar agora<small>Sem marcar, fica como rascunho</small></span></label>
-      <label class="tg"><input type="checkbox" id="epPainel" ${atual?.painelCliente ? "checked" : ""}><span>Mostrar como painel do cliente<small>Vira o botão “Painel – ${esc(atual?.titulo || "Sistema")}” em Meus serviços</small></span></label></div>`,
+    <div class="g2"><label class="tg"><input type="checkbox" id="epPub" ${!atual || atual.publicada ? "checked" : ""}><span>Publicar agora<small>Sem marcar, fica como rascunho (abre só pelo link de prévia)</small></span></label>
+      ${opcoes.frente ? `<input type="checkbox" id="epPainel" hidden>` : `<label class="tg"><input type="checkbox" id="epPainel" ${atual?.painelCliente ? "checked" : ""}><span>Mostrar como painel do cliente<small>Vira o botão “Painel – ${esc(atual?.titulo || "Sistema")}” em Meus serviços</small></span></label>`}</div>`,
     `<button class="btn sec" data-close>Cancelar</button><button class="btn" id="epOk">Enviar e ${atual ? "atualizar" : "criar"}</button>`, true);
   const info = t => $("#epInfo").innerHTML = t;
-  $("#epSlug").oninput = e => $("#epVer").textContent = slugEmp(e.target.value);
-  $("#epTipo").onchange = e => { if (e.target.value === "sistema") $("#epPainel").checked = true; };
-  $("#epPasta").onchange = e => {
-    pasta = new Map(); for (const f of e.target.files) pasta.set(f.webkitRelativePath.split("/").slice(1).join("/"), f);
-    const htmls = [...pasta.keys()].filter(k => /\.html?$/i.test(k)).sort((a, b) => (/(^|\/)index\.html?$/i.test(b) - /(^|\/)index\.html?$/i.test(a)) || a.split("/").length - b.split("/").length);
-    if (!htmls.length) { pasta = null; return info('<span class="bad">Não encontrei nenhum arquivo .html nesta pasta.</span>'); }
-    pasta.principal = htmls[0];
-    const tam = [...pasta.values()].reduce((s, f) => s + f.size, 0);
-    info(`<b>${pasta.size} arquivo(s)</b> · ${(tam / 1048576).toFixed(1)} MB · página principal: <b>${esc(pasta.principal)}</b>${htmls.length > 1 ? ` <span class="muted">(outros .html também sobem)</span>` : ""}`);
+  const mostrar = () => {
+    const raiz = $("#epRaiz").value, m = recortar(pasta, raiz), hs = htmlsDe(m), ant = $("#epPrin").value;
+    $("#epPrin").innerHTML = hs.map(h => `<option value="${esc(h)}">${esc(h)}</option>`).join("");
+    const pref = opcoes.frente ? hs.find(h => /painel|admin|gest/i.test(h)) : null; $("#epPrin").value = hs.includes(ant) ? ant : pref || hs[0] || "";
+    info(hs.length ? `<b>${m.size} arquivo(s)</b> · ${tamanhoMB(m)} MB${hs.length > 1 ? ` · ${hs.length} páginas .html (todas sobem e abrem pelo caminho delas)` : ""}` : '<span class="bad">Não há arquivo .html nesta pasta.</span>');
   };
-  $("#epHtml").onchange = e => { htmlArq = e.target.files[0] || null; if (htmlArq) info(`Arquivo: <b>${esc(htmlArq.name)}</b> · ${(htmlArq.size / 1024).toFixed(0)} KB`); };
+  const carregar = m => {
+    pasta = m; htmlArq = null; $("#epHtml").value = "";
+    const hs = htmlsDe(m); if (!hs.length) { pasta = null; $("#epEsc").hidden = true; return info('<span class="bad">Não encontrei nenhum arquivo .html.</span>'); }
+    // subpastas com .html (ex.: um dossiê com "landing/" e "site/" dentro): dá para publicar só uma delas
+    const dirs = [...new Set(hs.filter(h => h.includes("/")).map(h => h.split("/")[0] + "/"))];
+    $("#epRaiz").innerHTML = `<option value="">Pasta inteira</option>` + dirs.map(d => `<option value="${esc(d)}">Só ${esc(d)}</option>`).join("");
+    $("#epRaiz").value = !hs.some(h => !h.includes("/")) && dirs.length ? dirs[0] : "";
+    $("#epEsc").hidden = false; mostrar();
+  };
+  $("#epRaiz").onchange = mostrar;
+  $("#epSlug").oninput = e => $("#epVer").textContent = slugEmp(e.target.value);
+  $("#epTipo").onchange = e => { if (e.target.value === "sistema" && !opcoes.frente) $("#epPainel").checked = true; };
+  $("#epPasta").onchange = e => { $("#epZip").value = ""; carregar(pastaDeArquivos(e.target.files)); };
+  $("#epZip").onchange = async e => { const f = e.target.files[0]; if (!f) return; $("#epPasta").value = ""; try { carregar(await lerZip(f, info)); } catch (er) { pasta = null; info(`<span class="bad">Não consegui abrir o .zip: ${esc(er.message)}</span>`); } };
+  $("#epHtml").onchange = e => { htmlArq = e.target.files[0] || null; if (!htmlArq) return; pasta = null; $("#epPasta").value = ""; $("#epZip").value = ""; $("#epEsc").hidden = true; info(`Arquivo: <b>${esc(htmlArq.name)}</b> · ${(htmlArq.size / 1024).toFixed(0)} KB`); };
   $("#epOk").onclick = async () => {
     const slug = atual ? atual.id : slugEmp($("#epSlug").value), titulo = $("#epNome").value.trim() || slug, b = $("#epOk");
     if (!/^[a-z0-9][a-z0-9-]{1,47}$/.test(slug)) return toast("Endereço inválido: use letras, números e hífen");
-    if (!pasta && !htmlArq) return toast("Escolha a pasta ou o arquivo .html");
+    if (!pasta && !htmlArq) return toast("Escolha a pasta, o .zip ou o arquivo .html");
     if (S.mode === "firebase" && pasta && !S.st) return toast("O Storage não está ligado no painel (config.js)");
     b.disabled = true;
     try {
       if (!atual) { const ja = await S.get(`lp_paginas/${slug}`).catch(() => null); if (ja) { b.disabled = false; return toast("Esse endereço já está em uso. Escolha outro."); } }
-      let html = "", n = 0;
+      let html = "", n = 0, extra = { raiz: false, principal: "", htmls: [], pasta: "" };
       if (pasta) {
-        const urls = await subirPasta(slug, pasta, pasta.principal, t => { b.textContent = t.length > 48 ? t.slice(0, 48) + "…" : t; });
-        html = trocarRefs(await pasta.get(pasta.principal).text(), dirDe(pasta.principal), urls); n = urls.size;
+        const m = recortar(pasta, $("#epRaiz").value), prin = $("#epPrin").value;
+        html = await m.get(prin).text();
+        n = await subirPasta(`lp/${slug}`, m, t => b.textContent = t);
+        extra = { raiz: true, principal: prin, htmls: htmlsDe(m).slice(0, 60), pasta: `lp/${slug}` };
       } else html = await htmlArq.text();
-      if (html.length > 900000) throw new Error("o HTML principal passa de 900 KB mesmo sem os arquivos. Tire imagens embutidas (base64) do arquivo.");
-      const agora = Date.now(), tipo = $("#epTipo").value, publicar = $("#epPub").checked;
+      if (html.length > 900000) throw new Error("o HTML principal passa de 900 KB. Tire imagens embutidas (base64) do arquivo e deixe-as na pasta.");
+      const agora = Date.now(), tipo = $("#epTipo").value, publicar = $("#epPub").checked, previa = atual?.previa || uid(16);
       const base = atual ? {} : { cid: id, suspensa: false, seo: { titulo }, whatsapp: { ativo: false, numero: "", mensagem: "Olá! Vim pela página " + titulo }, pixel: {}, criadoEm: agora };
-      await S.set(`lp_paginas/${slug}`, { ...base, cid: id, titulo, tipo, html, publicada: publicar, ...(publicar ? { publicadoEm: agora } : {}), arquivos: n, pasta: n ? `lp/${slug}` : "", painelCliente: $("#epPainel").checked, atualizadoEm: agora, enviadoPor: "upe" }, !!atual);
+      await S.set(`lp_paginas/${slug}`, { ...base, cid: id, titulo, tipo, html, ...extra, previa, publicada: publicar, ...(publicar ? { publicadoEm: agora } : {}), arquivos: n, painelCliente: $("#epPainel").checked, atualizadoEm: agora, enviadoPor: "upe" }, !!atual);
       await S.set(`lp_paginas/${slug}/privado/rascunho`, { html, em: agora });
-      doc.temPaginas = true; dlg.close(); await save(`${TIPOS_PAG[tipo]} ${publicar ? "no ar" : "salva como rascunho"}${n ? ` com ${n} arquivo(s) no Storage` : ""}: lp.upecriativo.com.br/${slug}`);
+      doc.temPaginas = true;
+      if (opcoes.frente) { doc.paineis = doc.paineis || {}; doc.paineis[opcoes.frente] = { modo: "personalizado", slug, arquivo: extra.principal, nome: titulo, previa, em: agora }; }
+      dlg.close(); await save(`${TIPOS_PAG[tipo]} ${publicar ? "no ar" : "salva como rascunho"}${n ? ` com ${n} arquivo(s)` : ""}: lp.upecriativo.com.br/${slug}/${opcoes.frente ? ` · agora é o painel de ${FRENTES_UPE[opcoes.frente]}` : ""}`);
     } catch (e) { console.error(e); toast("Não foi possível enviar: " + (e.message || e)); b.disabled = false; b.textContent = `Enviar e ${atual ? "atualizar" : "criar"}`; }
   };
 }
@@ -388,7 +418,7 @@ async function cMeusServicos(m, c) {
 async function cAppProprio(m, c, slug) {
   const p = (await S.query("lp_paginas", "cid", c.id).catch(() => [])).find(x => x.id === slug);
   if (!p) { m.innerHTML = `<div class="empty"><b>Painel não encontrado.</b><a class="btn sec" href="#/c/servicos">Voltar</a></div>`; return; }
-  const url = p.dominio ? "https://" + p.dominio : LP_URL + p.id;
+  const url = p.dominio ? "https://" + p.dominio : urlPagina(p);
   m.innerHTML = `<a href="#/c/servicos" class="small">← Meus serviços</a><div class="spread"><h1>${esc(p.titulo || p.id)}</h1><a class="btn sec sm" href="${esc(url)}" target="_blank" rel="noopener">Abrir em outra aba ↗</a></div>
     <iframe class="svc-frame" src="${esc(url)}" title="${esc(p.titulo || p.id)}" allow="clipboard-write; fullscreen"></iframe>`;
 }

@@ -22,6 +22,11 @@ service firebase.storage {
       allow write: if upe() && request.resource.size < 500 * 1024 * 1024
         && request.resource.contentType.matches('(video|image)/.*');
     }
+    // dossiês completos (pasta ou .zip): só a Upe envia e lê; o painel mostra pelo link lp.upecriativo.com.br/_d/{chave}/…
+    match /dossies/{chave}/{rest=**} {
+      allow read, delete: if upe();
+      allow write: if upe() && request.resource.size < 200 * 1024 * 1024;
+    }
     // páginas e sistemas: imagens do editor (dono da página ou Upe) e, pela Upe, a pasta inteira (HTML, CSS, fontes, scripts, dados)
     match /lp/{slug}/{rest=**} {
       allow read: if true;

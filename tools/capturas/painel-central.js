@@ -15,6 +15,9 @@ const SITE = __R + '/site';
     const ct = { '.html': 'text/html', '.js': 'application/javascript', '.json': 'application/json', '.png': 'image/png', '.jpg': 'image/jpeg', '.svg': 'image/svg+xml', '.css': 'text/css', '.webmanifest': 'application/manifest+json' }[path.extname(f)] || 'text/plain';
     r.fulfill({ path: f, contentType: ct });
   });
+  // leitor de .zip (cdnjs) servido de uma cópia local
+  let JSZIP = null; for (const c of ['jszip/dist/jszip.min.js', '/opt/node-tools/node_modules/jszip/dist/jszip.min.js']) { try { JSZIP = require.resolve(c); break; } catch (e) {} }
+  if (JSZIP) await ctx.route(/cdnjs\.cloudflare\.com\/ajax\/libs\/jszip\//, r => r.fulfill({ path: JSZIP, contentType: 'application/javascript' }));
   const p = await ctx.newPage(), errs = [];
   p.on('pageerror', e => errs.push('PAGE ' + e.message)); p.on('dialog', d => d.accept());
   p.on('console', m => { if (m.type() === 'error' && !/Failed to load resource|net::ERR/.test(m.text())) errs.push('CONS ' + m.text().slice(0, 200)); });
@@ -67,10 +70,25 @@ const SITE = __R + '/site';
   ok(/7 arquivo/.test(await p.textContent('#epInfo')), 'pasta lida: ' + (await p.textContent('#epInfo')));
   await p.click('#epOk'); await p.waitForTimeout(4000);
   cols = await LS(); const pg = (cols['lp_paginas'] || {})['cafe-aurora-pedidos'] || {};
-  ok(pg.cid === cid && pg.publicada && pg.tipo === 'sistema' && pg.painelCliente && pg.arquivos === 6, 'página/sistema publicado com ' + pg.arquivos + ' arquivo(s) no Storage');
-  ok(pg.html && !/href="css\/estilo\.css"|src="img\/logo\.svg"|\.\/js\/app\.js/.test(pg.html) && (pg.html.match(/idb:/g) || []).length >= 3, 'caminhos do HTML trocados pelos arquivos enviados');
-  const cssOk = await p.evaluate(() => { const u = new Map([['fonts/exemplo.woff2', 'URL-FONTE'], ['img/fundo.svg', 'URL-FUNDO']]); const t = window.__upeTrocarRefs('src: url("../fonts/exemplo.woff2"); background: url(../img/fundo.svg)', 'css/', u); return t.includes('url("URL-FONTE")') && t.includes('url(URL-FUNDO)'); });
-  ok(cssOk, 'caminhos dentro do CSS (fontes e imagens) também são trocados');
+  ok(pg.cid === cid && pg.publicada && pg.tipo === 'sistema' && pg.painelCliente && pg.arquivos === 7 && pg.raiz && pg.principal === 'index.html' && pg.previa, 'página/sistema publicado com ' + pg.arquivos + ' arquivo(s) no caminho original');
+  const enviados = await p.evaluate(() => window.__upeEnviados.slice());
+  ok(['css/estilo.css', 'fonts/exemplo.woff2', 'js/app.js', 'dados/itens.json', 'img/logo.svg'].every(r => enviados.includes('lp/cafe-aurora-pedidos/' + r)), 'arquivos enviados com os mesmos caminhos (css, fontes, js, dados, imagens)');
+  ok(/href="css\/estilo\.css"/.test(pg.html), 'HTML principal guardado como está (caminhos relativos funcionam no endereço da página)');
+  // .zip com a página dentro de uma subpasta: "Pasta a publicar" escolhe a subpasta sozinha
+  if (JSZIP) {
+    const JS = require(JSZIP.replace(/dist\/jszip\.min\.js$/, '')), z = new JS(), dirF = __dirname + '/fixtures/pagina-exemplo';
+    const andar = (d, r = '') => fs.readdirSync(d).forEach(n => { const c = path.join(d, n); fs.statSync(c).isDirectory() ? andar(c, r + n + '/') : z.file('Pacote/landing/' + r + n, fs.readFileSync(c)); }); andar(dirF);
+    z.file('Pacote/LEIA-ME.txt', 'teste'); const zipF = path.join(O, 'pacote-teste.zip'); fs.writeFileSync(zipF, await z.generateAsync({ type: 'nodebuffer' }));
+    await p.click('#pgNova'); await p.waitForSelector('#epZip'); await p.fill('#epSlug', 'cafe-aurora-zip');
+    await p.setInputFiles('#epZip', zipF); await p.waitForTimeout(1500);
+    ok((await p.inputValue('#epRaiz')) === 'landing/' && (await p.inputValue('#epPrin')) === 'index.html', '.zip aberto no navegador: publica a subpasta landing/ com index.html');
+    await p.click('#epOk'); await p.waitForTimeout(3000);
+    cols = await LS(); const pz = (cols['lp_paginas'] || {})['cafe-aurora-zip'] || {}, env2 = await p.evaluate(() => window.__upeEnviados.slice());
+    ok(pz.raiz && pz.arquivos === 7 && env2.includes('lp/cafe-aurora-zip/css/estilo.css') && !env2.some(x => /LEIA-ME/.test(x)), '.zip publicado com os caminhos da subpasta');
+  } else console.log('· jszip não encontrado: teste do .zip pulado');
+  await vai(`#/admin/cliente/${cid}/apps`, 1500);
+  const opsPainel = await p.$$eval('[data-ps="sistemas"] option', l => l.map(o => o.value));
+  ok(opsPainel.includes('cafe-aurora-pedidos|index.html'), 'painel personalizado escolhe entre as páginas e sistemas enviados');
   await p.screenshot({ path: `${O}/pc-a-paginas.png`, fullPage: true });
   // sair do admin
   await vai('#/admin/clientes', 800); await p.click('#logout'); await p.waitForTimeout(800);
