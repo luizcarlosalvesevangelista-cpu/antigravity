@@ -179,7 +179,7 @@ exports.api = onRequest({ secrets: [MP_ACCESS_TOKEN], cors: false, invoker: "pub
 });
 
 /* ---------- landing pages montadas no servidor (prévia certa ao compartilhar) ---------- */
-// Páginas e sistemas enviados com a pasta (raiz: true) ficam no Storage em lp/{endereço}/{caminho original} e abrem no caminho de verdade:
+// Páginas e sistemas enviados com a pasta (raiz: true) ficam no Storage (clientes/{marca}/paginas/{endereço}/…) e abrem no caminho de verdade:
 // lp.upecriativo.com.br/{endereço}/css/estilo.css, /fonts/…, /js/…, /dados/… (então caminhos relativos, módulos, fetch e fontes funcionam como no computador).
 // Dossiês: lp.upecriativo.com.br/_d/{chave}/… → pasta do dossiê do cliente (dossies_idx/{chave}.prefixo = clientes/{marca}/dossie;
 // chave aleatória, só quem tem o link abre). Envios antigos ficaram em dossies/{chave}/….
@@ -187,17 +187,37 @@ exports.api = onRequest({ secrets: [MP_ACCESS_TOKEN], cors: false, invoker: "pub
 const BUCKET = () => admin.storage().bucket((process.env.GCLOUD_PROJECT || "upecriativo-cc472") + ".firebasestorage.app");
 const TIPO_TXT = { html: "text/html; charset=utf-8", htm: "text/html; charset=utf-8", css: "text/css; charset=utf-8", js: "text/javascript; charset=utf-8", mjs: "text/javascript; charset=utf-8",
   json: "application/json; charset=utf-8", map: "application/json; charset=utf-8", webmanifest: "application/manifest+json", svg: "image/svg+xml", txt: "text/plain; charset=utf-8", md: "text/plain; charset=utf-8", csv: "text/csv; charset=utf-8", xml: "application/xml; charset=utf-8" };
-// texto sai direto daqui; imagens, fontes, vídeos e PDFs vão para o endereço do Storage (sem limite de tamanho, com suporte a vídeo)
-async function servirArquivo(res, caminho, extra = {}) {
+const TIPO_MIDIA = { jpg: "image/jpeg", jpeg: "image/jpeg", png: "image/png", gif: "image/gif", webp: "image/webp", avif: "image/avif", ico: "image/x-icon", mp4: "video/mp4", webm: "video/webm", mov: "video/quicktime",
+  mp3: "audio/mpeg", wav: "audio/wav", ogg: "audio/ogg", woff: "font/woff", woff2: "font/woff2", ttf: "font/ttf", otf: "font/otf", pdf: "application/pdf", zip: "application/zip" };
+// tudo sai daqui, no mesmo endereço da página: texto direto; imagens, fontes, vídeos e PDF em fluxo (com pedaços para vídeo).
+// Sem redirecionar para o Storage: o tipo é sempre o certo e o navegador não bloqueia (ORB) nem guarda link velho.
+async function servirArquivo(req, res, caminho, extra = {}) {
   const f = BUCKET().file(caminho), [md] = await f.getMetadata().catch(() => [null]);
   if (!md) return false;
-  const ext = caminho.split(".").pop().toLowerCase();
-  res.set({ "Access-Control-Allow-Origin": "*", ...extra });
-  if (TIPO_TXT[ext] && +md.size < 8 * 1048576) { const [buf] = await f.download(); res.set("Content-Type", TIPO_TXT[ext]).set("Cache-Control", "public, max-age=60, s-maxage=120").send(buf); return true; }
-  let tok = String(md.metadata?.firebaseStorageDownloadTokens || "").split(",")[0];
-  if (!tok) { tok = crypto.randomUUID(); await f.setMetadata({ metadata: { firebaseStorageDownloadTokens: tok } }); }
-  // cache curto: se a pasta mudar de lugar (ex.: migração para clientes/{marca}/…), o link antigo não fica preso no cache
-  res.set("Cache-Control", "public, max-age=60, s-maxage=300").redirect(302, `https://firebasestorage.googleapis.com/v0/b/${f.bucket.name}/o/${encodeURIComponent(caminho)}?alt=media&token=${tok}`);
+  const ext = caminho.split(".").pop().toLowerCase(), tam = +md.size || 0;
+  res.set({ "Access-Control-Allow-Origin": "*", "X-Content-Type-Options": "nosniff", ...extra });
+  if (TIPO_TXT[ext] && tam < 8 * 1048576) { const [buf] = await f.download(); res.set("Content-Type", TIPO_TXT[ext]).set("Cache-Control", "public, max-age=60, s-maxage=120").send(buf); return true; }
+  const tipo = TIPO_MIDIA[ext] || TIPO_TXT[ext] || md.contentType || "application/octet-stream";
+  // arquivo muito grande (acima do limite de resposta do servidor): vai pelo endereço do Storage, já com o tipo corrigido
+  if (tam > 30 * 1048576) {
+    let tok = String(md.metadata?.firebaseStorageDownloadTokens || "").split(",")[0]; const acerto = {};
+    if (md.contentType !== tipo) acerto.contentType = tipo;
+    if (!tok) { tok = crypto.randomUUID(); acerto.metadata = { firebaseStorageDownloadTokens: tok }; }
+    if (Object.keys(acerto).length) await f.setMetadata(acerto);
+    res.set("Cache-Control", "public, max-age=60, s-maxage=300").redirect(302, `https://firebasestorage.googleapis.com/v0/b/${f.bucket.name}/o/${encodeURIComponent(caminho)}?alt=media&token=${tok}`);
+    return true;
+  }
+  const etag = `"${md.etag || md.generation}"`;
+  res.set({ "Content-Type": tipo, "Accept-Ranges": "bytes", "Cache-Control": "public, max-age=300, s-maxage=3600", ETag: etag });
+  if (req.get("if-none-match") === etag) { res.status(304).end(); return true; }
+  const m = /^bytes=(\d*)-(\d*)$/.exec(req.get("range") || "");
+  let ini = 0, fim = tam - 1;
+  if (m && tam && (m[1] || m[2])) { ini = m[1] ? +m[1] : Math.max(0, tam - +m[2]); fim = m[1] && m[2] ? Math.min(+m[2], tam - 1) : tam - 1;
+    if (ini > fim || ini >= tam) { res.status(416).set("Content-Range", `bytes */${tam}`).end(); return true; }
+    res.status(206).set("Content-Range", `bytes ${ini}-${fim}/${tam}`); }
+  res.set("Content-Length", String(fim - ini + 1));
+  if (req.method === "HEAD") { res.end(); return true; }
+  await new Promise((ok, erro) => f.createReadStream(tam ? { start: ini, end: fim } : {}).on("error", erro).on("end", ok).pipe(res));
   return true;
 }
 const caminhoSeguro = partes => { try { const p = partes.map(decodeURIComponent); return p.some(x => !x || x === "." || x === ".." || x.includes("\\")) ? null : p.join("/"); } catch { return null; } };
@@ -214,7 +234,7 @@ exports.lpRender = onRequest({ memory: "256MiB", invoker: "public" }, async (req
     if (!resto && !barra) return res.redirect(301, `/_d/${chave}/${qs}`);
     const alvo = !resto || barra ? (resto ? resto + "/" : "") + "index.html" : resto;
     const ix = (await db.doc("dossies_idx/" + chave).get()).data(), pref = ix && /^clientes\/[a-z0-9-]+\/dossie$/.test(ix.prefixo || "") ? ix.prefixo : `dossies/${chave}`;
-    if (await servirArquivo(res, `${pref}/${alvo}`, { "X-Robots-Tag": "noindex" })) return;
+    if (await servirArquivo(req, res, `${pref}/${alvo}`, { "X-Robots-Tag": "noindex" })) return;
     return fora("Arquivo não encontrado", "Confira o link.");
   }
   let slug = "";
@@ -232,7 +252,7 @@ exports.lpRender = onRequest({ memory: "256MiB", invoker: "public" }, async (req
     const alvo = !resto ? "index.html" : barra ? resto + "/index.html" : resto;
     // pasta da página: clientes/{marca}/paginas/{endereço} (ou lp/{endereço} nos envios antigos); nada fora disso
     const pasta = new RegExp(`^(clientes/[a-z0-9-]+/paginas/${slug}|lp/${slug})$`).test(p.pasta || "") ? p.pasta : `lp/${slug}`;
-    if (alvo !== prin) { if (await servirArquivo(res, `${pasta}/${alvo}`)) return; return fora("Arquivo não encontrado", "Confira o endereço digitado."); }
+    if (alvo !== prin) { if (await servirArquivo(req, res, `${pasta}/${alvo}`)) return; return fora("Arquivo não encontrado", "Confira o endereço digitado."); }
   }
   const previa = p.previa && req.query.previa === p.previa;
   if ((!p.publicada && !previa) || !p.html) return fora("Página indisponível", "Esta página não está no ar agora. Volte em breve.");
