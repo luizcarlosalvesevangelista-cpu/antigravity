@@ -430,7 +430,7 @@ async function servicosDoCliente(c) {
   pgs.filter(p => p.tipo === "sistema" || p.painelCliente).forEach(p => out.push({ frente: "app", nome: p.titulo || p.id, sub: TIPOS_PAG[p.tipo] || "Sistema", status: p.publicada ? "ativo" : "pendente",
     botoes: [[`Painel – ${p.titulo || p.id}`, `#/c/app/${encodeURIComponent(p.id)}`], ["Abrir em outra aba ↗", p.dominio ? "https://" + p.dominio : LP_URL + p.id, true]] }));
   if (doc.plano?.branding || doc.plano?.midias || doc.plano?.grafica) out.unshift({ frente: "branding", nome: "Branding e mídias", sub: ["branding", "midias", "grafica"].filter(k => doc.plano?.[k]).map(k => ({ branding: "Branding", midias: "Mídias digitais", grafica: "Papelaria gráfica" })[k]).join(" · "), status: "ativo",
-    botoes: [...(doc.acesso?.apresentacao && doc.apresentacao ? [["Apresentação da marca", "#/c/apresentacao"]] : []), ...(doc.plano?.midias && doc.acesso?.calendario ? [["Posts para aprovar", "#/c/conteudo"]] : []), ...(temPainelProprio(doc, "branding") ? [["Painel da marca", "#/c/s-branding"]] : [])] });
+    botoes: [...(doc.acesso?.apresentacao && doc.apresentacao ? [["Apresentação da marca", "#/c/apresentacao"]] : []), ...(postsVisiveis(doc) ? [["Posts para aprovar", "#/c/conteudo"]] : []), ...(temPainelProprio(doc, "branding") ? [["Painel da marca", "#/c/s-branding"]] : [])] });
   return out;
 }
 const cardsServicos = svs => svs.length ? `<div class="g2 meus">${svs.map(sv => `<article class="card grid"><div class="spread"><div class="grid" style="gap:2px"><h3>${esc(sv.nome)}</h3>${sv.sub ? `<span class="muted small">${esc(sv.sub)}</span>` : ""}</div>${sv.frente === "branding" ? "" : astPill(sv.status)}</div>

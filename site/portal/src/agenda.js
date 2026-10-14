@@ -90,7 +90,7 @@ function bell(host, key, items) {
 }
 function notifsCliente(doc, acoes) {
   const out = [], vis = it => it.status !== "rascunho" && it.status !== "orcamento", t = todayIso();
-  const pend0 = (doc.posts || []).filter(vis).filter(p => statusOf(p, acoes).status === "pendente");
+  const pend0 = postsVisiveis(doc) ? (doc.posts || []).filter(vis).filter(p => statusOf(p, acoes).status === "pendente") : [];
   // ajuste devolvido pela Upe: aviso próprio, com link direto para o post
   pend0.filter(p => (p.versao || 1) > 1).forEach(p => out.push({ em: p.statusEm || 0, titulo: `Ajuste pronto: nova versão de “${p.titulo}” para aprovar`, sub: `Versão ${p.versao} · ${fdate(p.data)}`, href: `#/c/conteudo/${p.id}`, cls: "warn" }));
   const pend = pend0.filter(p => (p.versao || 1) <= 1);
@@ -137,7 +137,7 @@ function notifsAdmin({ clients, contatos, reunioes, crono }) {
 /* ---------- eventos do cliente (agenda) ---------- */
 function eventosCliente(doc, acoes) {
   const ev = [];
-  (doc.posts || []).filter(p => p.status !== "rascunho" && p.data).forEach(p => { const s = statusOf(p, acoes).status; ev.push({ id: "p:" + p.id, data: p.data, hora: p.hora || "", titulo: p.titulo, tag: FMT_LBL[p.tipo] || "Post", sub: "Postagem agendada", cls: evCls(s), pill: pill(s), k: "post", ref: p }); });
+  (postsVisiveis(doc) ? doc.posts || [] : []).filter(p => p.status !== "rascunho" && p.data).forEach(p => { const s = statusOf(p, acoes).status; ev.push({ id: "p:" + p.id, data: p.data, hora: p.hora || "", titulo: p.titulo, tag: FMT_LBL[p.tipo] || "Post", sub: "Postagem agendada", cls: evCls(s), pill: pill(s), k: "post", ref: p }); });
   (doc.entregas || []).forEach(e => ev.push({ id: "e:" + e.id, data: e.data, titulo: e.titulo, tag: "Entrega", sub: e.descricao || "Prazo de entrega", cls: e.status === "entregue" ? "ok" : daysTo(e.data) < 0 ? "bad" : "info", pill: pill(e.status === "entregue" ? "entregue" : "pendente").replace("Aguardando aprovação", "Em andamento"), k: "entrega", ref: e }));
   (doc.cobrancas || []).filter(c => c.liberada).forEach(c => { const s = cobStatus(c, acoes); ev.push({ id: "c:" + c.id, data: c.vencimento, titulo: `${c.descricao} · ${brl(c.valor)}`, tag: "Vencimento", sub: "Pagamento", cls: s === "paga" ? "ok" : daysTo(c.vencimento) < 0 ? "bad" : "warn", pill: pill(s), k: "cob", ref: c }); });
   (doc.reunioes || []).filter(r => r.status !== "cancelada").forEach(r => ev.push({ id: "r:" + r.id, data: r.data, hora: r.hora, titulo: r.titulo, tag: "Reunião", sub: r.link ? "Online" : r.local || "Reunião", cls: "info", pill: '<span class="pill info">Reunião</span>', k: "reuniao", ref: r }));

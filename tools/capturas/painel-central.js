@@ -96,6 +96,13 @@ const SITE = __R + '/site';
     cols = await LS(); const cdoc = (cols['clientes'] || {})[cid] || {}, ps = (cdoc.posts || []).find(x => x.id === 'p-solto') || {};
     ok(cdoc.criacao?.pasta === 'clientes/cafe-aurora/criacao' && ps.midias?.[0] === 'clientes/cafe-aurora/criacao/img/logo.svg', 'pasta de criação salva no Storage do cliente e post ligado ao arquivo: ' + (ps.midias || []).join());
   }
+  // chave "Mostrar para o cliente" no Conteúdo: decide sozinha se os posts aparecem para o cliente
+  await vai(`#/admin/cliente/${cid}/conteudo`, 1500);
+  ok(!!(await p.$('#cVis')), 'Conteúdo tem a chave “Mostrar para o cliente”');
+  await p.evaluate(() => { const i = document.querySelector('#cVis'); if (i.checked) i.click(); }); await p.waitForTimeout(1200);
+  cols = await LS(); ok(((cols['clientes'] || {})[cid] || {}).conteudoVisivel === false, 'posts ocultos para o cliente ao desligar a chave');
+  await p.evaluate(() => { const i = document.querySelector('#cVis'); if (!i.checked) i.click(); }); await p.waitForTimeout(1200);
+  cols = await LS(); ok(((cols['clientes'] || {})[cid] || {}).conteudoVisivel === true, 'posts visíveis de novo ao ligar a chave');
   await vai(`#/admin/cliente/${cid}/apps`, 1500);
   const opsPainel = await p.$$eval('[data-ps="sistemas"] option', l => l.map(o => o.value));
   ok(opsPainel.includes('cafe-aurora-pedidos|index.html'), 'painel personalizado escolhe entre as páginas e sistemas enviados');

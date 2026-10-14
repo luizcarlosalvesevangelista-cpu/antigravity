@@ -196,7 +196,8 @@ async function servirArquivo(res, caminho, extra = {}) {
   if (TIPO_TXT[ext] && +md.size < 8 * 1048576) { const [buf] = await f.download(); res.set("Content-Type", TIPO_TXT[ext]).set("Cache-Control", "public, max-age=60, s-maxage=120").send(buf); return true; }
   let tok = String(md.metadata?.firebaseStorageDownloadTokens || "").split(",")[0];
   if (!tok) { tok = crypto.randomUUID(); await f.setMetadata({ metadata: { firebaseStorageDownloadTokens: tok } }); }
-  res.set("Cache-Control", "public, max-age=600, s-maxage=3600").redirect(302, `https://firebasestorage.googleapis.com/v0/b/${f.bucket.name}/o/${encodeURIComponent(caminho)}?alt=media&token=${tok}`);
+  // cache curto: se a pasta mudar de lugar (ex.: migração para clientes/{marca}/…), o link antigo não fica preso no cache
+  res.set("Cache-Control", "public, max-age=60, s-maxage=300").redirect(302, `https://firebasestorage.googleapis.com/v0/b/${f.bucket.name}/o/${encodeURIComponent(caminho)}?alt=media&token=${tok}`);
   return true;
 }
 const caminhoSeguro = partes => { try { const p = partes.map(decodeURIComponent); return p.some(x => !x || x === "." || x === ".." || x.includes("\\")) ? null : p.join("/"); } catch { return null; } };

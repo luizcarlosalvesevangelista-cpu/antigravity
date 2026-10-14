@@ -88,6 +88,8 @@ const thread = (doc, acoes) => [
 ].sort((a, b) => a.em - b.em);
 const pedidosOf = (doc, acoes) => acoes.filter(a => a.tipo === "pedido" && !String(a.alvo || "").startsWith("app:")).map(a => ({ ...a, status: doc.pedidosAdm?.[a.id]?.status || "novo" })).sort((a, b) => b.em - a.em);
 function cobStatus(c, acoes) { if (c.status === "paga" || c.status === "cancelado") return c.status; return acoes.some(a => a.tipo === "pagamento" && a.alvo === c.id) ? "informado" : "aberta"; }
+// posts visíveis para o cliente (Conteúdo, Agenda, avisos e Próximos): a chave da aba Conteúdo decide; sem ela, vale plano Mídias + acesso Calendário
+const postsVisiveis = doc => doc.conteudoVisivel === true || (doc.conteudoVisivel !== false && !!(doc.plano?.midias && doc.acesso?.calendario));
 function pendencias(doc, acoes, lastSeen = 0) {
   const vis = it => it.status !== "rascunho" && it.status !== "orcamento";
   const posts = (doc.posts || []).filter(vis).filter(p => statusOf(p, acoes).status === "pendente");
@@ -402,20 +404,20 @@ async function clientRoute(tab, arg) {
   state.client = c; state.cfg = await Api.config(); await carregarFontes();
   const { doc, acoes } = c, ac = doc.acesso || {}, pl = doc.plano || {};
   const seenKey = `upe-visto-${id}`, lastSeen = +(ls.get(seenKey) || 0);
-  const pend = pendencias(doc, acoes, lastSeen);
+  const pend = pendencias(doc, acoes, lastSeen); if (!postsVisiveis(doc)) pend.posts = [];
   const recItems = (doc.graficos || []).filter(g => g.recompra && statusOf(g, acoes).status !== "rascunho");
   const tabs = [
     ["inicio", "Início", 0, true],
     ["agenda", "Agenda", 0, true],
     ["apresentacao", "Apresentação", 0, ac.apresentacao && doc.apresentacao],
-    ["conteudo", "Conteúdo", pend.posts.length, pl.midias && ac.calendario],
+    ["conteudo", "Conteúdo", pend.posts.length, postsVisiveis(doc)],
     ["graficos", "Materiais gráficos", pend.artes.length, pl.grafica && ac.graficos],
     ["produtos", "Comprar de novo", 0, pl.grafica && ac.recompra && recItems.length],
     ["servicos", "Meus serviços", 0, true],
     ["pagamentos", "Pagamentos", pend.cobs.length, ac.pagamentos || FRENTES_DO_CLIENTE(doc).length > 0],
     ["mensagens", "Falar com a Upe", tab === "mensagens" ? 0 : pend.msgs.length, true]
   ].filter(t => t[3]);
-  const kitView = tab === "kit" && pl.midias && ac.calendario;
+  const kitView = tab === "kit" && postsVisiveis(doc);
   // painel de um serviço (s-erp, s-landing…) ou de um sistema próprio (app/<endereço>): abre a partir de Meus serviços
   const servico = /^s-/.test(tab) && (FRENTES_DO_CLIENTE(doc).includes(tab.slice(2)) || temPainelProprio(doc, tab.slice(2))) ? tab.slice(2) : "", appProprio = tab === "app" && arg ? arg : "";
   if (servico || appProprio) tab = "servicos";
@@ -957,7 +959,8 @@ function aConteudo(ct, { id, doc, priv, acoes, save, alvo }) {
   const posts = (doc.posts || []).map(p => ({ ...comRepost(p, doc.posts), ef: statusOf(p, acoes) })).sort((a, b) => (b.data || "").localeCompare(a.data || ""));
   const aj = posts.filter(p => p.ef.status === "ajustes" && p.ef.por === "cliente").sort((a, b) => b.ef.em - a.ef.em);
   const tl = timelineApps(doc.perfil || { canais: ["instagram", "whatsapp", "google"] });
-  ct.innerHTML = `${!doc.plano?.midias ? `<div class="card" style="background:var(--warn-bg)">Este cliente não está no plano Mídias digitais. Os posts só aparecem para ele com o plano e o acesso “Calendário de aprovação” ligados.</div>` : ""}
+  ct.innerHTML = `<section class="card spread" ${postsVisiveis(doc) ? "" : 'style="background:var(--warn-bg)"'}><div class="grid" style="gap:2px"><b>Posts ${postsVisiveis(doc) ? "visíveis" : "ocultos"} para o cliente</b><span class="muted small">${postsVisiveis(doc) ? "Ele vê os posts no Conteúdo, na Agenda, nos avisos e em Próximos (com ou sem arquivos)." : "Ele não vê os posts em lugar nenhum do painel. Você continua montando e programando aqui."}${doc.conteudoVisivel === undefined ? ` <i>Automático: ${doc.plano?.midias && doc.acesso?.calendario ? "plano Mídias e acesso Calendário ligados" : "sem plano Mídias ou acesso Calendário"}.</i>` : ""}</span></div>
+      <label class="tg" style="flex:none"><input type="checkbox" id="cVis" ${postsVisiveis(doc) ? "checked" : ""}><span>Mostrar para o cliente</span></label></section>
     ${aj.length ? `<section class="card grid prio"><div class="spread"><div><span class="tagx bad">Prioridade</span> <b>${aj.length} ajuste${aj.length > 1 ? "s" : ""} pedido${aj.length > 1 ? "s" : ""} pelo cliente</b></div><span class="muted small">Ajuste e devolva o arquivo corrigido: o cliente é avisado na hora.</span></div>
       ${aj.map(p => `<div class="row" style="flex-wrap:nowrap;align-items:flex-start"><div style="flex:1;min-width:0"><b>${esc(p.titulo)}</b> <span class="muted small">v${p.versao || 1} · ${fdate(p.data)} · ${fdt(p.ef.em)}</span><div class="small">“${esc(p.ef.texto)}”</div></div><button class="btn sm" data-ed="${p.id}">Devolver corrigido</button></div>`).join("")}</section>` : ""}
     <section class="card grid"><div class="spread"><div class="grid" style="gap:4px"><b>Pasta de criação</b><span class="muted small">${doc.criacao ? `Salva em <code>${esc(doc.criacao.pasta)}/</code> · ${doc.criacao.arquivos} arquivo(s) · ${fdt(doc.criacao.em)}` : "Envie a pasta (ou o .zip) com as artes, vídeos e capas dos posts. Ela fica salva no Storage do cliente e os posts são ligados aos arquivos pelo nome."}</span></div>
@@ -1002,6 +1005,7 @@ function aConteudo(ct, { id, doc, priv, acoes, save, alvo }) {
   };
   $("#pNew").onclick = () => edit(null);
   $("#pKit").onclick = () => kitImport({ alvo: "cliente", id, doc, save });
+  $("#cVis").onchange = async e => { doc.conteudoVisivel = e.target.checked; await save(e.target.checked ? "Posts visíveis para o cliente (Conteúdo e Agenda)" : "Posts ocultos para o cliente"); };
   // pasta de criação: sobe para clientes/{marca}/criacao/… (mesmos caminhos) e liga os posts aos arquivos
   const enviarCriacao = async mapa => {
     if (!mapa.size) return toast("A pasta está vazia");
