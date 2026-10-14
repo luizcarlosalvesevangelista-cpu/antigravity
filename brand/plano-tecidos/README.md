@@ -6,7 +6,7 @@ Projeto da Upe Criativo para a Plano Tecidos (@planotecidos). Todas as páginas 
 |---|---|
 | Manual da marca | `index.html`, `Plano_Tecidos_Brand_Book.pdf`, `Plano_Tecidos_Brand_Book.png` |
 | Dossiê (diagnóstico, estratégia, redesign, entregáveis) | `dossie/index.html` |
-| Apresentação de redesign (17 slides, setas do teclado) | `apresentacao/index.html`, `apresentacao/Plano_Tecidos_Redesign.pdf` |
+| Apresentação de redesign (18 slides, setas do teclado) | `apresentacao/index.html`, `apresentacao/Plano_Tecidos_Redesign.pdf` |
 | Landing page institucional | `site/index.html` |
 | Cronograma de conteúdo (12/10 a 22/11/2026) | `conteudo/index.html` |
 | Artes do Instagram (JPG 1080×1350 e 1080×1920) | `conteudo/posts/` |
