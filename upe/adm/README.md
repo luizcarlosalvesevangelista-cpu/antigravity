@@ -31,6 +31,16 @@ Copie `cliente-modelo/` e renomeie com o nome da marca em minúsculas e com híf
 - **Páginas:** abrem em `lp.upecriativo.com.br/<endereço>/`, ou no domínio do cliente.
 - **Dossiê:** abre por um link com chave (`lp.upecriativo.com.br/_d/<chave>/`), que só a Upe tem.
 
+## O que nunca sobe
+
+O painel ignora sozinho pastas de trabalho ao enviar uma pasta ou um .zip:
+
+- pastas que começam com `_` (ex.: `_trabalho`);
+- perfis de navegador (`chrome…`);
+- `node_modules`, `__pycache__` e arquivos temporários do Office (`~$…`).
+
+Guarde scripts, testes e rascunhos em `_trabalho/`, fora do que vai para o cliente.
+
 ## O que não vai para o GitHub
 
 Arquivos pesados (vídeos, PDFs, fotos originais), contratos, CPF, senhas e chaves. Esses ficam só no HD e no Storage. O GitHub guarda os modelos, as páginas (HTML, CSS, JS) e os textos.

@@ -1210,6 +1210,7 @@ function aApres(ct, { id, doc, priv, save }) {
     let ini = htmls.sort((a, b) => pontua(b) - pontua(a))[0], html = await mapa.get(ini).text();
     if (!/const DADOS/.test(html)) for (const h of htmls) { const t = await mapa.get(h).text(); if (/const DADOS/.test(t)) { ini = h; html = t; break; } }
     const chave = uid(24), /* link novo a cada importação: nada fica preso em cache */ dir = ini.includes("/") ? ini.slice(0, ini.lastIndexOf("/") + 1) : "", prefixo = `clientes/${await pastaDoCliente(id, doc)}/dossie`;
+    if (mapa.ignorados) toast(`${mapa.ignorados} arquivo(s) de trabalho ignorados (_trabalho, perfis de navegador…)`);
     const n = await subirPasta(prefixo, mapa, t => toast(`Dossiê: ${t} arquivo(s)…`));
     await S.set(`dossies_idx/${chave}`, { prefixo, cliente: id, em: Date.now() }); // o link /_d/{chave}/… abre esta pasta
     const raiz = `${LP_URL}_d/${chave}/`;
@@ -2658,17 +2659,20 @@ async function vincularPosts(doc, arqs) {
 // Os arquivos vão para o Storage no mesmo caminho relativo (lp/{endereço}/css/estilo.css…) e o servidor entrega cada um em
 // lp.upecriativo.com.br/{endereço}/css/estilo.css. Nada é reescrito: caminhos relativos, módulos, fetch(), fontes e caminhos montados pelo script funcionam.
 const LIXO = /(^|\/)(\.|__MACOSX\/)|thumbs\.db$|desktop\.ini$/i;
+// pastas de trabalho que nunca sobem: _trabalho (e qualquer pasta que comece com _), perfis de navegador, node_modules, .git, temporários do Office
+const TRABALHO = /(^|\/)(_[^/]*|chrom(e|ium)(-[^/]*)?|node_modules|__pycache__)\/|(^|\/)~\$/i;
+const ignorar = rel => LIXO.test(rel) || TRABALHO.test(rel);
 // "Escolher pasta": tira o nome da pasta escolhida do começo do caminho
-function pastaDeArquivos(files) { const m = new Map(); for (const f of files) { const rel = (f.webkitRelativePath || f.name).split("/").slice(1).join("/") || f.name; if (!LIXO.test(rel)) m.set(rel, f); } return m; }
+function pastaDeArquivos(files) { const m = new Map(); let ign = 0; for (const f of files) { const rel = (f.webkitRelativePath || f.name).split("/").slice(1).join("/") || f.name; if (ignorar(rel)) ign++; else m.set(rel, f); } m.ignorados = ign; return m; }
 let JSZIP = null;
 async function lerZip(arq, progresso = () => {}) {
   JSZIP = JSZIP || await new Promise((ok, no) => { if (window.JSZip) return ok(window.JSZip); const sc = document.createElement("script"); sc.src = "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"; sc.onload = () => ok(window.JSZip); sc.onerror = () => no(new Error("não foi possível abrir o leitor de .zip")); document.head.appendChild(sc); });
-  const z = await JSZIP.loadAsync(arq), nomes = Object.keys(z.files).filter(n => !z.files[n].dir && !LIXO.test(n));
+  const z = await JSZIP.loadAsync(arq), todos = Object.keys(z.files).filter(n => !z.files[n].dir), nomes = todos.filter(n => !ignorar(n));
   // pasta única no topo do .zip (ex.: Cliente_Dossie/…) sai do caminho, como na escolha de pasta
   const topo = nomes.length && nomes.every(n => n.includes("/") && n.split("/")[0] === nomes[0].split("/")[0]) ? nomes[0].split("/")[0] + "/" : "";
   const m = new Map(); let k = 0;
   for (const n of nomes) { progresso(`Abrindo o .zip ${++k}/${nomes.length}`); const rel = n.slice(topo.length); m.set(rel, new File([await z.files[n].async("blob")], rel.split("/").pop(), { type: tipoArq(rel) })); }
-  return m;
+  m.ignorados = todos.length - nomes.length; return m;
 }
 const htmlsDe = m => [...m.keys()].filter(k => /\.html?$/i.test(k)).sort((a, b) => a.split("/").length - b.split("/").length || (/(^|\/)index\.html?$/i.test(b) - /(^|\/)index\.html?$/i.test(a)) || a.localeCompare(b));
 // só uma subpasta (ex.: "landing/") vira a raiz publicada
@@ -2681,9 +2685,13 @@ const resolverRel = (dir, u) => { const p = (dir + u).split("/"), out = []; for 
 const tamanhoMB = m => ([...m.values()].reduce((t, f) => t + f.size, 0) / 1048576).toFixed(1);
 // envia a pasta para {prefixo}/{caminho}, 6 arquivos por vez
 async function subirPasta(prefixo, arquivos, progresso = () => {}) {
-  const lista = [...arquivos.entries()]; let n = 0, i = 0;
-  const um = async () => { while (i < lista.length) { const [rel, f] = lista[i++]; await S.uploadEm(f, `${prefixo}/${rel}`); progresso(`Enviando ${++n}/${lista.length}`); } };
+  const lista = [...arquivos.entries()], falhas = []; let n = 0, i = 0;
+  // um arquivo que falha tenta de novo e não derruba o envio inteiro
+  const um = async () => { while (i < lista.length) { const [rel, f] = lista[i++];
+    try { await S.uploadEm(f, `${prefixo}/${rel}`); } catch (e) { try { await S.uploadEm(f, `${prefixo}/${rel}`); } catch (e2) { falhas.push(rel); console.warn("não subiu", rel, e2); continue; } }
+    progresso(`Enviando ${++n}/${lista.length}`); } };
   await Promise.all(Array.from({ length: Math.min(6, lista.length) }, um));
+  if (falhas.length) { toast(`${falhas.length} arquivo(s) não subiram: ${falhas.slice(0, 3).join(", ")}${falhas.length > 3 ? "…" : ""}`); if (falhas.length > lista.length / 2) throw new Error("a maior parte dos arquivos não subiu; confira a conexão e tente de novo"); }
   return n;
 }
 // endereço público de uma página/sistema (rascunho abre com a chave de prévia)
@@ -2729,7 +2737,7 @@ function enviarPagina(id, doc, atual, save, opcoes = {}) {
     const raiz = $("#epRaiz").value, m = recortar(pasta, raiz), hs = htmlsDe(m), ant = prinEscolhido || $("#epPrin").value;
     $("#epPrin").innerHTML = hs.map(h => `<option value="${esc(h)}">${esc(h)}</option>`).join("");
     const pref = opcoes.frente ? hs.find(h => /painel|admin|gest/i.test(h)) : null; $("#epPrin").value = hs.includes(ant) ? ant : pref || hs[0] || "";
-    let txt = hs.length ? `<b>${m.size} arquivo(s)</b> · ${tamanhoMB(m)} MB${hs.length > 1 ? ` · ${hs.length} páginas .html (todas sobem e abrem pelo caminho delas)` : ""}` : '<span class="bad">Não há arquivo .html nesta pasta.</span>';
+    let txt = hs.length ? `<b>${m.size} arquivo(s)</b> · ${tamanhoMB(m)} MB${pasta.ignorados ? ` · ${pasta.ignorados} de trabalho ignorados (_trabalho, perfis de navegador…)` : ""}${hs.length > 1 ? ` · ${hs.length} páginas .html (todas sobem e abrem pelo caminho delas)` : ""}` : '<span class="bad">Não há arquivo .html nesta pasta.</span>';
     // confere os arquivos que a página principal chama: fora da pasta escolhida (../assets) ou faltando no envio
     const prin = $("#epPrin").value;
     if (prin && m.get(prin)) {
