@@ -2673,6 +2673,11 @@ async function lerZip(arq, progresso = () => {}) {
 const htmlsDe = m => [...m.keys()].filter(k => /\.html?$/i.test(k)).sort((a, b) => a.split("/").length - b.split("/").length || (/(^|\/)index\.html?$/i.test(b) - /(^|\/)index\.html?$/i.test(a)) || a.localeCompare(b));
 // só uma subpasta (ex.: "landing/") vira a raiz publicada
 const recortar = (m, dir) => { if (!dir) return m; const r = new Map(); for (const [k, f] of m) if (k.startsWith(dir)) r.set(k.slice(dir.length), f); return r; };
+// caminhos locais que um .html chama (src, href, url()), sem links da internet, âncoras, e-mail e telefone
+const refsLocais = t => [...new Set([...String(t).matchAll(/(?:src|href)\s*=\s*["']([^"'#?]+)|url\(\s*["']?([^"')#?]+)/gi)].map(m => (m[1] || m[2] || "").trim())
+  .filter(u => u && !/^(https?:|\/\/|data:|mailto:|tel:|javascript:|blob:|#|\$\{)/i.test(u) && !u.startsWith("/")))];
+// resolve "../assets/x.css" a partir da pasta do .html; null se sair da raiz
+const resolverRel = (dir, u) => { const p = (dir + u).split("/"), out = []; for (const x of p) { if (x === "..") { if (!out.length) return null; out.pop(); } else if (x && x !== ".") out.push(x); } return out.join("/"); };
 const tamanhoMB = m => ([...m.values()].reduce((t, f) => t + f.size, 0) / 1048576).toFixed(1);
 // envia a pasta para {prefixo}/{caminho}, 6 arquivos por vez
 async function subirPasta(prefixo, arquivos, progresso = () => {}) {
@@ -2720,11 +2725,22 @@ function enviarPagina(id, doc, atual, save, opcoes = {}) {
       ${opcoes.frente ? `<input type="checkbox" id="epPainel" hidden>` : `<label class="tg"><input type="checkbox" id="epPainel" ${atual?.painelCliente ? "checked" : ""}><span>Mostrar como painel do cliente<small>Vira o botão “Painel – ${esc(atual?.titulo || "Sistema")}” em Meus serviços</small></span></label>`}</div>`,
     `<button class="btn sec" data-close>Cancelar</button><button class="btn" id="epOk">Enviar e ${atual ? "atualizar" : "criar"}</button>`, true);
   const info = t => $("#epInfo").innerHTML = t;
-  const mostrar = () => {
-    const raiz = $("#epRaiz").value, m = recortar(pasta, raiz), hs = htmlsDe(m), ant = $("#epPrin").value;
+  const mostrar = async (prinEscolhido) => {
+    const raiz = $("#epRaiz").value, m = recortar(pasta, raiz), hs = htmlsDe(m), ant = prinEscolhido || $("#epPrin").value;
     $("#epPrin").innerHTML = hs.map(h => `<option value="${esc(h)}">${esc(h)}</option>`).join("");
     const pref = opcoes.frente ? hs.find(h => /painel|admin|gest/i.test(h)) : null; $("#epPrin").value = hs.includes(ant) ? ant : pref || hs[0] || "";
-    info(hs.length ? `<b>${m.size} arquivo(s)</b> · ${tamanhoMB(m)} MB${hs.length > 1 ? ` · ${hs.length} páginas .html (todas sobem e abrem pelo caminho delas)` : ""}` : '<span class="bad">Não há arquivo .html nesta pasta.</span>');
+    let txt = hs.length ? `<b>${m.size} arquivo(s)</b> · ${tamanhoMB(m)} MB${hs.length > 1 ? ` · ${hs.length} páginas .html (todas sobem e abrem pelo caminho delas)` : ""}` : '<span class="bad">Não há arquivo .html nesta pasta.</span>';
+    // confere os arquivos que a página principal chama: fora da pasta escolhida (../assets) ou faltando no envio
+    const prin = $("#epPrin").value;
+    if (prin && m.get(prin)) {
+      const dir = prin.includes("/") ? prin.slice(0, prin.lastIndexOf("/") + 1) : "", refs = refsLocais(await m.get(prin).text());
+      const fora = refs.filter(u => resolverRel(raiz + dir, u) !== null && resolverRel(dir, u) === null), faltam = refs.filter(u => { const r = resolverRel(raiz + dir, u); return r === null || (!pasta.has(r) && !pasta.has(decodeURIComponent(r))); });
+      if (fora.length && !fora.some(u => faltam.includes(u)) && raiz) { // os arquivos de fora estão no envio: publica a pasta de cima junto
+        $("#epRaiz").value = ""; return mostrar(raiz + prin).then(() => info($("#epInfo").innerHTML + `<br><span class="ok">A página usa arquivos de fora de <b>${esc(raiz)}</b> (ex.: <code>${esc(fora[0])}</code>): a pasta de cima vai junto e a página abre em <b>${esc(raiz + prin)}</b>.</span>`));
+      }
+      if (faltam.length) txt += `<br><span class="bad">A página chama ${faltam.length} arquivo(s) que não estão no envio (ex.: <code>${esc(faltam.slice(0, 3).join(", "))}</code>). Envie a pasta de cima ou o .zip completo, com essas pastas.</span>`;
+    }
+    info(txt);
   };
   const carregar = m => {
     pasta = m; htmlArq = null; $("#epHtml").value = "";
@@ -2735,12 +2751,14 @@ function enviarPagina(id, doc, atual, save, opcoes = {}) {
     $("#epRaiz").value = !hs.some(h => !h.includes("/")) && dirs.length ? dirs[0] : "";
     $("#epEsc").hidden = false; mostrar();
   };
-  $("#epRaiz").onchange = mostrar;
+  $("#epRaiz").onchange = () => mostrar(); $("#epPrin").onchange = () => mostrar($("#epPrin").value);
   $("#epSlug").oninput = e => $("#epVer").textContent = slugEmp(e.target.value);
   $("#epTipo").onchange = e => { if (e.target.value === "sistema" && !opcoes.frente) $("#epPainel").checked = true; };
   $("#epPasta").onchange = e => { $("#epZip").value = ""; carregar(pastaDeArquivos(e.target.files)); };
   $("#epZip").onchange = async e => { const f = e.target.files[0]; if (!f) return; $("#epPasta").value = ""; try { carregar(await lerZip(f, info)); } catch (er) { pasta = null; info(`<span class="bad">Não consegui abrir o .zip: ${esc(er.message)}</span>`); } };
-  $("#epHtml").onchange = e => { htmlArq = e.target.files[0] || null; if (!htmlArq) return; pasta = null; $("#epPasta").value = ""; $("#epZip").value = ""; $("#epEsc").hidden = true; info(`Arquivo: <b>${esc(htmlArq.name)}</b> · ${(htmlArq.size / 1024).toFixed(0)} KB`); };
+  $("#epHtml").onchange = async e => { htmlArq = e.target.files[0] || null; if (!htmlArq) return; pasta = null; $("#epPasta").value = ""; $("#epZip").value = ""; $("#epEsc").hidden = true;
+    const refs = refsLocais(await htmlArq.text());
+    info(`Arquivo: <b>${esc(htmlArq.name)}</b> · ${(htmlArq.size / 1024).toFixed(0)} KB${refs.length ? `<br><span class="bad">Este .html chama ${refs.length} arquivo(s) da pasta (ex.: <code>${esc(refs.slice(0, 3).join(", "))}</code>). Só o .html não leva esses arquivos: use “Pasta” ou “.zip” com a pasta completa.</span>` : ""}`); };
   $("#epOk").onclick = async () => {
     const slug = atual ? atual.id : slugEmp($("#epSlug").value), titulo = $("#epNome").value.trim() || slug, b = $("#epOk");
     if (!/^[a-z0-9][a-z0-9-]{1,47}$/.test(slug)) return toast("Endereço inválido: use letras, números e hífen");

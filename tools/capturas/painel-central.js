@@ -85,6 +85,12 @@ const SITE = __R + '/site';
     await p.click('#epOk'); await p.waitForTimeout(3000);
     cols = await LS(); const pz = (cols['lp_paginas'] || {})['cafe-aurora-zip'] || {}, env2 = await p.evaluate(() => window.__upeEnviados.slice());
     ok(pz.raiz && pz.arquivos === 7 && env2.includes('clientes/cafe-aurora/paginas/cafe-aurora-zip/css/estilo.css') && !env2.some(x => /LEIA-ME/.test(x)), '.zip publicado com os caminhos da subpasta');
+    // .zip como o do Joaquim: site/index.html chama ../assets/…; a pasta de cima vai junto sozinha
+    const z2 = new JS(); z2.file('Pacote/site/index.html', '<!doctype html><title>t</title><link rel="stylesheet" href="../assets/marca.css"><h1>Oi</h1><img src="../assets/logos/l.png">'); z2.file('Pacote/assets/marca.css', 'body{}'); z2.file('Pacote/assets/logos/l.png', 'x'); z2.file('Pacote/LEIA.txt', 'x');
+    const zj = path.join(O, 'pacote-joaquim.zip'); fs.writeFileSync(zj, await z2.generateAsync({ type: 'nodebuffer' }));
+    await p.click('#pgNova'); await p.waitForSelector('#epZip'); await p.fill('#epSlug', 'cafe-aurora-site'); await p.setInputFiles('#epZip', zj); await p.waitForTimeout(2000);
+    ok((await p.inputValue('#epRaiz')) === '' && (await p.inputValue('#epPrin')) === 'site/index.html' && /pasta de cima vai junto/.test(await p.textContent('#epInfo')), 'página que chama ../assets: a pasta de cima entra junto e abre em site/index.html');
+    await p.click('[data-close]').catch(() => {}); await p.waitForTimeout(500);
   } else console.log('· jszip não encontrado: teste do .zip pulado');
   // pasta de criação (.zip) no Conteúdo: salva em clientes/{marca}/criacao e liga os posts pelo nome do arquivo
   if (JSZIP) {
