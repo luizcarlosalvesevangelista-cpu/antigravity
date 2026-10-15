@@ -208,7 +208,7 @@ async function servirArquivo(req, res, caminho, extra = {}) {
     return true;
   }
   const etag = `"${md.etag || md.generation}"`;
-  res.set({ "Content-Type": tipo, "Accept-Ranges": "bytes", "Cache-Control": "public, max-age=300, s-maxage=3600", ETag: etag });
+  res.set({ "Content-Type": tipo, "Accept-Ranges": "bytes", "Cache-Control": "public, max-age=300, s-maxage=600", ETag: etag });
   if (req.get("if-none-match") === etag) { res.status(304).end(); return true; }
   const m = /^bytes=(\d*)-(\d*)$/.exec(req.get("range") || "");
   let ini = 0, fim = tam - 1;

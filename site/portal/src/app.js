@@ -936,7 +936,7 @@ function aApres(ct, { id, doc, priv, save }) {
     const pontua = k => (/dossi/i.test(k) ? 4 : 0) + (/index\.html?$/i.test(k) ? 1 : 0) - k.split("/").length;
     let ini = htmls.sort((a, b) => pontua(b) - pontua(a))[0], html = await mapa.get(ini).text();
     if (!/const DADOS/.test(html)) for (const h of htmls) { const t = await mapa.get(h).text(); if (/const DADOS/.test(t)) { ini = h; html = t; break; } }
-    const chave = priv.dossieChave || uid(24), dir = ini.includes("/") ? ini.slice(0, ini.lastIndexOf("/") + 1) : "", prefixo = `clientes/${await pastaDoCliente(id, doc)}/dossie`;
+    const chave = uid(24), /* link novo a cada importação: nada fica preso em cache */ dir = ini.includes("/") ? ini.slice(0, ini.lastIndexOf("/") + 1) : "", prefixo = `clientes/${await pastaDoCliente(id, doc)}/dossie`;
     const n = await subirPasta(prefixo, mapa, t => toast(`Dossiê: ${t} arquivo(s)…`));
     await S.set(`dossies_idx/${chave}`, { prefixo, cliente: id, em: Date.now() }); // o link /_d/{chave}/… abre esta pasta
     const raiz = `${LP_URL}_d/${chave}/`;
