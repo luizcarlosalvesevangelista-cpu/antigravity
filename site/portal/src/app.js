@@ -474,6 +474,34 @@ function cInicio(m, c, { pend, tabs }) {
   servicosDoCliente(c).then(svs => { const el = $("#iniSv", m); if (el) el.innerHTML = cardsServicos(svs); }).catch(() => { const el = $("#iniSv", m); if (el) el.innerHTML = ""; });
 }
 
+/* ---------- dossiê em "pacote de páginas" (sem o objeto DADOS) ----------
+   apresentacao/slides/*.jpg → telas · apresentacao/*.pdf → PDF · conteudo/motion/*.mp4 (+ .jpg de capa) → motions ·
+   conteudo/calendario.js (window.POSTS, window.SEMANAS) + conteudo/posts/<id>[-n].jpg → posts e feed. rels: caminhos a partir da raiz do pacote. */
+async function pacoteDossie(rels, raiz, texto, doc) {
+  const U = rel => raiz + caminhoUrl(rel), ord = (a, b) => a.localeCompare(b, "pt", { numeric: true });
+  const slidesR = rels.filter(r => /(^|\/)apresentacao\/slides\/[^/]+\.(jpe?g|png|webp)$/i.test(r)).sort(ord);
+  const pdf = rels.find(r => /(^|\/)apresentacao\/[^/]+\.pdf$/i.test(r)) || rels.find(r => /redesign|apresenta/i.test(r) && /\.pdf$/i.test(r)) || "";
+  const mot = rels.filter(r => /(^|\/)conteudo\/motion\/[^/]+\.mp4$/i.test(r)).sort(ord);
+  const capaMot = r => { const j = r.replace(/\.mp4$/i, ".jpg"); return rels.includes(j) ? U(j) : ""; };
+  const nomeMot = r => { const n = r.split("/").pop().replace(/\.mp4$/i, "").replace(/^m\d+-/, "").replace(/-/g, " "); return n.charAt(0).toUpperCase() + n.slice(1); };
+  let P = [], SEM = [];
+  const cal = rels.find(r => /(^|\/)conteudo\/calendario\.js$/i.test(r));
+  if (cal) { try { const w = new Function("window", (await texto(cal)) + "\n;return window;")({}); P = Array.isArray(w.POSTS) ? w.POSTS : []; SEM = Array.isArray(w.SEMANAS) ? w.SEMANAS : []; } catch (e) { console.warn("calendario.js", e); } } // arquivo do próprio admin
+  const dirPosts = cal ? cal.replace(/calendario\.js$/i, "posts/") : "conteudo/posts/";
+  const midiasDe = id => { if (!id) return []; const re = new RegExp(`^${String(id).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(-\\d+)?\\.(jpe?g|png|webp|mp4)$`, "i"); return rels.filter(r => r.startsWith(dirPosts) && re.test(r.slice(dirPosts.length))).sort(ord).map(U); };
+  const semanaDe = d => { const k = SEM.findIndex((x, i) => d >= x.ini && (!SEM[i + 1] || d < SEM[i + 1].ini)); return k >= 0 ? (SEM[k].n || k + 1) : 1; };
+  const hora = h => { const m = String(h || "").match(/(\d{1,2})(?:[h:](\d{2}))?/); return m ? `${pad(+m[1])}:${m[2] || "00"}` : ""; };
+  const postagens = P.map(x => ({ data: x.date || x.data || "", hora: hora(x.hora), tipo: /carrossel/i.test(x.fmt || "") ? "carrossel" : /reel|v[ií]deo/i.test(x.fmt || "") ? "reels" : "imagem", titulo: x.titulo || "Post", legenda: [x.legenda, x.tags].filter(Boolean).join("\n\n"), midias: midiasDe(x.id), semana: semanaDe(x.date || "") }));
+  const A0 = doc.apresentacao || {}, motions = mot.map(r => ({ video: U(r), poster: capaMot(r), titulo: nomeMot(r), duracao: "" }));
+  const instagram = postagens.filter(x => x.midias[0] && !/\.mp4/i.test(x.midias[0])).map(x => ({ img: x.midias[0], titulo: x.titulo, legenda: x.legenda, data: x.data ? fdate(x.data) : "", semana: x.semana }));
+  const slides = slidesR.map((r, k) => ({ nome: `Tela ${k + 1}`, tipo: "img", img: U(r) }));
+  if (motions.length) slides.push({ nome: "Motions", tipo: "motions", img: "" });
+  if (instagram.length) slides.push({ nome: "Instagram", tipo: "instagram", img: "" });
+  const limpo = v => /^gs:/i.test(v || "") ? "" : v || ""; // endereço gs:// não abre no navegador
+  return { apresentacao: { ...A0, marca: A0.marca || doc.marca || "", baseUrl: raiz, slides: slides.length ? slides : A0.slides || [], pdf: pdf ? U(pdf) : limpo(A0.pdf), motions, instagram, semanas: SEM.map(x => x.tema).filter(Boolean) },
+    posts: postsDoDossie({ postagens }, "", doc), resumo: `${slides.length} tela(s), ${motions.length} motion(s), ${postagens.length} post(s) do cronograma` };
+}
+
 /* ---------- arquivos da marca (cliente): manual em PDF, manual editável e certificado de anterioridade com selo ---------- */
 const SELO_ANT = `<svg class="selo" viewBox="0 0 120 120" role="img" aria-label="Selo: marca com certificado de anterioridade"><defs><path id="seloArco" d="M60 60 m-44 0 a44 44 0 1 1 88 0 a44 44 0 1 1 -88 0"/></defs><circle cx="60" cy="60" r="57" fill="#0d1b33"/><circle cx="60" cy="60" r="51" fill="none" stroke="#e8c15a" stroke-width="2.5"/><text font-family="Lato,Arial,sans-serif" font-size="10.5" font-weight="900" letter-spacing="2.2" fill="#e8c15a"><textPath href="#seloArco" startOffset="2%">ANTERIORIDADE · REGISTRADA ·</textPath></text><circle cx="60" cy="60" r="27" fill="#e8c15a"/><path d="M47 61 l9 9 l18 -20" fill="none" stroke="#0d1b33" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 function arquivosMarca(doc) {
@@ -877,7 +905,7 @@ function aApres(ct, { id, doc, priv, save }) {
         <div class="row">${hasDossie ? `<span class="pill ok">Dossiê salvo${priv.dossieNome ? ` · ${esc(priv.dossieNome)}` : ""}</span>` : '<span class="pill">Nenhum dossiê salvo</span>'}<span class="muted small">${priv.dossieEm ? fdt(priv.dossieEm) : ""}</span></div>
         <p class="muted small"><b>Pasta ou .zip do dossiê:</b> escolha a pasta do cliente inteira (ou o .zip dela), com o .html e as pastas de imagens, vídeos, fontes e PDF. Tudo sobe com os mesmos caminhos e o dossiê abre completo por um link só seu. Funciona com o modelo novo (objeto DADOS) e com dossiês antigos.</p>
         <label class="f" for="dBase">Ou: endereço da pasta já publicada (se enviar só o .html)<input id="dBase" value="${esc(A.baseUrl || "")}" placeholder="https://seusite.web.app/clientes/marca/dossie/"></label>
-        <div class="row"><label class="btn sm">Importar pasta do dossiê<input type="file" id="dDir" webkitdirectory multiple hidden></label><label class="btn sm">Importar .zip do dossiê<input type="file" id="dZip" accept=".zip,application/zip" hidden></label><label class="btn sec sm">Só o arquivo .html<input type="file" id="dFile" accept=".html,text/html" hidden></label>${hasDossie ? `<button class="btn sec sm" id="dOpen">Abrir dossiê completo</button>` : ""}<a class="btn sec sm" href="modelos/Modelo_Dossie_Upe.html" target="_blank" rel="noopener">Modelo em branco</a></div>
+        <div class="row"><label class="btn sm">Importar pasta do dossiê<input type="file" id="dDir" webkitdirectory multiple hidden></label><label class="btn sm">Importar .zip do dossiê<input type="file" id="dZip" accept=".zip,application/zip" hidden></label><label class="btn sec sm">Só o arquivo .html<input type="file" id="dFile" accept=".html,text/html" hidden></label>${hasDossie ? `<button class="btn sec sm" id="dOpen">Abrir dossiê completo</button>` : ""}${priv.dossieChave ? `<button class="btn sec sm" id="dReler" title="Monta de novo a apresentação e os posts a partir dos arquivos já enviados">Reler o dossiê já enviado</button>` : ""}<a class="btn sec sm" href="modelos/Modelo_Dossie_Upe.html" target="_blank" rel="noopener">Modelo em branco</a></div>
       </section>
       <section class="card grid"><h3>O que o cliente vê</h3>
         <div class="row"><span class="pill ${doc.acesso?.apresentacao ? "ok" : ""}">${doc.acesso?.apresentacao ? "Apresentação liberada" : "Apresentação oculta"}</span><a class="small" href="#/admin/cliente/${id}/projeto">Mudar em Projeto e acessos</a></div>
@@ -940,8 +968,32 @@ function aApres(ct, { id, doc, priv, save }) {
     const n = await subirPasta(prefixo, mapa, t => toast(`Dossiê: ${t} arquivo(s)…`));
     await S.set(`dossies_idx/${chave}`, { prefixo, cliente: id, em: Date.now() }); // o link /_d/{chave}/… abre esta pasta
     const raiz = `${LP_URL}_d/${chave}/`;
+    if (!/const DADOS/.test(html)) { await aplicarPacote([...mapa.keys()], raiz, rel => mapa.get(rel).text(), { chave, url: raiz + caminhoUrl(ini), nome: ini.split("/").pop() }); toast(`Dossiê enviado (${n} arquivo(s)).`); return; }
     await importar(html, ini.split("/").pop(), { chave, base: raiz + caminhoUrl(dir), url: raiz + caminhoUrl(ini), arquivos: [...mapa.keys()].filter(k => k.startsWith(dir)).map(k => k.slice(dir.length)) });
     toast(`Dossiê enviado (${n} arquivo(s)).`);
+  };
+  // pacote de páginas: monta a apresentação e os posts a partir das pastas (apresentacao/, conteudo/)
+  const aplicarPacote = async (rels, raiz, texto, info) => {
+    const r = await pacoteDossie(rels, raiz, texto, doc);
+    doc.apresentacao = r.apresentacao;
+    if (r.posts.length) { doc.posts = [...(doc.posts || []), ...r.posts]; doc.kits = [...(doc.kits || []).filter(k => k.id !== "dossie"), { id: "dossie", nome: "Posts do dossiê", importadoEm: Date.now(), total: doc.posts.filter(p => p.kitId === "dossie").length }]; }
+    Object.assign(priv, { dossie: "", dossieUrl: info.url, dossieChave: info.chave, dossieNome: info.nome, dossieEm: Date.now() });
+    await S.set(`privado/${id}`, priv); await save(`Dossiê vinculado: ${r.resumo}${r.posts.length ? ` (${r.posts.length} novo(s) no calendário)` : ""}.`);
+  };
+  // relê o dossiê que já está no Storage (sem enviar de novo) e vincula a apresentação e os posts outra vez
+  if ($("#dReler")) $("#dReler").onclick = async () => {
+    try {
+      toast("Lendo o dossiê enviado…");
+      const ix = await S.get(`dossies_idx/${priv.dossieChave}`).catch(() => null), pref = ix?.prefixo || `dossies/${priv.dossieChave}`;
+      const rels = (await S.listar(pref)).map(c => c.slice(pref.length + 1)); if (!rels.length) return toast("Não encontrei os arquivos do dossiê no Storage.");
+      const chave = uid(24); await S.set(`dossies_idx/${chave}`, { prefixo: pref, cliente: id, em: Date.now() }); // link novo: nada preso em cache
+      const raiz = `${LP_URL}_d/${chave}/`, texto = async rel => (await fetch(raiz + caminhoUrl(rel))).text();
+      const htmls = rels.filter(r => /\.html?$/i.test(r)), pont = k => (/dossi/i.test(k) ? 4 : 0) + (/index\.html?$/i.test(k) ? 1 : 0) - k.split("/").length;
+      let ini = htmls.sort((a, b) => pont(b) - pont(a))[0] || "index.html", html = await texto(ini);
+      if (!/const DADOS/.test(html)) for (const h of htmls) { const t = await texto(h); if (/const DADOS/.test(t)) { ini = h; html = t; break; } }
+      if (/const DADOS/.test(html)) { const dir = ini.includes("/") ? ini.slice(0, ini.lastIndexOf("/") + 1) : ""; return importar(html, ini.split("/").pop(), { chave, base: raiz + caminhoUrl(dir), url: raiz + caminhoUrl(ini), arquivos: rels.filter(k => k.startsWith(dir)).map(k => k.slice(dir.length)) }); }
+      await aplicarPacote(rels, raiz, texto, { chave, url: raiz + caminhoUrl(ini), nome: ini.split("/").pop() });
+    } catch (er) { console.error(er); toast("Não foi possível reler o dossiê: " + er.message); }
   };
   $("#dDir").onchange = async e => { try { await importarPasta(pastaDeArquivos(e.target.files)); } catch (er) { console.error(er); toast("Não foi possível importar: " + er.message); } };
   $("#dZip").onchange = async e => { const f = e.target.files[0]; if (!f) return; try { await importarPasta(await lerZip(f, t => toast(t))); } catch (er) { console.error(er); toast("Não foi possível importar: " + er.message); } };
