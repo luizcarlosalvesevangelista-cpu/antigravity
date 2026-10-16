@@ -74,6 +74,11 @@ service cloud.firestore {
       allow read: if true;
       allow write: if ehUpe();
     }
+    // portfólio do site: projetos do Behance (gravados pela função) e ajustes do painel
+    match /publico/portfolio {
+      allow read: if true;
+      allow write: if isAdmin() || ehUpe();
+    }
     match /publico/vendas/paginas/{slug} {
       allow read: if true;
       allow create: if ehUpe() && request.resource.data.html is string && request.resource.data.html.size() < 1048000;

@@ -1593,6 +1593,47 @@ async function aConfig(w) {
   $("#kT").onclick = () => { const c = read(); if (!c.pixChave) return toast("Informe a chave PIX"); const pl = pixPayload({ chave: c.pixChave, nome: c.pixNome, cidade: c.pixCidade, valor: 1, txid: "TESTEUPE" });
     modal("Teste de PIX (R$ 1,00)", `<div style="text-align:center"><div class="qrbox" id="qr"></div></div><div class="cc">${esc(pl)}</div><p class="muted small">Leia com o app do banco e confira o nome do recebedor antes de pagar.</p>`); try { new QRCode($("#qr"), { text: pl, width: 200, height: 200 }); } catch (e) {} };
   if ($("#kR")) $("#kR").onclick = () => S.reset();
+  portfolioCfg(w);
+}
+
+/* portfólio do site (upecriativo.com.br): projetos do Behance escolhidos aqui */
+async function portfolioCfg(w) {
+  const box = document.createElement("section"); box.className = "card grid"; box.id = "pfBox"; w.appendChild(box);
+  const TIPOS = ["Branding", "Redesign", "Motion"];
+  let d = (await S.get("publico/portfolio").catch(() => null)) || {}, aj = { ocultos: [], tipos: {}, ordem: [], locais: true, ...(d.ajustes || {}) };
+  const ordenados = () => { const ps = d.projetos || [], pos = id => { const i = aj.ordem.indexOf(id); return i < 0 ? 1e6 : i; }; return ps.slice().sort((a, b) => pos(a.id) - pos(b.id) || (b.data || 0) - (a.data || 0)); };
+  const draw = (msg = "") => {
+    const ps = ordenados();
+    box.innerHTML = `<h3>Portfólio do site (Behance)</h3>
+      <p class="muted small">Os projetos publicados no seu Behance aparecem na seção Portfólio de upecriativo.com.br. Escolha aqui quais ficam visíveis, a frente de cada um e a ordem. O site busca o Behance de novo a cada 6 horas.</p>
+      <div class="g2"><label class="f" for="pfU">Usuário do Behance<input id="pfU" value="${esc(d.usuario || "")}" placeholder="ex.: upecriativo (de behance.net/upecriativo)"></label>
+      <label class="tg" style="align-self:end"><input type="checkbox" id="pfL" ${aj.locais !== false ? "checked" : ""}><span>Mostrar também os projetos da Upe<small>Upe Criativo e Upe ERP, que já estão no site</small></span></label></div>
+      <label class="f" for="pfK">Links de projetos (opcional, um por linha)<textarea id="pfK" rows="3" placeholder="https://www.behance.net/gallery/123456789/Nome-do-projeto">${esc((d.links || []).join("\n"))}</textarea></label>
+      <div class="row"><button class="btn sm" id="pfA">Atualizar do Behance agora</button><span class="muted small" id="pfM">${esc(msg || (d.em ? `Atualizado em ${new Date(d.em).toLocaleString("pt-BR")}` : "Ainda não atualizado."))}</span></div>
+      ${d.erro ? `<p class="small" style="color:var(--bad)">${esc(d.erro)}</p>` : ""}
+      <div class="grid" style="gap:8px">${ps.map((p, i) => `<div class="row" style="flex-wrap:nowrap;align-items:center;border-top:1px solid var(--line);padding-top:8px">
+        <div class="thumb" style="width:84px;flex:none">${p.capa ? `<img src="${esc(p.capa)}" alt="" loading="lazy">` : "sem capa"}</div>
+        <div class="grid" style="gap:4px;flex:1;min-width:0"><a href="${esc(p.link)}" target="_blank" rel="noopener"><b>${esc(p.titulo)}</b></a>
+          <div class="row" style="gap:10px"><label class="tg"><input type="checkbox" data-pfv="${esc(p.id)}" ${aj.ocultos.includes(p.id) ? "" : "checked"}>Visível</label>${TIPOS.map(t => `<label class="tg"><input type="checkbox" data-pft="${esc(p.id)}" value="${t}" ${(aj.tipos[p.id] || ["Branding"]).includes(t) ? "checked" : ""}>${t}</label>`).join("")}</div></div>
+        <div class="grid" style="gap:4px"><button class="btn sec sm" data-pfo="${i}" data-dir="-1" aria-label="Subir" ${i ? "" : "disabled"}>↑</button><button class="btn sec sm" data-pfo="${i}" data-dir="1" aria-label="Descer" ${i < ps.length - 1 ? "" : "disabled"}>↓</button></div></div>`).join("") || '<p class="muted small">Nenhum projeto ainda. Informe o usuário e clique em “Atualizar do Behance agora”.</p>'}</div>
+      <div class="row" style="justify-content:flex-end"><button class="btn" id="pfS">Salvar portfólio</button></div>`;
+    $$("#pfBox [data-pfo]").forEach(b => b.onclick = () => { ler(); const ids = ordenados().map(p => p.id), i = +b.dataset.pfo, j = i + +b.dataset.dir; [ids[i], ids[j]] = [ids[j], ids[i]]; aj.ordem = ids; draw(); });
+    $("#pfS").onclick = async () => { ler(); await S.set("publico/portfolio", campos(), true); toast("Portfólio salvo. O site já mostra a nova seleção."); };
+    $("#pfA").onclick = async () => {
+      ler(); const pedido = Date.now(); await S.set("publico/portfolio", { ...campos(), pedido }, true);
+      $("#pfA").disabled = true; $("#pfM").textContent = "Buscando no Behance…";
+      for (let k = 0; k < 30; k++) { await new Promise(r => setTimeout(r, 3000)); const n = await S.get("publico/portfolio").catch(() => null); if (n && n.feito === pedido) { d = n; return draw(`${(n.projetos || []).length} projeto(s) encontrado(s).`); } }
+      $("#pfA").disabled = false; $("#pfM").textContent = "O Behance demorou a responder. Tente de novo em alguns minutos.";
+    };
+  };
+  const ler = () => {
+    d.usuario = $("#pfU").value.trim(); d.links = $("#pfK").value.split(/\s+/).map(x => x.trim()).filter(Boolean); aj.locais = $("#pfL").checked;
+    aj.ocultos = $$("#pfBox [data-pfv]").filter(c => !c.checked).map(c => c.dataset.pfv);
+    const t = {}; $$("#pfBox [data-pft]").forEach(c => { (t[c.dataset.pft] = t[c.dataset.pft] || []); if (c.checked) t[c.dataset.pft].push(c.value); }); aj.tipos = { ...aj.tipos, ...t };
+    if (!aj.ordem.length) aj.ordem = ordenados().map(p => p.id);
+  };
+  const campos = () => ({ usuario: d.usuario, links: d.links, ajustes: aj });
+  draw();
 }
 
 /* ===== Agenda, reuniões, cronograma, kits e notificações (incluído dentro do app.js) ===== */

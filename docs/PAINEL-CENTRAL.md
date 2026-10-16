@@ -149,6 +149,16 @@ Painéis antigos de um `.html` só continuam abrindo.
 
 Em **Apresentação e dossiê**, use **Importar pasta do dossiê** ou **Importar .zip do dossiê**. Tudo sobe para `dossies/{chave}/…` com os mesmos caminhos. O dossiê completo abre por um link só da Upe (`lp.upecriativo.com.br/_d/{chave}/…`, chave aleatória). A aba 05 vira a apresentação do cliente, e os posts entram no calendário.
 
+## Portfólio do site (Behance)
+
+Em **Configurações › Portfólio do site (Behance)**:
+
+1. Informe o usuário do Behance (o final de `behance.net/<usuário>`). Se quiser, cole também links de projetos, um por linha.
+2. Clique em **Atualizar do Behance agora**. Os projetos aparecem em alguns segundos.
+3. Para cada projeto, escolha se fica visível, a frente (Branding, Redesign, Motion) e a ordem. Depois clique em **Salvar portfólio**.
+
+O site mostra os projetos na seção Portfólio, e cada card abre o projeto no Behance. Os projetos da Upe (Upe Criativo e Upe ERP) continuam no site se a opção estiver marcada. O servidor busca o Behance de novo a cada 6 horas; um projeto novo entra visível e como Branding até você mudar.
+
 ## Técnico
 
 - **Mesmo endereço:** o site principal publica também `apps/painel` e `apps/servicos` (ver `site/firebase.json`). O painel abre esses apps em `../apps/<app>/?embed=1`, então o login é o mesmo.

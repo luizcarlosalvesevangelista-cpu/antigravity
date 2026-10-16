@@ -314,3 +314,57 @@ exports.planilha = onCall({ invoker: "public" }, async req => {
   const [cab = [], ...linhas] = r.data.values || [];
   return { linhas: linhas.slice(0, 5000).map(l => Object.fromEntries(cab.map((k, i) => [String(k).trim(), l[i] ?? ""]))) };
 });
+
+/* ---------- portfólio do site a partir do Behance ---------- */
+// publico/portfolio: { usuario, links[], pedido } vêm do painel; a função grava { projetos[], feito, em, erro }.
+const BE_UA = { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0 Safari/537.36", "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", "Accept-Language": "pt-BR,pt;q=0.9" };
+const beTxt = s => String(s || "").replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1").replace(/&amp;/g, "&").replace(/&quot;/g, '"').replace(/&#0?39;/g, "'").replace(/&lt;/g, "<").replace(/&gt;/g, ">").trim();
+const beId = link => (String(link).match(/\/gallery\/(\d+)/) || [])[1] || "";
+async function beGet(url) { const r = await fetch(url, { headers: BE_UA, redirect: "follow", signal: AbortSignal.timeout(15000) }); if (!r.ok) throw new Error(r.status === 404 ? "não encontrado no Behance (confira o usuário ou o link)" : `Behance respondeu ${r.status}`); return r.text(); }
+async function beFeed(usuario) {
+  const xml = await beGet(`https://www.behance.net/feeds/user?username=${encodeURIComponent(usuario)}`);
+  return [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)].map(([, it]) => {
+    const tag = t => beTxt((it.match(new RegExp(`<${t}[^>]*>([\\s\\S]*?)</${t}>`)) || [])[1]);
+    const link = tag("link").split("?")[0], desc = tag("description");
+    return { id: beId(link), titulo: tag("title"), link, capa: (desc.match(/<img[^>]+src=["']([^"']+)/) || [])[1] || "", data: Date.parse(tag("pubDate")) || 0 };
+  }).filter(p => p.id && p.titulo);
+}
+// sem feed: lê os links /gallery/ da página do perfil e depois o og:title e og:image de cada projeto
+async function bePerfil(usuario) {
+  const html = await beGet(`https://www.behance.net/${encodeURIComponent(usuario)}/projects`), vistos = new Set(), links = [];
+  for (const [, id, slug] of html.matchAll(/behance\.net\\?\/gallery\\?\/(\d+)\\?\/([A-Za-z0-9_%.-]+)/g)) if (!vistos.has(id)) { vistos.add(id); links.push(`https://www.behance.net/gallery/${id}/${slug}`); }
+  for (const [, id, slug] of html.matchAll(/href=["']\/gallery\/(\d+)\/([A-Za-z0-9_%.-]+)/g)) if (!vistos.has(id)) { vistos.add(id); links.push(`https://www.behance.net/gallery/${id}/${slug}`); }
+  if (!links.length) throw new Error("nenhum projeto na página do perfil");
+  const out = [];
+  for (const l of links.slice(0, 24)) { try { const p = await beProjeto(l); if (p.titulo) out.push(p); } catch (e) {} }
+  return out;
+}
+async function beProjeto(link) {
+  const html = await beGet(link), og = k => beTxt((html.match(new RegExp(`<meta[^>]+property=["']og:${k}["'][^>]+content=["']([^"']*)`)) || html.match(new RegExp(`<meta[^>]+content=["']([^"']*)["'][^>]+property=["']og:${k}["']`)) || [])[1]);
+  return { id: beId(link), titulo: og("title").replace(/\s+on Behance$/i, ""), link: link.split("?")[0], capa: og("image"), data: 0 };
+}
+async function sincronizarBehance(ref, d) {
+  const projetos = [], erros = [];
+  const usuario = String(d.usuario || "").trim().replace(/^https?:\/\/(www\.)?behance\.net\//i, "").replace(/\/.*$/, "").replace(/^@/, "");
+  if (usuario) {
+    try { projetos.push(...await beFeed(usuario)); } catch (e) { erros.push(`feed: ${e.message}`); }
+    if (!projetos.length) { try { projetos.push(...await bePerfil(usuario)); } catch (e) { erros.push(`perfil ${usuario}: ${e.message}`); } }
+    if (projetos.length) erros.length = 0;
+  }
+  for (const l of (d.links || []).filter(x => /behance\.net\/gallery\/\d+/.test(x)).slice(0, 40)) {
+    if (projetos.some(p => p.id === beId(l))) continue;
+    try { const p = await beProjeto(l); if (p.titulo) projetos.push(p); } catch (e) { erros.push(`${l}: ${e.message}`); }
+  }
+  // se nada voltar, mantém a lista anterior para o site não ficar vazio
+  const lista = projetos.length ? projetos.filter(p => /^https:\/\//.test(p.capa) || !p.capa).slice(0, 60) : (d.projetos || []);
+  await ref.set({ projetos: lista, feito: d.pedido || 0, em: Date.now(), erro: erros.join(" · ").slice(0, 500) }, { merge: true });
+  logger.info("behance", { usuario, total: projetos.length, erros: erros.length });
+}
+exports.behancePedido = onDocumentWritten({ document: "publico/portfolio", timeoutSeconds: 120 }, async ev => {
+  const d = ev.data?.after?.data(); if (!d || !d.pedido || d.pedido === d.feito) return;
+  await sincronizarBehance(ev.data.after.ref, d);
+});
+exports.behanceSync = onSchedule({ schedule: "every 6 hours", timeZone: TZ, timeoutSeconds: 120 }, async () => {
+  const ref = db.doc("publico/portfolio"), d = (await ref.get()).data();
+  if (d && (d.usuario || (d.links || []).length)) await sincronizarBehance(ref, d);
+});

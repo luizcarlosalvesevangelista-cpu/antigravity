@@ -629,12 +629,34 @@ function caseCard(p) {
   return `<a class="case reveal" href="#case-${p.id}" data-tipos="${p.tipos.join(" ")}"><div class="cv"><img src="${p.capa}" alt="" width="1280" height="720"></div><div class="meta"><span>${p.tipos.join(" · ")}</span><span>${p.ano}</span></div><h3>${p.titulo}</h3></a>`;
 }
 const soon = `<div class="case soon"><div class="cv">Próximo projeto de Branding e Redesign</div><div class="meta"><span>Em breve</span><span></span></div><h3 style="color:var(--fg-2)">Seu projeto aqui</h3></div>`;
-document.querySelectorAll("[data-cases]").forEach(g => {
-  const n = g.dataset.cases === "all" ? PROJETOS.length : +g.dataset.cases;
-  const items = PROJETOS.slice(0, n).map(caseCard);
-  if (g.dataset.cases === "all") items.push(soon, soon);
-  g.innerHTML = items.join("");
-});
+/* projetos do Behance escolhidos no painel (publico/portfolio); sem eles, ficam os projetos acima */
+const escH = t => String(t ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+function beCard(p) {
+  const tipos = p.tipos.length ? p.tipos : ["Branding"], ano = p.data ? new Date(p.data).getFullYear() : "";
+  return `<a class="case reveal" href="${escH(p.link)}" target="_blank" rel="noopener" data-tipos="${escH(tipos.join(" "))}"><div class="cv">${p.capa ? `<img src="${escH(p.capa)}" alt="" loading="lazy" width="808" height="632">` : ""}</div><div class="meta"><span>${escH(tipos.join(" · "))}</span><span>${ano ? ano + " · " : ""}Behance ↗</span></div><h3>${escH(p.titulo)}</h3></a>`;
+}
+function montarCases(be, locais) {
+  const todos = [...be.map(beCard), ...(locais ? PROJETOS.map(caseCard) : [])];
+  document.querySelectorAll("[data-cases]").forEach(g => {
+    const items = g.dataset.cases === "all" ? todos.slice() : todos.slice(0, +g.dataset.cases);
+    if (g.dataset.cases === "all" && !be.length) items.push(soon, soon);
+    g.innerHTML = items.join("");
+  });
+  const ativo = document.querySelector('.filters button[aria-pressed="true"]'); if (ativo) ativo.click();
+}
+montarCases([], true);
+(() => {
+  const c = CONTATO.firebase; if (!c || !window.fetch) return;
+  const val = v => !v ? null : "stringValue" in v ? v.stringValue : "integerValue" in v ? +v.integerValue : "doubleValue" in v ? v.doubleValue : "booleanValue" in v ? v.booleanValue
+    : "arrayValue" in v ? (v.arrayValue.values || []).map(val) : "mapValue" in v ? Object.fromEntries(Object.entries(v.mapValue.fields || {}).map(([k, x]) => [k, val(x)])) : null;
+  fetch(`https://firestore.googleapis.com/v1/projects/${c.projectId}/databases/(default)/documents/publico/portfolio?key=${c.apiKey}`).then(r => r.ok ? r.json() : null).then(doc => {
+    if (!doc) return; const d = val({ mapValue: doc }), aj = d.ajustes || {}, ocultos = aj.ocultos || [], ordem = aj.ordem || [];
+    const pos = id => { const i = ordem.indexOf(id); return i < 0 ? 1e6 : i; };
+    const be = (d.projetos || []).filter(p => p && p.id && /^https:\/\/(www\.)?behance\.net\//.test(p.link) && !ocultos.includes(p.id))
+      .sort((a, b) => pos(a.id) - pos(b.id) || (b.data || 0) - (a.data || 0)).map(p => ({ ...p, tipos: (aj.tipos || {})[p.id] || ["Branding"] }));
+    if (be.length) montarCases(be, aj.locais !== false);
+  }).catch(() => {});
+})();
 document.querySelectorAll(".filters button").forEach(b => b.addEventListener("click", () => {
   document.querySelectorAll(".filters button").forEach(x => x.setAttribute("aria-pressed", x === b ? "true" : "false"));
   document.querySelectorAll('[data-cases="all"] .case[data-tipos]').forEach(c => c.hidden = !(b.dataset.f === "todos" || c.dataset.tipos.includes(b.dataset.f)));
