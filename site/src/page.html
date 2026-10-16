@@ -33,7 +33,7 @@
 :root[data-theme="dark"] { --bg: #0E1823; --bg-2: #132232; --fg: #ECEADB; --fg-2: #A9B4C0; --linha: #26384A; --cartao: #152535; --acento: #9DB6D3; --azul-fundo: #0B3F66; color-scheme: dark; }
 
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; scroll-padding-top: 76px; }
 body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 17px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
 img, video { max-width: 100%; display: block; }
 a { color: inherit; }
@@ -64,23 +64,43 @@ h3 { font-size: 1.2rem; font-weight: 900; }
 .top nav a:hover { opacity: 1; background: rgba(242,240,225,.1); }
 .top nav a[aria-current="page"] { background: var(--creme); color: var(--azul); opacity: 1; }
 .top .theme { flex: none; background: transparent; border: 1.5px solid rgba(242,240,225,.35); color: var(--creme); width: 38px; height: 38px; border-radius: 50%; cursor: pointer; display: grid; place-items: center; }
-@media (max-width: 860px) {
-  .top .wrap { flex-wrap: wrap; height: auto; padding-block: 12px 0; row-gap: 6px; }
-  .top nav { order: 3; width: 100%; margin: 0 calc(var(--gutter) * -1); padding: 0 var(--gutter) 10px; }
-  .top .theme { margin-left: auto; }
+/* Área do cliente e o botão de contato ficam destacados; no celular e no tablet o menu abre num painel */
+.top nav a.nav-cli { border: 1.5px solid rgba(242,240,225,.45); opacity: 1; margin-left: 6px; }
+@media (min-width: 1181px) { .top nav a[data-nav="inicio"] { display: none; } .top nav a { padding: 8px 8px; font-size: .88rem; } .top .wrap { gap: 16px; } }
+.top .btn-top { flex: none; background: var(--creme); color: var(--azul); font: 900 .88rem var(--font); text-decoration: none; padding: 10px 16px; border-radius: 999px; white-space: nowrap; }
+.top .btn-top:hover { filter: brightness(.95); }
+.top .menu-btn { display: none; flex: none; width: 44px; height: 44px; border-radius: 12px; border: 1.5px solid rgba(242,240,225,.35); background: transparent; color: var(--creme); cursor: pointer; place-items: center; }
+.top .menu-btn svg { width: 22px; height: 22px; }
+.top .menu-btn .x { display: none; }
+.top.aberto .menu-btn .x { display: block; } .top.aberto .menu-btn .ham { display: none; }
+@media (max-width: 1180px) {
+  .top .wrap { height: 62px; gap: 10px; position: relative; }
+  .top .brand { height: 20px; margin-right: auto; }
+  .top .menu-btn { display: grid; }
+  .top nav { display: none; position: absolute; top: 100%; left: 0; right: 0; margin: 0; flex-direction: column; gap: 2px; padding: 10px var(--gutter) 18px; background: var(--azul-fundo); box-shadow: 0 18px 30px rgba(6,30,50,.35); max-height: calc(100dvh - 62px); overflow-y: auto; }
+  .top.aberto nav { display: flex; }
+  .top nav a { font-size: 1.05rem; padding: 13px 14px; border-radius: 12px; }
+  .top nav a.nav-cli { margin: 8px 0 0; text-align: center; }
 }
+.top .nav-tema { display: none; }
+@media (max-width: 520px) {
+  .top .theme { display: none; }
+  .top .nav-tema { display: block; background: transparent; border: 0; color: var(--creme); font: 700 1rem var(--font); text-align: left; padding: 13px 14px; border-radius: 12px; opacity: .8; cursor: pointer; }
+  .top .btn-top { padding: 9px 13px; font-size: .84rem; }
+}
+@media (max-width: 360px) { .top .btn-top { display: none; } }
 
 /* hero */
 .hero { background: var(--azul); color: var(--creme); position: relative; overflow: hidden; }
 .hero .pat, .band-azul .pat { position: absolute; inset: -130px; background-size: 130px 130px; opacity: .13; pointer-events: none; }
-.hero .stage { position: relative; aspect-ratio: 16 / 7; max-width: 100%; }
+.hero .stage { position: relative; height: clamp(200px, 42vh, 500px); max-width: 100%; }
 .hero .stage svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 .hero .copy { position: relative; display: grid; gap: 22px; justify-items: center; text-align: center; padding-block: 0 72px; }
 .hero h1 { font-size: clamp(1.9rem, 4.6vw, 3.6rem); font-weight: 900; max-width: 20ch; }
 .hero .lead { color: var(--creme); opacity: .86; text-align: center; }
 .hero .ctas { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
 .replay { position: absolute; right: var(--gutter); top: 16px; background: rgba(242,240,225,.12); color: var(--creme); border: 0; font: 700 .8rem var(--font); padding: 7px 12px; border-radius: 999px; cursor: pointer; }
-@media (max-width: 700px) { .hero .stage { aspect-ratio: 4 / 3; } }
+@media (max-width: 700px) { .hero .stage { height: clamp(150px, 28vh, 240px); } .hero .copy { padding-block: 0 52px; gap: 18px; } .hero .ctas .btn { flex: 1 1 200px; justify-content: center; } }
 
 /* faixas */
 section { position: relative; }
@@ -105,9 +125,10 @@ section { position: relative; }
 .band-azul .reel-cap { color: rgba(242,240,225,.75); }
 
 /* serviços */
-.servs { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 18px; }
-.servs .serv { grid-column: span 2; } .servs .serv:nth-child(n+4) { grid-column: span 3; }
-@media (max-width: 900px) { .servs { grid-template-columns: 1fr; } }
+.servs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+@media (max-width: 1080px) { .servs { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .servs { grid-template-columns: 1fr; } }
+.serv { transition: transform .15s, box-shadow .15s; } .serv:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(6,30,50,.12); }
 .serv { background: var(--cartao); border: 1px solid var(--linha); border-radius: 18px; padding: 28px; display: grid; gap: 12px; align-content: start; text-decoration: none; }
 .serv svg { width: 46px; height: 46px; color: var(--acento); }
 .serv p { margin: 0; color: var(--fg-2); }
@@ -143,9 +164,7 @@ section { position: relative; }
 .aud p { margin: 0; color: var(--fg-2); font-size: .95rem; }
 
 /* portfólio */
-.cases { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
-@media (max-width: 900px) { .cases { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 560px) { .cases { grid-template-columns: 1fr; } }
+.cases { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 18px; }
 .case { display: grid; gap: 12px; text-decoration: none; border-radius: 18px; }
 .case .cv { border-radius: 16px; overflow: hidden; aspect-ratio: 16 / 9; background: var(--azul); position: relative; }
 .case .cv img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
@@ -164,7 +183,7 @@ section { position: relative; }
 
 /* sobre */
 .about { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: clamp(28px, 5vw, 72px); align-items: start; }
-@media (max-width: 860px) { .about { grid-template-columns: 1fr; } }
+@media (max-width: 860px) { .about { grid-template-columns: 1fr; } .portrait { max-width: 170px !important; aspect-ratio: 1; } }
 .portrait { aspect-ratio: 4 / 5; border-radius: 20px; background: var(--azul); color: var(--creme); position: relative; overflow: hidden; display: grid; place-items: center; max-width: 320px; }
 .portrait .pat { position: absolute; inset: -60px; background-size: 90px 90px; opacity: .14; }
 .portrait .mono { position: relative; height: 38%; }
@@ -210,6 +229,11 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
 footer .brand { height: 20px; color: var(--creme); }
 footer a { text-decoration: none; opacity: .85; } footer a:hover { opacity: 1; }
 footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
+@media (max-width: 700px) { footer nav { gap: 2px 18px; } footer nav a { padding-block: 8px; } footer { padding-bottom: 96px; } }
+/* WhatsApp sempre à mão (computador e celular) */
+.wa-float { position: fixed; z-index: 30; right: max(18px, env(safe-area-inset-right)); bottom: max(18px, env(safe-area-inset-bottom)); width: 58px; height: 58px; border-radius: 50%; background: #1FAF55; color: #fff; display: grid; place-items: center; box-shadow: 0 10px 26px rgba(0,0,0,.28); transition: transform .15s; }
+.wa-float:hover { transform: scale(1.06); } .wa-float svg { width: 30px; height: 30px; }
+.wa-float:focus-visible { outline: 3px solid var(--ardosia); outline-offset: 3px; }
 .view[hidden] { display: none !important; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .case .cv img { transition: none; } }
 </style>
@@ -217,7 +241,7 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
 <header class="top">
   <div class="wrap">
     <a href="#inicio" class="brand" aria-label="Upe Criativo, início"><svg class="wm" viewBox="786 2599 350 48" aria-hidden="true">__WM__</svg></a>
-    <nav aria-label="Principal">
+    <nav aria-label="Principal" id="menuPrincipal">
       <a href="#inicio" data-nav="inicio">Início</a>
       <a href="#branding" data-nav="branding">Branding</a>
       <a href="#erp" data-nav="erp">Upe ERP</a>
@@ -226,11 +250,15 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
       <a href="#portfolio" data-nav="portfolio">Portfólio</a>
       <a href="#sobre" data-nav="sobre">Sobre</a>
       <a href="#contato" data-nav="contato">Contato</a>
-      <a href="portal/">Área do cliente</a>
+      <a href="portal/" class="nav-cli">Área do cliente</a>
+      <button type="button" class="nav-tema" data-tema>Tema claro / escuro</button>
     </nav>
+    <a class="btn-top" href="#contato" data-close>Falar com a Upe</a>
     <button class="theme" id="theme" type="button" aria-label="Alternar tema claro e escuro"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+    <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="menuPrincipal" aria-label="Abrir o menu"><svg class="ham" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg><svg class="x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
   </div>
 </header>
+<a class="wa-float" href="https://wa.me/5511934393249?text=Ol%C3%A1%21%20Vim%20pelo%20site%20da%20Upe%20Criativo." target="_blank" rel="noopener" aria-label="Falar com a Upe no WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.3 1 2.5c.1.2 1.7 2.6 4.2 3.7 1.6.7 2.2.7 3 .6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2l-.5-.3z"/></svg></a>
 
 <main>
 <!-- ================= INÍCIO ================= -->
@@ -373,7 +401,7 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
 
   <section class="band" id="sobre-teaser">
     <div class="wrap split">
-      <div class="reveal"><div class="portrait" style="max-width:260px"><div class="pat" data-pat></div><div class="mono"><svg class="wm" viewBox="786 2599 36 48" aria-hidden="true"><path d="__N__"/><path d="__U__"/></svg></div></div></div>
+      <div class="reveal"><div class="portrait" style="max-width:260px;justify-self:start"><div class="pat" data-pat></div><div class="mono"><svg class="wm" viewBox="786 2599 36 48" aria-hidden="true"><path d="__N__"/><path d="__U__"/></svg></div></div></div>
       <div class="stack reveal">
         <p class="eb">Quem está por trás</p>
         <h2>A Upe é o meu projeto de agência pessoal.</h2>
@@ -517,11 +545,13 @@ document.getElementById("ano").textContent = new Date().getFullYear();
 (() => {
   const root = document.documentElement, btn = document.getElementById("theme");
   try { const t = localStorage.getItem("upe-tema"); if (t) root.dataset.theme = t; } catch (e) {}
-  btn.addEventListener("click", () => {
+  const trocar = () => {
     const dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
     root.dataset.theme = dark ? "light" : "dark";
     try { localStorage.setItem("upe-tema", root.dataset.theme); } catch (e) {}
-  });
+  };
+  btn.addEventListener("click", trocar);
+  document.querySelectorAll("[data-tema]").forEach(b => b.addEventListener("click", trocar)); // botão de tema dentro do menu (celular)
 })();
 
 /* padrão de foguetes */
@@ -689,6 +719,15 @@ function route() {
 }
 addEventListener("hashchange", route);
 route();
+// menu no celular e no tablet: abre num painel e fecha ao escolher, ao tocar fora ou com Esc
+(() => {
+  const top = document.querySelector(".top"), bt = document.getElementById("menuBtn");
+  const abrir = on => { top.classList.toggle("aberto", on); bt.setAttribute("aria-expanded", on); bt.setAttribute("aria-label", on ? "Fechar o menu" : "Abrir o menu"); };
+  bt.addEventListener("click", () => abrir(!top.classList.contains("aberto")));
+  top.querySelectorAll("nav a, [data-close]").forEach(a => a.addEventListener("click", () => abrir(false)));
+  addEventListener("keydown", e => { if (e.key === "Escape" && top.classList.contains("aberto")) { abrir(false); bt.focus(); } });
+  document.addEventListener("click", e => { if (!top.contains(e.target)) abrir(false); });
+})();
 </script>
 <script>/* medição do site principal (sem cookies): visitas, origem, aparelho e cliques aparecem no Painel Upe Serviços › cliente Upe Criativo › Análise (página "upe-site") */
 (function(){var A="https://firestore.googleapis.com/v1/projects/upecriativo-cc472/databases/(default)/documents/lp_paginas/upe-site/eventos?key=AIzaSyDJqqSMLWZLKSt9K1jPzvvQgyikZy4q9vw";

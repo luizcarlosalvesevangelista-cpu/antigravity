@@ -45,7 +45,7 @@
 :root[data-theme="dark"] { --bg: #0E1823; --bg-2: #132232; --fg: #ECEADB; --fg-2: #A9B4C0; --linha: #26384A; --cartao: #152535; --acento: #9DB6D3; --azul-fundo: #0B3F66; color-scheme: dark; }
 
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+html { scroll-behavior: smooth; scroll-padding-top: 76px; }
 body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font); font-size: 17px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
 img, video { max-width: 100%; display: block; }
 a { color: inherit; }
@@ -76,23 +76,43 @@ h3 { font-size: 1.2rem; font-weight: 900; }
 .top nav a:hover { opacity: 1; background: rgba(242,240,225,.1); }
 .top nav a[aria-current="page"] { background: var(--creme); color: var(--azul); opacity: 1; }
 .top .theme { flex: none; background: transparent; border: 1.5px solid rgba(242,240,225,.35); color: var(--creme); width: 38px; height: 38px; border-radius: 50%; cursor: pointer; display: grid; place-items: center; }
-@media (max-width: 860px) {
-  .top .wrap { flex-wrap: wrap; height: auto; padding-block: 12px 0; row-gap: 6px; }
-  .top nav { order: 3; width: 100%; margin: 0 calc(var(--gutter) * -1); padding: 0 var(--gutter) 10px; }
-  .top .theme { margin-left: auto; }
+/* Área do cliente e o botão de contato ficam destacados; no celular e no tablet o menu abre num painel */
+.top nav a.nav-cli { border: 1.5px solid rgba(242,240,225,.45); opacity: 1; margin-left: 6px; }
+@media (min-width: 1181px) { .top nav a[data-nav="inicio"] { display: none; } .top nav a { padding: 8px 8px; font-size: .88rem; } .top .wrap { gap: 16px; } }
+.top .btn-top { flex: none; background: var(--creme); color: var(--azul); font: 900 .88rem var(--font); text-decoration: none; padding: 10px 16px; border-radius: 999px; white-space: nowrap; }
+.top .btn-top:hover { filter: brightness(.95); }
+.top .menu-btn { display: none; flex: none; width: 44px; height: 44px; border-radius: 12px; border: 1.5px solid rgba(242,240,225,.35); background: transparent; color: var(--creme); cursor: pointer; place-items: center; }
+.top .menu-btn svg { width: 22px; height: 22px; }
+.top .menu-btn .x { display: none; }
+.top.aberto .menu-btn .x { display: block; } .top.aberto .menu-btn .ham { display: none; }
+@media (max-width: 1180px) {
+  .top .wrap { height: 62px; gap: 10px; position: relative; }
+  .top .brand { height: 20px; margin-right: auto; }
+  .top .menu-btn { display: grid; }
+  .top nav { display: none; position: absolute; top: 100%; left: 0; right: 0; margin: 0; flex-direction: column; gap: 2px; padding: 10px var(--gutter) 18px; background: var(--azul-fundo); box-shadow: 0 18px 30px rgba(6,30,50,.35); max-height: calc(100dvh - 62px); overflow-y: auto; }
+  .top.aberto nav { display: flex; }
+  .top nav a { font-size: 1.05rem; padding: 13px 14px; border-radius: 12px; }
+  .top nav a.nav-cli { margin: 8px 0 0; text-align: center; }
 }
+.top .nav-tema { display: none; }
+@media (max-width: 520px) {
+  .top .theme { display: none; }
+  .top .nav-tema { display: block; background: transparent; border: 0; color: var(--creme); font: 700 1rem var(--font); text-align: left; padding: 13px 14px; border-radius: 12px; opacity: .8; cursor: pointer; }
+  .top .btn-top { padding: 9px 13px; font-size: .84rem; }
+}
+@media (max-width: 360px) { .top .btn-top { display: none; } }
 
 /* hero */
 .hero { background: var(--azul); color: var(--creme); position: relative; overflow: hidden; }
 .hero .pat, .band-azul .pat { position: absolute; inset: -130px; background-size: 130px 130px; opacity: .13; pointer-events: none; }
-.hero .stage { position: relative; aspect-ratio: 16 / 7; max-width: 100%; }
+.hero .stage { position: relative; height: clamp(200px, 42vh, 500px); max-width: 100%; }
 .hero .stage svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 .hero .copy { position: relative; display: grid; gap: 22px; justify-items: center; text-align: center; padding-block: 0 72px; }
 .hero h1 { font-size: clamp(1.9rem, 4.6vw, 3.6rem); font-weight: 900; max-width: 20ch; }
 .hero .lead { color: var(--creme); opacity: .86; text-align: center; }
 .hero .ctas { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; }
 .replay { position: absolute; right: var(--gutter); top: 16px; background: rgba(242,240,225,.12); color: var(--creme); border: 0; font: 700 .8rem var(--font); padding: 7px 12px; border-radius: 999px; cursor: pointer; }
-@media (max-width: 700px) { .hero .stage { aspect-ratio: 4 / 3; } }
+@media (max-width: 700px) { .hero .stage { height: clamp(150px, 28vh, 240px); } .hero .copy { padding-block: 0 52px; gap: 18px; } .hero .ctas .btn { flex: 1 1 200px; justify-content: center; } }
 
 /* faixas */
 section { position: relative; }
@@ -117,9 +137,10 @@ section { position: relative; }
 .band-azul .reel-cap { color: rgba(242,240,225,.75); }
 
 /* serviços */
-.servs { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 18px; }
-.servs .serv { grid-column: span 2; } .servs .serv:nth-child(n+4) { grid-column: span 3; }
-@media (max-width: 900px) { .servs { grid-template-columns: 1fr; } }
+.servs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+@media (max-width: 1080px) { .servs { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .servs { grid-template-columns: 1fr; } }
+.serv { transition: transform .15s, box-shadow .15s; } .serv:hover { transform: translateY(-3px); box-shadow: 0 14px 30px rgba(6,30,50,.12); }
 .serv { background: var(--cartao); border: 1px solid var(--linha); border-radius: 18px; padding: 28px; display: grid; gap: 12px; align-content: start; text-decoration: none; }
 .serv svg { width: 46px; height: 46px; color: var(--acento); }
 .serv p { margin: 0; color: var(--fg-2); }
@@ -155,9 +176,7 @@ section { position: relative; }
 .aud p { margin: 0; color: var(--fg-2); font-size: .95rem; }
 
 /* portfólio */
-.cases { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
-@media (max-width: 900px) { .cases { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 560px) { .cases { grid-template-columns: 1fr; } }
+.cases { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 18px; }
 .case { display: grid; gap: 12px; text-decoration: none; border-radius: 18px; }
 .case .cv { border-radius: 16px; overflow: hidden; aspect-ratio: 16 / 9; background: var(--azul); position: relative; }
 .case .cv img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
@@ -176,7 +195,7 @@ section { position: relative; }
 
 /* sobre */
 .about { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: clamp(28px, 5vw, 72px); align-items: start; }
-@media (max-width: 860px) { .about { grid-template-columns: 1fr; } }
+@media (max-width: 860px) { .about { grid-template-columns: 1fr; } .portrait { max-width: 170px !important; aspect-ratio: 1; } }
 .portrait { aspect-ratio: 4 / 5; border-radius: 20px; background: var(--azul); color: var(--creme); position: relative; overflow: hidden; display: grid; place-items: center; max-width: 320px; }
 .portrait .pat { position: absolute; inset: -60px; background-size: 90px 90px; opacity: .14; }
 .portrait .mono { position: relative; height: 38%; }
@@ -222,6 +241,11 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
 footer .brand { height: 20px; color: var(--creme); }
 footer a { text-decoration: none; opacity: .85; } footer a:hover { opacity: 1; }
 footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
+@media (max-width: 700px) { footer nav { gap: 2px 18px; } footer nav a { padding-block: 8px; } footer { padding-bottom: 96px; } }
+/* WhatsApp sempre à mão (computador e celular) */
+.wa-float { position: fixed; z-index: 30; right: max(18px, env(safe-area-inset-right)); bottom: max(18px, env(safe-area-inset-bottom)); width: 58px; height: 58px; border-radius: 50%; background: #1FAF55; color: #fff; display: grid; place-items: center; box-shadow: 0 10px 26px rgba(0,0,0,.28); transition: transform .15s; }
+.wa-float:hover { transform: scale(1.06); } .wa-float svg { width: 30px; height: 30px; }
+.wa-float:focus-visible { outline: 3px solid var(--ardosia); outline-offset: 3px; }
 .view[hidden] { display: none !important; }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .case .cv img { transition: none; } }
 </style>
@@ -232,7 +256,7 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
 <header class="top">
   <div class="wrap">
     <a href="#inicio" class="brand" aria-label="Upe Criativo, início"><svg class="wm" viewBox="786 2599 350 48" aria-hidden="true"><path d="M 807.03 2603.74 C 805.59 2603.18 803.34 2603.19 801.95 2603.85 C 803.12 2602.35 803.71 2601.73 804.37 2601.19 C 804.45 2601.12 804.55 2601.12 804.63 2601.19 C 805.21 2601.69 805.64 2602.05 807.03 2603.74 "/><path d="M 812.05 2605.51 L 808.33 2605.51 C 809.1 2606.7 809.76 2607.97 810.29 2609.32 C 810.3 2609.33 810.3 2609.35 810.31 2609.37 C 810.95 2611.01 811.42 2612.75 811.68 2614.56 C 812.25 2618.48 811.84 2622.43 810.54 2626.03 C 810.86 2626.07 811.38 2626.18 811.92 2626.47 C 812.7 2626.89 813.63 2627.79 813.7 2629.64 C 813.79 2632.04 812.46 2633.9 811.66 2634.8 C 811.55 2634.93 811.39 2635 811.23 2635 C 811.16 2635 811.08 2634.98 811.01 2634.96 C 810.78 2634.87 810.64 2634.65 810.64 2634.4 L 810.7 2631.87 C 810.71 2631.42 810.48 2631 810.11 2630.76 C 809.73 2630.52 809.2 2630.27 808.56 2630.01 C 808.39 2630.18 808.19 2630.31 807.97 2630.4 L 807.75 2631.98 C 807.67 2632.57 807.16 2633.02 806.57 2633.02 L 805.51 2633.02 C 805.46 2633.42 805.39 2633.8 805.31 2634.14 C 805.07 2635.09 804.76 2635.57 804.36 2635.57 C 803.97 2635.57 803.65 2635.09 803.41 2634.14 C 803.33 2633.8 803.27 2633.42 803.21 2633.02 L 802.43 2633.02 C 801.84 2633.02 801.33 2632.57 801.25 2631.98 L 801.04 2630.41 C 800.81 2630.31 800.61 2630.17 800.43 2630 C 799.77 2630.26 799.25 2630.52 798.86 2630.76 C 798.48 2631 798.25 2631.42 798.27 2631.87 L 798.32 2634.4 C 798.33 2634.65 798.18 2634.87 797.95 2634.96 C 797.88 2634.98 797.81 2635 797.74 2635 C 797.57 2635 797.42 2634.93 797.3 2634.8 C 796.5 2633.9 795.18 2632.04 795.27 2629.64 C 795.33 2627.79 796.27 2626.89 797.05 2626.47 C 797.61 2626.17 798.15 2626.06 798.46 2626.02 C 797.16 2622.43 796.75 2618.48 797.32 2614.56 C 797.58 2612.75 798.05 2611.01 798.69 2609.37 C 798.7 2609.35 798.7 2609.33 798.71 2609.32 C 799.24 2607.97 799.9 2606.7 800.67 2605.51 L 788.57 2605.51 L 788.57 2622.07 C 788.57 2626.13 789.5 2629.85 791.35 2633.22 C 793.2 2636.59 795.91 2639.26 799.49 2641.24 C 803.07 2643.23 807.35 2644.21 812.32 2644.21 L 820.39 2644.21 L 820.39 2605.51 Z M 812.05 2605.51 "/><path d="M 857.14 2615.61 C 857.02 2617.67 856.43 2619.39 855.36 2620.77 C 854.3 2622.14 853.02 2623.25 851.53 2624.09 C 850.03 2624.93 848.01 2625.87 845.46 2626.92 C 843.27 2627.83 841.5 2628.64 840.12 2629.34 C 838.74 2630.03 837.44 2630.92 836.21 2631.99 C 834.97 2633.06 833.99 2634.4 833.26 2635.99 C 832.54 2637.59 832.17 2639.48 832.17 2641.67 L 832.17 2644.21 L 823.83 2644.21 L 823.83 2641.67 C 823.83 2637.72 824.75 2634.3 826.57 2631.38 C 828.41 2628.47 831.19 2625.84 834.93 2623.5 C 836.11 2622.75 837.28 2622.1 838.45 2621.54 C 839.63 2620.98 841.02 2620.36 842.64 2619.67 C 844.74 2618.79 846.26 2618.05 847.2 2617.48 C 848.14 2616.9 848.66 2616.2 848.77 2615.4 C 848.91 2614.48 848.69 2613.9 848.11 2613.64 C 847.54 2613.38 846.88 2613.24 846.13 2613.24 L 830.64 2613.24 L 830.64 2605.51 L 847.04 2605.51 C 848.88 2605.51 850.59 2605.96 852.18 2606.87 C 853.77 2607.78 855.01 2609.02 855.91 2610.57 C 856.81 2612.13 857.22 2613.81 857.14 2615.61  M 827.91 2613.66 C 825.66 2613.66 823.83 2611.84 823.83 2609.59 C 823.83 2607.33 825.66 2605.51 827.91 2605.51 "/><path d="M 865.48 2628.74 L 865.48 2636.48 L 886.59 2636.48 L 886.59 2644.21 L 857.14 2644.21 L 857.14 2627.68 C 857.14 2623.62 858.06 2619.9 859.91 2616.54 C 861.76 2613.16 864.48 2610.49 868.06 2608.5 C 871.64 2606.5 875.91 2605.51 880.89 2605.51 L 886.59 2605.51 L 886.59 2613.24 L 880.62 2613.24 C 877.83 2613.24 875.16 2613.85 872.63 2615.06 C 870.09 2616.28 868.19 2618.26 866.94 2621.01 L 886.59 2621.01 L 886.59 2628.74 Z M 865.48 2628.74 "/><path d="M 927.23 2644.21 L 897.77 2644.21 L 897.77 2627.68 C 897.77 2623.62 898.7 2619.9 900.55 2616.54 C 902.4 2613.17 905.11 2610.49 908.69 2608.5 C 912.27 2606.5 916.55 2605.51 921.52 2605.51 L 927.23 2605.51 L 927.23 2613.24 L 921.25 2613.24 C 918.84 2613.24 916.5 2613.7 914.21 2614.61 C 911.93 2615.52 910.01 2617.1 908.45 2619.36 C 906.89 2621.61 906.11 2624.62 906.11 2628.38 L 906.11 2636.48 L 927.23 2636.48 Z M 927.23 2644.21  M 918.17 2629.86 C 915.92 2629.86 914.09 2628.03 914.09 2625.78 C 914.09 2623.52 915.92 2621.7 918.17 2621.7 "/><path d="M 942.43 2631.66 C 941.01 2632.85 939.92 2634.25 939.15 2635.88 C 938.38 2637.49 938 2639.42 938 2641.67 L 938 2644.21 L 929.66 2644.21 L 929.66 2641.67 C 929.66 2637.72 930.57 2634.3 932.4 2631.38 C 934.23 2628.47 937.02 2625.84 940.76 2623.5 C 941.93 2622.75 943.1 2622.09 944.28 2621.54 C 945.45 2620.98 946.84 2620.36 948.46 2619.68 C 950.57 2618.79 952.09 2618.05 953.03 2617.47 C 953.97 2616.9 954.49 2616.21 954.59 2615.39 C 954.73 2614.48 954.52 2613.9 953.94 2613.64 C 953.36 2613.38 952.7 2613.24 951.95 2613.24 L 929.66 2613.24 L 929.66 2605.51 L 952.86 2605.51 C 954.7 2605.51 956.41 2605.96 958 2606.87 C 959.59 2607.78 960.84 2609.02 961.73 2610.57 C 962.63 2612.13 963.04 2613.81 962.96 2615.61 C 962.84 2617.67 962.25 2619.39 961.19 2620.77 C 960.13 2622.14 958.85 2623.25 957.35 2624.09 C 955.85 2624.93 953.83 2625.88 951.29 2626.93 C 950.66 2627.19 950.19 2627.38 949.89 2627.5 L 964.93 2644.21 L 953.71 2644.21 Z M 942.43 2631.66 "/><path d="M 967.36 2613.91 L 975.7 2613.91 L 975.7 2644.21 L 967.36 2644.21 Z M 967.36 2613.91  M 967.45 2609.59 C 967.45 2607.33 969.28 2605.51 971.53 2605.51 C 973.79 2605.51 975.61 2607.33 975.61 2609.59 "/><path d="M 999.3 2644.21 L 978.13 2644.21 L 978.13 2627.68 C 978.13 2623.62 979.05 2619.9 980.91 2616.54 C 982.76 2613.17 985.47 2610.49 989.05 2608.5 C 992.63 2606.5 996.91 2605.51 1001.88 2605.51 L 1009.95 2605.51 L 1009.95 2644.21 L 1001.61 2644.21 L 1001.61 2613.24 C 999.2 2613.24 996.86 2613.7 994.57 2614.61 C 992.29 2615.52 990.37 2617.1 988.81 2619.36 C 987.25 2621.61 986.47 2624.62 986.47 2628.38 L 986.47 2636.48 L 999.3 2636.48 Z M 999.3 2644.21 "/><path d="M 1025 2613.24 L 1012.38 2613.24 L 1012.38 2605.51 L 1045.7 2605.51 C 1045.85 2605.51 1045.96 2605.62 1045.96 2605.76 L 1045.96 2613.24 L 1033.34 2613.24 L 1033.34 2644.21 L 1025 2644.21 Z M 1025 2613.24 "/><path d="M 1048.39 2613.57 L 1056.73 2613.57 L 1056.73 2644.21 L 1048.39 2644.21 Z M 1048.39 2613.57  M 1048.48 2609.59 C 1048.48 2607.33 1050.31 2605.51 1052.56 2605.51 C 1054.81 2605.51 1056.64 2607.33 1056.64 2609.59 "/><path d="M 1083.91 2644.21 L 1074.32 2644.21 C 1074.32 2640.33 1073.97 2636.64 1073.27 2633.13 C 1072.55 2629.62 1071.64 2626.43 1070.52 2623.55 C 1069.39 2620.68 1068.2 2618.15 1066.94 2615.96 C 1065.67 2613.76 1064.48 2611.92 1063.36 2610.42 C 1062.23 2608.93 1060.84 2607.29 1059.16 2605.51 L 1069.96 2605.51 C 1071.27 2607.14 1072.35 2608.64 1073.19 2609.98 C 1074.03 2611.33 1074.88 2612.96 1075.73 2614.88 C 1076.59 2616.8 1077.34 2618.98 1077.96 2621.42 C 1078.59 2623.86 1078.98 2626.44 1079.12 2629.17 C 1079.36 2626.44 1079.82 2623.86 1080.48 2621.42 C 1081.15 2618.98 1081.9 2616.8 1082.74 2614.88 C 1083.58 2612.96 1084.4 2611.33 1085.2 2609.98 C 1086 2608.64 1087.02 2607.14 1088.28 2605.51 L 1099.08 2605.51 C 1097.4 2607.29 1095.99 2608.93 1094.86 2610.42 C 1093.73 2611.92 1092.54 2613.76 1091.28 2615.96 C 1090.03 2618.15 1088.84 2620.68 1087.72 2623.55 C 1086.6 2626.43 1085.68 2629.62 1084.97 2633.13 C 1084.27 2636.64 1083.91 2640.33 1083.91 2644.21 "/><path d="M 1109.85 2613.24 L 1109.85 2621.34 C 1109.85 2625.13 1110.63 2628.14 1112.18 2630.38 C 1113.74 2632.63 1115.66 2634.2 1117.95 2635.11 C 1120.23 2636.02 1122.58 2636.48 1124.98 2636.48 L 1124.98 2628.38 C 1124.98 2624.62 1124.21 2621.61 1122.65 2619.36 C 1121.09 2617.1 1119.17 2615.52 1116.89 2614.61 C 1114.6 2613.7 1112.25 2613.24 1109.85 2613.24 M 1109.85 2605.51 C 1114.76 2605.55 1118.99 2606.57 1122.53 2608.57 C 1126.07 2610.57 1128.75 2613.25 1130.58 2616.59 C 1132.41 2619.94 1133.33 2623.64 1133.33 2627.68 L 1133.33 2644.21 L 1124.98 2644.21 C 1120.07 2644.18 1115.84 2643.16 1112.3 2641.16 C 1108.77 2639.18 1106.08 2636.5 1104.25 2633.14 C 1102.42 2629.79 1101.5 2626.09 1101.5 2622.07 L 1101.5 2605.51 Z M 1109.85 2605.51  M 1119.42 2628.97 C 1117.17 2628.97 1115.34 2627.15 1115.34 2624.89 C 1115.34 2622.64 1117.17 2620.82 1119.42 2620.82 "/></svg></a>
-    <nav aria-label="Principal">
+    <nav aria-label="Principal" id="menuPrincipal">
       <a href="#inicio" data-nav="inicio">Início</a>
       <a href="#branding" data-nav="branding">Branding</a>
       <a href="#erp" data-nav="erp">Upe ERP</a>
@@ -241,11 +265,15 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
       <a href="#portfolio" data-nav="portfolio">Portfólio</a>
       <a href="#sobre" data-nav="sobre">Sobre</a>
       <a href="#contato" data-nav="contato">Contato</a>
-      <a href="portal/">Área do cliente</a>
+      <a href="portal/" class="nav-cli">Área do cliente</a>
+      <button type="button" class="nav-tema" data-tema>Tema claro / escuro</button>
     </nav>
+    <a class="btn-top" href="#contato" data-close>Falar com a Upe</a>
     <button class="theme" id="theme" type="button" aria-label="Alternar tema claro e escuro"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+    <button class="menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="menuPrincipal" aria-label="Abrir o menu"><svg class="ham" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg><svg class="x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
   </div>
 </header>
+<a class="wa-float" href="https://wa.me/5511934393249?text=Ol%C3%A1%21%20Vim%20pelo%20site%20da%20Upe%20Criativo." target="_blank" rel="noopener" aria-label="Falar com a Upe no WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.4.1-.6.3-.2.2-.8.8-.8 2s.9 2.3 1 2.5c.1.2 1.7 2.6 4.2 3.7 1.6.7 2.2.7 3 .6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2l-.5-.3z"/></svg></a>
 
 <main>
 <!-- ================= INÍCIO ================= -->
@@ -388,7 +416,7 @@ footer nav { display: flex; flex-wrap: wrap; gap: 6px 18px; }
 
   <section class="band" id="sobre-teaser">
     <div class="wrap split">
-      <div class="reveal"><div class="portrait" style="max-width:260px"><div class="pat" data-pat></div><div class="mono"><svg class="wm" viewBox="786 2599 36 48" aria-hidden="true"><path d="M 807.03 2603.74 C 805.59 2603.18 803.34 2603.19 801.95 2603.85 C 803.12 2602.35 803.71 2601.73 804.37 2601.19 C 804.45 2601.12 804.55 2601.12 804.63 2601.19 C 805.21 2601.69 805.64 2602.05 807.03 2603.74 "/><path d="M 812.05 2605.51 L 808.33 2605.51 C 809.1 2606.7 809.76 2607.97 810.29 2609.32 C 810.3 2609.33 810.3 2609.35 810.31 2609.37 C 810.95 2611.01 811.42 2612.75 811.68 2614.56 C 812.25 2618.48 811.84 2622.43 810.54 2626.03 C 810.86 2626.07 811.38 2626.18 811.92 2626.47 C 812.7 2626.89 813.63 2627.79 813.7 2629.64 C 813.79 2632.04 812.46 2633.9 811.66 2634.8 C 811.55 2634.93 811.39 2635 811.23 2635 C 811.16 2635 811.08 2634.98 811.01 2634.96 C 810.78 2634.87 810.64 2634.65 810.64 2634.4 L 810.7 2631.87 C 810.71 2631.42 810.48 2631 810.11 2630.76 C 809.73 2630.52 809.2 2630.27 808.56 2630.01 C 808.39 2630.18 808.19 2630.31 807.97 2630.4 L 807.75 2631.98 C 807.67 2632.57 807.16 2633.02 806.57 2633.02 L 805.51 2633.02 C 805.46 2633.42 805.39 2633.8 805.31 2634.14 C 805.07 2635.09 804.76 2635.57 804.36 2635.57 C 803.97 2635.57 803.65 2635.09 803.41 2634.14 C 803.33 2633.8 803.27 2633.42 803.21 2633.02 L 802.43 2633.02 C 801.84 2633.02 801.33 2632.57 801.25 2631.98 L 801.04 2630.41 C 800.81 2630.31 800.61 2630.17 800.43 2630 C 799.77 2630.26 799.25 2630.52 798.86 2630.76 C 798.48 2631 798.25 2631.42 798.27 2631.87 L 798.32 2634.4 C 798.33 2634.65 798.18 2634.87 797.95 2634.96 C 797.88 2634.98 797.81 2635 797.74 2635 C 797.57 2635 797.42 2634.93 797.3 2634.8 C 796.5 2633.9 795.18 2632.04 795.27 2629.64 C 795.33 2627.79 796.27 2626.89 797.05 2626.47 C 797.61 2626.17 798.15 2626.06 798.46 2626.02 C 797.16 2622.43 796.75 2618.48 797.32 2614.56 C 797.58 2612.75 798.05 2611.01 798.69 2609.37 C 798.7 2609.35 798.7 2609.33 798.71 2609.32 C 799.24 2607.97 799.9 2606.7 800.67 2605.51 L 788.57 2605.51 L 788.57 2622.07 C 788.57 2626.13 789.5 2629.85 791.35 2633.22 C 793.2 2636.59 795.91 2639.26 799.49 2641.24 C 803.07 2643.23 807.35 2644.21 812.32 2644.21 L 820.39 2644.21 L 820.39 2605.51 Z M 812.05 2605.51 "/></svg></div></div></div>
+      <div class="reveal"><div class="portrait" style="max-width:260px;justify-self:start"><div class="pat" data-pat></div><div class="mono"><svg class="wm" viewBox="786 2599 36 48" aria-hidden="true"><path d="M 807.03 2603.74 C 805.59 2603.18 803.34 2603.19 801.95 2603.85 C 803.12 2602.35 803.71 2601.73 804.37 2601.19 C 804.45 2601.12 804.55 2601.12 804.63 2601.19 C 805.21 2601.69 805.64 2602.05 807.03 2603.74 "/><path d="M 812.05 2605.51 L 808.33 2605.51 C 809.1 2606.7 809.76 2607.97 810.29 2609.32 C 810.3 2609.33 810.3 2609.35 810.31 2609.37 C 810.95 2611.01 811.42 2612.75 811.68 2614.56 C 812.25 2618.48 811.84 2622.43 810.54 2626.03 C 810.86 2626.07 811.38 2626.18 811.92 2626.47 C 812.7 2626.89 813.63 2627.79 813.7 2629.64 C 813.79 2632.04 812.46 2633.9 811.66 2634.8 C 811.55 2634.93 811.39 2635 811.23 2635 C 811.16 2635 811.08 2634.98 811.01 2634.96 C 810.78 2634.87 810.64 2634.65 810.64 2634.4 L 810.7 2631.87 C 810.71 2631.42 810.48 2631 810.11 2630.76 C 809.73 2630.52 809.2 2630.27 808.56 2630.01 C 808.39 2630.18 808.19 2630.31 807.97 2630.4 L 807.75 2631.98 C 807.67 2632.57 807.16 2633.02 806.57 2633.02 L 805.51 2633.02 C 805.46 2633.42 805.39 2633.8 805.31 2634.14 C 805.07 2635.09 804.76 2635.57 804.36 2635.57 C 803.97 2635.57 803.65 2635.09 803.41 2634.14 C 803.33 2633.8 803.27 2633.42 803.21 2633.02 L 802.43 2633.02 C 801.84 2633.02 801.33 2632.57 801.25 2631.98 L 801.04 2630.41 C 800.81 2630.31 800.61 2630.17 800.43 2630 C 799.77 2630.26 799.25 2630.52 798.86 2630.76 C 798.48 2631 798.25 2631.42 798.27 2631.87 L 798.32 2634.4 C 798.33 2634.65 798.18 2634.87 797.95 2634.96 C 797.88 2634.98 797.81 2635 797.74 2635 C 797.57 2635 797.42 2634.93 797.3 2634.8 C 796.5 2633.9 795.18 2632.04 795.27 2629.64 C 795.33 2627.79 796.27 2626.89 797.05 2626.47 C 797.61 2626.17 798.15 2626.06 798.46 2626.02 C 797.16 2622.43 796.75 2618.48 797.32 2614.56 C 797.58 2612.75 798.05 2611.01 798.69 2609.37 C 798.7 2609.35 798.7 2609.33 798.71 2609.32 C 799.24 2607.97 799.9 2606.7 800.67 2605.51 L 788.57 2605.51 L 788.57 2622.07 C 788.57 2626.13 789.5 2629.85 791.35 2633.22 C 793.2 2636.59 795.91 2639.26 799.49 2641.24 C 803.07 2643.23 807.35 2644.21 812.32 2644.21 L 820.39 2644.21 L 820.39 2605.51 Z M 812.05 2605.51 "/></svg></div></div></div>
       <div class="stack reveal">
         <p class="eb">Quem está por trás</p>
         <h2>A Upe é o meu projeto de agência pessoal.</h2>
@@ -532,11 +560,13 @@ document.getElementById("ano").textContent = new Date().getFullYear();
 (() => {
   const root = document.documentElement, btn = document.getElementById("theme");
   try { const t = localStorage.getItem("upe-tema"); if (t) root.dataset.theme = t; } catch (e) {}
-  btn.addEventListener("click", () => {
+  const trocar = () => {
     const dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
     root.dataset.theme = dark ? "light" : "dark";
     try { localStorage.setItem("upe-tema", root.dataset.theme); } catch (e) {}
-  });
+  };
+  btn.addEventListener("click", trocar);
+  document.querySelectorAll("[data-tema]").forEach(b => b.addEventListener("click", trocar)); // botão de tema dentro do menu (celular)
 })();
 
 /* padrão de foguetes */
@@ -704,6 +734,15 @@ function route() {
 }
 addEventListener("hashchange", route);
 route();
+// menu no celular e no tablet: abre num painel e fecha ao escolher, ao tocar fora ou com Esc
+(() => {
+  const top = document.querySelector(".top"), bt = document.getElementById("menuBtn");
+  const abrir = on => { top.classList.toggle("aberto", on); bt.setAttribute("aria-expanded", on); bt.setAttribute("aria-label", on ? "Fechar o menu" : "Abrir o menu"); };
+  bt.addEventListener("click", () => abrir(!top.classList.contains("aberto")));
+  top.querySelectorAll("nav a, [data-close]").forEach(a => a.addEventListener("click", () => abrir(false)));
+  addEventListener("keydown", e => { if (e.key === "Escape" && top.classList.contains("aberto")) { abrir(false); bt.focus(); } });
+  document.addEventListener("click", e => { if (!top.contains(e.target)) abrir(false); });
+})();
 </script>
 <script>/* medição do site principal (sem cookies): visitas, origem, aparelho e cliques aparecem no Painel Upe Serviços › cliente Upe Criativo › Análise (página "upe-site") */
 (function(){var A="https://firestore.googleapis.com/v1/projects/upecriativo-cc472/databases/(default)/documents/lp_paginas/upe-site/eventos?key=AIzaSyDJqqSMLWZLKSt9K1jPzvvQgyikZy4q9vw";
