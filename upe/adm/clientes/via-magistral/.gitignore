@@ -1,0 +1,6 @@
+# arquivos pesados ficam só no HD e no Storage
+*.mp4
+*.wav
+*.pdf
+criacao/
+_trabalho/*.log

@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Peças · Via Magistral</title>
+<!-- Peças estáticas: slides 16:9 (?slide=1..N), posts 4:5 (?post=s1-01&i=0) e recortes do manual (?manual=versoes).
+     Gerado por montar_pecas.py a partir deste modelo (injeta vm.css, vm.js e os blocos do cartão e do rótulo). -->
+<link rel="stylesheet" href="fonts/fonts.css">
+<script src="vm-brand.js"></script>
+<style>
+/*VM_CSS*/
+:root{--display:Poppins,sans-serif;--body:Poppins,sans-serif}
+*{box-sizing:border-box;margin:0}
+html,body{background:#000}
+#cv{position:relative;overflow:hidden;font-family:Poppins,sans-serif}
+.sl{position:absolute;inset:0;padding:110px 130px;display:flex;flex-direction:column;color:#112250;background:#F5F0E9}
+.sl.dk{background:#112250;color:#F5F0E9}
+.sl .k{font-size:22px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:#3C5070}
+.sl.dk .k{color:#C6A75E}
+.sl h2{font-size:76px;font-weight:700;line-height:1.04;letter-spacing:-.03em;margin-top:22px;max-width:1300px}
+.sl h2 em{font-style:normal;font-weight:300}
+.sl .lead{font-size:30px;line-height:1.5;margin-top:26px;max-width:1100px;opacity:.85}
+.sl .pg{position:absolute;right:130px;bottom:56px;font-size:18px;letter-spacing:.14em;opacity:.6}
+.sl .mk{position:absolute;left:130px;bottom:48px;width:150px}
+.row{display:grid;gap:36px;margin-top:auto}
+.tile{border-radius:22px;display:grid;place-items:center;padding:40px;overflow:hidden;position:relative}
+.cap{font-size:20px;opacity:.7;margin-top:14px}
+.post{width:1080px}
+</style>
+</head>
+<body>
+<div id="cv"></div>
+<!--VM_PARTS-->
+<script>
+/*VM_JS*/
+const Q=new URLSearchParams(location.search),cv=document.getElementById('cv');
+document.documentElement.style.setProperty('--vm-pattern',`url(${VM_PATTERN})`);
+const part=n=>document.getElementById('part-'+n).innerHTML;
+const mk=(c='#112250')=>`<div class="mk">${vmLogo('h',{color:c})}</div>`;
+const pg=i=>`<div class="pg">VIA MAGISTRAL · ${String(i).padStart(2,'0')}</div>`;
+const anat=()=>{const [x,y,w,h]=VM.symbol.vb.split(' ').map(Number);const pins=[[812,1428,1],[690,1705,2],[385,1682,3],[530,1905,4]];
+  return `<svg viewBox="${x-30} ${y-30} ${w+60} ${h+60}" fill="#112250" style="width:100%">${VM.symbol.sym.map(d=>`<path d="${d}"/>`).join('')}${pins.map(([a,b,n])=>`<g><circle cx="${a}" cy="${b}" r="24" fill="#C6A75E" stroke="#F5F0E9" stroke-width="6"/><text x="${a}" y="${b+9}" text-anchor="middle" style="font:700 26px Poppins;fill:#112250">${n}</text></g>`).join('')}</svg>`};
+const card=(html,ar=1.667)=>`<div style="position:relative;aspect-ratio:${ar};border-radius:18px;overflow:hidden;box-shadow:0 30px 60px -30px rgba(0,0,0,.45)">${html}</div>`;
+
+/* ---------------- SLIDES (1920×1080) ---------------- */
+const SLIDES=[
+ ()=>`<div class="sl dk" style="justify-content:center">${`<div class="pat vm-pat" style="position:absolute;left:0;right:0;top:0;height:200px;background:#C6A75E;--pat-size:560px"></div><div class="pat vm-pat" style="position:absolute;left:0;right:0;bottom:0;height:200px;background:#C6A75E;--pat-size:560px"></div>`}
+   <div style="display:grid;grid-template-columns:560px 1fr;gap:110px;align-items:center"><div>${vmLogo('v',{color:'#F5F0E9'})}</div><div><div class="k">Apresentação da nova marca</div><h2 style="font-size:84px">Sua fórmula,<br><em style="color:#C6A75E">do seu jeito.</em></h2><p class="lead">Identidade visual · versão 2 · outubro de 2026</p></div></div></div>`,
+ ()=>`<div class="sl"><div class="k">De onde partimos</div><h2>Uma farmácia querida, <em>com uma marca que não acompanhava o cuidado.</em></h2>
+   <div class="row" style="grid-template-columns:repeat(3,1fr)">${[['3 unidades','Asa Sul, Setor Sudoeste e Gama, em Brasília.'],['Homeopatia, cosméticos e fitoterápicos','Manipulação de fórmulas com responsabilidade técnica.'],['Primeira proposta recusada','O símbolo e os ícones não representaram a farmácia. O padrão e o cartão foram aprovados.']].map(([a,b])=>`<div style="border-top:3px solid #112250;padding-top:24px"><div style="font-size:34px;font-weight:700;line-height:1.15">${a}</div><p style="font-size:24px;margin-top:12px;opacity:.8">${b}</p></div>`).join('')}</div>${pg(2)}</div>`,
+ ()=>`<div class="sl dk"><div class="k">O conceito</div><h2>Cada pessoa é única. <em style="color:#C6A75E">Cada fórmula também.</em></h2><p class="lead">A Via Magistral não vende remédio de prateleira. Ela prepara o caminho de cada receita até a fórmula certa. A nova marca desenha esse caminho: a “via”.</p>
+   <div class="row" style="grid-template-columns:repeat(4,1fr)">${['Confiança','Proximidade','Precisão','Personalização'].map(a=>`<div style="border:1.5px solid rgba(245,240,233,.3);border-radius:999px;padding:22px;text-align:center;font-size:28px;font-weight:600">${a}</div>`).join('')}</div>${pg(3)}</div>`,
+ ()=>`<div class="sl"><div class="k">O símbolo</div><div style="display:grid;grid-template-columns:720px 1fr;gap:90px;align-items:center;margin-top:30px;flex:1"><div style="background:#fff;border-radius:28px;padding:60px">${anat()}</div>
+   <div style="display:grid;gap:34px">${[['O pilão em movimento','Trabalho feito à mão, por farmacêutica.'],['As faixas da fórmula','Camadas de uma dosagem precisa.'],['A curva: a “via”','O caminho de cada paciente até a fórmula.'],['A base firme','Segurança técnica e responsabilidade.']].map(([a,b],i)=>`<div style="display:grid;grid-template-columns:56px 1fr;gap:22px;align-items:start"><span style="width:52px;height:52px;border-radius:50%;background:#112250;color:#F5F0E9;display:grid;place-items:center;font-weight:700;font-size:24px">${i+1}</span><div><div style="font-size:34px;font-weight:700">${a}</div><div style="font-size:24px;opacity:.75;margin-top:4px">${b}</div></div></div>`).join('')}</div></div>${pg(4)}</div>`,
+ ()=>`<div class="sl"><div class="k">Versões do logotipo</div><h2>Principal, secundário e <em>sempre em uma cor só.</em></h2>
+   <div class="row" style="grid-template-columns:1.3fr 1.3fr 1fr 1fr"><div class="tile" style="background:#fff;height:420px"><div style="width:72%">${vmLogo('v',{color:'#112250'})}</div></div><div class="tile" style="background:#fff;height:420px"><div style="width:86%">${vmLogo('h',{color:'#112250'})}</div></div><div class="tile" style="background:#112250;height:420px"><div style="width:84%">${vmLogo('v',{color:'#F5F0E9'})}</div></div><div class="tile" style="background:#C6A75E;height:420px"><div style="width:84%">${vmLogo('v',{color:'#112250'})}</div></div></div>${pg(5)}</div>`,
+ ()=>`<div class="sl"><div class="k">Cores e tipografia</div><h2>As cores e a Poppins do manual, <em>sem mudanças.</em></h2>
+   <div class="row" style="grid-template-columns:repeat(5,1fr);gap:20px">${[['Royal Blue','#112250','Primária'],['Soft Gold','#C6A75E','Primária'],['Saphire','#3C5070','Secundária'],['Shellstone','#D9C8C2','Secundária'],['Swan Wing','#F5F0E9','Destaque']].map(([n,h,r])=>`<div><div style="height:260px;border-radius:20px;background:${h};box-shadow:inset 0 0 0 1px rgba(17,34,80,.12)"></div><div style="font-size:28px;font-weight:700;margin-top:16px">${n}</div><div style="font-size:20px;opacity:.7">${h} · ${r}</div></div>`).join('')}</div>
+   <div style="display:flex;gap:60px;align-items:baseline;margin-top:44px;border-top:1px solid rgba(17,34,80,.15);padding-top:30px"><span style="font-size:110px;font-weight:700;line-height:.8">Aa</span><div style="font-size:26px"><b>Poppins</b> · títulos em Bold, subtítulos em Medium, textos em Regular.<br><span style="opacity:.7">O nome “Via Magistral” é lettering próprio (Bildeberg adaptada) e não é digitado.</span></div></div>${pg(6)}</div>`,
+ ()=>`<div class="sl dk" style="padding:0"><div style="position:absolute;inset:0;background:#112250"></div><div class="vm-pat" style="position:absolute;inset:0;background:#C6A75E;--pat-size:700px;opacity:.9"></div>
+   <div style="position:absolute;left:130px;top:110px;right:130px;display:grid;grid-template-columns:1fr 520px;gap:80px;align-items:start"><div style="background:#112250;padding:44px 50px;border-radius:24px"><div class="k">O padrão de ramos</div><h2 style="font-size:64px">Aprovado na primeira proposta, <em style="color:#C6A75E">mantido na nova marca.</em></h2><p class="lead" style="font-size:26px">Traz a origem botânica dos ativos. Dá textura às peças; o símbolo assina.</p></div>
+   <div style="width:420px;aspect-ratio:1;border-radius:50%;background:#112250;display:grid;place-items:center;box-shadow:0 0 0 30px #112250;margin-top:80px"><div style="width:62%">${vmLogo('symbol',{color:'#F5F0E9'})}</div></div></div>${pg(7)}</div>`,
+ ()=>`<div class="sl" style="background:#3C5070;color:#F5F0E9"><div class="k" style="color:#C6A75E">Cartão de visita</div><h2>O modelo aprovado, <em>agora com o novo símbolo.</em></h2>
+   <div class="row" style="grid-template-columns:1fr 1fr;gap:50px">${card(part('cardfront'))}${card(part('cardback'))}</div>${pg(8)}</div>`,
+ ()=>`<div class="sl"><div class="k">Rótulos e embalagem</div><h2>Do balcão <em>à casa de quem cuida.</em></h2>
+   <div class="row" style="grid-template-columns:1.25fr 1fr;gap:40px;align-items:end"><div style="display:grid;gap:22px">${part('rotulo')}${part('rotulo2')}</div><div style="border-radius:22px;overflow:hidden" id="frascoSlot"></div></div>${pg(9)}</div>`,
+ ()=>`<div class="sl"><div class="k">Sacolas</div><h2>Kraft para o dia a dia, <em>Royal Blue para presentear.</em></h2><div class="row" style="grid-template-columns:1fr 1fr;gap:40px"><div id="bagKraft" style="height:560px;border-radius:22px;overflow:hidden"></div><div id="bagRoyal" style="height:560px;border-radius:22px;overflow:hidden"></div></div>${pg(10)}</div>`,
+ ()=>`<div class="sl"><div class="k">Instagram</div><h2>O feed da nova marca.</h2><div id="feedSlot" style="margin-top:40px;display:grid;grid-template-columns:repeat(6,1fr);gap:14px"></div>${pg(11)}</div>`,
+ ()=>`<div class="sl dk"><div class="k">Filme da marca</div><h2>A fórmula da Helena.</h2><p class="lead">38 segundos, com trilha e efeitos. Da receita à fórmula pronta, com a assinatura no fim.</p><div id="sbSlot" class="row" style="grid-template-columns:repeat(7,1fr);gap:16px"></div>${pg(12)}</div>`,
+ ()=>`<div class="sl dk"><div class="k">Motions</div><h2>A marca em movimento.</h2><div id="moSlot" class="row" style="grid-template-columns:repeat(5,1fr);gap:20px"></div>${pg(13)}</div>`,
+ ()=>`<div class="sl"><div class="k">Landing page</div><h2>Envie a receita <em>em dois toques.</em></h2><div class="row" style="grid-template-columns:1fr 300px;gap:40px;align-items:end"><div style="height:600px;border-radius:18px;overflow:hidden;box-shadow:0 30px 60px -30px rgba(0,0,0,.4)"><img src="../dossie/assets/site/lp-desktop.jpg" style="width:100%;display:block"></div><div style="height:600px;border-radius:36px;border:10px solid #151515;overflow:hidden"><img src="../dossie/assets/site/lp-tela-01.jpg" style="width:100%;display:block"></div></div>${pg(14)}</div>`,
+ ()=>`<div class="sl dk"><div class="k">Próximos passos</div><h2>Depois da aprovação.</h2>
+   <div class="row" style="grid-template-columns:repeat(4,1fr)">${[['Ajustes finos','Comentários sobre cor, proporção e aplicações.'],['Arquivos finais','Logotipo em AI, EPS, SVG, PNG e PDF; versão para o INPI.'],['Manual atualizado','Novo símbolo, padrão, papelaria e redes.'],['Lançamento','Landing page, cronograma de posts, reels e filme.']].map(([a,b],i)=>`<div style="border-top:3px solid #C6A75E;padding-top:24px"><div style="font-size:18px;letter-spacing:.14em;color:#C6A75E">0${i+1}</div><div style="font-size:34px;font-weight:700;margin-top:10px">${a}</div><p style="font-size:24px;margin-top:10px;opacity:.8">${b}</p></div>`).join('')}</div>${pg(15)}</div>`
+];
+
+/* ---------------- POSTS (1080×1350) ---------------- */
+const CAR={
+ 's1-03':[VM_POSTS[4],
+   ...[['01','Envie a foto da receita','Pelo WhatsApp da unidade mais perto de você.'],['02','A farmacêutica avalia','Dose, forma farmacêutica e compatibilidade dos ativos.'],['03','Você aprova o orçamento','O prazo de preparo vem junto.'],['04','Retire ou receba','Asa Sul · St Sudoeste · Gama.']].map(([n,a,b])=>({c:'p-slate',h:`<div class="in"><span class="lbl" style="color:#C6A75E">Passo ${n}</span><div style="font-size:40cqw;font-weight:700;line-height:.8;color:#C6A75E;margin-top:8cqw;letter-spacing:-.06em">${+n}</div><p class="ttl" style="font-size:10cqw;margin-top:8cqw">${a}</p><p class="txt" style="margin-top:4cqw;opacity:.85">${b}</p><div class="foot"><span>Via Magistral</span><div style="width:11cqw">${vmLogo('symbol')}</div></div></div>`}))],
+ 's2-03':[VM_POSTS[6],
+   ...[['Local seco e fresco','Longe do banheiro e do fogão: o vapor e o calor alteram a fórmula.'],['Frasco bem fechado','E longe da luz do sol.'],['Validade e horários','Respeite a validade do rótulo e os horários da receita. Dúvidas? Fale com a nossa farmacêutica.']].map(([a,b],i)=>({c:i%2?'p-rose':'p-linen',h:`<div class="in"><span class="lbl">Cuidado 0${i+1}</span><div style="width:22cqw;height:2cqw;border-radius:2cqw;background:#C6A75E;margin-top:12cqw"></div><p class="ttl" style="font-size:11cqw;margin-top:6cqw">${a}</p><p class="txt" style="margin-top:5cqw">${b}</p><div class="foot"><span>Dica da farmacêutica</span><div style="width:11cqw">${vmLogo('symbol')}</div></div></div>`}))]
+};
+const POSTMAP={'s1-01':VM_POSTS[0],'s1-04':VM_POSTS[2],'s1-06':VM_POSTS[1],'s2-01':VM_POSTS[3],'s2-04':VM_POSTS[7],'s2-06':VM_POSTS[8],'s2-07':VM_POSTS[5]};
+
+/* ---------------- RECORTES DO MANUAL (1600×1000) ---------------- */
+const MAN={
+ construcao:()=>`<div class="sl" style="padding:80px"><div style="display:grid;grid-template-columns:640px 1fr;gap:70px;align-items:center;height:100%"><div style="background:#fff;border-radius:24px;padding:50px">${anat()}</div><div style="display:grid;gap:26px">${['Pilão em movimento','Faixas da fórmula','A curva: a via','Base firme'].map((a,i)=>`<div style="font-size:34px;font-weight:700"><span style="color:#C6A75E">${i+1}</span> · ${a}</div>`).join('')}<p style="font-size:22px;opacity:.7">Símbolo em linhas cheias, sem degradê: reproduz em uma cor, carimbo, hot stamping e gravação.</p></div></div></div>`,
+ versoes:()=>`<div class="sl" style="padding:70px;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:1fr 1fr;gap:22px">${[['#F5F0E9','#112250','v'],['#D9C8C2','#112250','v'],['#112250','#F5F0E9','v'],['#C6A75E','#112250','v'],['#F5F0E9','#112250','h'],['#3C5070','#F5F0E9','h'],['#112250','#F5F0E9','symbol'],['#C6A75E','#112250','symbol']].map(([b,c,k])=>`<div class="tile" style="background:${b};box-shadow:inset 0 0 0 1px rgba(17,34,80,.1)"><div style="width:${k==='symbol'?'55%':'80%'}">${vmLogo(k,{color:c})}</div></div>`).join('')}</div>`,
+ paleta:()=>`<div class="sl" style="padding:70px;display:grid;grid-template-columns:repeat(5,1fr);gap:18px">${[['Royal Blue','#112250','C79 M58 Y0 K69'],['Soft Gold','#C6A75E','conferir CMYK'],['Saphire','#3C5070','conferir CMYK'],['Shellstone','#D9C8C2','conferir CMYK'],['Swan Wing','#F5F0E9','C0 M2 Y5 K4']].map(([n,h,c])=>`<div style="border-radius:22px;background:${h};padding:30px;display:flex;flex-direction:column;justify-content:flex-end;color:${['#112250','#3C5070'].includes(h)?'#F5F0E9':'#112250'};box-shadow:inset 0 0 0 1px rgba(17,34,80,.1)"><b style="font-size:32px">${n}</b><span style="font-size:20px">${h}</span><span style="font-size:16px;opacity:.75">${c}</span></div>`).join('')}</div>`,
+ padrao:()=>`<div class="sl dk" style="padding:0"><div class="vm-pat" style="position:absolute;inset:0;background:#C6A75E;--pat-size:700px"></div><div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:440px;aspect-ratio:1;border-radius:50%;background:#112250;display:grid;place-items:center;box-shadow:0 0 0 30px #112250"><div style="width:62%">${vmLogo('symbol',{color:'#F5F0E9'})}</div></div></div>`,
+ aplicacoes:()=>`<div class="sl" style="padding:60px;background:#3C5070;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto;gap:30px">${card(part('cardfront'))}${card(part('cardback'))}<div style="grid-column:1/-1">${part('rotulo')}</div></div>`
+};
+
+/* ---------------- montagem ---------------- */
+const fill=()=>{const fr=document.getElementById('frascoSlot');if(fr){fr.innerHTML='<div class="vm-mock" id="vmFrasco"></div>';vmFrasco()}
+ const bk=document.getElementById('bagKraft');if(bk){bk.innerHTML=part('kraft')}
+ const br=document.getElementById('bagRoyal');if(br){br.innerHTML='<div id="vmBag" style="height:100%"></div>';vmBagDraw()}
+ const fd=document.getElementById('feedSlot');if(fd){fd.innerHTML=FEED.slice(0,12).map(n=>`<img src="../dossie/conteudo/posts/${n}.jpg" style="width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:10px">`).join('')}
+ const sb=document.getElementById('sbSlot');if(sb){sb.innerHTML=[1,2,3,4,5,6,7].map(n=>`<img src="../dossie/conteudo/motion/storyboard/filme-0${n}.jpg" style="width:100%;border-radius:12px">`).join('')}
+ const mo=document.getElementById('moSlot');if(mo){mo.innerHTML=['logo-v','reel-01-como-funciona','reel-02-voce-sabia','reel-03-unidades','filme-v'].map(n=>`<div style="position:relative"><img src="../dossie/conteudo/motion/${n}.jpg" style="width:100%;border-radius:14px"><span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:84px;height:84px;border-radius:50%;background:rgba(198,167,94,.95);display:grid;place-items:center;color:#112250;font-size:34px">▶</span></div>`).join('')}
+ document.querySelectorAll('[data-logo]').forEach(el=>{el.innerHTML=vmLogo(el.dataset.logo,{color:el.dataset.color})});};
+const FEED=['s1-01','s1-02','s1-03-1','s1-04','s1-05','s1-06','s2-01','s2-02','s2-03-1','s2-04','s2-05','s2-06'];
+if(Q.has('slide')){const i=+Q.get('slide')-1;cv.style.width='1920px';cv.style.height='1080px';cv.innerHTML=SLIDES[i]();window.__count=SLIDES.length}
+else if(Q.has('post')){const id=Q.get('post'),k=+(Q.get('i')||0);const P=CAR[id]?CAR[id][k]:POSTMAP[id];cv.style.width='1080px';cv.style.height='1350px';cv.innerHTML=`<div class="post ${P.c}">${P.h}</div>`;window.__car=CAR}
+else if(Q.has('manual')){cv.style.width='1600px';cv.style.height='1000px';cv.innerHTML=MAN[Q.get('manual')]()}
+fill();
+document.fonts.ready.then(()=>{setTimeout(()=>document.body.dataset.ready='1',150)});
+</script>
+</body>
+</html>
