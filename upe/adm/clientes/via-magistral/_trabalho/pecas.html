@@ -498,7 +498,7 @@ const fill=()=>{const fr=document.getElementById('frascoSlot');if(fr){fr.innerHT
  const mo=document.getElementById('moSlot');if(mo){mo.innerHTML=['logo-v','reel-01-como-funciona','reel-02-voce-sabia','reel-03-unidades','filme-v'].map(n=>`<div style="position:relative"><img src="../dossie/conteudo/motion/${n}.jpg" style="width:100%;border-radius:14px"><span style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:84px;height:84px;border-radius:50%;background:rgba(198,167,94,.95);display:grid;place-items:center;color:#112250;font-size:34px">▶</span></div>`).join('')}
  document.querySelectorAll('[data-logo]').forEach(el=>{el.innerHTML=vmLogo(el.dataset.logo,{color:el.dataset.color})});};
 const FEED=['s1-01','s1-02','s1-03-1','s1-04','s1-05','s1-06','s2-01','s2-02','s2-03-1','s2-04','s2-05','s2-06'];
-if(Q.has('slide')){const i=+Q.get('slide')-1;cv.style.width='1920px';cv.style.height='1080px';cv.innerHTML=SLIDES[i]();window.__count=SLIDES.length}
+if(Q.has('slide')){SLIDES.splice(1,0,SLIDES.splice(11,1)[0]);const i=+Q.get('slide')-1;cv.style.width='1920px';cv.style.height='1080px';cv.innerHTML=SLIDES[i]();const g=cv.querySelector('.pg');if(g)g.textContent='VIA MAGISTRAL · '+String(i+1).padStart(2,'0');window.__count=SLIDES.length}
 else if(Q.has('post')){const id=Q.get('post'),k=+(Q.get('i')||0);const P=CAR[id]?CAR[id][k]:POSTMAP[id];cv.style.width='1080px';cv.style.height='1350px';cv.innerHTML=`<div class="post ${P.c}">${P.h}</div>`;window.__car=CAR}
 else if(Q.has('manual')){cv.style.width='1600px';cv.style.height='1000px';cv.innerHTML=MAN[Q.get('manual')]()}
 fill();

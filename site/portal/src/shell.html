@@ -187,6 +187,19 @@ table.precos input[type=checkbox], .painel-op input[type=radio], .svcards input[
 /* filme e telas de imagem ficam presos ao quadro (vídeo vertical não estica a apresentação) */
 .player .stage:not(.livre) > img, .player .stage:not(.livre) > video { position: absolute; inset: 0; }
 .player .stage .ph { padding: 30px; text-align: center; opacity: .7; }
+.player .stage .site-fr { position: absolute; inset: 0; overflow: hidden; background: #fff; }
+.player .stage .site-fr iframe { position: absolute; left: 0; top: 0; width: 1440px; height: 810px; border: 0; transform-origin: 0 0; }
+.player .stage .site-bt, .player .stage .unmute { position: absolute; right: 14px; bottom: 14px; z-index: 2; display: flex; gap: 8px; }
+.player .stage .site-bt button, .player .stage .unmute { background: rgba(10,10,10,.82); color: var(--creme); border: 0; border-radius: 999px; padding: 9px 15px; font: 900 .85rem var(--font); cursor: pointer; }
+.sitev { position: fixed; inset: 0; z-index: 90; background: #0b0b0b; display: grid; grid-template-rows: auto 1fr; color: var(--creme); }
+.sitev-top { display: flex; align-items: center; gap: 8px; padding: 10px 14px; flex-wrap: wrap; font-size: .85rem; }
+.sitev-top span { opacity: .7; }
+.sitev-top button, .sitev-top .b { background: rgba(242,240,225,.12); color: var(--creme); border: 0; border-radius: 999px; padding: 8px 14px; font: 900 .85rem var(--font); cursor: pointer; text-decoration: none; }
+.sitev-top button[aria-pressed="true"] { background: var(--creme); color: var(--tinta); }
+.sitev-body { display: flex; align-items: center; justify-content: center; min-height: 0; padding: 0 12px 12px; overflow: auto; }
+.sitev-body iframe { width: 100%; height: 100%; border: 0; border-radius: 8px; background: #fff; }
+.sitev[data-dev="tablet"] .sitev-body iframe { width: min(834px, 100%); height: min(1112px, 100%); border-radius: 22px; box-shadow: 0 0 0 10px #222; }
+.sitev[data-dev="celular"] .sitev-body iframe { width: 390px; max-width: 100%; height: min(844px, 100%); border-radius: 34px; box-shadow: 0 0 0 10px #222; }
 .player .pbar { display: flex; align-items: center; gap: 10px; padding: 10px 12px; color: var(--creme); }
 .player .pbar button { background: rgba(242,240,225,.12); color: var(--creme); border: 0; border-radius: 999px; padding: 8px 14px; font: 900 .85rem var(--font); cursor: pointer; }
 .player .pbar .nm { flex: 1; min-width: 0; font-size: .88rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

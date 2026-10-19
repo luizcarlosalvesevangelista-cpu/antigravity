@@ -212,7 +212,7 @@ const DADOS = {
     cards: [
       { rotulo: 'Manual da marca', texto: 'Atualizar o manual atual: novo símbolo, retirada dos ícones, correção das cores e do acento. Recortes prontos em assets/manual/.', arquivo: 'marca/manual/ (a atualizar)' },
       { rotulo: 'Apresentação de redesign', texto: '15 telas 16:9, com o filme, os motions e o feed para ampliar.', arquivo: 'Aba 05' },
-      { rotulo: 'Landing page', texto: 'Envio de receita pelo WhatsApp, orçamento (lead no painel), linhas, três unidades e dúvidas. Validada com tools/validar-html.js.', arquivo: 'paginas/landing/index.html' },
+      { rotulo: 'Landing page', texto: 'Envio de receita pelo WhatsApp, orçamento (lead no painel), linhas, três unidades e dúvidas. Validada com tools/validar-html.js. Funciona dentro do dossiê (site/) e abre em tela cheia.', arquivo: 'paginas/landing/index.html · cópia em dossie/site/' },
       { rotulo: 'Cronograma de conteúdo', texto: '26/10 a 08/11/2026: 13 publicações (9 artes, 2 carrosséis, 4 reels) e o filme da marca.', arquivo: 'criacao/ e aba 05' }
     ],
     landing: {
@@ -246,21 +246,23 @@ const DADOS = {
     lede: 'A nova marca da Via Magistral: o que mudou desde a primeira proposta, o símbolo, as aplicações, o filme, os motions com som e o feed para ampliar.',
     pdf: 'apresentacao/Via_Magistral_Apresentacao.pdf',
     pdfTamanho: '3,2 MB',
+    autoplay: true,
+    site: { titulo: 'Via Magistral · Farmácia de Manipulação', url: 'site/index.html', dominio: 'viamagistral.com.br' },
     slides: [
       { nome: 'Capa', img: 'apresentacao/slides/slide-01.jpg' },
-      { nome: 'De onde partimos', img: 'apresentacao/slides/slide-02.jpg' },
-      { nome: 'O conceito', img: 'apresentacao/slides/slide-03.jpg' },
-      { nome: 'O símbolo', img: 'apresentacao/slides/slide-04.jpg' },
-      { nome: 'Versões do logotipo', img: 'apresentacao/slides/slide-05.jpg' },
-      { nome: 'Cores e tipografia', img: 'apresentacao/slides/slide-06.jpg' },
-      { nome: 'Padrão de ramos', img: 'apresentacao/slides/slide-07.jpg' },
-      { nome: 'Cartão de visita', img: 'apresentacao/slides/slide-08.jpg' },
-      { nome: 'Rótulos e embalagem', img: 'apresentacao/slides/slide-09.jpg' },
-      { nome: 'Sacolas', img: 'apresentacao/slides/slide-10.jpg' },
-      { nome: 'Instagram', tipo: 'instagram', img: 'apresentacao/slides/slide-11.jpg' },
-      { nome: 'Filme da marca', tipo: 'filme', img: 'apresentacao/slides/slide-12.jpg' },
+      { nome: 'Filme da marca', tipo: 'filme', img: 'apresentacao/slides/slide-02.jpg' },
+      { nome: 'De onde partimos', img: 'apresentacao/slides/slide-03.jpg' },
+      { nome: 'O conceito', img: 'apresentacao/slides/slide-04.jpg' },
+      { nome: 'O símbolo', img: 'apresentacao/slides/slide-05.jpg' },
+      { nome: 'Versões do logotipo', img: 'apresentacao/slides/slide-06.jpg' },
+      { nome: 'Cores e tipografia', img: 'apresentacao/slides/slide-07.jpg' },
+      { nome: 'Padrão de ramos', img: 'apresentacao/slides/slide-08.jpg' },
+      { nome: 'Cartão de visita', img: 'apresentacao/slides/slide-09.jpg' },
+      { nome: 'Rótulos e embalagem', img: 'apresentacao/slides/slide-10.jpg' },
+      { nome: 'Sacolas', img: 'apresentacao/slides/slide-11.jpg' },
+      { nome: 'Instagram', tipo: 'instagram', img: 'apresentacao/slides/slide-12.jpg' },
       { nome: 'Motions', tipo: 'motions', img: 'apresentacao/slides/slide-13.jpg' },
-      { nome: 'Landing page', img: 'apresentacao/slides/slide-14.jpg' },
+      { nome: 'Site funcionando', tipo: 'site', img: 'apresentacao/slides/slide-14.jpg' },
       { nome: 'Próximos passos', img: 'apresentacao/slides/slide-15.jpg' }
     ],
     semanas: ['Semana 1 · lançamento da marca', 'Semana 2 · educação e serviço'],
@@ -463,6 +465,24 @@ th{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mute
 @media (max-width:640px){.lb-body img,.lb-body video{max-width:100%}.lb-nav{top:auto!important;bottom:72px}}
 .lb-nav{position:absolute;top:50%;transform:translateY(-50%);width:46px!important;height:46px!important;font-size:1.6rem!important}.lb-nav.prev{left:12px}.lb-nav.next{right:12px}
 .lb-cap{padding:12px 16px 18px;max-width:760px;margin:0 auto;width:100%;font-size:.9rem;line-height:1.5;max-height:26vh;overflow:auto}.lb-cap .leg{white-space:pre-line;opacity:.8;margin-top:4px}
+/* tela do site e visualizador em tela cheia */
+.site5{grid-template-columns:minmax(0,24cqw) 1fr;align-items:center;gap:3cqw;background:#f2efe0;color:#2b2b29}
+.site5 .frame{position:relative;aspect-ratio:16/10;border-radius:1cqw;overflow:hidden;background:#fff;box-shadow:0 2cqw 4cqw -2cqw rgba(0,0,0,.45)}
+.site5 .frame iframe{position:absolute;left:0;top:0;width:1440px;height:900px;border:0;transform-origin:0 0}
+.site5 .bt{display:flex;gap:.8cqw;flex-wrap:wrap;margin-top:2.2cqw}
+.site5 .bt button{font:700 1.2cqw var(--f-display);border:0;border-radius:999px;padding:.9cqw 1.6cqw;background:#0b4b7c;color:#f2efe0;cursor:pointer}
+.site5 .bt button.gh{background:transparent;color:#0b4b7c;box-shadow:inset 0 0 0 2px #0b4b7c}
+.sv{position:fixed;inset:0;z-index:70;background:#0c0d0c;display:grid;grid-template-rows:auto 1fr;color:#f2efe0}
+.sv-top{display:flex;align-items:center;gap:10px;padding:10px 14px;flex-wrap:wrap}
+.sv-top b{font:700 .9rem var(--f-display)}.sv-top span{font-size:.8rem;opacity:.7}.sv-top .sp{flex:1}
+.sv button{font:700 .85rem var(--f-display);background:#2f302c;color:#f2efe0;border:0;border-radius:999px;padding:8px 14px;cursor:pointer}
+.sv button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+.sv-body{display:flex;align-items:center;justify-content:center;overflow:auto;padding:0 12px 12px;min-height:0}
+.sv-body iframe{border:0;background:#fff;width:100%;height:100%;border-radius:8px;display:block}
+.sv[data-dev="tablet"] .sv-body iframe{width:min(834px,100%);height:min(1112px,100%);border-radius:22px;box-shadow:0 0 0 10px #262724}
+.sv[data-dev="celular"] .sv-body iframe{width:390px;max-width:100%;height:min(844px,100%);border-radius:34px;box-shadow:0 0 0 10px #262724}
+@media (max-width:640px){.sv-top .filter{order:3;width:100%}}
+.unmute{position:absolute;right:16px;bottom:16px;z-index:3;font:700 .85rem var(--f-display);background:rgba(11,75,124,.95);color:#f2efe0;border:0;border-radius:999px;padding:9px 16px;cursor:pointer}
 .foot-note{padding-block:28px;font-size:.8rem;color:var(--muted);text-align:right}
 </style>
 </head>
@@ -474,9 +494,15 @@ th{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--mute
  <button type="button" class="lb-nav prev" id="lbPrev" aria-label="Anterior">‹</button><button type="button" class="lb-nav next" id="lbNext" aria-label="Próximo">›</button>
  <div class="lb-cap" id="lbCap"></div>
 </div>
+<div class="sv" id="sv" hidden role="dialog" aria-modal="true" aria-label="Site funcionando">
+ <div class="sv-top"><b id="svT"></b><span id="svD"></span><span class="sp"></span>
+  <div class="filter" role="group" aria-label="Aparelho"><button type="button" data-sv="desktop" aria-pressed="true">Computador</button><button type="button" data-sv="tablet" aria-pressed="false">Tablet</button><button type="button" data-sv="celular" aria-pressed="false">Celular</button></div>
+  <button type="button" id="svNew">Abrir em nova aba</button><button type="button" id="svX">✕ Fechar</button></div>
+ <div class="sv-body"><iframe id="svF" title="Site funcionando"></iframe></div>
+</div>
 <script>
 (function(){
-const D=DADOS,P=D.projeto;
+const D=DADOS,P=D.projeto,SITE=(D.apresentacao&&D.apresentacao.site)||{},temSite=!!(SITE.url&&!/^\[/.test(SITE.url));
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 /* texto: [colchetes] = campo vazio, destacado */
 const T=s=>{s=String(s??'');return /^\[.*\]$/.test(s.trim())?`<span class="ph">${esc(s)}</span>`:esc(s).replace(/\[([^\]]+)\]/g,'<span class="ph">[$1]</span>')};
@@ -526,14 +552,14 @@ const t3=hero('Aba 03 · Proposta',T(r.titulo),r.lede)
 const g=D.entregaveis,L=g.landing;
 const t4=hero('Aba 04 · O que vai para o cliente','Entregáveis','Os documentos do projeto e como cada um deve ser usado.')
  +`<section><div class="grid2">${g.cards.map((c,i)=>`<div class="card"><div class="label">${String(i+1).padStart(2,'0')} · ${T(c.rotulo)}</div><p>${T(c.texto)}</p><p class="small muted">${c.arquivo==='Aba 05'?'<a href="#t5">Ver na aba 05 · Apresentação</a>':T(c.arquivo)}</p></div>`).join('')}</div></section>`
- +sec('landing','Landing page · simulação responsiva','Desktop, tablet e celular','Escolha o aparelho e role dentro da tela, ou deixe a rolagem automática.',`<div class="dev-ctl"><div class="filter" role="group" aria-label="Aparelho"><button type="button" aria-pressed="true" data-dev="desktop">Desktop · 1440 px</button><button type="button" aria-pressed="false" data-dev="tablet">Tablet · 834 px</button><button type="button" aria-pressed="false" data-dev="mobile">Celular · 390 px</button><button type="button" aria-pressed="false" data-dev="all">Os três lado a lado</button></div><label class="auto"><input type="checkbox" id="autoscroll" checked> Rolar automaticamente</label></div>
+ +sec('landing','Landing page · simulação responsiva','Desktop, tablet e celular','Escolha o aparelho e role dentro da tela, ou deixe a rolagem automática.',`${temSite?'<div><button type="button" class="btn" data-site-open>⛶ Abrir o site funcionando em tela cheia</button></div>':''}<div class="dev-ctl"><div class="filter" role="group" aria-label="Aparelho"><button type="button" aria-pressed="true" data-dev="desktop">Desktop · 1440 px</button><button type="button" aria-pressed="false" data-dev="tablet">Tablet · 834 px</button><button type="button" aria-pressed="false" data-dev="mobile">Celular · 390 px</button><button type="button" aria-pressed="false" data-dev="all">Os três lado a lado</button></div><label class="auto"><input type="checkbox" id="autoscroll" checked> Rolar automaticamente</label></div>
   <div class="devs" id="devs" data-dev="desktop"><div class="dev desktop"><div class="bar"><i></i><i></i><i></i><span>${T(L.dominio)}</span></div><div class="scr">${I(L.desktop,'página inteira no desktop')}</div></div><div class="dev tablet"><div class="scr">${I(L.tablet,'página inteira no tablet')}</div></div><div class="dev mobile"><div class="scr">${I(L.celular,'página inteira no celular')}</div></div></div>
   <div class="mobs">${L.telas.map(s=>`<figure>${I(s.img,'tela: '+s.legenda)}<figcaption>${T(s.legenda)}</figcaption></figure>`).join('')}</div>${has(L.tabela)?tbl(['Elemento','Desktop','Tablet','Celular'],L.tabela):''}`)
  +(has(g.checklist)?sec('checklist','Antes e depois do envio','Checklist','',`<ul class="check card">${g.checklist.map(c=>`<li>${T(c)}</li>`).join('')}</ul>`):'');
 
 /* ---------- ABA 05 ---------- */
 const A=D.apresentacao;
-const t5=hero('Aba 05 · Versão final para o cliente',`Apresentação<br>${T(P.marca)}`,A.lede,`<div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn" id="pStart" type="button">▶ Apresentar em tela cheia</button><a class="btn ghost" href="#pdf">Versão em PDF</a></div>`)
+const t5=hero('Aba 05 · Versão final para o cliente',`Apresentação<br>${T(P.marca)}`,A.lede,`<div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn" id="pStart" type="button">▶ Apresentar em tela cheia</button>${temSite?'<button class="btn ghost" type="button" data-site-open>⛶ Ver o site funcionando</button>':''}<a class="btn ghost" href="#pdf">Versão em PDF</a></div>`)
  +nav([['apres','Apresentação'],['mo5','Filme e motions'],['ig5','Instagram'],['pdf','Versão PDF']])
  +`<section id="apres"><div class="player" id="player" tabindex="0" aria-label="Apresentação"><div class="stage" id="stage"></div><div class="pbar"><button type="button" id="pPrev" aria-label="Tela anterior">←</button><div class="pinfo"><b id="pNum"></b><span id="pName"></span></div><div class="pprog"><i id="pProg"></i></div><button type="button" id="pNext" aria-label="Próxima tela">→</button><button type="button" id="pFull">⛶ Tela cheia</button></div></div><div class="rail" id="rail"></div><p class="cap">Atalhos: ← → navegam · F abre a tela cheia · Esc sai.</p></section>`
  +sec('mo5','Filme e motions · com som','Assista em tela grande','Clique em um vídeo para abrir no modo cinema, com som.',`<div class="mogrid" id="mogrid5"></div>`)
@@ -592,12 +618,32 @@ const stage=$('stage'),player=$('player');let cur=0;const N=A.slides.length;
 const special={
  instagram:(s,i)=>`<div class="ms igs"><div><div class="k5">${String(i+1).padStart(2,'0')} · ${T(s.nome)}</div><h3>O feed da nova marca.</h3><p>Clique em uma arte para ampliar.</p></div><div class="g9">${IG.slice(0,15).map((it,k)=>`<button type="button" data-ig="${k}">${it.src?`<img src="${esc(it.src)}" alt="" loading="lazy">`:'<div class="phimg" style="min-height:0;aspect-ratio:4/5">[post]</div>'}</button>`).join('')}</div></div>`,
  filme:(s,i)=>`<div class="ms film">${F.video?`<video src="${esc(F.video)}" poster="${esc(F.poster)}" controls playsinline preload="metadata"></video>`:'<div class="phimg" style="aspect-ratio:9/16">[vídeo]</div>'}<div><div class="k5">${String(i+1).padStart(2,'0')} · ${T(s.nome)}</div><h3>${T(F.titulo)}</h3><p>${T(F.texto)}</p><div class="sb5">${F.storyboard.slice(0,6).map((x,k)=>x.img?`<img src="${esc(x.img)}" alt="" data-psb="${k}" loading="lazy">`:'<div class="phimg" style="min-height:0;aspect-ratio:9/16">[quadro]</div>').join('')}</div></div></div>`,
+ site:(s,i)=>`<div class="ms site5"><div><div class="k5">${String(i+1).padStart(2,'0')} · ${T(s.nome)}</div><h3>${T(SITE.titulo||'O site')}</h3>${SITE.dominio?`<p>${T(SITE.dominio)}</p>`:''}<p>O site está funcionando aqui dentro: role, clique nos botões e abra em tela cheia no computador, no tablet ou no celular.</p><div class="bt"><button type="button" data-site-open>⛶ Tela cheia</button><button type="button" class="gh" data-site-open="celular">Ver no celular</button></div></div><div class="frame">${temSite?`<iframe src="${esc(SITE.url)}" title="Site ${esc(SITE.titulo||'')}" loading="lazy"></iframe>`:'<div class="phimg" style="height:100%;border-radius:0">[endereço do site em apresentacao.site.url]</div>'}</div></div>`,
  motions:(s,i)=>`<div class="ms mos"><div><div class="k5">${String(i+1).padStart(2,'0')} · ${T(s.nome)}</div><h3>A marca em movimento.</h3></div><div class="row5">${r.motions.map(x=>`<figure>${x.video?`<video src="${esc(x.video)}" poster="${esc(x.poster)}" controls playsinline preload="none"></video>`:'<div class="phimg" style="aspect-ratio:9/16;min-height:0">[vídeo]</div>'}<figcaption>${T(x.titulo)} · ${T(x.duracao)}</figcaption></figure>`).join('')}</div></div>`
 };
 stage.innerHTML=A.slides.map((s,i)=>`<div class="slide${i?'':' on'}" aria-hidden="${!!i}">${special[s.tipo]?special[s.tipo](s,i):I(s.img,'tela '+(i+1)+': '+s.nome)}</div>`).join('');
 $('rail').innerHTML=A.slides.map((s,i)=>`<button type="button" data-go="${i}" aria-current="${!i}">${s.img?`<img src="${esc(s.img)}" alt="" loading="lazy">`:'<div class="phimg">[tela]</div>'}<span>${String(i+1).padStart(2,'0')} · ${esc(s.nome)}</span></button>`).join('');
 function pausePlayer(){stage.querySelectorAll('video').forEach(v=>v.pause())}
-function show(n){if(!N)return;cur=(n+N)%N;pausePlayer();stage.querySelectorAll('.slide').forEach((s,i)=>{s.classList.toggle('on',i===cur);s.setAttribute('aria-hidden',i!==cur)});
+/* vídeo automático: filme com som (cai para mudo + "Ativar som" se o navegador bloquear); motions mudos em loop */
+const AUTO=A.autoplay!==false;
+function somBtn(sl,v){if(sl.querySelector('.unmute'))return;const b=document.createElement('button');b.type='button';b.className='unmute';b.textContent='🔊 Ativar som';
+ b.onclick=ev=>{ev.stopPropagation();v.muted=false;v.play().catch(()=>{});b.remove()};sl.appendChild(b)}
+function autoplay(){if(!AUTO||!N)return;const sl=stage.querySelectorAll('.slide')[cur],vs=[...sl.querySelectorAll('video')];if(!vs.length)return;
+ if(A.slides[cur].tipo==='motions'){vs.forEach(v=>{v.muted=true;v.loop=true;v.play().catch(()=>{})});return}
+ const v=vs[0];try{v.currentTime=0}catch(e){}v.muted=false;v.play().then(()=>{const b=sl.querySelector('.unmute');b&&b.remove()}).catch(()=>{v.muted=true;v.play().catch(()=>{});somBtn(sl,v)})}
+/* site funcionando em tela cheia */
+const sv=$('sv'),svF=$('svF');let svLast=null;
+function svDev(d){sv.dataset.dev=d;sv.querySelectorAll('[data-sv]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.sv===d))}
+function openSite(dev){if(!temSite)return;svLast=document.activeElement;pausePlayer();if(!svF.getAttribute('src'))svF.src=SITE.url;$('svT').textContent=SITE.titulo&&!/^\[/.test(SITE.titulo)?SITE.titulo:'Site';$('svD').textContent=SITE.dominio&&!/^\[/.test(SITE.dominio)?SITE.dominio:'';
+ svDev(dev||'desktop');sv.hidden=false;document.body.style.overflow='hidden';(sv.requestFullscreen?sv.requestFullscreen():Promise.reject()).catch(()=>{});$('svX').focus()}
+function closeSite(){if(document.fullscreenElement===sv)document.exitFullscreen().catch(()=>{});sv.hidden=true;document.body.style.overflow='';svLast&&svLast.focus&&svLast.focus()}
+sv.querySelectorAll('[data-sv]').forEach(b=>b.onclick=()=>svDev(b.dataset.sv));$('svX').onclick=closeSite;$('svNew').onclick=()=>window.open(SITE.url,'_blank','noopener');
+document.addEventListener('fullscreenchange',()=>{if(!document.fullscreenElement&&!sv.hidden&&sv.dataset.fs==='1'){sv.dataset.fs='';}if(document.fullscreenElement===sv)sv.dataset.fs='1'});
+document.addEventListener('click',ev=>{const b=ev.target.closest('[data-site-open]');if(b){ev.preventDefault();openSite(b.dataset.siteOpen||'desktop')}});
+/* miniatura do site: a página em 1440 px reduzida para caber no quadro */
+const fitSite=()=>stage.querySelectorAll('.site5 .frame').forEach(fr=>{const f=fr.querySelector('iframe');if(f)f.style.transform=`scale(${fr.clientWidth/1440})`});
+if(window.ResizeObserver)new ResizeObserver(fitSite).observe(stage);
+function show(n){if(!N)return;cur=(n+N)%N;pausePlayer();stage.querySelectorAll('.slide').forEach((s,i)=>{s.classList.toggle('on',i===cur);s.setAttribute('aria-hidden',i!==cur)});fitSite();autoplay();
  $('pNum').textContent=`${cur+1} / ${N}`;$('pName').textContent=A.slides[cur].nome;$('pProg').style.width=((cur+1)/N*100)+'%';
  $('rail').querySelectorAll('button').forEach((b,i)=>b.setAttribute('aria-current',i===cur))}
 show(0);
@@ -632,6 +678,7 @@ let last=performance.now();
 
 /* ---------- teclado ---------- */
 document.addEventListener('keydown',ev=>{
+ if(!sv.hidden){if(ev.key==='Escape')closeSite();return}
  if(!lb.hidden){if(ev.key==='Escape')closeLB();else if(ev.key==='ArrowRight')go(1);else if(ev.key==='ArrowLeft')go(-1);else if(ev.key==='+'||ev.key==='=')step(2);else if(ev.key==='-')step(.5);return}
  if($('t5').hidden||ev.target.closest('input,textarea,video'))return;
  const active=player.contains(document.activeElement)||document.fullscreenElement===player||player.classList.contains('immersive');

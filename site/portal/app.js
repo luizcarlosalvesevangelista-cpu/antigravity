@@ -764,12 +764,22 @@ function cApres(m, { doc }) {
   const A = doc.apresentacao || {}, R = p => resolveUrl(p, A.baseUrl), slides = (A.slides || []).filter(s => s.img || s.tipo);
   let i = 0;
   m.innerHTML = `<div class="grid" style="gap:6px"><span class="eb">Apresentação</span><h1>${esc(A.marca || doc.marca || "")}</h1>${A.lede ? `<p class="muted">${esc(A.lede)}</p>` : ""}</div>
+    ${A.site?.url ? `<div><button class="btn sec" id="siteAbrir">⛶ Ver o site funcionando</button></div>` : ""}
     ${A.cores?.length ? `<div class="row">${A.cores.map(c => `<span class="row small" style="gap:6px"><i style="width:18px;height:18px;border-radius:50%;background:${esc(c.hex)};border:1px solid var(--line);display:inline-block"></i>${esc(c.nome)}</span>`).join("")}</div>` : ""}
     ${slides.length ? `<div class="player" id="pl"><div class="stage" id="stg"></div><div class="pbar"><button id="pp" aria-label="Tela anterior">←</button><span class="nm" id="pn"></span><button id="pf">Tela cheia</button><button id="px" aria-label="Próxima tela">→</button></div></div>
-      <div class="rail" id="rail">${slides.map((s, k) => `<button data-k="${k}"><div class="rt">${s.img ? `<img src="${esc(R(s.img))}" alt="">` : esc({ filme: "Filme", motions: "Motions", instagram: "Instagram" }[s.tipo] || "Tela")}</div><span>${k + 1}. ${esc(s.nome || "")}</span></button>`).join("")}</div>` : `<div class="empty">A apresentação ainda não foi publicada.</div>`}
+      <div class="rail" id="rail">${slides.map((s, k) => `<button data-k="${k}"><div class="rt">${s.img ? `<img src="${esc(R(s.img))}" alt="">` : esc({ filme: "Filme", motions: "Motions", instagram: "Instagram", site: "Site" }[s.tipo] || "Tela")}</div><span>${k + 1}. ${esc(s.nome || "")}</span></button>`).join("")}</div>` : `<div class="empty">A apresentação ainda não foi publicada.</div>`}
     ${A.pdf ? `<div><a class="btn sec" href="${esc(R(A.pdf))}" target="_blank" rel="noopener">Baixar em PDF${A.pdfTamanho ? ` (${esc(A.pdfTamanho)})` : ""}</a></div>` : ""}`;
+  if ($("#siteAbrir")) $("#siteAbrir").onclick = () => abrirSite(A.site, R(A.site.url));
   if (!slides.length) return;
   const stg = $("#stg");
+  // vídeo automático: o filme começa com som (se o navegador bloquear, começa mudo com "Ativar som"); motions mudos em loop
+  const tocar = s => {
+    if (A.autoplay === false) return;
+    const vs = $$("video", stg); if (!vs.length) return;
+    if (s.tipo === "motions") return vs.forEach(v => { v.muted = true; v.loop = true; v.play().catch(() => {}); });
+    const v = vs[0]; v.muted = false;
+    v.play().catch(() => { v.muted = true; v.play().catch(() => {}); const b = document.createElement("button"); b.className = "unmute"; b.textContent = "🔊 Ativar som"; b.onclick = e => { e.stopPropagation(); v.muted = false; v.play().catch(() => {}); b.remove(); }; stg.appendChild(b); });
+  };
   const show = k => {
     i = (k + slides.length) % slides.length; const s0 = slides[i];
     // tela com "filme" no nome abre o filme, mesmo marcada como motions no dossiê
@@ -779,8 +789,10 @@ function cApres(m, { doc }) {
     stg.classList.toggle("livre", (s.tipo === "motions" && !!A.motions?.length) || (s.tipo === "instagram" && !!A.instagram?.length)); stg.scrollTop = 0;
     if (s.tipo === "filme" && A.filme?.video) stg.innerHTML = `<video src="${esc(R(A.filme.video))}" poster="${esc(R(A.filme.poster))}" controls playsinline></video>`;
     else if (s.tipo === "motions" && A.motions?.length) stg.innerHTML = `<div class="mot">${A.motions.map(mo => `<figure><video src="${esc(R(mo.video))}" poster="${esc(R(mo.poster))}" controls playsinline preload="metadata"></video>${mo.titulo ? `<figcaption>${esc(mo.titulo)}${mo.duracao ? ` · ${esc(mo.duracao)}` : ""}</figcaption>` : ""}</figure>`).join("")}</div>`;
+    else if (s.tipo === "site" && A.site?.url) { stg.innerHTML = `<div class="site-fr"><iframe src="${esc(R(A.site.url))}" title="${esc(A.site.titulo || "Site")}" loading="lazy"></iframe></div><div class="site-bt"><button data-sv="desktop">⛶ Tela cheia</button><button data-sv="celular">Ver no celular</button></div>`; const fit = () => { const f = $("iframe", stg); if (f) f.style.transform = `scale(${stg.clientWidth / 1440})`; }; fit(); new ResizeObserver(fit).observe(stg); $$("[data-sv]", stg).forEach(b => b.onclick = () => abrirSite(A.site, R(A.site.url), b.dataset.sv)); }
     else if (s.tipo === "instagram" && A.instagram?.length) { stg.innerHTML = `<div class="igg">${A.instagram.map((p, k2) => `<button data-ig="${k2}" aria-label="Ampliar ${esc(p.titulo)}"><img src="${esc(R(p.img))}" alt="${esc(p.titulo)}"></button>`).join("")}</div>`; stg.querySelectorAll("[data-ig]").forEach(b => b.onclick = () => { const p = A.instagram[+b.dataset.ig]; modal(esc(p.titulo || "Post"), `<div class="media-box"><img src="${esc(R(p.img))}" alt=""></div>${p.legenda ? `<div class="legenda">${esc(p.legenda)}</div>` : ""}`); }); }
     else stg.innerHTML = s.img ? `<img src="${esc(R(s.img))}" alt="${esc(s.nome)}">` : `<div class="ph">${esc(s.nome)}</div>`;
+    tocar(s);
     $("#pn").textContent = `${i + 1} de ${slides.length} · ${s.nome || ""}`;
     $$("#rail button").forEach(b => b.setAttribute("aria-current", +b.dataset.k === i ? "true" : "false"));
   };
@@ -789,6 +801,19 @@ function cApres(m, { doc }) {
   $$("#rail button").forEach(b => b.onclick = () => show(+b.dataset.k));
   $("#pl").tabIndex = 0; $("#pl").addEventListener("keydown", e => { if (e.key === "ArrowRight") show(i + 1); if (e.key === "ArrowLeft") show(i - 1); });
   show(0);
+}
+
+/* site funcionando em tela cheia (computador, tablet ou celular) */
+function abrirSite(site, url, dev = "desktop") {
+  const ant = document.activeElement, ov = document.createElement("div");
+  ov.className = "sitev"; ov.setAttribute("role", "dialog"); ov.setAttribute("aria-modal", "true"); ov.setAttribute("aria-label", "Site funcionando");
+  ov.innerHTML = `<div class="sitev-top"><b>${esc(site.titulo || "Site")}</b>${site.dominio ? `<span>${esc(site.dominio)}</span>` : ""}<span style="flex:1"></span>${["desktop", "tablet", "celular"].map(d => `<button data-d="${d}">${{ desktop: "Computador", tablet: "Tablet", celular: "Celular" }[d]}</button>`).join("")}<a class="b" href="${esc(url)}" target="_blank" rel="noopener">Nova aba</a><button data-x>✕ Fechar</button></div><div class="sitev-body"><iframe src="${esc(url)}" title="${esc(site.titulo || "Site")}"></iframe></div>`;
+  const setD = d => { ov.dataset.dev = d; $$("[data-d]", ov).forEach(b => b.setAttribute("aria-pressed", b.dataset.d === d ? "true" : "false")); };
+  const fechar = () => { if (document.fullscreenElement === ov) document.exitFullscreen().catch(() => {}); ov.remove(); document.removeEventListener("keydown", esc_); ant?.focus?.(); };
+  const esc_ = e => { if (e.key === "Escape") fechar(); };
+  $$("[data-d]", ov).forEach(b => b.onclick = () => setD(b.dataset.d)); $("[data-x]", ov).onclick = fechar;
+  document.addEventListener("keydown", esc_); setD(dev); document.body.appendChild(ov); $("[data-x]", ov).focus();
+  (ov.requestFullscreen ? ov.requestFullscreen() : Promise.reject()).catch(() => {});
 }
 
 /* ---------- conteúdo: calendário de aprovação ---------- */
@@ -1132,6 +1157,8 @@ function apresFromDossie(D, baseUrl) {
   const strip = v => (typeof v === "string" && /^\[.*\]$/.test(v.trim())) ? "" : v;
   return {
     marca: strip(D.projeto?.marca) || "", lede: strip(A.lede) || "", pdf: A.pdf || "", pdfTamanho: strip(A.pdfTamanho) || "", baseUrl: baseUrl || "",
+    autoplay: A.autoplay !== false,
+    site: A.site?.url && !/^\[/.test(A.site.url) ? { titulo: strip(A.site.titulo) || "", url: A.site.url, dominio: strip(A.site.dominio) || "" } : null,
     cores: (D.marca?.cores || []).filter(c => !/^\[/.test(c.nome)).map(c => ({ nome: c.nome, hex: c.hex })),
     slides: (A.slides || []).map(s => ({ nome: s.nome, tipo: (s.tipo || "img") !== "img" && /filme/i.test(s.nome || "") && R.filme?.video ? "filme" : s.tipo || "img", img: s.img || "" })),
     filme: R.filme ? { titulo: strip(R.filme.titulo), texto: strip(R.filme.texto), video: R.filme.video || "", poster: R.filme.poster || "", duracao: strip(R.filme.duracao) } : null,
@@ -1157,17 +1184,21 @@ function aApres(ct, { id, doc, priv, save }) {
         <label class="f" for="aMarca">Título<input id="aMarca" value="${esc(A.marca || doc.marca || "")}"></label>
         <label class="f" for="aLede">Texto de abertura<textarea id="aLede">${esc(A.lede || "")}</textarea></label>
         <label class="f" for="aPdf">PDF da apresentação (link)<input id="aPdf" value="${esc(A.pdf || "")}"></label>
+        <label class="f" for="aSite">Site funcionando (caminho no dossiê, ex.: site/index.html, ou link publicado)<input id="aSite" value="${esc(A.site?.url || "")}"></label>
+        <label class="row small" style="gap:8px"><input type="checkbox" id="aAuto" ${A.autoplay === false ? "" : "checked"}> Vídeos começam sozinhos</label>
       </section>
     </div>
     <section class="card grid"><div class="spread"><h3>Telas da apresentação</h3><button class="btn sec sm" id="sAdd">Adicionar tela</button></div>
-      <p class="muted small">Tipo “imagem” mostra a imagem. “Filme”, “Motions” e “Instagram” viram telas interativas com os vídeos e o feed do dossiê.</p>
-      <div class="grid" style="gap:8px">${(A.slides || []).map((s, k) => `<div class="row" style="flex-wrap:nowrap"><span class="muted small num" style="width:22px">${k + 1}</span><input data-sn="${k}" value="${esc(s.nome)}" aria-label="Nome da tela" style="max-width:220px"><select data-st="${k}" aria-label="Tipo" style="max-width:130px">${["img", "filme", "motions", "instagram"].map(t => `<option value="${t}" ${(s.tipo || "img") === t ? "selected" : ""}>${{ img: "Imagem", filme: "Filme", motions: "Motions", instagram: "Instagram" }[t]}</option>`).join("")}</select><input data-si="${k}" value="${esc(s.img || "")}" placeholder="caminho ou link da imagem" aria-label="Imagem"><button class="btn sec sm" data-sd="${k}" aria-label="Remover tela">×</button></div>`).join("") || '<p class="muted small">Nenhuma tela ainda. Importe um dossiê ou adicione telas.</p>'}</div>
+      <p class="muted small">Tipo “imagem” mostra a imagem. “Filme”, “Motions”, “Instagram” e “Site” viram telas interativas: os vídeos começam sozinhos e o site funciona dentro da tela, com tela cheia no computador, tablet ou celular.</p>
+      <div class="grid" style="gap:8px">${(A.slides || []).map((s, k) => `<div class="row" style="flex-wrap:nowrap"><span class="muted small num" style="width:22px">${k + 1}</span><input data-sn="${k}" value="${esc(s.nome)}" aria-label="Nome da tela" style="max-width:220px"><select data-st="${k}" aria-label="Tipo" style="max-width:130px">${["img", "filme", "motions", "instagram", "site"].map(t => `<option value="${t}" ${(s.tipo || "img") === t ? "selected" : ""}>${{ img: "Imagem", filme: "Filme", motions: "Motions", instagram: "Instagram", site: "Site" }[t]}</option>`).join("")}</select><input data-si="${k}" value="${esc(s.img || "")}" placeholder="caminho ou link da imagem" aria-label="Imagem"><button class="btn sec sm" data-sd="${k}" aria-label="Remover tela">×</button></div>`).join("") || '<p class="muted small">Nenhuma tela ainda. Importe um dossiê ou adicione telas.</p>'}</div>
       <div class="row muted small">Filme: ${A.filme?.video ? esc(A.filme.video) : "não definido"} · Motions: ${(A.motions || []).length} · Posts do Instagram: ${(A.instagram || []).length}</div>
     </section>
     <div class="row" style="justify-content:flex-end"><button class="btn" id="aSv">Salvar apresentação</button></div>`;
   const collect = () => {
     const slides = $$("[data-sn]", ct).map((i, k) => ({ nome: i.value.trim(), tipo: $(`[data-st="${k}"]`, ct).value, img: $(`[data-si="${k}"]`, ct).value.trim() }));
-    doc.apresentacao = { ...A, marca: $("#aMarca").value.trim(), lede: $("#aLede").value.trim(), pdf: $("#aPdf").value.trim(), baseUrl: $("#dBase").value.trim(), slides };
+    const su = $("#aSite").value.trim();
+    doc.apresentacao = { ...A, marca: $("#aMarca").value.trim(), lede: $("#aLede").value.trim(), pdf: $("#aPdf").value.trim(), baseUrl: $("#dBase").value.trim(), slides,
+      autoplay: $("#aAuto").checked, site: su ? { ...(A.site || {}), url: su, titulo: A.site?.titulo || A.marca || doc.marca || "" } : null };
   };
   $("#sAdd").onclick = () => { collect(); doc.apresentacao.slides.push({ nome: "Nova tela", tipo: "img", img: "" }); aApres(ct, { id, doc, priv, save }); };
   $$("[data-sd]", ct).forEach(b => b.onclick = () => { collect(); doc.apresentacao.slides.splice(+b.dataset.sd, 1); aApres(ct, { id, doc, priv, save }); });
